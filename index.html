@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InferencePort AI — Run models locally</title>
+    <link rel="stylesheet" href="styles/global.css" />
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <script src="scripts/theme.js"></script>
+
+    <meta name="description" content="InferencePort AI — a lightweight app and website for running local LLMs and exploring Hugging Face Spaces. Preview, run and share models from your desktop." />
+    <style>
+        .hero-cta { margin-top: 18px; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 28px; }
+        .feature { background: var(--card-bg); padding: 18px; border-radius: 10px; box-shadow: var(--shadow); }
+        .container { padding: 40px; }
+        .features h3 { color: hsl(128, 100%, 51%) }
+    </style>
+
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <div class="logo" style="color: hsl(128, 100%, 51%)">InferencePort AI</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="install.html">Download</a></li>
+            <li><a href="playground.html">Playground</a></li>
+            <li><a href="security.html">Security</a></li>
+        </ul>
+    </nav>
+    <div class="hero center1">
+        <div class="hero-left" style="padding: 40px;">
+            <h1>Run powerful language models locally — privately.</h1>
+            <p>InferencePort AI makes it easy to run, test and share local models and Hugging Face Spaces from your desktop for free.</p>
+            <div class="hero-buttons">
+                <a href="install.html">Install</a>
+                <a href="index.html#oss">Open source</a>
+                <a href="playground.html" target="_blank">Try it online ➡ </a>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <img src="img/examples/example1.png" style="padding-right: 10px;"/>
+            <img src="img/examples/example2.png" />
+        </div>
+    </div>
+    <main style="padding: 40px;">
+        <section>
+            <h2>What you can do</h2>
+            <section id="features" class="features">
+                <div class="feature-card">
+                    <h3>Run local models</h3>
+                    <p>Start and interact with models hosted on your machine (Ollama, local runtimes). Stream responses to the UI and save sessions.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Browse Spaces</h3>
+                    <p>Discover, add and preview Hugging Face Spaces and community demos directly from the app.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Share and export</h3>
+                    <p>Share website cards and export session data for reproducibility and collaboration.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Privacy-first</h3>
+                    <p>All model runs happen locally (unless you choose otherwise). We aim for minimal external calls and transparent behavior.</p>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-top:28px;">
+            <h2 style="text-align: center; color: hsl(128, 100%, 51%)">Get started</h2>
+            <div style="text-align: center;">
+                <p>1. Download the desktop app from the Download page.</p>
+                <p>2. Open the Playground to test models without installing anything locally.</p>
+                <p>3. Visit the Settings to configure model backends and user preferences.</p>
+            </div>
+        </section>
+
+        <footer style="margin-top:40px; padding:20px 0; border-top:1px solid var(--edge);">
+            <small>© 2025 InferencePort AI — Open source and privacy minded.</small>
+        </footer>
+    </main>
+</body>
+</html>

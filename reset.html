@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InferencePort AI — Run models locally</title>
+    <link rel="stylesheet" href="styles/global.css" />
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <script src="scripts/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <meta name="description" content="InferencePort AI — a lightweight app and website for running local LLMs and exploring Hugging Face Spaces. Preview, run and share models from your desktop." />
+    <style>
+        .hero-cta { margin-top: 18px; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 28px; }
+        .feature { background: var(--card-bg); padding: 18px; border-radius: 10px; box-shadow: var(--shadow); }
+        .container { padding: 40px; }
+        .features h3 { color: hsl(128, 100%, 51%) }
+    </style>
+
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <div class="logo" style="color: hsl(128, 100%, 51%)">InferencePort AI</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="install.html">Download</a></li>
+            <li><a href="playground.html">Playground</a></li>
+            <li><a href="security.html">Security</a></li>
+        </ul>
+    </nav>
+    <div class="hero center1">
+        <div class="hero-left" style="padding: 40px;">
+            <h1>Run powerful language models locally — privately.</h1>
+            <p>InferencePort AI makes it easy to run, test and share local models and Hugging Face Spaces from your desktop for free.</p>
+            <div class="hero-buttons">
+                <a href="install.html">Install</a>
+                <a href="index.html#oss">Open source</a>
+                <a href="playground.html" target="_blank">Try it online ➡ </a>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <img src="img/examples/example1.png" style="padding-right: 10px;"/>
+            <img src="img/examples/example2.png" />
+        </div>
+    </div>
+    <main style="padding: 40px;">
+        <section>
+            <h2 style="text-align: center;">Reset Password</h2>
+            <input type="password" id="pswrd-input" placeholder="Type New Password"></input>
+            <input type="password" id="confirm-input" placeholder="Confirm Password"></input>
+            <button id="submit">Submit</button>
+        </section>
+
+        <footer style="margin-top:40px; padding:20px 0; border-top:1px solid var(--edge);">
+            <small>© 2025 InferencePort AI — Open source and privacy minded.</small>
+        </footer>
+    </main>
+    <script>
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwaXhlaGhkYnR6c2Jja2Zla3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNDI0MjcsImV4cCI6MjA3NjcxODQyN30.nR1KCSRQj1E_evQWnE2VaZzg7PgLp2kqt4eDKP2PkpE"
+        const supabaseUrl = "https://dpixehhdbtzsbckfektd.supabase.co";
+        const sb = supabase.createClient(supabaseUrl, supabaseKey);
+        const submitBtn = document.getElementById("submit");
+        const input1 = document.getElementById("pswrd-input")
+        const input2 = document.getElementById("confirm-input")
+        submitBtn.addEventListener("click", async () => {
+            if (input1.value !== input2.value) { alert("Passwords do not match"); return; }
+            const { data, error } = await sb.auth.updateUser({
+                password: input1.value
+            })
+            if (!error) {
+                alert("Password reset successfully")
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1000)
+            }
+            else {
+                alert(error);
+            }
+        })
+    </script>
+</body>
+</html>

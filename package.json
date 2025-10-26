@@ -1,0 +1,10 @@
+{
+  "name": "inferenceport-web-site",
+  "version": "1.0.0",
+  "description": "Static website for InferencePort-Web",
+  "scripts": {
+    "start": "node serve.js"
+  },
+  "author": "sharktide",
+  "license": "Apache-2.0"
+}

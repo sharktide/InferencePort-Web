@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClimateStrike AI</title>
+    <script src="scripts/theme.js"></script>
+    <link rel="stylesheet" href="styles/global.css" />
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <script type="module" src="https://get.microsoft.com/badge/ms-store-badge.bundled.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download — InferencePort AI</title>
+  <link rel="stylesheet" href="styles/global.css" />
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+  <meta name="description" content="Download InferencePort AI - desktop app to run local models and browse Spaces." />
+  <style>
+    .download-container { max-width:960px; margin:auto; display:grid; gap:18px; grid-template-columns: 1fr; }
+    .download-card { padding:18px; border-radius:10px; background: #494949; box-shadow:var(--shadow); }
+    .btn-row { display:flex; gap:12px; margin-top:12px; }
+  </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <div class="logo" style="color: hsl(128, 100%, 51%)">InferencePort AI</div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="install.html">Download</a></li>
+            <li><a href="playground.html">Playground</a></li>
+            <li><a href="security.html">Security</a></li>
+        </ul>
+    </nav>
+    <div class="hero center1">
+        <div class="hero-left" style="padding: 40px;">
+            <h1>Run powerful language models locally — privately.</h1>
+            <p>InferencePort AI makes it easy to run, test and share local models and Hugging Face Spaces from your desktop for free.</p>
+            <div class="hero-buttons">
+                <a href="install.html">Install</a>
+                <a href="index.html#oss">Open source</a>
+                <a href="playground.html" target="_blank">Try it online ➡ </a>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <img src="img/examples/example1.png" style="padding-right: 10px;"/>
+            <img src="img/examples/example2.png" />
+        </div>
+    </div>
+
+  <main style="padding: 40px;">
+    <h1 style="text-align:center;">Download InferencePort AI</h1>
+    <p style="text-align:center; max-width:800px; margin:12px auto;">InferencePort AI provides a desktop client to run models locally and manage Hugging Face Spaces. Choose the platform below to get the latest available binaries or instructions.</p>
+    <br />
+    <section style="max-width:900px; margin-left:auto; margin-right:auto; background: #575856;" class="download-card">
+      <h2>Install notes</h2>
+      <ul>
+        <li>Binary distribution is not currently published — check releases or build from source.</li>
+        <li>For local model serving we recommend Ollama or other container runtimes; check the app settings to choose a backend.</li>
+        <li>Need help? Open an issue on the project repository.</li>
+      </ul>
+    </section>
+    <div class="download-container">
+      <div class="download-card">
+        <h3>Windows</h3>
+        <p>Download the latest Windows installer (x64). If you prefer the Store package, follow the link below.</p>
+        <div class="btn-row">
+          <a class="btn primary" href="#">Windows installer (coming)</a>
+        </div>
+      </div>
+
+      <div class="download-card">
+        <h3>macOS</h3>
+        <p>macOS build for Intel and Apple Silicon — packaged as a DMG. Follow the instructions when available.</p>
+        <div class="btn-row"><a class="btn primary" href="#">macOS (coming)</a></div>
+      </div>
+
+      <div class="download-card">
+        <h3>Manual / Developer</h3>
+        <p>If you'd rather run from source or use the preview, clone the repository and follow the README.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
+
+<!-- <script>
+const binaries = {
+  windows: {
+    amd64: [
+      { name: "Installer (.exe)", url: "https://github.com/sharktide/ClimateStrike-App/releases/latest/download/ClimateStrikeAI_x64.exe" },
+      { name: "Portable (.zip)", url: "https://github.com/sharktide/ClimateStrike-App/releases/latest/download/ClimateStrike-Unpacked-x64.zip" }
+    ],
+    arm64: [
+      { name: "Installer (.exe)", url: "https://github.com/sharktide/ClimateStrike-App/releases/latest/download/ClimateStrikeAI_aarch64.exe" },
+      { name: "Portable (.zip)", url: "https://github.com/sharktide/ClimateStrike-App/releases/latest/download/ClimateStrike-Unpacked-aarch64.zip" }
+    ],
+    win32: "coming"
+  },
+  mac: {
+    apple: [
+      { name: "Installer (.pkg)", url: "https://github.com/sharktide/ClimateStrike-App/releases/latest/download/StrikeAI-1.0.pkg" }
+    ],
+  }
+};
+
+function showBinaries(os, arch) {
+  const containerId = `${os}-binaries`;
+  const binaryDiv = document.getElementById(containerId);
+  binaryDiv.innerHTML = '';
+  if (os === 'windows') {
+    const badge = document.createElement('div');
+    badge.innerHTML = `
+      <a target="_blank" href="https://apps.microsoft.com/detail/9n067x4gdm7z?referrer=appbadge&mode=direct">
+        <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
+      </a>
+    `;
+    binaryDiv.appendChild(badge);
+  }
+  if (!arch) return;
+
+  const data = binaries[os][arch];
+  if (data === 'coming') {
+    binaryDiv.innerHTML = `<p class="placeholder">Binaries coming soon. Please build from source.</p>`;
+    return;
+  }
+
+  data.forEach(file => {
+    const link = document.createElement('a');
+    link.href = file.url;
+    link.textContent = file.name;
+    binaryDiv.appendChild(link);
+  });
+}
+</script>
+
+
+
+</body>
+</html> -->
