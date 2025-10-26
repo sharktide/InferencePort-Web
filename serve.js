@@ -1,5 +1,5 @@
-#!/usr/bin/env node
-// Simple static file server for local preview
+
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
