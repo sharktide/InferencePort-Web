@@ -27,10 +27,3 @@ Alternative previews
 Notes
 - The site files (HTML, CSS, images) are already present in this folder: `index.html`, `install.html`, `playground.html`, `security.html`, and `styles/`.
 - If you want a different port: set the `PORT` environment variable, e.g. in PowerShell: `$env:PORT=3000; npm start`.
-
-If you'd like, I can:
-- Wire up a small deploy config for GitHub Pages.
-- Improve the homepage content, assets and meta tags for SEO/social previews.
-- Add a favicon and accessibility improvements.
-
-Tell me which of these you'd like next and I'll proceed.
