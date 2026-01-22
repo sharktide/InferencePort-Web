@@ -1,92 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InferencePort AI — Run models locally</title>
-    <link rel="stylesheet" href="styles/global.css" />
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <script src="scripts/theme.js"></script>
-
-    <meta name="description" content="InferencePort AI — a lightweight app and website for running local LLMs and exploring Hugging Face Spaces. Preview, run and share models from your desktop." />
-    <style>
-        .hero-cta { margin-top: 18px; }
-        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 28px; }
-        .feature { background: var(--card-bg); padding: 18px; border-radius: 10px; box-shadow: var(--shadow); }
-        .container { padding: 40px; }
-        .features h3 { color: hsl(128, 100%, 51%) }
-    </style>
-
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>InferencePort AI</title>
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<style>
+		.hero-gradient {
+			background: linear-gradient(135deg, #57709c, #4b5563, #777878);
+		}
+	</style>
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
 </head>
+
 <body>
-    <nav>
-        <div class="nav-left">
-            <div class="logo" style="color: hsl(128, 100%, 51%)">InferencePort AI</div>
-        </div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="install.html">Download</a></li>
-            <li><a href="playground.html">Playground</a></li>
-            <li><a href="security.html">Security</a></li>
-        </ul>
-    </nav>
-    <div class="hero center1">
-        <div class="hero-left" style="padding: 40px;">
-            <h1>Run powerful language models locally — privately.</h1>
-            <p>InferencePort AI makes it easy to run, test and share local models and Hugging Face Spaces from your desktop for free.</p>
-            <div class="hero-buttons">
-                <a href="install.html">Install</a>
-                <a href="index.html#oss">Open source</a>
-                <a href="playground.html" target="_blank">Try it online ➡ </a>
-            </div>
-        </div>
+	<!-- Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container">
+			<a class="navbar-brand fw-bold" href="#">InferencePort AI</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="#features">Features</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#download">Download</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#community">Community</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="security.html">Security</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
 
-        <div class="hero-right">
-            <img src="img/examples/example1.png" style="padding-right: 10px;"/>
-            <img src="img/examples/example2.png" />
-        </div>
-    </div>
-    <main style="padding: 40px;">
-        <section>
-            <h1>Now Introducing <i>⚡Lightning</i></h1>
-            <h4>Lightning is a new feature that allows your models to generate optimized responses by searching the web and generating lighting fast images.</h4>
-            <p>Now available in v1.4.0+</p>
-            <button class="btn primary" style="margin-top: 12px; max-width: 175px;" onclick="window.location.href='install.html'">Get the latest version</button>
-        </section>
-        <section>
-            <h2>What you can do</h2>
-            <section id="features" class="features">
-                <div class="feature-card">
-                    <h3>Run local models</h3>
-                    <p>Start and interact with models hosted on your machine (Ollama, local runtimes). Stream responses to the UI and save sessions.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Browse Spaces</h3>
-                    <p>Discover, add and preview Hugging Face Spaces and community demos directly from the app.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Share and export</h3>
-                    <p>Share website cards and export session data for reproducibility and collaboration.</p>
-                </div>
-                <div class="feature-card">
-                    <h3>Privacy-first</h3>
-                    <p>All model runs happen locally (unless you choose otherwise). We aim for minimal external calls and transparent behavior.</p>
-                </div>
-            </div>
-        </section>
+	<!-- Hero Section -->
+	<section class="hero-gradient text-white py-5">
+		<div class="container">
+			<div class="row align-items-center">
+				<!-- Left Column: Logo + Title -->
+				<div class="col-md-6 text-center text-md-start">
+					<h1 class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start"
+						style="color: #abc6ee !important;">
+						<span class="me-2">
+							<!-- Lightning Bolt Icon (Bootstrap Icon or FontAwesome) -->
+							<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="orange"
+								class="bi bi-lightning-fill" viewBox="0 0 16 16">
+								<path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
+							</svg>
+						</span>
+						InferencePort AI
+					</h1>
+					<p class="lead mt-3">
+						InferencePort AI makes it easy to run,
+						test and share local models and Hugging
+						Face Spaces from your desktop for free.
+					</p>
+					<a href="#download" class="btn btn-light btn-lg mt-3">Get Started</a>
+				</div>
 
-        <section style="margin-top:28px;">
-            <h2 style="text-align: center; color: hsl(128, 100%, 51%)">Get started</h2>
-            <div style="text-align: center;">
-                <p>1. Download the desktop app from the Download page.</p>
-                <p>2. Open the Playground to test models without installing anything locally.</p>
-                <p>3. Visit the Settings to configure model backends and user preferences.</p>
-            </div>
-        </section>
+				<!-- Right Column: Screenshot Placeholder -->
+				<div class="col-md-6 text-center mt-4 mt-md-0">
+					<img style="max-width: 250ox; max-height: 250px;" src="img/examples/cucumber.png"
+						alt="App Screenshot" class="img-fluid rounded shadow-lg" />
+				</div>
+			</div>
+		</div>
+	</section>
 
-        <footer style="margin-top:40px; padding:20px 0; border-top:1px solid var(--edge);">
-            <small>© 2025 InferencePort AI — Open source and privacy minded.</small>
-        </footer>
-    </main>
+	<!-- Features Section -->
+	<section id="features" class="py-5">
+		<div class="container">
+			<div class="row text-center">
+				<div class="col-md-4">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h5 class="card-title">⚡ Lightning Fast</h5>
+							<p class="card-text">
+								Experience instant image generation powered by optimized AI
+								pipelines.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 mt-4 mt-md-0">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h5 class="card-title">🌐 Cross-Platform</h5>
+							<p class="card-text">
+								Works seamlessly on Windows, macOS, and Linux with a unified
+								interface.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 mt-4 mt-md-0">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h5 class="card-title">💻 Open Source</h5>
+							<p class="card-text">
+								Transparent, community-driven development. Contribute and
+								shape the future of AI tools.
+							</p>
+						</div>
+					</div>
+				</div>
+				<br>
+				<div class="col-md-4" style="padding-top: 10px;">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h5 class="card-title">🤖 Run local models</h5>
+							<p class="card-text">
+								Run and interact with local models hosted on your machine
+								in a simple and organzied manner
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 mt-4 mt-md-0" style="padding-top: 10px;">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h5 class="card-title">🤗 Browse Spaces</h5>
+							<p class="card-text">
+								Discover, add and preview Hugging Face Spaces
+								and community demos directly from the app.
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 mt-4 mt-md-0" style="padding-top: 10px;">
+					<div class="card shadow-sm">
+						<div class="card-body">
+							<h5 class="card-title">🔐 Privacy First</h5>
+							<p class="card-text">
+								All model runs happen locally (unless you
+								choose otherwise). We aim for minimal
+								external calls and transparent behavior.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+	</section>
+
+	<section id="download" class="bg-light py-5">
+		<div class="container text-center">
+			<h2 class="fw-bold">Download InferencePort AI</h2>
+			<p class="mb-4">Available for Windows, macOS, and Linux</p>
+			<a href="install.html" target="_blank" class="btn btn-primary btn-lg">Visit Releases</a>
+		</div>
+	</section>
+
+	<section id="community" class="py-5">
+		<div class="container text-center">
+			<h2 class="fw-bold">Join the Community</h2>
+			<p>
+				Collaborate, contribute, and explore new possibilities with developers
+				worldwide.
+			</p>
+			<a href="https://github.com/sharktide/InferencePort-ai">
+				<img src="https://readme-stats-fast.vercel.app/api/pin/?username=sharktide&repo=InferencePort-ai&show_owner=true"
+					class="repo-image">
+			</a>
+			<a href="https://github.com/sharktide/InferencePort-web">
+				<img src="https://readme-stats-fast.vercel.app/api/pin/?username=sharktide&repo=InferencePort-web&show_owner=true"
+					class="repo-image">
+			</a>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer class="bg-dark text-white text-center py-3">
+		<p class="mb-0">
+			© 2026 InferencePort AI. Open Source. Built with ❤️ and Bootstrap.
+		</p>
+	</footer>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
