@@ -151,7 +151,7 @@
 
 			const isWindows = (a) =>
 				/windows|setup|\.exe$|\.msi$|\.zip$/i.test(a.name) &&
-				!/\.appx$/i.test(a.name);
+				!/\.appx$/i.test(a.name) && !/mac/i.test(a.name);
 
 			const isMac = (a) =>
 				/mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup/i.test(a.name);
