@@ -1,183 +1,303 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Install InferencePort AI</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .hero-gradient {
+        background: linear-gradient(135deg, #57709c, #4b5563, #777878);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+      }
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>Install InferencePort AI</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<style>
-		.hero-gradient {
-			background: linear-gradient(135deg, #57709c, #4b5563, #777878);
-		}
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
 
-		a {
-			color: #2090bc;
-			text-decoration: none;
-		}
-	</style>
-	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-</head>
+      a {
+        color: #2090bc;
+        text-decoration: none;
+      }
 
-<body>
-	<!-- Navbar -->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<div class="container">
-			<a class="navbar-brand fw-bold" href="#">InferencePort AI</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav ms-auto">
-					<li class="nav-item">
-						<a class="nav-link" href="index.html">Home</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#install">Install</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#community">Community</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="security.html">Security</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+      .lightning-bolt {
+        opacity: 0;
+        transform: translateY(-150px) scale(0.5);
+        animation:
+          boltDrop 0.4s cubic-bezier(0.25, 1.25, 0.5, 1) forwards,
+          pulseGlow 2s infinite 0.4s,
+          heroShake 0.8s ease-in-out;
+      }
 
-	<!-- Hero Section -->
-	<section class="hero-gradient text-white py-5">
-		<div class="container">
-			<div class="row align-items-center">
-				<div class="col-md-6 text-center text-md-start">
-					<h1 class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start"
-						style="color: #abc6ee !important">
-						<span class="me-2">
-							<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="orange"
-								class="bi bi-lightning-fill" viewBox="0 0 16 16">
-								<path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-							</svg>
-						</span>
-						InferencePort AI
-					</h1>
-					<p class="lead mt-3">
-						InferencePort AI is a JavaScript app that makes it easy to run,
-						test and share local models and Hugging
-						Face Spaces from your desktop for free.
-					</p>
-					<a href="#install" class="btn btn-light btn-lg mt-3">Install Now</a>
-				</div>
-				<div class="col-md-6 text-center mt-4 mt-md-0">
-					<img src="img/examples/cucumber.png" alt="App Screenshot" class="img-fluid rounded shadow-lg"
-						style="max-width: 250px; max-height: 250px" />
-				</div>
-			</div>
-		</div>
-	</section>
+      @keyframes boltDrop {
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
 
-	<section id="install" class="py-5">
-		<div class="container">
-			<h2 class="fw-bold text-center mb-4">Download & Install</h2>
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 2px orange);
+        }
+        50% {
+          filter: drop-shadow(0 0 14px orange);
+        }
+      }
 
-			<ul class="nav nav-tabs justify-content-center" id="installTabs" role="tablist">
-				<li class="nav-item">
-					<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#windows">
-						Windows
-					</button>
-				</li>
-				<li class="nav-item">
-					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac">
-						macOS
-					</button>
-				</li>
-				<li class="nav-item">
-					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#linux">
-						Linux
-					</button>
-				</li>
-			</ul>
+      .hero-container {
+        animation: heroShake 0.8s ease-in-out;
+      }
 
-			<div class="tab-content mt-4" id="installTabsContent">
-				<div class="tab-pane fade show active" id="windows"></div>
-				<div class="tab-pane fade" id="mac"></div>
-				<div class="tab-pane fade" id="linux">
-					<h4 class="mb-3">Linux Downloads</h4>
-					<p>
-						Prebuilt binaries are not available for Linux. You can build from
-						source:
-					</p>
-					<div class="card mb-3">
-						<div class="card-header fw-bold">Source Code</div>
-						<div class="card-body">
-							<ul class="list-group" id="linux-source-links"></ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+      @keyframes heroShake {
+        0% {
+          transform: translate(0, 0);
+        }
+        10% {
+          transform: translate(-8px, -5px);
+        }
+        20% {
+          transform: translate(8px, 6px);
+        }
+        30% {
+          transform: translate(-6px, 8px);
+        }
+        40% {
+          transform: translate(6px, -8px);
+        }
+        50% {
+          transform: translate(-10px, 4px);
+        }
+        60% {
+          transform: translate(10px, -6px);
+        }
+        70% {
+          transform: translate(-5px, -10px);
+        }
+        80% {
+          transform: translate(5px, 10px);
+        }
+        90% {
+          transform: translate(-6px, 6px);
+        }
+        100% {
+          transform: translate(0, 0);
+        }
+      }
+    </style>
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+  </head>
 
-	<!-- Community Section -->
-	<section id="community" class="py-5 bg-light">
-		<div class="container text-center">
-			<h2 class="fw-bold">Join the Community</h2>
-			<p>
-				Collaborate, contribute, and explore new possibilities with developers
-				worldwide.
-			</p>
-			<a href="https://github.com/sharktide/InferencePort-ai" class="btn btn-outline-dark me-2">GitHub Repo
-				(App)</a>
-			<a href="https://github.com/sharktide/InferencePort-web" class="btn btn-outline-dark">GitHub Repo (Web)</a>
-		</div>
-	</section>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#">InferencePort AI</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#install">Install</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#community">Community</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="security.html">Security</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-	<!-- Footer -->
+    <section class="hero-gradient text-white py-5">
+      <div class="container hero-container">
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center text-md-start">
+            <h1
+              class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title"
+              style="color: #abc6ee !important"
+            >
+              <span class="me-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="48"
+                  height="48"
+                  fill="orange"
+                  class="bi bi-lightning-fill lightning-bolt"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
+                </svg>
+              </span>
+              InferencePort AI
+            </h1>
+            <p class="lead mt-3 hero-text">
+              InferencePort AI is a JavaScript app that makes it easy to run,
+              test and share local models and Hugging Face Spaces from your
+              desktop for free.
+            </p>
+            <a href="#install" class="btn btn-light btn-lg mt-3 hero-btn"
+              >Install Now</a
+            >
+          </div>
+          <div class="col-md-6 text-center mt-4 mt-md-0 hero-image">
+            <img
+              src="img/examples/cucumber.png"
+              alt="App Screenshot"
+              class="img-fluid rounded shadow-lg"
+              style="width: 425px; height: 225px"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" class="py-5">
+      <div class="container">
+        <h2 class="fw-bold text-center mb-4">Download & Install</h2>
+
+        <ul
+          class="nav nav-tabs justify-content-center"
+          id="installTabs"
+          role="tablist"
+        >
+          <li class="nav-item">
+            <button
+              class="nav-link active"
+              data-bs-toggle="tab"
+              data-bs-target="#windows"
+            >
+              Windows
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac">
+              macOS
+            </button>
+          </li>
+          <li class="nav-item">
+            <button
+              class="nav-link"
+              data-bs-toggle="tab"
+              data-bs-target="#linux"
+            >
+              Linux
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content mt-4" id="installTabsContent">
+          <div class="tab-pane fade show active" id="windows"></div>
+          <div class="tab-pane fade" id="mac"></div>
+          <div class="tab-pane fade" id="linux">
+            <h4 class="mb-3">Linux Downloads</h4>
+            <p>
+              Prebuilt binaries are not available for Linux. You can build from
+              source:
+            </p>
+            <div class="card mb-3">
+              <div class="card-header fw-bold">Source Code</div>
+              <div class="card-body">
+                <ul class="list-group" id="linux-source-links"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Section -->
+    <section id="community" class="py-5 bg-light">
+      <div class="container text-center">
+        <h2 class="fw-bold">Join the Community</h2>
+        <p>
+          Collaborate, contribute, and explore new possibilities with developers
+          worldwide.
+        </p>
+        <a
+          href="https://github.com/sharktide/InferencePort-ai"
+          class="btn btn-outline-dark me-2"
+          >GitHub Repo (App)</a
+        >
+        <a
+          href="https://github.com/sharktide/InferencePort-web"
+          class="btn btn-outline-dark"
+          >GitHub Repo (Web)</a
+        >
+      </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3 mt-5">
-        <small>© 2026 Rihaan Meher</small>
+      <small>© 2026 Rihaan Meher</small>
     </footer>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-	<script>
-		async function loadRelease() {
-			const res = await fetch(
-				"https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest",
-			);
-			const release = await res.json();
-			const assets = (release.assets || []).filter(
-				(a) => !/\.blockmap$/i.test(a.name),
-			);
+    <script>
+      async function loadRelease() {
+        const res = await fetch(
+          "https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest",
+        );
+        const release = await res.json();
+        const assets = (release.assets || []).filter(
+          (a) => !/\.blockmap$/i.test(a.name),
+        );
 
-			const isWindows = (a) =>
-				/windows|setup|\.exe$|\.msi$|\.zip$/i.test(a.name) &&
-				!/\.appx$/i.test(a.name) && !/mac/i.test(a.name);
+        const isWindows = (a) =>
+          /windows|setup|\.exe$|\.msi$|\.zip$/i.test(a.name) &&
+          !/\.appx$/i.test(a.name) &&
+          !/mac/i.test(a.name);
 
-			const isMac = (a) =>
-				/mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup/i.test(a.name);
+        const isMac = (a) =>
+          /mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup/i.test(a.name);
 
-			const isMacArm64 = (a) => /arm64/i.test(a.name) && isMac(a);
+        const isMacArm64 = (a) => /arm64/i.test(a.name) && isMac(a);
 
-			const isMacX64 = (a) => isMac(a) && !/arm64/i.test(a.name);
+        const isMacX64 = (a) => isMac(a) && !/arm64/i.test(a.name);
 
-			const isWinArm64 = (a) => isWindows(a) && /arm64/i.test(a.name);
+        const isWinArm64 = (a) => isWindows(a) && /arm64/i.test(a.name);
 
-			const isWinX64 = (a) => isWindows(a) && /x64/i.test(a.name);
+        const isWinX64 = (a) => isWindows(a) && /x64/i.test(a.name);
 
-			const winArm64Assets = assets.filter(isWinArm64);
-			const winX64Assets = assets
-				.filter(isWinX64)
-				.concat(
-					assets.filter(
-						(a) =>
-							isWindows(a) && !/arm64/i.test(a.name) && !/x64/i.test(a.name),
-					),
-				);
+        const winArm64Assets = assets.filter(isWinArm64);
+        const winX64Assets = assets
+          .filter(isWinX64)
+          .concat(
+            assets.filter(
+              (a) =>
+                isWindows(a) && !/arm64/i.test(a.name) && !/x64/i.test(a.name),
+            ),
+          );
 
-			const macArm64Assets = assets.filter(isMacArm64);
-			const macX64Assets = assets.filter(isMacX64);
+        const macArm64Assets = assets.filter(isMacArm64);
+        const macX64Assets = assets.filter(isMacX64);
 
-			document.getElementById("windows").innerHTML = `
+        document.getElementById("windows").innerHTML = `
 				<h4 class="mb-3">Windows Downloads</h4>
 				${renderCards("Windows x64", filterFormats(winX64Assets, ["zip", "exe", "msi"]))}
 				${renderCards("Windows ARM64", filterFormats(winArm64Assets, ["zip", "exe", "msi"]))}
@@ -194,7 +314,7 @@
 				</div>
 			`;
 
-			document.getElementById("mac").innerHTML = `
+        document.getElementById("mac").innerHTML = `
 				<h4 class="mb-3">macOS Downloads</h4>
 				${renderCards("macOS Intel (x64)", filterFormats(macX64Assets, ["zip", "dmg", "pkg"]))}
 				${renderCards("macOS Apple Silicon (ARM64)", filterFormats(macArm64Assets, ["zip", "dmg", "pkg"]))}
@@ -206,28 +326,30 @@
 				</div>
 			`;
 
-			document.getElementById("win-source-links").innerHTML = sourceLinks(release);
-			document.getElementById("mac-source-links").innerHTML = sourceLinks(release);
-			document.getElementById("linux-source-links").innerHTML = sourceLinks(release);
+        document.getElementById("win-source-links").innerHTML =
+          sourceLinks(release);
+        document.getElementById("mac-source-links").innerHTML =
+          sourceLinks(release);
+        document.getElementById("linux-source-links").innerHTML =
+          sourceLinks(release);
 
-			function sourceLinks(release) {
-			return `
+        function sourceLinks(release) {
+          return `
 				<li class="list-group-item"><a href="${release.tarball_url}">Download Tarball</a></li>
 				<li class="list-group-item"><a href="${release.zipball_url}">Download ZIP Archive</a></li>
 				<li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
 			`;
-			}
+        }
+      }
 
-		}
+      function filterFormats(assets, exts) {
+        const extRegexes = exts.map((ext) => new RegExp(`\\.${ext}$`, "i"));
+        return assets.filter((a) => extRegexes.some((rx) => rx.test(a.name)));
+      }
 
-		function filterFormats(assets, exts) {
-			const extRegexes = exts.map((ext) => new RegExp(`\\.${ext}$`, "i"));
-			return assets.filter((a) => extRegexes.some((rx) => rx.test(a.name)));
-		}
-
-		function renderCards(title, assets) {
-			if (!assets.length)
-				return `
+      function renderCards(title, assets) {
+        if (!assets.length)
+          return `
         <div class="card mb-3">
           <div class="card-header fw-bold">${title}</div>
           <div class="card-body">
@@ -235,7 +357,7 @@
           </div>
         </div>
       `;
-			return `
+        return `
         <div class="card mb-3">
           <div class="card-header fw-bold">${title}</div>
           <div class="card-body">
@@ -245,10 +367,9 @@
           </div>
         </div>
       `;
-		}
+      }
 
-		loadRelease();
-	</script>
-</body>
-
+      loadRelease();
+    </script>
+  </body>
 </html>

@@ -7,11 +7,96 @@
 	<title>InferencePort AI</title>
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<style>
-		.hero-gradient {
-			background: linear-gradient(135deg, #57709c, #4b5563, #777878);
-		}
-	</style>
+    <style>
+      .hero-gradient {
+        background: linear-gradient(135deg, #57709c, #4b5563, #777878);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      a {
+        color: #2090bc;
+        text-decoration: none;
+      }
+
+      .lightning-bolt {
+        opacity: 0;
+        transform: translateY(-150px) scale(0.5);
+        animation:
+          boltDrop 0.4s cubic-bezier(0.25, 1.25, 0.5, 1) forwards,
+          pulseGlow 2s infinite 0.4s,
+          heroShake 0.8s ease-in-out;
+      }
+
+      @keyframes boltDrop {
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes pulseGlow {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 2px orange);
+        }
+        50% {
+          filter: drop-shadow(0 0 14px orange);
+        }
+      }
+
+      .hero-container {
+        animation: heroShake 0.8s ease-in-out;
+      }
+
+      @keyframes heroShake {
+        0% {
+          transform: translate(0, 0);
+        }
+        10% {
+          transform: translate(-8px, -5px);
+        }
+        20% {
+          transform: translate(8px, 6px);
+        }
+        30% {
+          transform: translate(-6px, 8px);
+        }
+        40% {
+          transform: translate(6px, -8px);
+        }
+        50% {
+          transform: translate(-10px, 4px);
+        }
+        60% {
+          transform: translate(10px, -6px);
+        }
+        70% {
+          transform: translate(-5px, -10px);
+        }
+        80% {
+          transform: translate(5px, 10px);
+        }
+        90% {
+          transform: translate(-6px, 6px);
+        }
+        100% {
+          transform: translate(0, 0);
+        }
+      }
+    </style>
 	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
 </head>
 
@@ -42,41 +127,49 @@
 		</div>
 	</nav>
 
-	<!-- Hero Section -->
-	<section class="hero-gradient text-white py-5">
-		<div class="container">
-			<div class="row align-items-center">
-				<!-- Left Column: Logo + Title -->
-				<div class="col-md-6 text-center text-md-start">
-					<h1 class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start"
-						style="color: #abc6ee !important;">
-						<span class="me-2">
-							<!-- Lightning Bolt Icon (Bootstrap Icon or FontAwesome) -->
-							<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="orange"
-								class="bi bi-lightning-fill" viewBox="0 0 16 16">
-								<path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-							</svg>
-						</span>
-						InferencePort AI
-					</h1>
-					<p class="lead mt-3">
-						InferencePort AI is a JavaScript app that makes it easy to run,
-						test and share local models and Hugging
-						Face Spaces from your desktop for free.
-					</p>
-					<a href="#download" class="btn btn-light btn-lg mt-3">Get Started</a>
-				</div>
+    <section class="hero-gradient text-white py-5">
+      <div class="container hero-container">
+        <div class="row align-items-center">
+          <div class="col-md-6 text-center text-md-start">
+            <h1
+              class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title"
+              style="color: #abc6ee !important"
+            >
+              <span class="me-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="48"
+                  height="48"
+                  fill="orange"
+                  class="bi bi-lightning-fill lightning-bolt"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
+                </svg>
+              </span>
+              InferencePort AI
+            </h1>
+            <p class="lead mt-3 hero-text">
+              InferencePort AI is a JavaScript app that makes it easy to run,
+              test and share local models and Hugging Face Spaces from your
+              desktop for free.
+            </p>
+            <a href="#install" class="btn btn-light btn-lg mt-3 hero-btn"
+              >Install Now</a
+            >
+          </div>
+          <div class="col-md-6 text-center mt-4 mt-md-0 hero-image">
+            <img
+              src="img/examples/cucumber.png"
+              alt="App Screenshot"
+              class="img-fluid rounded shadow-lg"
+              style="width: 425px; height: 225px"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
 
-				<!-- Right Column: Screenshot Placeholder -->
-				<div class="col-md-6 text-center mt-4 mt-md-0">
-					<img style="max-width: 250ox; max-height: 250px;" src="img/examples/cucumber.png"
-						alt="App Screenshot" class="img-fluid rounded shadow-lg" />
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- Features Section -->
 	<section id="features" class="py-5">
 		<div class="container">
 			<div class="row text-center">
