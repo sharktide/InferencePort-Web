@@ -110,7 +110,7 @@
 					<div class="card mb-3">
 						<div class="card-header fw-bold">Source Code</div>
 						<div class="card-body">
-							<ul class="list-group" id="linux-links"></ul>
+							<ul class="list-group" id="linux-source-links"></ul>
 						</div>
 					</div>
 				</div>
@@ -178,40 +178,46 @@
 			const macX64Assets = assets.filter(isMacX64);
 
 			document.getElementById("windows").innerHTML = `
-        <h4 class="mb-3">Windows Downloads</h4>
-        ${renderCards("Windows x64", filterFormats(winX64Assets, ["zip", "exe", "msi"]))}
-        ${renderCards("Windows ARM64", filterFormats(winArm64Assets, ["zip", "exe", "msi"]))}
-        <div class="card mb-3">
-            <div class="card-header fw-bold">Source Code</div>
-            <div class="card-body">
-              <ul class="list-group" id="linux-links"></ul>
-            </div>
-        </div>
-        <div class="mt-4">
-          <h5>Microsoft Store</h5>
-          <p>You can also install directly from the Microsoft Store:</p>
-          <a href="https://apps.microsoft.com/detail/9p5d3xx84l28?hl=en-us" class="btn btn-primary">Get it from Microsoft Store</a>
-        </div>
-      `;
+				<h4 class="mb-3">Windows Downloads</h4>
+				${renderCards("Windows x64", filterFormats(winX64Assets, ["zip", "exe", "msi"]))}
+				${renderCards("Windows ARM64", filterFormats(winArm64Assets, ["zip", "exe", "msi"]))}
+				<div class="card mb-3">
+					<div class="card-header fw-bold">Source Code</div>
+					<div class="card-body">
+					<ul class="list-group" id="win-source-links"></ul>
+					</div>
+				</div>
+				<div class="mt-4">
+				<h5>Microsoft Store</h5>
+				<p>You can also install directly from the Microsoft Store:</p>
+				<a href="https://apps.microsoft.com/detail/9p5d3xx84l28?hl=en-us" class="btn btn-primary">Get it from Microsoft Store</a>
+				</div>
+			`;
 
 			document.getElementById("mac").innerHTML = `
-        <h4 class="mb-3">macOS Downloads</h4>
-        ${renderCards("macOS Intel (x64)", filterFormats(macX64Assets, ["zip", "dmg", "pkg"]))}
-        ${renderCards("macOS Apple Silicon (ARM64)", filterFormats(macArm64Assets, ["zip", "dmg", "pkg"]))}
-        <div class="card mb-3">
-            <div class="card-header fw-bold">Source Code</div>
-            <div class="card-body">
-              <ul class="list-group" id="linux-links"></ul>
-            </div>
-        </div>
-        `;
+				<h4 class="mb-3">macOS Downloads</h4>
+				${renderCards("macOS Intel (x64)", filterFormats(macX64Assets, ["zip", "dmg", "pkg"]))}
+				${renderCards("macOS Apple Silicon (ARM64)", filterFormats(macArm64Assets, ["zip", "dmg", "pkg"]))}
+				<div class="card mb-3">
+					<div class="card-header fw-bold">Source Code</div>
+					<div class="card-body">
+					<ul class="list-group" id="mac-source-links"></ul>
+					</div>
+				</div>
+			`;
 
-			const linuxLinks = document.getElementById("linux-links");
-			linuxLinks.innerHTML = `
-        <li class="list-group-item"><a href="${release.tarball_url}">Download Tarball</a></li>
-        <li class="list-group-item"><a href="${release.zipball_url}">Download ZIP Archive</a></li>
-        <li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
-      `;
+			document.getElementById("win-source-links").innerHTML = sourceLinks(release);
+			document.getElementById("mac-source-links").innerHTML = sourceLinks(release);
+			document.getElementById("linux-source-links").innerHTML = sourceLinks(release);
+
+			function sourceLinks(release) {
+			return `
+				<li class="list-group-item"><a href="${release.tarball_url}">Download Tarball</a></li>
+				<li class="list-group-item"><a href="${release.zipball_url}">Download ZIP Archive</a></li>
+				<li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
+			`;
+			}
+
 		}
 
 		function filterFormats(assets, exts) {
