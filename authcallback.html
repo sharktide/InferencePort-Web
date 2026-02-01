@@ -1,198 +1,148 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>InferencePort AI</title>
-	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-      .hero-gradient {
-        background: linear-gradient(135deg, #57709c, #4b5563, #777878);
-        background-size: 400% 400%;
-        animation: gradientShift 15s ease infinite;
-      }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Opening InferencePort AI…</title>
 
-      @keyframes gradientShift {
-        0% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-        100% {
-          background-position: 0% 50%;
-        }
-      }
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-      a {
-        color: #2090bc;
-        text-decoration: none;
-      }
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #57709c, #4b5563, #777878);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      color: #e5e7eb;
+    }
 
-      .lightning-bolt {
-        opacity: 0;
-        transform: translateY(-150px) scale(0.5);
-        animation:
-          boltDrop 0.4s cubic-bezier(0.25, 1.25, 0.5, 1) forwards,
-          pulseGlow 2s infinite 0.4s,
-          heroShake 0.8s ease-in-out;
-      }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-      @keyframes boltDrop {
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
+    .card {
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.85);
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 25px 50px rgba(0,0,0,.35);
+    }
 
-      @keyframes pulseGlow {
-        0%,
-        100% {
-          filter: drop-shadow(0 0 2px orange);
-        }
-        50% {
-          filter: drop-shadow(0 0 14px orange);
-        }
-      }
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
 
-      .hero-container {
-        animation: heroShake 0.8s ease-in-out;
-      }
+    .status-muted {
+      color: #9ca3af;
+    }
 
-      @keyframes heroShake {
-        0% {
-          transform: translate(0, 0);
-        }
-        10% {
-          transform: translate(-8px, -5px);
-        }
-        20% {
-          transform: translate(8px, 6px);
-        }
-        30% {
-          transform: translate(-6px, 8px);
-        }
-        40% {
-          transform: translate(6px, -8px);
-        }
-        50% {
-          transform: translate(-10px, 4px);
-        }
-        60% {
-          transform: translate(10px, -6px);
-        }
-        70% {
-          transform: translate(-5px, -10px);
-        }
-        80% {
-          transform: translate(5px, 10px);
-        }
-        90% {
-          transform: translate(-6px, 6px);
-        }
-        100% {
-          transform: translate(0, 0);
-        }
-      }
-    </style>
-	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+    .hidden {
+      display: none !important;
+    }
+
+    .btn-primary {
+      background-color: #f59e0b;
+      border-color: #f59e0b;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background-color: #fbbf24;
+      border-color: #fbbf24;
+    }
+
+    .error {
+      color: #f87171;
+    }
+  </style>
 </head>
 
-<body>
-	<!-- Navbar -->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<div class="container">
-			<a class="navbar-brand fw-bold" href="#">InferencePort AI</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav ms-auto">
-					<li class="nav-item">
-						<a class="nav-link" href="#features">Features</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#download">Download</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#community">Community</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="security.html">Security</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+<body class="d-flex align-items-center justify-content-center px-3">
 
-    <section class="hero-gradient text-white py-5">
-      <div class="container hero-container">
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center text-md-start">
-            <h1
-              class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title"
-              style="color: #abc6ee !important"
-            >
-              <span class="me-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  fill="orange"
-                  class="bi bi-lightning-fill lightning-bolt"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-                </svg>
-              </span>
-              InferencePort AI
-            </h1>
-            <p class="lead mt-3 hero-text">
-              InferencePort AI is a JavaScript app that makes it easy to run,
-              test and share local models and Hugging Face Spaces from your
-              desktop for free.
-            </p>
-            <a href="install.html" class="btn btn-light btn-lg mt-3 hero-btn"
-              >Install Now</a
-            >
-          </div>
-          <div class="col-md-6 text-center mt-4 mt-md-0 hero-image">
-            <img
-              src="img/examples/cucumber.png"
-              alt="App Screenshot"
-              class="img-fluid rounded shadow-lg"
-              style="width: 425px; height: 225px"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+  <div class="card p-4 p-md-5 text-center" style="max-width: 520px; width: 100%;">
+    <h1 class="fw-bold mb-3">Opening InferencePort AI</h1>
 
-	<section id="download" class="bg-light py-5">
-		<div class="container text-center">
-			<h2 class="fw-bold">You are being redirected to the authorized application</h2>
-		</div>
-	</section>
+    <p id="status-text" class="status-muted mb-4">
+      Redirecting you to the authorized desktop application…
+    </p>
 
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <small>© 2026 Rihaan Meher</small>
-    </footer>
+    <div id="spinner" class="mb-4">
+      <div class="spinner-border text-warning" role="status"></div>
+    </div>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-  (function() {
+    <div id="manual-section" class="hidden">
+      <p class="mb-3">
+        Your browser may have blocked the automatic launch.
+      </p>
+
+      <button id="open-btn" class="btn btn-primary btn-lg w-100 mb-2">
+        Open InferencePort AI
+      </button>
+
+      <small class="status-muted">
+        If prompted, allow your browser to open the application.
+      </small>
+    </div>
+
+    <div id="error-section" class="hidden mt-4">
+      <p class="error fw-semibold">
+        We couldn’t open the application.
+      </p>
+      <p class="status-muted">
+        Make sure InferencePort AI is installed, then try again.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
       const hash = window.location.hash.slice(1);
       if (!hash) return;
-  		console.log(hash);
-      const deepLink = `inferenceport-ai:///auth/callback#${hash}`;
-  
-      window.location.href = deepLink;
 
-  })();
+      const deepLink = `inferenceport-ai:///auth/callback#${hash}`;
+
+      const spinner = document.getElementById("spinner");
+      const manual = document.getElementById("manual-section");
+      const error = document.getElementById("error-section");
+      const button = document.getElementById("open-btn");
+
+      let opened = false;
+
+      function attemptOpen() {
+        try {
+          window.location.href = deepLink;
+          opened = true;
+        } catch {
+          opened = false;
+        }
+      }
+
+      attemptOpen();
+
+      setTimeout(() => {
+        if (!opened) {
+          spinner.classList.add("hidden");
+          manual.classList.remove("hidden");
+        }
+      }, 1200);
+
+      button?.addEventListener("click", () => {
+        try {
+          window.location.href = deepLink;
+
+          setTimeout(() => {
+            error.classList.remove("hidden");
+          }, 1200);
+        } catch {
+          error.classList.remove("hidden");
+        }
+      });
+    })();
   </script>
 
 </body>
-
 </html>
