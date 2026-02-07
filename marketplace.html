@@ -145,21 +145,24 @@
 			</div>
 		</section>
 
-		<!-- Marketplace -->
 		<section class="py-5">
-			<div class="container">
-				<h2 class="fw-bold text-center mb-4">Available Models</h2>
-				<input
-					type="text"
-					id="search-models"
-					class="form-control mb-4"
-					placeholder="Search models..."
-				/>
-				<div class="row g-4" id="available-models"></div>
-			</div>
+		  <div class="container">
+		    <h2 class="fw-bold text-center mb-4">Available Models</h2>
+		    <input
+		      type="text"
+		      id="search-models"
+		      class="form-control mb-4"
+		      placeholder="Search models..."
+		    />
+		    <div class="text-center my-4" id="loading-spinner">
+		      <div class="spinner-border text-primary" role="status">
+		        <span class="visually-hidden">Loading...</span>
+		      </div>
+		    </div>
+		    <div class="row g-4" id="available-models"></div>
+		  </div>
 		</section>
 
-		<!-- Model Detail Modal -->
 		<div class="modal fade" id="modelModal" tabindex="-1">
 			<div class="modal-dialog modal-lg modal-dialog-centered">
 				<div class="modal-content">
@@ -215,14 +218,22 @@
 			let availableModels = [];
 
 			async function fetchAvailableModels() {
-				const res = await fetch(
-					"https://sharktide-ollama-data.hf.space/models",
-				);
-				if (!res.ok) {
-					console.error("Failed to fetch models:", res.status);
-					return [];
-				}
-				return await res.json();
+			  const spinner = document.getElementById("loading-spinner");
+			  spinner.style.display = "block"; // show spinner
+			
+			  try {
+			    const res = await fetch("https://sharktide-ollama-data.hf.space/models");
+			    if (!res.ok) {
+			      console.error("Failed to fetch models:", res.status);
+			      return [];
+			    }
+			    return await res.json();
+			  } catch (err) {
+			    console.error("Error fetching models:", err);
+			    return [];
+			  } finally {
+			    spinner.style.display = "none";
+			  }
 			}
 
 			function cleanText(text) {
@@ -358,4 +369,5 @@
 		</script>
 	</body>
 </html>
+
 
