@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>InferencePort AI Marketplace</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<style>
+			.model-card {
+				background: #fafafa;
+				border-radius: 0.5rem;
+				padding: 1.75rem;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				height: 100%;
+			}
+
+			.model-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+			}
+
+			.model-name {
+				font-size: 1.5rem;
+				font-weight: 700;
+				margin-bottom: 0.75rem;
+			}
+
+			.model-description {
+				font-size: 1rem;
+				color: #374151;
+				margin-bottom: 1rem;
+				white-space: pre-wrap;
+			}
+
+			.size-badge {
+				background: #dbeafe;
+				color: #1d4ed8;
+				font-weight: 500;
+				padding: 0.35rem 0.6rem;
+				border-radius: 0.5rem;
+				font-size: 0.85rem;
+				margin-right: 0.4rem;
+			}
+
+			.meta-text {
+				margin-top: 1rem;
+				font-size: 0.95rem;
+			}
+
+			.more-link {
+				color: #2563eb;
+				text-decoration: none;
+				font-weight: 500;
+			}
+
+			.more-link:hover {
+				text-decoration: underline;
+			}
+
+			.download-btn {
+				margin-top: 1.5rem;
+				background: rgba(0, 0, 0, 0.01);
+				border: black;
+				padding: 0.75rem;
+				border-radius: 0.5rem;
+				font-weight: 500;
+				width: 100%;
+				transition: background 0.2s;
+			}
+
+			.download-btn:hover {
+				background: #d1d5db;
+			}
+
+			.hero-gradient {
+				background: linear-gradient(135deg, #57709c, #4b5563, #777878);
+				background-size: 400% 400%;
+				animation: gradientShift 15s ease infinite;
+			}
+			@keyframes gradientShift {
+				0% {
+					background-position: 0% 50%;
+				}
+				50% {
+					background-position: 100% 50%;
+				}
+				100% {
+					background-position: 0% 50%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container">
+				<a class="navbar-brand fw-bold" href="#">InferencePort AI</a>
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#">Marketplace</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#install">Install</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#community">Community</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="security.html"
+								>Security</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Hero -->
+		<section class="hero-gradient text-white py-5 text-center">
+			<div class="container">
+				<h1 class="display-4 fw-bold">InferencePort AI Marketplace</h1>
+				<p class="lead mt-3">
+					Browse and download AI models for InferencePort directly
+					from your browser.
+				</p>
+			</div>
+		</section>
+
+		<!-- Marketplace -->
+		<section class="py-5">
+			<div class="container">
+				<h2 class="fw-bold text-center mb-4">Available Models</h2>
+				<input
+					type="text"
+					id="search-models"
+					class="form-control mb-4"
+					placeholder="Search models..."
+				/>
+				<div class="row g-4" id="available-models"></div>
+			</div>
+		</section>
+
+		<!-- Model Detail Modal -->
+		<div class="modal fade" id="modelModal" tabindex="-1">
+			<div class="modal-dialog modal-lg modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="modalModelName"></h5>
+						<button
+							type="button"
+							class="btn btn-primary btn-download"
+							id="modalDownloadBtn"
+						>
+							Download
+						</button>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+					<div class="modal-body">
+						<p
+							id="modalModelDesc"
+							style="white-space: pre-wrap"
+						></p>
+						<div class="mb-3">
+							<strong>Tags:</strong>
+							<span id="modalModelTags"></span>
+						</div>
+						<div class="mb-3">
+							<strong>Sizes:</strong>
+							<span id="modalModelSizes"></span>
+						</div>
+						<div class="mb-3">
+							<strong>Pulls:</strong>
+							<span id="modalModelPulls"></span>
+						</div>
+						<div class="mb-3">
+							<strong>Updated:</strong>
+							<span id="modalModelUpdated"></span>
+						</div>
+						<a id="modalModelLink" target="_blank"></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer class="bg-dark text-white text-center py-3 mt-5">
+			<small>© 2026 Rihaan Meher</small>
+		</footer>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			let availableModels = [];
+
+			async function fetchAvailableModels() {
+				const res = await fetch(
+					"https://sharktide-ollama-data.hf.space/models",
+				);
+				if (!res.ok) {
+					console.error("Failed to fetch models:", res.status);
+					return [];
+				}
+				return await res.json();
+			}
+
+			function cleanText(text) {
+				return text.replace(/^\s+/gm, "").trim();
+			}
+
+			function renderAvailableModels(filter = "") {
+				const container = document.getElementById("available-models");
+				container.innerHTML = "";
+
+				availableModels
+					.filter((m) =>
+						m.name.toLowerCase().includes(filter.toLowerCase()),
+					)
+					.forEach((model) => {
+						const col = document.createElement("div");
+						col.className = "col-lg-4 col-md-6 mb-4";
+
+						const card = document.createElement("div");
+						card.className = "model-card";
+
+						const topSection = document.createElement("div");
+
+						const nameEl = document.createElement("div");
+						nameEl.className = "model-name";
+						nameEl.textContent = model.name;
+
+						const descEl = document.createElement("div");
+						descEl.className = "model-description";
+						descEl.textContent = cleanText(model.description);
+
+						const sizesWrapper = document.createElement("div");
+						model.sizes.forEach((size) => {
+							const badge = document.createElement("span");
+							badge.className = "size-badge";
+							badge.textContent = size;
+							sizesWrapper.appendChild(badge);
+						});
+
+						const pullsEl = document.createElement("div");
+						pullsEl.className = "meta-text";
+						pullsEl.innerHTML = "<strong>Pulls:</strong> ";
+						const pullsValue = document.createElement("span");
+						pullsValue.textContent = model.pulls;
+						pullsEl.appendChild(pullsValue);
+
+						const updatedEl = document.createElement("div");
+						updatedEl.className = "meta-text";
+						updatedEl.innerHTML = "<strong>Updated:</strong> ";
+						const updatedValue = document.createElement("span");
+						updatedValue.textContent = model.updated;
+						updatedEl.appendChild(updatedValue);
+
+						const downloadBtn = document.createElement("button");
+						downloadBtn.className = "download-btn";
+						downloadBtn.textContent = "Get in App";
+						downloadBtn.onclick = () => {
+							window.location.href = `inferenceport-ai:///marketplace/ollama#${encodeURIComponent(model.name)}`;
+						};
+
+						topSection.appendChild(nameEl);
+						topSection.appendChild(descEl);
+						topSection.appendChild(sizesWrapper);
+						topSection.appendChild(pullsEl);
+						topSection.appendChild(updatedEl);
+						if (model.link) {
+							const linkWrapper = document.createElement("div");
+							linkWrapper.className = "mt-3";
+
+							const link = document.createElement("a");
+							link.className = "more-link";
+							link.target = "_blank";
+							link.rel = "noopener noreferrer";
+							link.href = `https://ollama.com${model.link}`;
+							link.textContent = "More details";
+
+							linkWrapper.appendChild(link);
+							topSection.appendChild(linkWrapper);
+						}
+
+						card.appendChild(topSection);
+						card.appendChild(downloadBtn);
+						col.appendChild(card);
+						container.appendChild(col);
+					});
+			}
+
+			function openModelModal(model) {
+				const modalEl = document.getElementById("modelModal");
+				const bsModal = new bootstrap.Modal(modalEl);
+
+				document.getElementById("modalModelName").textContent =
+					model.name;
+				document.getElementById("modalModelDesc").textContent =
+					model.description;
+				document.getElementById("modalModelTags").innerHTML = model.tags
+					.map(
+						(t) =>
+							`<span class="badge bg-secondary me-1">${t}</span>`,
+					)
+					.join(" ");
+				document.getElementById("modalModelSizes").textContent =
+					model.sizes.join(", ");
+				document.getElementById("modalModelPulls").textContent =
+					model.pulls;
+				document.getElementById("modalModelUpdated").textContent =
+					model.updated;
+				const linkEl = document.getElementById("modalModelLink");
+				if (model.link) {
+					linkEl.href = `https://ollama.com${model.link}`;
+					linkEl.textContent = "More details on Ollama.com";
+				} else {
+					linkEl.textContent = "";
+				}
+
+				document.getElementById("modalDownloadBtn").onclick = () => {
+					window.location.href = `inferenceport-ai:///marketplace/ollama#${encodeURIComponent(model.name)}`;
+				};
+
+				bsModal.show();
+			}
+
+			document
+				.getElementById("search-models")
+				.addEventListener("input", (e) => {
+					renderAvailableModels(e.target.value);
+				});
+
+			document.addEventListener("DOMContentLoaded", async () => {
+				availableModels = await fetchAvailableModels();
+				renderAvailableModels();
+			});
+		</script>
+	</body>
+</html>
