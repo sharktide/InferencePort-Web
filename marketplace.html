@@ -9,6 +9,12 @@
 			rel="stylesheet"
 		/>
 		<style>
+			.model-highlight {
+			    outline: 3px solid #2563eb;
+			    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.15);
+			    transition: all 0.3s ease;
+			}
+
 			.model-card {
 				background: #fafafa;
 				border-radius: 0.5rem;
@@ -240,6 +246,29 @@
 				return text.replace(/^\s+/gm, "").trim();
 			}
 
+			function scrollToHashModel() {
+				const hash = window.location.hash;
+				if (!hash) return;
+				
+				const modelName = decodeURIComponent(hash.substring(1));
+				const target = document.getElementById(
+				    "model-" + encodeURIComponent(modelName)
+				);
+				
+				if (target) {
+				    setTimeout(() => {
+				        target.scrollIntoView({
+				            behavior: "smooth",
+				            block: "center",
+				        });
+				
+				      target.classList.add("model-highlight");
+
+				    }, 100);
+				  }
+				}
+
+
 			function renderAvailableModels(filter = "") {
 				const container = document.getElementById("available-models");
 				container.innerHTML = "";
@@ -254,6 +283,7 @@
 
 						const card = document.createElement("div");
 						card.className = "model-card";
+						card.id = "model-" + encodeURIComponent(model.name);
 
 						const topSection = document.createElement("div");
 
@@ -365,9 +395,11 @@
 			document.addEventListener("DOMContentLoaded", async () => {
 				availableModels = await fetchAvailableModels();
 				renderAvailableModels();
+				scrollToHashModel();
 			});
 		</script>
 	</body>
 </html>
+
 
 
