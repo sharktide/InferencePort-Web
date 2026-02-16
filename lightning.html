@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lightning Models – InferencePort AI</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    .hero-gradient {
+      background: linear-gradient(135deg, #57709c, #4b5563, #777878);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .speed-highlight {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffd166;
+      text-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+    }
+
+    .lightning-section {
+      background: #111827;
+      color: white;
+    }
+
+    .model-card {
+      border-radius: 16px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .model-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .screenshot-img {
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+  </style>
+
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+</head>
+
+<body>
+
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">InferencePort AI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+						<a class="nav-link" href="marketplace">Marketplace</a>
+					</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="install.html">Install</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#community">Community</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="security.html">Security</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+  <section class="hero-gradient text-white py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start">
+          <h1 class="display-5 fw-bold" style="color: #abc6ee !important">
+            ⚡ InferencePort AI
+          </h1>
+          <p class="lead mt-3">
+            Run, test, and share local models and Hugging Face Spaces from your
+            desktop for free.
+          </p>
+          <a href="install.html" class="btn btn-light btn-lg mt-3">
+            Install Now
+          </a>
+        </div>
+        <div class="col-md-6 text-center mt-4 mt-md-0">
+          <img src="img/examples/cucumber.png"
+               alt="App Screenshot"
+               class="img-fluid rounded shadow-lg"
+               style="width: 425px; height: 225px" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIGHTNING ANNOUNCEMENT -->
+  <section class="lightning-section py-5 text-center">
+    <div class="container">
+      <h2 class="fw-bold display-6">⚡ Lightning Models Are Here</h2>
+
+      <div class="speed-highlight mt-3">
+        Up to 1000 Words / Second
+      </div>
+
+      <p class="lead mt-3">
+        Lightning Text v2 and Lightning Image Turbo deliver incredible speed and quality, free for everyone right now.
+      </p>
+
+      <a href="install.html" class="btn btn-warning btn-lg mt-3 px-5">
+        Try Lightning Now
+      </a>
+    </div>
+  </section>
+
+  <!-- MODEL DETAILS WITH PARAGRAPHS AND BULLETS -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <!-- Lightning Text v2 -->
+        <div class="col-md-6">
+          <div class="card shadow model-card h-100">
+            <div class="card-body">
+              <h4 class="fw-bold">⚡ Lightning Text v2</h4>
+              <p class="mt-2">
+                Lightning Text v2 is built for speed and smooth streaming. Generate text responses instantly for chat, coding, or long-form writing.
+              </p>
+              <ul>
+                <li>Up to 1000 words per second</li>
+                <li>Low-latency streaming output</li>
+                <li>Optimized decoding and caching</li>
+                <li>Perfect for chatbots, code assistants, and document generation</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lightning Image Turbo -->
+        <div class="col-md-6">
+          <div class="card shadow model-card h-100">
+            <div class="card-body">
+              <h4 class="fw-bold">⚡ Lightning Image Turbo (New Default)</h4>
+              <p class="mt-2">
+                Lightning Image Turbo produces ultra-realistic images with exceptional detail and stunning sci-fi or cinematic visuals.
+              </p>
+              <ul>
+                <li>Ultra-realistic rendering</li>
+                <li>Exceptional sci-fi environments</li>
+                <li>Sharper detail & lighting effects</li>
+                <li>Faster generation than ever before</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="py-5 bg-light">
+    <div class="container text-center">
+      <h3 class="fw-bold mb-5">Lightning In Action</h3>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <img src="img/examples/text-streaming.png"
+               alt="Lightning Text v2 Streaming"
+               class="img-fluid screenshot-img">
+        </div>
+
+        <div class="col-md-4">
+          <img src="img/examples/ultra-realistic.png"
+               alt="Ultra Realistic Image Output"
+               class="img-fluid screenshot-img">
+        </div>
+
+        <div class="col-md-4">
+          <img src="img/examples/scifi-scene.png"
+               alt="Sci-Fi Image Example"
+               class="img-fluid screenshot-img">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero-gradient text-white py-5 text-center">
+    <div class="container">
+      <h3 class="fw-bold">Install & Experience Lightning Today</h3>
+      <div class="speed-highlight mt-2">1000 Words / Second</div>
+      <p class="lead mt-2">
+        Download the latest release and explore the speed and quality for yourself.
+      </p>
+      <a href="install.html" class="btn btn-light btn-lg mt-3 px-5">
+        Visit Releases Page
+      </a>
+    </div>
+  </section>
+
+  <footer class="bg-dark text-white text-center py-3">
+    <small>© 2026 InferencePort AI</small>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
