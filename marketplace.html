@@ -228,7 +228,7 @@
 			  spinner.style.display = "block"; // show spinner
 			
 			  try {
-			    const res = await fetch("https://sharktide-ollama-data.hf.space/models");
+			    const res = await fetch("https://sharktide-lightning.hf.space/models");
 			    if (!res.ok) {
 			      console.error("Failed to fetch models:", res.status);
 			      return [];
@@ -400,6 +400,7 @@
 		</script>
 	</body>
 </html>
+
 
 
 
