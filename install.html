@@ -258,7 +258,7 @@ async function loadRelease() {
     (a) => !/\.blockmap$/i.test(a.name)
   );
 
-  // Platform detection helpers
+  // Helpers
   const isWindows = (a) => /windows|setup|\.exe$|\.msi$|\.zip$/i.test(a.name) && !/\.appx$/i.test(a.name) && !/mac/i.test(a.name);
   const isMac = (a) => /mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup/i.test(a.name);
   const isLinux = (a) => /linux/i.test(a.name) && !/\.blockmap$/i.test(a.name);
@@ -270,7 +270,7 @@ async function loadRelease() {
   const isJetpack5 = (a) => /jetpack5/i.test(a.name);
   const isJetpack6 = (a) => /jetpack6/i.test(a.name);
 
-  // Filter assets by platform/architecture/acceleration
+  // Filter assets
   const winX64 = assets.filter(a => isWindows(a) && isX64(a) && !isCuda(a) && !isRocm(a));
   const winArm64 = assets.filter(a => isWindows(a) && isArm64(a));
   const winCuda = assets.filter(a => isWindows(a) && isCuda(a));
@@ -286,19 +286,39 @@ async function loadRelease() {
   const jetpack5 = assets.filter(a => isLinux(a) && isJetpack5(a));
   const jetpack6 = assets.filter(a => isLinux(a) && isJetpack6(a));
 
-  // Render sections
+  // Render sections with GPU notice
+  function renderCards(title, assets, isGpu = false) {
+    if (!assets.length) {
+      return `<div class="card mb-3">
+        <div class="card-header fw-bold">${title}${isGpu ? ' <span class="badge bg-warning text-dark">GPU</span>' : ''}</div>
+        <div class="card-body">
+          <p class="mb-0 text-muted">No builds available for this variant in the latest release.</p>
+        </div>
+      </div>`;
+    }
+    return `<div class="card mb-3">
+      <div class="card-header fw-bold">${title}${isGpu ? ' <span class="badge bg-warning text-dark">GPU</span>' : ''}</div>
+      <div class="card-body">
+        <ul class="list-group">
+          ${assets.map(a => `<li class="list-group-item"><a href="${a.browser_download_url}">${a.name}</a></li>`).join("")}
+        </ul>
+      </div>
+    </div>`;
+  }
+
+  // Windows
   document.getElementById("windows").innerHTML = `
     <h4 class="mb-3">Windows Downloads</h4>
     ${renderCards("Windows x64 (CPU)", winX64)}
     ${renderCards("Windows ARM64", winArm64)}
-    ${renderCards("Windows CUDA", winCuda)}
-    ${renderCards("Windows ROCm", winRocm)}
+    ${renderCards("GPU Builds", [...winCuda, ...winRocm], true)}
     <div class="card mb-3">
       <div class="card-header fw-bold">Source Code</div>
       <div class="card-body"><ul class="list-group" id="win-source-links"></ul></div>
     </div>
   `;
 
+  // macOS
   document.getElementById("mac").innerHTML = `
     <h4 class="mb-3">macOS Downloads</h4>
     ${renderCards("macOS Intel (x64)", macX64)}
@@ -309,14 +329,12 @@ async function loadRelease() {
     </div>
   `;
 
+  // Linux
   document.getElementById("linux").innerHTML = `
     <h4 class="mb-3">Linux Downloads</h4>
     ${renderCards("Linux x64 (CPU)", linuxX64)}
     ${renderCards("Linux ARM64 (CPU)", linuxArm64)}
-    ${renderCards("Linux CUDA", linuxCuda)}
-    ${renderCards("Linux ROCm", linuxRocm)}
-    ${renderCards("JetPack 5 (ARM)", jetpack5)}
-    ${renderCards("JetPack 6 (ARM)", jetpack6)}
+    ${renderCards("GPU Builds", [...linuxCuda, ...linuxRocm, ...jetpack5, ...jetpack6], true)}
     <div class="card mb-3">
       <div class="card-header fw-bold">Source Code</div>
       <div class="card-body"><ul class="list-group" id="linux-source-links"></ul></div>
@@ -331,34 +349,14 @@ async function loadRelease() {
       <li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
     `;
   }
-
   document.getElementById("win-source-links").innerHTML = sourceLinks(release);
   document.getElementById("mac-source-links").innerHTML = sourceLinks(release);
   document.getElementById("linux-source-links").innerHTML = sourceLinks(release);
-
-  // Render helper functions
-  function renderCards(title, assets) {
-    if (!assets.length) {
-      return `<div class="card mb-3">
-        <div class="card-header fw-bold">${title}</div>
-        <div class="card-body">
-          <p class="mb-0 text-muted">No builds available for this variant in the latest release.</p>
-        </div>
-      </div>`;
-    }
-    return `<div class="card mb-3">
-      <div class="card-header fw-bold">${title}</div>
-      <div class="card-body">
-        <ul class="list-group">
-          ${assets.map(a => `<li class="list-group-item"><a href="${a.browser_download_url}">${a.name}</a></li>`).join("")}
-        </ul>
-      </div>
-    </div>`;
-  }
 }
 
 loadRelease();
 </script>
+
 
   </body>
 </html>
