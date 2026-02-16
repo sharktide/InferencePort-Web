@@ -248,137 +248,117 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-      async function loadRelease() {
-        const res = await fetch(
-          "https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest",
-        );
-        const release = await res.json();
-        const assets = (release.assets || []).filter(
-          (a) => !/\.blockmap$/i.test(a.name),
-        );
+ <script>
+async function loadRelease() {
+  const res = await fetch(
+    "https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest"
+  );
+  const release = await res.json();
+  const assets = (release.assets || []).filter(
+    (a) => !/\.blockmap$/i.test(a.name)
+  );
 
-        const isWindows = (a) =>
-          /windows|setup|\.exe$|\.msi$|\.zip$/i.test(a.name) &&
-          !/\.appx$/i.test(a.name) &&
-          !/mac/i.test(a.name);
+  // Platform detection helpers
+  const isWindows = (a) => /windows|setup|\.exe$|\.msi$|\.zip$/i.test(a.name) && !/\.appx$/i.test(a.name) && !/mac/i.test(a.name);
+  const isMac = (a) => /mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup/i.test(a.name);
+  const isLinux = (a) => /linux/i.test(a.name) && !/\.blockmap$/i.test(a.name);
 
-        const isMac = (a) =>
-          /mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup/i.test(a.name);
+  const isX64 = (a) => /x64/i.test(a.name);
+  const isArm64 = (a) => /arm64|aarch64/i.test(a.name);
+  const isCuda = (a) => /cuda/i.test(a.name);
+  const isRocm = (a) => /rocm/i.test(a.name);
+  const isJetpack5 = (a) => /jetpack5/i.test(a.name);
+  const isJetpack6 = (a) => /jetpack6/i.test(a.name);
 
-        const isMacArm64 = (a) => /arm64/i.test(a.name) && isMac(a);
+  // Filter assets by platform/architecture/acceleration
+  const winX64 = assets.filter(a => isWindows(a) && isX64(a) && !isCuda(a) && !isRocm(a));
+  const winArm64 = assets.filter(a => isWindows(a) && isArm64(a));
+  const winCuda = assets.filter(a => isWindows(a) && isCuda(a));
+  const winRocm = assets.filter(a => isWindows(a) && isRocm(a));
 
-        const isMacX64 = (a) => isMac(a) && !/arm64/i.test(a.name);
+  const macX64 = assets.filter(a => isMac(a) && isX64(a));
+  const macArm64 = assets.filter(a => isMac(a) && isArm64(a));
 
-        const isWinArm64 = (a) => isWindows(a) && /arm64/i.test(a.name);
+  const linuxX64 = assets.filter(a => isLinux(a) && isX64(a) && !isCuda(a) && !isRocm(a));
+  const linuxArm64 = assets.filter(a => isLinux(a) && isArm64(a) && !isJetpack5(a) && !isJetpack6(a));
+  const linuxCuda = assets.filter(a => isLinux(a) && isCuda(a));
+  const linuxRocm = assets.filter(a => isLinux(a) && isRocm(a));
+  const jetpack5 = assets.filter(a => isLinux(a) && isJetpack5(a));
+  const jetpack6 = assets.filter(a => isLinux(a) && isJetpack6(a));
 
-        const isWinX64 = (a) => isWindows(a) && /x64/i.test(a.name);
+  // Render sections
+  document.getElementById("windows").innerHTML = `
+    <h4 class="mb-3">Windows Downloads</h4>
+    ${renderCards("Windows x64 (CPU)", winX64)}
+    ${renderCards("Windows ARM64", winArm64)}
+    ${renderCards("Windows CUDA", winCuda)}
+    ${renderCards("Windows ROCm", winRocm)}
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Source Code</div>
+      <div class="card-body"><ul class="list-group" id="win-source-links"></ul></div>
+    </div>
+  `;
 
-        const winArm64Assets = assets.filter(isWinArm64);
-        const winX64Assets = assets
-          .filter(isWinX64)
-          .concat(
-            assets.filter(
-              (a) =>
-                isWindows(a) && !/arm64/i.test(a.name) && !/x64/i.test(a.name),
-            ),
-          );
+  document.getElementById("mac").innerHTML = `
+    <h4 class="mb-3">macOS Downloads</h4>
+    ${renderCards("macOS Intel (x64)", macX64)}
+    ${renderCards("macOS Apple Silicon (ARM64)", macArm64)}
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Source Code</div>
+      <div class="card-body"><ul class="list-group" id="mac-source-links"></ul></div>
+    </div>
+  `;
 
-        const macArm64Assets = assets.filter(isMacArm64);
-        const macX64Assets = assets.filter(isMacX64);
-        const isLinux = (a) =>
-            /linux|linuxsetup/i.test(a.name) &&
-            !/\.blockmap$/i.test(a.name);
+  document.getElementById("linux").innerHTML = `
+    <h4 class="mb-3">Linux Downloads</h4>
+    ${renderCards("Linux x64 (CPU)", linuxX64)}
+    ${renderCards("Linux ARM64 (CPU)", linuxArm64)}
+    ${renderCards("Linux CUDA", linuxCuda)}
+    ${renderCards("Linux ROCm", linuxRocm)}
+    ${renderCards("JetPack 5 (ARM)", jetpack5)}
+    ${renderCards("JetPack 6 (ARM)", jetpack6)}
+    <div class="card mb-3">
+      <div class="card-header fw-bold">Source Code</div>
+      <div class="card-body"><ul class="list-group" id="linux-source-links"></ul></div>
+    </div>
+  `;
 
-        const isLinuxArm64 = (a) => isLinux(a) && /arm64|aarch64/i.test(a.name);
-        const isLinuxX64 = (a) => isLinux(a) && !/arm64|aarch64/i.test(a.name);
+  // Source links
+  function sourceLinks(release) {
+    return `
+      <li class="list-group-item"><a href="${release.tarball_url}">Download Tarball</a></li>
+      <li class="list-group-item"><a href="${release.zipball_url}">Download ZIP Archive</a></li>
+      <li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
+    `;
+  }
 
-        const linuxArm64Assets = assets.filter(isLinuxArm64);
-        const linuxX64Assets = assets.filter(isLinuxX64);
+  document.getElementById("win-source-links").innerHTML = sourceLinks(release);
+  document.getElementById("mac-source-links").innerHTML = sourceLinks(release);
+  document.getElementById("linux-source-links").innerHTML = sourceLinks(release);
 
-        document.getElementById("windows").innerHTML = `
-				<h4 class="mb-3">Windows Downloads</h4>
-				${renderCards("Windows x64", filterFormats(winX64Assets, ["zip", "exe", "msi"]))}
-				${renderCards("Windows ARM64", filterFormats(winArm64Assets, ["zip", "exe", "msi"]))}
-				<div class="card mb-3">
-					<div class="card-header fw-bold">Source Code</div>
-					<div class="card-body">
-					<ul class="list-group" id="win-source-links"></ul>
-					</div>
-				</div>
-				<div class="mt-4">
-				<h5>Microsoft Store</h5>
-				<p>You can also install directly from the Microsoft Store:</p>
-				<a href="https://apps.microsoft.com/detail/9p5d3xx84l28?hl=en-us" class="btn btn-primary">Get it from Microsoft Store</a>
-				</div>
-			`;
-
-        document.getElementById("mac").innerHTML = `
-				<h4 class="mb-3">macOS Downloads</h4>
-				${renderCards("macOS Intel (x64)", filterFormats(macX64Assets, ["zip", "dmg", "pkg"]))}
-				${renderCards("macOS Apple Silicon (ARM64)", filterFormats(macArm64Assets, ["zip", "dmg", "pkg"]))}
-				<div class="card mb-3">
-					<div class="card-header fw-bold">Source Code</div>
-					<div class="card-body">
-					<ul class="list-group" id="mac-source-links"></ul>
-					</div>
-				</div>
-			`;
-        document.getElementById("linux").innerHTML = `
-				<h4 class="mb-3">Linux Downloads</h4>
-				${renderCards("Linux x64", filterFormats(linuxX64Assets, ["deb", "AppImage", "tar.xz"]))}
-				${renderCards("Linux ARM64", filterFormats(linuxArm64Assets, ["deb", "AppImage", "tar.xz"]))}
-				<div class="card mb-3">
-					<div class="card-header fw-bold">Source Code</div>
-					<div class="card-body">
-					<ul class="list-group" id="linux-source-links"></ul>
-					</div>
-				</div>
-			`;
-        document.getElementById("win-source-links").innerHTML =
-          sourceLinks(release);
-        document.getElementById("mac-source-links").innerHTML =
-          sourceLinks(release);
-        document.getElementById("linux-source-links").innerHTML =
-          sourceLinks(release);
-
-        function sourceLinks(release) {
-          return `
-				<li class="list-group-item"><a href="${release.tarball_url}">Download Tarball</a></li>
-				<li class="list-group-item"><a href="${release.zipball_url}">Download ZIP Archive</a></li>
-				<li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
-			`;
-        }
-      }
-
-      function filterFormats(assets, exts) {
-        const extRegexes = exts.map((ext) => new RegExp(`\\.${ext}$`, "i"));
-        return assets.filter((a) => extRegexes.some((rx) => rx.test(a.name)));
-      }
-
-      function renderCards(title, assets) {
-        if (!assets.length)
-          return `
-        <div class="card mb-3">
-          <div class="card-header fw-bold">${title}</div>
-          <div class="card-body">
-            <p class="mb-0 text-muted">No builds available for this variant in the latest release.</p>
-          </div>
+  // Render helper functions
+  function renderCards(title, assets) {
+    if (!assets.length) {
+      return `<div class="card mb-3">
+        <div class="card-header fw-bold">${title}</div>
+        <div class="card-body">
+          <p class="mb-0 text-muted">No builds available for this variant in the latest release.</p>
         </div>
-      `;
-        return `
-        <div class="card mb-3">
-          <div class="card-header fw-bold">${title}</div>
-          <div class="card-body">
-            <ul class="list-group">
-              ${assets.map((a) => `<li class="list-group-item"><a href="${a.browser_download_url}">${a.name}</a></li>`).join("")}
-            </ul>
-          </div>
-        </div>
-      `;
-      }
+      </div>`;
+    }
+    return `<div class="card mb-3">
+      <div class="card-header fw-bold">${title}</div>
+      <div class="card-body">
+        <ul class="list-group">
+          ${assets.map(a => `<li class="list-group-item"><a href="${a.browser_download_url}">${a.name}</a></li>`).join("")}
+        </ul>
+      </div>
+    </div>`;
+  }
+}
 
-      loadRelease();
-    </script>
+loadRelease();
+</script>
+
   </body>
 </html>
