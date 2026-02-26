@@ -263,7 +263,7 @@ async function loadRelease() {
   const isMac = (a) => /mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup|Windows/i.test(a.name);
   const isLinux = (a) => /linux/i.test(a.name) && !/\.blockmap$/i.test(a.name);
 
-  const isX64 = (a) => /x64/i.test(a.name);
+  const isX64 = (a) => /x64|amd64/i.test(a.name);
   const isArm64 = (a) => /arm64|aarch64/i.test(a.name);
   const isCuda = (a) => /cuda/i.test(a.name);
   const isRocm = (a) => /rocm/i.test(a.name);
@@ -280,7 +280,7 @@ async function loadRelease() {
   const macArm64 = assets.filter(a => isMac(a) && isArm64(a));
 
   const linuxX64 = assets.filter(a => isLinux(a) && isX64(a) && !isCuda(a) && !isRocm(a));
-  const linuxArm64 = assets.filter(a => isLinux(a) && isArm64(a) && !isJetpack5(a) && !isJetpack6(a));
+  const linuxArm64 = assets.filter(a => isLinux(a) && isArm64(a) && !isJetpack5(a) && !isJetpack6(a) && !isCuda(a));
   const linuxCuda = assets.filter(a => isLinux(a) && isCuda(a));
   const linuxRocm = assets.filter(a => isLinux(a) && isRocm(a));
   const jetpack5 = assets.filter(a => isLinux(a) && isJetpack5(a));
