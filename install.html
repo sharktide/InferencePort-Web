@@ -263,7 +263,7 @@ async function loadRelease() {
   const isMac = (a) => /mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup|Windows/i.test(a.name);
   const isLinux = (a) => /linux/i.test(a.name) && !/\.blockmap$/i.test(a.name);
 
-  const isX64 = (a) => /x64|amd64/i.test(a.name);
+  const isX64 = (a) => /x64|amd64|x86_64/i.test(a.name);
   const isArm64 = (a) => /arm64|aarch64/i.test(a.name);
   const isCuda = (a) => /cuda/i.test(a.name);
   const isRocm = (a) => /rocm/i.test(a.name);
