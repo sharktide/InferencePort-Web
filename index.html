@@ -74,13 +74,10 @@
         background: #3d63d8;
       }
 
-      .split-section {
-        background: white;
-        border-radius: 18px;
-        padding: 50px;
-        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+      .split-section .row {
+        max-width: 100%;
+        justify-content: space-around;
       }
-
       .repo-image {
         margin: 10px;
         border-radius: 12px;
@@ -296,25 +293,20 @@
           Visit Documentation
         </a>
       </div>
-    </section>
-
-    <!-- DOWNLOAD + MARKETPLACE -->
-
-    <section class="py-5">
-      <div class="container">
+      </section>
+      <section class="py-5 text-center">
         <div class="split-section">
           <div class="row text-center">
             <div class="col-md-6 mb-4 mb-md-0">
               <h3 class="fw-bold">Download InferencePort</h3>
 
               <p class="text-muted">
-                Windows, macOS and Linux builds with Vulkan GPU acceleration.
-                ROCM and CUDA builds available.
+                Windows, macOS and Linux builds with GPU acceleration.
               </p>
 
-              <a href="install.html" class="btn btn-primary">
+              <button onclick='location.href="install.html"' class="btn btn-primary btn-lg">
                 Download Now →
-              </a>
+              </button>
             </div>
 
             <div class="col-md-6">
@@ -324,12 +316,11 @@
                 Browse models, Hugging Face Spaces and community demos.
               </p>
 
-              <a href="marketplace.html" class="btn btn-success">
+              <button onclick='location.href="marketplace.html"' class="btn btn-success btn-lg">
                 Open Marketplace →
-              </a>
+              </button>
             </div>
           </div>
-        </div>
       </div>
     </section>
 
