@@ -12,94 +12,32 @@
     <meta name="description"
         content="InferencePort AI — a lightweight app and website for running local LLMs and exploring Hugging Face Spaces. Preview, run and share models from your desktop." />
     <style>
-      .hero-gradient {
-        background: linear-gradient(135deg, #57709c, #4b5563, #777878);
-        background-size: 400% 400%;
-        animation: gradientShift 15s ease infinite;
-      }
+		:root {
+			--primary: #4f7cff;
+			--primary-soft: #eef2ff;
+			--text-dark: #0f172a;
+			--muted: #64748b;
+		}
 
-      @keyframes gradientShift {
-        0% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-        100% {
-          background-position: 0% 50%;
-        }
-      }
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
+			color: var(--text-dark);
+			background: #f8fafc;
+		}
 
-      a {
-        color: #2090bc;
-        text-decoration: none;
-      }
+		.hero-gradient {
+			background: radial-gradient(circle at 30% 30%, #6d8cff, #4f7cff, #1e293b);
+			color: white;
+		}
 
-      .lightning-bolt {
-        opacity: 0;
-        transform: translateY(-150px) scale(0.5);
-        animation:
-          boltDrop 0.4s cubic-bezier(0.25, 1.25, 0.5, 1) forwards,
-          pulseGlow 2s infinite 0.4s,
-          heroShake 0.8s ease-in-out;
-      }
+		.hero-title {
+			letter-spacing: -1px;
+		}
 
-      @keyframes boltDrop {
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      @keyframes pulseGlow {
-        0%,
-        100% {
-          filter: drop-shadow(0 0 2px orange);
-        }
-        50% {
-          filter: drop-shadow(0 0 14px orange);
-        }
-      }
-
-      .hero-container {
-        animation: heroShake 0.8s ease-in-out;
-      }
-
-      @keyframes heroShake {
-        0% {
-          transform: translate(0, 0);
-        }
-        10% {
-          transform: translate(-8px, -5px);
-        }
-        20% {
-          transform: translate(8px, 6px);
-        }
-        30% {
-          transform: translate(-6px, 8px);
-        }
-        40% {
-          transform: translate(6px, -8px);
-        }
-        50% {
-          transform: translate(-10px, 4px);
-        }
-        60% {
-          transform: translate(10px, -6px);
-        }
-        70% {
-          transform: translate(-5px, -10px);
-        }
-        80% {
-          transform: translate(5px, 10px);
-        }
-        90% {
-          transform: translate(-6px, 6px);
-        }
-        100% {
-          transform: translate(0, 0);
-        }
-      }
+		.hero-text {
+			color: #e2e8f0;
+			max-width: 520px;
+		}
     </style>
 </head>
 
@@ -155,9 +93,7 @@
               InferencePort AI
             </h1>
             <p class="lead mt-3 hero-text">
-              InferencePort AI is a JavaScript app that makes it easy to run,
-              test and share local models and Hugging Face Spaces from your
-              desktop for free.
+              InferencePort makes it effortless to run, test, and share local AI models and Hugging Face Spaces from a clean desktop interface.
             </p>
             <a href="install.html" class="btn btn-light btn-lg mt-3 hero-btn"
               >Install Now</a
