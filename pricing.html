@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pricing – InferencePort AI</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #4f7cff;
+        --text-dark: #0f172a;
+        --muted: #64748b;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
+        background: #f8fafc;
+        color: var(--text-dark);
+      }
+      .hero-gradient {
+        background: radial-gradient(
+          circle at 30% 30%,
+          #6d8cff,
+          #4f7cff,
+          #1e293b
+        );
+        color: white;
+      }
+      .card {
+        border: none;
+        border-radius: 18px;
+        transition: 0.25s;
+        padding: 10px;
+      }
+      .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+      }
+      .plan-highlight {
+        border: 2px solid var(--primary);
+        box-shadow: 0 20px 50px rgba(79, 124, 255, 0.25);
+      }
+      .price {
+        font-size: 46px;
+        font-weight: 700;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .feature-list {
+        list-style: none;
+        padding-left: 0;
+      }
+      .feature-list li {
+        padding: 6px 0;
+        font-size: 15px;
+      }
+      .limit-low {
+        color: #dc2626;
+        font-weight: 600;
+      }
+      .limit-mid {
+        color: #f59e0b;
+        font-weight: 600;
+      }
+      .limit-high {
+        color: #16a34a;
+        font-weight: 600;
+      }
+      .limit-unlimited {
+        color: #16a34a;
+        font-weight: 600;
+      }
+      .section-title {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      .btn-primary {
+        background: var(--primary);
+        border: none;
+      }
+      .btn-primary:hover {
+        background: #3d63d8;
+      }
+      .blurb {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 15px;
+        min-height: 45px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand fw-bold">InferencePort AI</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="marketplace.html">Marketplace</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="install.html">Install</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="security.html">Security</a>
+            </li>
+            <li class="nav-item"><a class="nav-link active">Pricing</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero-gradient py-5 text-center">
+      <div class="container">
+        <h1 class="display-5 fw-bold mb-3">
+          Flexible Pricing for Every AI Creator
+        </h1>
+        <p class="lead">
+          Run powerful AI locally for free — scale into the cloud when you need
+          more power.
+        </p>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="py-5">
+      <div class="container">
+        <h2 class="text-center section-title mb-5">Choose Your Plan</h2>
+        <div class="row g-4 justify-content-center">
+          <!-- FREE -->
+          <div class="col-xl-4 col-lg-6">
+            <div class="card shadow-sm text-center h-100">
+              <div class="card-body">
+                <h4 class="fw-bold">Free Tier</h4>
+                <div class="blurb">
+                  Perfect for exploring AI locally with basic cloud access.
+                </div>
+                <div class="price">$0</div>
+                <div class="muted mb-3">forever</div>
+                <ul class="feature-list text-start">
+                  <li>
+                    💬 <span class="limit-low">50 Cloud Chats / day</span>
+                  </li>
+                  <li>🖼️ <span class="limit-low">10 Images / day</span></li>
+                  <li>🎬 <span class="limit-low">3 Videos / day</span></li>
+                  <li>🔊 <span class="limit-low">1 Audio / week</span></li>
+                  <hr />
+                  <li>
+                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
+                  </li>
+                  <li>✓ Local Model Marketplace</li>
+                  <li>✓ HuggingFace Spaces Viewer</li>
+                  <li>✓ Website Viewer</li>
+                  <li>✓ Local Model Hosting</li>
+                  <li>✓ Remote Server Connection</li>
+                </ul>
+                <button
+                  class="btn btn-outline-primary w-100 mt-3"
+                  onclick="window.location.href='install.html'"
+                >
+                  Get Started
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- LIGHT -->
+          <div class="col-xl-4 col-lg-6">
+            <div class="card shadow-sm text-center h-100">
+              <div class="card-body">
+                <h4 class="fw-bold">AI Light</h4>
+                <div class="blurb">
+                  Ideal for casual AI users who want faster cloud generation and
+                  more creative tools.
+                </div>
+                <div class="price">$9.99</div>
+                <div class="muted mb-3">per month</div>
+                <ul class="feature-list text-start">
+                  <li>
+                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
+                  </li>
+                  <li>🖼️ <span class="limit-mid">50 Images / day</span></li>
+                  <li>🎬 <span class="limit-mid">10 Videos / day</span></li>
+                  <li>🔊 <span class="limit-mid">5 Audio / week</span></li>
+                  <hr />
+                  <li>
+                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
+                  </li>
+                  <li>✓ Local Model Marketplace</li>
+                  <li>✓ HuggingFace Spaces Viewer</li>
+                  <li>✓ Website Viewer</li>
+                  <li>✓ Local Model Hosting</li>
+                  <li>✓ Remote Server Connection</li>
+                </ul>
+                <button
+                  class="btn btn-primary w-100 mt-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#upgradeModal"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CORE -->
+          <div class="col-xl-4 col-lg-6">
+            <div class="card text-center h-100 plan-highlight">
+              <div class="card-body">
+                <h4 class="fw-bold">AI Core</h4>
+                <div class="blurb">
+                  The perfect balance of power and price for serious creators
+                  and developers.
+                </div>
+                <div class="price">$15.99</div>
+                <div class="muted mb-3">per month</div>
+                <ul class="feature-list text-start">
+                  <li>
+                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
+                  </li>
+                  <li>🖼️ <span class="limit-high">150 Images / day</span></li>
+                  <li>🎬 <span class="limit-high">30 Videos / day</span></li>
+                  <li>🔊 <span class="limit-high">25 Audio / week</span></li>
+                  <hr />
+                  <li>
+                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
+                  </li>
+                  <li>✓ Local Model Marketplace</li>
+                  <li>✓ HuggingFace Spaces Viewer</li>
+                  <li>✓ Website Viewer</li>
+                  <li>✓ Local Model Hosting</li>
+                  <li>✓ Remote Server Connection</li>
+                </ul>
+                <button
+                  class="btn btn-primary w-100 mt-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#upgradeModal"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CREATOR -->
+          <div class="col-xl-4 col-lg-6">
+            <div class="card shadow-sm text-center h-100">
+              <div class="card-body">
+                <h4 class="fw-bold">AI Creator</h4>
+                <div class="blurb">
+                  Built for heavy AI creators generating images, video, and
+                  audio at scale.
+                </div>
+                <div class="price">$29.99</div>
+                <div class="muted mb-3">per month</div>
+                <ul class="feature-list text-start">
+                  <li>
+                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
+                  </li>
+                  <li>🖼️ <span class="limit-high">300 Images / day</span></li>
+                  <li>🎬 <span class="limit-high">50 Videos / day</span></li>
+                  <li>🔊 <span class="limit-high">45 Audio / week</span></li>
+                  <hr />
+                  <li>
+                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
+                  </li>
+                  <li>✓ Local Model Marketplace</li>
+                  <li>✓ HuggingFace Spaces Viewer</li>
+                  <li>✓ Website Viewer</li>
+                  <li>✓ Local Model Hosting</li>
+                  <li>✓ Remote Server Connection</li>
+                </ul>
+                <button
+                  class="btn btn-primary w-100 mt-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#upgradeModal"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROFESSIONAL -->
+          <div class="col-xl-4 col-lg-6">
+            <div class="card shadow-sm text-center h-100">
+              <div class="card-body">
+                <h4 class="fw-bold">AI Professional</h4>
+                <div class="blurb">
+                  Maximum generation power for studios, researchers, and
+                  high-volume AI workflows.
+                </div>
+                <div class="price">$99.99</div>
+                <div class="muted mb-3">per month</div>
+                <ul class="feature-list text-start">
+                  <li>
+                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
+                  </li>
+                  <li>
+                    🖼️ <span class="limit-unlimited">Unlimited Images</span>
+                  </li>
+                  <li>
+                    🎬 <span class="limit-unlimited">Unlimited Videos</span>
+                  </li>
+                  <li>🔊 <span class="limit-high">75 Audio / week</span></li>
+                  <hr />
+                  <li>
+                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
+                  </li>
+                  <li>✓ Local Model Marketplace</li>
+                  <li>✓ HuggingFace Spaces Viewer</li>
+                  <li>✓ Website Viewer</li>
+                  <li>✓ Local Model Hosting</li>
+                  <li>✓ Remote Server Connection</li>
+                </ul>
+                <button
+                  class="btn btn-primary w-100 mt-3"
+                  data-bs-toggle="modal"
+                  data-bs-target="#upgradeModal"
+                >
+                  Subscribe
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div
+      class="modal fade"
+      id="upgradeModal"
+      tabindex="-1"
+      aria-labelledby="upgradeModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="upgradeModalLabel">Upgrade Info</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center">
+            Open the app and click <strong>Upgrade</strong> to find out more.
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary w-100"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-3">
+      <small>© 2026 Rihaan Meher</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
