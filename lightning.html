@@ -14,24 +14,32 @@
       .screenshot-img {
         height: 300px;
       }
-      .hero-gradient {
-        background: linear-gradient(135deg, #57709c, #4b5563, #777878);
-        background-size: 400% 400%;
-        animation: gradientShift 15s ease infinite;
-      }
+    :root {
+			--primary: #4f7cff;
+			--primary-soft: #eef2ff;
+			--text-dark: #0f172a;
+			--muted: #64748b;
+		}
 
-      @keyframes gradientShift {
-        0% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-        100% {
-          background-position: 0% 50%;
-        }
-      }
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
+			color: var(--text-dark);
+			background: #f8fafc;
+		}
 
+		.hero-gradient {
+			background: radial-gradient(circle at 30% 30%, #6d8cff, #4f7cff, #1e293b);
+			color: white;
+		}
+
+		.hero-title {
+			letter-spacing: -1px;
+		}
+
+		.hero-text {
+			color: #e2e8f0;
+			max-width: 520px;
+		}
       .speed-highlight {
         font-size: 2rem;
         font-weight: 700;
