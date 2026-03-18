@@ -129,12 +129,9 @@
       </div>
     </section>
 
-<section id="install" class="py-5">
-  <div class="container">
-    <h2 class="fw-bold text-center mb-4">Download & Install</h2>
-
-    <!-- New: Recommended download section -->
-    <div id="recommended-download" class="mb-4"></div>
+    <section id="install" class="py-5">
+      <div class="container">
+        <h2 class="fw-bold text-center mb-4">Download & Install</h2>
 
         <ul
           class="nav nav-tabs justify-content-center"
@@ -239,112 +236,7 @@ async function loadRelease() {
   const jetpack5 = assets.filter(a => isLinux(a) && isJetpack5(a));
   const jetpack6 = assets.filter(a => isLinux(a) && isJetpack6(a));
 
-  // --- New: Recommended download section ---
-
-  function detectPlatform() {
-    const ua = navigator.userAgent || "";
-    const platform = navigator.platform || "";
-    let os = null;
-    let arch = null;
-
-    // OS
-    if (/Win/i.test(platform) || /Windows/i.test(ua)) {
-      os = "windows";
-    } else if (/Mac/i.test(platform) || /Mac OS X/i.test(ua)) {
-      os = "mac";
-    } else if (/Linux|X11|Ubuntu|Debian|Fedora|Arch/i.test(platform + ua)) {
-      os = "linux";
-    }
-
-    // Arch
-    if (/arm64|aarch64/i.test(ua + platform)) {
-      arch = "arm64";
-    } else if (/x86_64|Win64|WOW64|amd64/i.test(ua + platform)) {
-      arch = "x64";
-    }
-
-    return { os, arch };
-  }
-
-  function chooseRecommendedAsset(info) {
-    const { os, arch } = info;
-    if (!os) return null;
-
-    if (os === "windows") {
-      // Prefer CPU builds by default; GPU users can pick from tabs
-      if (arch === "arm64" && winArm64.length) return winArm64[0];
-      if (winX64.length) return winX64[0];
-      if (winCuda.length) return winCuda[0];
-      if (winRocm.length) return winRocm[0];
-    }
-
-    if (os === "mac") {
-      if (arch === "arm64" && macArm64.length) return macArm64[0];
-      if (macX64.length) return macX64[0];
-    }
-
-    if (os === "linux") {
-      if (arch === "arm64" && linuxArm64.length) return linuxArm64[0];
-      if (linuxX64.length) return linuxX64[0];
-      if (linuxCuda.length) return linuxCuda[0];
-      if (linuxRocm.length) return linuxRocm[0];
-      if (jetpack6.length) return jetpack6[0];
-      if (jetpack5.length) return jetpack5[0];
-    }
-
-    return null;
-  }
-
-  function humanReadablePlatform(info) {
-    const { os, arch } = info;
-    const osLabel =
-      os === "windows" ? "Windows" :
-      os === "mac" ? "macOS" :
-      os === "linux" ? "Linux" :
-      "Unknown OS";
-    const archLabel = arch ? arch.toUpperCase() : "Unknown arch";
-    return `${osLabel} ${archLabel}`;
-  }
-
-  (function renderRecommended() {
-    const container = document.getElementById("recommended-download");
-    if (!container) return;
-
-    const info = detectPlatform();
-    const asset = chooseRecommendedAsset(info);
-
-    if (!asset) {
-      container.innerHTML = `
-        <div class="card border-0 shadow-sm p-4 text-center">
-          <h4 class="fw-bold mb-2">Recommended download</h4>
-          <p class="text-muted mb-0">
-            We couldn't automatically detect a matching build. Please choose a download from the tabs below.
-          </p>
-        </div>
-      `;
-      return;
-    }
-
-    const platformLabel = humanReadablePlatform(info);
-
-    container.innerHTML = `
-      <div class="card border-0 shadow-sm p-4 d-flex flex-column flex-md-row align-items-center justify-content-between">
-        <div class="text-center text-md-start mb-3 mb-md-0">
-          <h4 class="fw-bold mb-1">Recommended download for your system</h4>
-          <p class="mb-1 text-muted">${platformLabel}</p>
-          <p class="mb-0 small text-muted">File: ${asset.name}</p>
-        </div>
-        <div class="text-center">
-          <a href="${asset.browser_download_url}" class="btn btn-primary btn-lg px-4">
-            Download now
-          </a>
-        </div>
-      </div>
-    `;
-  })();
-
-  // --- Existing: render sections with GPU notice ---
-
+  // Render sections with GPU notice
   function renderCards(title, assets, isGpu = false) {
     if (!assets.length) {
       return `<div class="card mb-3">
