@@ -113,9 +113,9 @@
         <div id="recommended-download" class="mb-4"></div>
 
         <ul class="nav nav-tabs justify-content-center" id="installTabs" role="tablist">
-          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#windows">Windows</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac">macOS</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#linux">Linux</button></li>
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#windows" id="windows-tab">Windows</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac" id="mac-tab">macOS</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#linux" id="linux-tab">Linux</button></li>
         </ul>
 
         <div class="tab-content mt-4" id="installTabsContent">
@@ -205,6 +205,33 @@
           return { os, arch };
         }
 
+        // <span data-color="green">Add auto-switch functionality</span>
+        function switchToOSTab(os) {
+          // Get the bootstrap tab instance
+          const tabElements = {
+            windows: document.getElementById('windows-tab'),
+            mac: document.getElementById('mac-tab'),
+            linux: document.getElementById('linux-tab')
+          };
+
+          // Initialize all tabs
+          const tabInstances = {};
+          Object.keys(tabElements).forEach(key => {
+            if (tabElements[key]) {
+              tabInstances[key] = new bootstrap.Tab(tabElements[key]);
+            }
+          });
+
+          // Activate the appropriate tab based on OS
+          if (os === 'windows' && tabInstances.windows) {
+            tabInstances.windows.show();
+          } else if (os === 'mac' && tabInstances.mac) {
+            tabInstances.mac.show();
+          } else if (os === 'linux' && tabInstances.linux) {
+            tabInstances.linux.show();
+          }
+        }
+
         function chooseRecommendedAsset(info) {
           const { os, arch } = info;
 
@@ -278,6 +305,9 @@
               renderRecommended();
             };
           }
+          
+          // <span data-color="green">After rendering, switch to the correct tab</span>
+          switchToOSTab(info.os);
         }
 
         renderRecommended();
@@ -335,7 +365,7 @@
           return `
             <li class="list-group-item"><a href="${release.tarball_url}">Download Tarball</a></li>
             <li class="list-group-item"><a href="${release.zipball_url}">Download ZIP Archive</a></li>
-            <li class="list-group-item"><a href="${release.html_url}">View Release Page</
+            <li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
           `;
         }
 
