@@ -1,380 +1,1041 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>InferencePort AI | Cloud & Local AI Models</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="styles/main.css" />
+		<style>
+			:root {
+				--brand: #4f7cff;
+				--brand-dim: rgba(79, 124, 255, 0.12);
+				--brand-border: rgba(79, 124, 255, 0.28);
+				--surface: #0f1525;
+				--muted: #8b93a7;
+			}
+			body {
+				background: #080d1a;
+				font-family: "Inter", sans-serif;
+				color: #d6daea;
+			}
 
-    <title>InferencePort AI | Run AI Models Locally and in the cloud</title>
-    <meta name="description" content="InferencePort AI lets you run AI models locally on Windows, macOS, and Linux. Explore models, Hugging Face Spaces, and community demos from your desktop.">
-    <meta name="keywords" content="InferencePort AI, AI models, local AI, Hugging Face, AI marketplace, run AI locally, AI software">
-    <meta name="author" content="Rihaan Meher">
+			.navbar {
+				background: rgba(8, 13, 26, 0.92) !important;
+				backdrop-filter: blur(12px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+			}
+			.navbar-brand {
+				font-weight: 800;
+				font-size: 1.1rem;
+				letter-spacing: -0.02em;
+				color: #fff !important;
+			}
+			.navbar-brand span {
+				color: var(--brand);
+			}
+			.nav-link {
+				color: var(--muted) !important;
+				font-size: 0.88rem;
+			}
+			.nav-link:hover,
+			.nav-link.active {
+				color: #fff !important;
+			}
+			.nav-pill {
+				background: var(--brand) !important;
+				color: #fff !important;
+				border-radius: 7px !important;
+				padding: 6px 16px !important;
+				font-weight: 600 !important;
+				font-size: 0.85rem;
+			}
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="InferencePort AI | Run AI Models Locally & Explore Marketplace">
-    <meta property="og:description" content="Run AI models locally, explore Hugging Face Spaces, and discover AI tools through InferencePort's desktop interface.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://inference.js.org/">
-    <meta property="og:image" content="https://inference.js.org/img/favicon.ico">
+			.hero-section {
+				padding: 110px 0 72px;
+				text-align: center;
+				background: radial-gradient(
+					ellipse 70% 40% at 50% 0%,
+					rgba(79, 124, 255, 0.17) 0%,
+					transparent 60%
+				);
+			}
+			.hero-eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 7px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.7rem;
+				font-weight: 500;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--brand);
+				background: var(--brand-dim);
+				border: 1px solid var(--brand-border);
+				border-radius: 50px;
+				padding: 5px 14px;
+				margin-bottom: 22px;
+			}
+			.pulse {
+				width: 7px;
+				height: 7px;
+				background: var(--brand);
+				border-radius: 50%;
+				animation: pulse 2s ease infinite;
+			}
+			@keyframes pulse {
+				0%,
+				100% {
+					opacity: 1;
+					transform: scale(1);
+				}
+				50% {
+					opacity: 0.4;
+					transform: scale(0.8);
+				}
+			}
+			.hero-title {
+				font-size: clamp(2rem, 5vw, 3.6rem);
+				font-weight: 800;
+				letter-spacing: -0.04em;
+				line-height: 1.1;
+				color: #fff;
+			}
+			.hero-title .accent {
+				color: var(--brand);
+			}
+			.hero-subtitle {
+				font-size: 1rem;
+				color: var(--muted);
+				max-width: 430px;
+				margin: 16px auto 0;
+				line-height: 1.65;
+			}
+			.stat-num {
+				font-size: 1.9rem;
+				font-weight: 800;
+				color: #fff;
+				letter-spacing: -0.04em;
+			}
+			.stat-label {
+				font-size: 0.76rem;
+				color: var(--muted);
+				margin-top: 2px;
+			}
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="InferencePort AI | Run AI Models Locally & Explore Marketplace">
-    <meta name="twitter:description" content="Run AI models locally, explore Hugging Face Spaces, and discover AI tools through InferencePort's desktop interface.">
-    <meta name="twitter:image" content="https://inference.js.org/img/favicon.ico">
+			.section-tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				font-weight: 500;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--brand);
+				margin-bottom: 10px;
+			}
+			.section-title {
+				font-size: clamp(1.5rem, 3vw, 2.2rem);
+				font-weight: 800;
+				letter-spacing: -0.03em;
+				line-height: 1.15;
+				color: #fff;
+			}
+			.section-title .accent {
+				color: var(--brand);
+			}
+			.section-sub {
+				color: var(--muted);
+				font-size: 0.93rem;
+				max-width: 400px;
+				line-height: 1.65;
+			}
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+			.ip-card {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 14px;
+				padding: 22px;
+				height: 100%;
+				transition:
+					border-color 0.2s,
+					transform 0.2s;
+			}
+			.ip-card:hover {
+				border-color: var(--brand-border);
+				transform: translateY(-3px);
+			}
+			.ip-card.featured {
+				border-color: var(--brand-border);
+				background: linear-gradient(
+					135deg,
+					rgba(79, 124, 255, 0.07),
+					rgba(79, 124, 255, 0.02)
+				);
+			}
+			.feat-icon {
+				font-size: 1.4rem;
+				margin-bottom: 10px;
+			}
+			.feat-title {
+				font-weight: 700;
+				font-size: 0.95rem;
+				color: #fff;
+				margin-bottom: 6px;
+			}
+			.feat-body {
+				font-size: 0.83rem;
+				color: var(--muted);
+				line-height: 1.6;
+			}
 
-    <style>
-      :root {
-        --primary: #4f7cff;
-        --text-dark: #0f172a;
-        --muted: #64748b;
-      }
+			.model-row {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 12px;
+				padding: 14px 18px;
+				transition:
+					border-color 0.2s,
+					transform 0.2s;
+			}
+			.model-row:hover {
+				border-color: var(--brand-border);
+				transform: translateX(3px);
+			}
+			.model-row.featured {
+				border-color: var(--brand-border);
+				background: rgba(79, 124, 255, 0.06);
+			}
+			.model-icon {
+				width: 38px;
+				height: 38px;
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.1rem;
+				flex-shrink: 0;
+			}
+			.icon-blue {
+				background: rgba(79, 124, 255, 0.15);
+			}
+			.icon-cyan {
+				background: rgba(6, 182, 212, 0.15);
+			}
+			.icon-purple {
+				background: rgba(124, 58, 237, 0.15);
+			}
+			.icon-green {
+				background: rgba(16, 185, 129, 0.15);
+			}
+			.model-name {
+				font-weight: 700;
+				font-size: 0.88rem;
+				color: #fff;
+			}
+			.model-desc {
+				font-size: 0.75rem;
+				color: var(--muted);
+				margin-top: 1px;
+			}
+			.tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.58rem;
+				font-weight: 500;
+				padding: 3px 8px;
+				border-radius: 5px;
+				letter-spacing: 0.05em;
+				text-transform: uppercase;
+				white-space: nowrap;
+			}
+			.tag-cloud {
+				background: rgba(79, 124, 255, 0.12);
+				color: var(--brand);
+				border: 1px solid var(--brand-border);
+			}
+			.tag-fast {
+				background: rgba(6, 182, 212, 0.12);
+				color: #06b6d4;
+				border: 1px solid rgba(6, 182, 212, 0.25);
+			}
+			.tag-new {
+				background: rgba(124, 58, 237, 0.12);
+				color: #a78bfa;
+				border: 1px solid rgba(124, 58, 237, 0.25);
+			}
+			.tag-local {
+				background: rgba(16, 185, 129, 0.12);
+				color: #10b981;
+				border: 1px solid rgba(16, 185, 129, 0.25);
+			}
 
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
-        color: var(--text-dark);
-        background: #f8fafc;
-      }
+			.compare-box {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 16px;
+				overflow: hidden;
+				position: relative;
+			}
+			.compare-box::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 3px;
+				background: linear-gradient(
+					90deg,
+					var(--brand),
+					#7c3aed,
+					#06b6d4
+				);
+			}
+			.compare-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.compare-list li {
+				display: flex;
+				align-items: center;
+				gap: 9px;
+				padding: 10px 0;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+				font-size: 0.84rem;
+				color: var(--muted);
+			}
+			.compare-list li:last-child {
+				border-bottom: none;
+			}
+			.col-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				margin-bottom: 14px;
+			}
+			.col-dot {
+				display: inline-block;
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				margin-right: 6px;
+			}
+			.dot-cloud {
+				background: var(--brand);
+				box-shadow: 0 0 8px rgba(79, 124, 255, 0.6);
+			}
+			.dot-local {
+				background: #10b981;
+				box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+			}
 
-      .hero-gradient {
-        background: radial-gradient(
-          circle at 30% 30%,
-          #6d8cff,
-          #4f7cff,
-          #1e293b
-        );
-        color: white;
-      }
+			.plan-card {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 14px;
+				padding: 24px 20px;
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				position: relative;
+				transition:
+					border-color 0.2s,
+					transform 0.2s;
+			}
+			.plan-card:hover {
+				transform: translateY(-4px);
+				border-color: var(--brand-border);
+			}
+			.plan-card.popular {
+				border-color: var(--brand);
+				background: rgba(79, 124, 255, 0.06);
+			}
+			.popular-pill {
+				position: absolute;
+				top: -11px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--brand);
+				color: #fff;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				font-weight: 500;
+				padding: 3px 12px;
+				border-radius: 50px;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				white-space: nowrap;
+			}
+			.plan-name {
+				font-weight: 800;
+				font-size: 0.93rem;
+				color: #fff;
+			}
+			.plan-price {
+				font-size: 2rem;
+				font-weight: 800;
+				color: #fff;
+				letter-spacing: -0.04em;
+				line-height: 1;
+				margin: 16px 0 2px;
+			}
+			.plan-price sup {
+				font-size: 0.95rem;
+				vertical-align: super;
+				font-weight: 600;
+			}
+			.plan-period {
+				font-size: 0.74rem;
+				color: var(--muted);
+				margin-bottom: 16px;
+			}
+			.plan-hr {
+				border-color: rgba(255, 255, 255, 0.07);
+				margin: 14px 0;
+			}
+			.plan-section {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				color: var(--brand);
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				margin-bottom: 8px;
+			}
+			.plan-feature {
+				font-size: 0.81rem;
+				color: var(--muted);
+				display: flex;
+				align-items: center;
+				gap: 7px;
+				margin-bottom: 7px;
+			}
+			.plan-feature.hi {
+				color: #d6daea;
+			}
+			.btn-plan-primary {
+				background: var(--brand);
+				color: #fff;
+				border: none;
+				border-radius: 8px;
+				padding: 9px;
+				font-weight: 600;
+				font-size: 0.84rem;
+				width: 100%;
+				margin-top: auto;
+				transition: opacity 0.2s;
+			}
+			.btn-plan-primary:hover {
+				opacity: 0.85;
+				color: #fff;
+			}
+			.btn-plan-outline {
+				background: rgba(255, 255, 255, 0.05);
+				color: #d6daea;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 8px;
+				padding: 9px;
+				font-size: 0.84rem;
+				width: 100%;
+				margin-top: auto;
+				transition: background 0.2s;
+			}
+			.btn-plan-outline:hover {
+				background: rgba(255, 255, 255, 0.09);
+				color: #fff;
+			}
 
-      .hero-title {
-        letter-spacing: -1px;
-      }
+			.btn-brand {
+				background: var(--brand);
+				color: #fff;
+				border: none;
+				border-radius: 9px;
+				padding: 11px 26px;
+				font-weight: 600;
+				font-size: 0.9rem;
+				box-shadow: 0 0 24px rgba(79, 124, 255, 0.28);
+				transition:
+					transform 0.2s,
+					opacity 0.2s;
+			}
+			.btn-brand:hover {
+				transform: translateY(-2px);
+				opacity: 0.9;
+				color: #fff;
+			}
+			.btn-ghost {
+				background: rgba(255, 255, 255, 0.05);
+				color: #d6daea;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 9px;
+				padding: 10px 22px;
+				font-size: 0.9rem;
+				transition: background 0.2s;
+			}
+			.btn-ghost:hover {
+				background: rgba(255, 255, 255, 0.09);
+				color: #fff;
+			}
 
-      .hero-text {
-        color: #e2e8f0;
-        max-width: 520px;
-      }
+			footer {
+				border-top: 1px solid rgba(255, 255, 255, 0.07);
+				font-size: 0.81rem;
+				color: var(--muted);
+			}
+			footer a {
+				color: var(--muted);
+				text-decoration: none;
+			}
+			footer a:hover {
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg sticky-top">
+			<div class="container">
+				<a class="navbar-brand" href="index.html"
+					>InferencePort<span>AI</span></a
+				>
+				<button
+					class="navbar-toggler border-0"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#nav"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="nav">
+					<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+						<li class="nav-item">
+							<a class="nav-link active" href="index.html"
+								>Home</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="marketplace.html"
+								>Marketplace</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="lightning.html"
+								>Lightning</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="install.html">Install</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pricing.html">Pricing</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="security.html"
+								>Security</a
+							>
+						</li>
+						<li class="nav-item ms-2">
+							<a
+								class="nav-link nav-pill"
+								href="install.html#install"
+								>Get Started</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
-      .card {
-        border: none;
-        border-radius: 14px;
-        transition: 0.25s;
-      }
+		<section class="hero-section">
+			<div class="container">
+				<div class="hero-eyebrow">
+					<span class="pulse"></span> Cloud model access — now
+					available
+				</div>
+				<h1 class="hero-title">
+					AI Models, <span class="accent">Cloud-Powered</span><br />&
+					Locally Private.
+				</h1>
+				<p class="hero-subtitle">
+					Run frontier cloud models instantly, or keep everything on
+					your machine. One clean desktop app — your choice.
+				</p>
+				<div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+					<a href="install.html" class="btn btn-brand"
+						>Get InferencePort Free</a
+					>
+					<a href="marketplace.html" class="btn btn-ghost"
+						>Browse Models →</a
+					>
+				</div>
+				<div
+					class="mt-5 pt-4"
+					style="border-top: 1px solid rgba(255, 255, 255, 0.07)"
+				>
+					<div class="row justify-content-center g-4">
+						<div class="col-auto text-center">
+							<div class="stat-num">1,000</div>
+							<div class="stat-label">words / sec (cloud)</div>
+						</div>
+						<div class="col-auto text-center">
+							<div class="stat-num">3</div>
+							<div class="stat-label">platforms supported</div>
+						</div>
+						<div class="col-auto text-center">
+							<div class="stat-num">Free</div>
+							<div class="stat-label">to start</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-      .card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
-      }
+		<section class="py-5">
+			<div class="container">
+				<div class="row align-items-center g-5">
+					<div class="col-lg-5">
+						<div class="section-tag">☁ Cloud Models</div>
+						<h2 class="section-title mb-3">
+							Frontier models,<br /><span class="accent"
+								>no setup required.</span
+							>
+						</h2>
+						<p class="section-sub mb-4">
+							Access the world's most capable models through the
+							cloud — no GPU, no configuration. Just open the app
+							and start generating.
+						</p>
+						<div class="d-flex gap-2 flex-wrap">
+							<a href="install.html" class="btn btn-brand"
+								>Try Cloud Models</a
+							>
+							<a href="pricing.html" class="btn btn-ghost"
+								>See Pricing</a
+							>
+						</div>
+					</div>
+					<div class="col-lg-7">
+						<div class="d-flex flex-column gap-3">
+							<div class="model-row featured">
+								<div class="model-icon icon-blue">⚡</div>
+								<div class="flex-grow-1">
+									<div class="model-name">
+										Lightning Text v2
+									</div>
+									<div class="model-desc">
+										Up to 1,000 words/sec · low-latency
+										streaming
+									</div>
+								</div>
+								<span class="tag tag-fast">FASTEST</span>
+							</div>
+							<div class="model-row">
+								<div class="model-icon icon-cyan">🎨</div>
+								<div class="flex-grow-1">
+									<div class="model-name">
+										Lightning Image Turbo
+									</div>
+									<div class="model-desc">
+										Ultra-realistic images · sci-fi &
+										cinematic quality
+									</div>
+								</div>
+								<span class="tag tag-cloud">CLOUD</span>
+							</div>
+							<div class="model-row">
+								<div class="model-icon icon-purple">🎬</div>
+								<div class="flex-grow-1">
+									<div class="model-name">
+										Cloud Video Generation
+									</div>
+									<div class="model-desc">
+										High-quality AI video generation
+										on-demand
+									</div>
+								</div>
+								<span class="tag tag-new">NEW</span>
+							</div>
+							<div class="model-row">
+								<div class="model-icon icon-green">🖥</div>
+								<div class="flex-grow-1">
+									<div class="model-name">
+										Local Models (Ollama)
+									</div>
+									<div class="model-desc">
+										100% on-device · private · offline
+										capable
+									</div>
+								</div>
+								<span class="tag tag-local">LOCAL</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-      .card-text {
-        color: var(--muted);
-      }
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Everything Included</div>
+					<h2 class="section-title">Built for everyone.</h2>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-8">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">☁️</div>
+							<div class="feat-title">
+								Cloud-First Architecture
+							</div>
+							<p class="feat-body">
+								InferencePort's cloud tier connects you directly
+								to frontier models — no local hardware needed.
+								Get instant AI capabilities with zero setup:
+								authenticate and start generating across text,
+								image, video, and audio.
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🔐</div>
+							<div class="feat-title">Privacy-First Local</div>
+							<p class="feat-body">
+								Prefer to keep data on-device? Run any
+								Ollama-compatible model locally. Nothing leaves
+								your machine.
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">⚡</div>
+							<div class="feat-title">Lightning Fast</div>
+							<p class="feat-body">
+								Cloud text generation up to 1,000 words/sec with
+								optimized streaming pipelines.
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🌐</div>
+							<div class="feat-title">Cross-Platform</div>
+							<p class="feat-body">
+								Windows, macOS, and Linux — one download,
+								unified interface across all your machines.
+							</p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🤗</div>
+							<div class="feat-title">HuggingFace Spaces</div>
+							<p class="feat-body">
+								Browse and preview thousands of community AI
+								demos in the built-in spaces viewer.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-      .section-title {
-        font-weight: 700;
-        letter-spacing: -0.5px;
-      }
+		<section class="py-5">
+			<div class="container">
+				<div class="compare-box p-4 p-md-5">
+					<div class="section-tag">Your Choice</div>
+					<h2 class="section-title mb-4">
+						Cloud or Local — <span class="accent">you decide.</span>
+					</h2>
+					<div class="row g-4">
+						<div class="col-md-5">
+							<div class="col-label">
+								<span class="col-dot dot-cloud"></span>Cloud
+								Models
+							</div>
+							<ul class="compare-list">
+								<li>✦ No GPU or hardware required</li>
+								<li>✦ Instant access to frontier models</li>
+								<li>✦ Up to 1,000 words/sec throughput</li>
+								<li>✦ Auto-updated — always latest models</li>
+								<li>✦ Image, video & audio generation</li>
+							</ul>
+						</div>
+						<div
+							class="col-md-2 d-none d-md-flex align-items-center justify-content-center"
+						>
+							<span
+								style="
+									font-family:
+										&quot;JetBrains Mono&quot;, monospace;
+									font-size: 0.72rem;
+									color: var(--muted);
+								"
+								>vs</span
+							>
+						</div>
+						<div class="col-md-5">
+							<div class="col-label">
+								<span class="col-dot dot-local"></span>Local
+								Models
+							</div>
+							<ul class="compare-list">
+								<li>
+									✦ 100% private — nothing leaves your device
+								</li>
+								<li>✦ Works fully offline</li>
+								<li>✦ Unlimited local chat</li>
+								<li>✦ Full Ollama model compatibility</li>
+								<li>✦ Remote server connection supported</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-      .btn-primary {
-        background: var(--primary);
-        border: none;
-      }
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-5">
+					<div class="section-tag">Plans</div>
+					<h2 class="section-title">Scale when you're ready.</h2>
+					<p class="section-sub mx-auto mt-2">
+						Start free with generous limits. Upgrade for unlimited
+						cloud generation.
+					</p>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-3">
+						<div class="plan-card">
+							<div class="plan-name">Free</div>
+							<div class="plan-price">$0</div>
+							<div class="plan-period">forever</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 50 Cloud Chats / day
+							</div>
+							<div class="plan-feature">🖼️ 10 Images / day</div>
+							<div class="plan-feature">🎬 3 Videos / day</div>
+							<div class="plan-feature">🔊 1 Audio / week</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a
+								href="install.html"
+								class="btn btn-plan-outline mt-3"
+								>Get Started</a
+							>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="plan-card">
+							<div class="plan-name">AI Light</div>
+							<div class="plan-price"><sup>$</sup>9.99</div>
+							<div class="plan-period">per month</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 Unlimited Cloud Chat
+							</div>
+							<div class="plan-feature">🖼️ 50 Images / day</div>
+							<div class="plan-feature">🎬 10 Videos / day</div>
+							<div class="plan-feature">🔊 5 Audio / week</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a
+								href="pricing.html"
+								class="btn btn-plan-outline mt-3"
+								>Subscribe</a
+							>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="plan-card popular">
+							<div class="popular-pill">Most Popular</div>
+							<div class="plan-name">AI Core</div>
+							<div class="plan-price"><sup>$</sup>15.99</div>
+							<div class="plan-period">per month</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 Unlimited Cloud Chat
+							</div>
+							<div class="plan-feature hi">
+								🖼️ 150 Images / day
+							</div>
+							<div class="plan-feature">🎬 30 Videos / day</div>
+							<div class="plan-feature">🔊 25 Audio / week</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a
+								href="pricing.html"
+								class="btn btn-plan-primary mt-3"
+								>Subscribe</a
+							>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="plan-card">
+							<div class="plan-name">AI Professional</div>
+							<div class="plan-price"><sup>$</sup>99.99</div>
+							<div class="plan-period">per month</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 Unlimited Cloud Chat
+							</div>
+							<div class="plan-feature hi">
+								🖼️ Unlimited Images
+							</div>
+							<div class="plan-feature hi">
+								🎬 Unlimited Videos
+							</div>
+							<div class="plan-feature">🔊 75 Audio / week</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a
+								href="pricing.html"
+								class="btn btn-plan-outline mt-3"
+								>Subscribe</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-      .btn-primary:hover {
-        background: #3d63d8;
-      }
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Open Source</div>
+					<h2 class="section-title">Join the Community</h2>
+					<p class="section-sub mx-auto mt-2">
+						Collaborate, contribute, and explore new possibilities
+						with developers worldwide.
+					</p>
+				</div>
+				<div class="row justify-content-center g-3">
+					<div class="col-md-5">
+						<a
+							href="https://github.com/sharktide/InferencePort-ai"
+							class="ip-card d-block text-decoration-none"
+							style="color: inherit"
+						>
+							<div class="d-flex align-items-center gap-3">
+								<div style="font-size: 1.6rem">📦</div>
+								<div>
+									<div class="feat-title">
+										InferencePort App
+									</div>
+									<div class="feat-body">
+										The desktop application — open source on
+										GitHub.
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+					<div class="col-md-5">
+						<a
+							href="https://github.com/sharktide/InferencePort-web"
+							class="ip-card d-block text-decoration-none"
+							style="color: inherit"
+						>
+							<div class="d-flex align-items-center gap-3">
+								<div style="font-size: 1.6rem">🌐</div>
+								<div>
+									<div class="feat-title">
+										InferencePort Web
+									</div>
+									<div class="feat-body">
+										This website's source — contribute on
+										GitHub.
+									</div>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
 
-      .split-section .row {
-        max-width: 100%;
-        justify-content: space-around;
-      }
-      .repo-image {
-        margin: 10px;
-        border-radius: 12px;
-        transition: 0.2s;
-      }
+		<footer class="py-4">
+			<div class="container">
+				<div
+					class="d-flex flex-wrap justify-content-between align-items-center gap-3"
+				>
+					<span
+						>© 2026 Rihaan Meher |
+						<a
+							href="https://stats.uptimerobot.com/N1MpjMQC4U"
+							target="_blank"
+							>System Health</a
+						></span
+					>
+					<div class="d-flex gap-3 flex-wrap">
+						<a href="marketplace.html">Marketplace</a>
+						<a href="lightning.html">Lightning</a>
+						<a href="install.html">Install</a>
+						<a href="pricing.html">Pricing</a>
+						<a href="security.html">Security</a>
+						<a
+							href="https://inferenceport-ai.readthedocs.io"
+							target="_blank"
+							>Docs</a
+						>
+					</div>
+				</div>
+			</div>
+		</footer>
 
-      .repo-image:hover {
-        transform: scale(1.04);
-      }
-      a {
-        color: #257ea5;
-        text-decoration: none;
-      }
-    </style>
-
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-  </head>
-
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand fw-bold">InferencePort AI</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link active" href="index.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="marketplace.html">Marketplace</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="install.html">Install</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="security.html">Security</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- HERO -->
-
-    <section class="hero-gradient py-5">
-      <div class="container py-4">
-        <div class="row align-items-center">
-          <div class="col-lg-6">
-            <h1 class="display-4 fw-bold hero-title">
-               <span class="me-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  fill="orange"
-                  class="bi bi-lightning-fill lightning-bolt"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-                </svg>
-              </span> Run AI Models<br />
-              <span style="color: #c7d2fe">Directly From Your Desktop.</span>
-            </h1>
-
-            <p class="lead hero-text mt-3">
-              InferencePort makes it effortless to run, test, and share local AI
-              models and Hugging Face Spaces from a clean desktop interface.
-            </p>
-
-            <div class="mt-4">
-              <a href="install.html" class="btn btn-light btn-lg me-2">
-                Install Free
-              </a>
-
-              <a href="marketplace.html" class="btn btn-outline-light btn-lg">
-                Browse Marketplace
-              </a>
-            </div>
-          </div>
-
-          <div class="col-lg-6 text-center mt-5 mt-lg-0">
-            <img
-              src="img/examples/cucumber.png"
-              class="img-fluid rounded shadow-lg"
-              style="max-width: 480px"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FEATURES -->
-
-    <section id="features" class="py-5">
-      <div class="container">
-        <h2 class="text-center section-title mb-5">
-          Powerful AI Tools Built for <i>Everyone</i>
-        </h2>
-
-        <div class="row text-center g-4">
-          <div class="col-md-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">⚡ Lightning Fast</h5>
-                <p class="card-text">
-                  Experience instant image generation powered by optimized AI
-                  pipelines.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">🌐 Cross-Platform</h5>
-                <p class="card-text">
-                  Works seamlessly on Windows, macOS, and Linux with a unified
-                  interface.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">🔐 Security First</h5>
-                <p class="card-text">
-                  At InferencePort, security is taken very seriously.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">🤖 Run Local Models</h5>
-                <p class="card-text">
-                  Run and interact with local models hosted on your machine in a
-                  simple and organized manner.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">🤗 Browse Spaces</h5>
-                <p class="card-text">
-                  Discover and preview Hugging Face Spaces and community demos.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title">💻 Open Source</h5>
-                <p class="card-text">
-                  Transparent community-driven development.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- LIGHTNING -->
-
-    <section class="py-5 text-center">
-      <div class="container">
-        <h2 class="fw-bold mb-3">Lightning Models ⚡</h2>
-
-        <p class="lead text-muted mb-4">
-          Ultra-fast AI models capable of generating text at 1000 words/sec and
-          producing high-quality images in seconds.
-        </p>
-
-        <a href="lightning.html" class="btn btn-primary btn-lg px-5">
-          Try Lightning Models
-        </a>
-      </div>
-    </section>
-
-    <!-- DOCS -->
-
-    <section id="docs" class="py-5" style="background: #e7ebf1">
-      <div class="container text-center">
-        <h2 class="fw-bold mb-3">📘 Read the Docs</h2>
-
-        <p class="lead mb-4">
-          Explore guides, API references, and integration examples.
-        </p>
-
-        <a
-          href="https://inferenceport-ai.readthedocs.io"
-          target="_blank"
-          class="btn btn-outline-primary btn-lg"
-        >
-          Visit Documentation
-        </a>
-      </div>
-      </section>
-      <section class="py-5 text-center">
-        <div class="split-section">
-          <div class="row text-center">
-            <div class="col-md-6 mb-4 mb-md-0">
-              <h3 class="fw-bold">Download InferencePort</h3>
-
-              <p class="text-muted">
-                Windows, macOS and Linux builds with GPU acceleration.
-              </p>
-
-              <button onclick='location.href="install.html"' class="btn btn-primary btn-lg">
-                Download Now →
-              </button>
-            </div>
-
-            <div class="col-md-6">
-              <h3 class="fw-bold">Explore the Marketplace</h3>
-
-              <p class="text-muted">
-                Browse models, Hugging Face Spaces and community demos.
-              </p>
-
-              <button onclick='location.href="marketplace.html"' class="btn btn-success btn-lg">
-                Open Marketplace →
-              </button>
-            </div>
-          </div>
-      </div>
-    </section>
-
-    <!-- COMMUNITY -->
-
-    <section id="community" class="py-5">
-      <div class="container text-center">
-        <h2 class="fw-bold">Join the Community</h2>
-
-        <p>Collaborate, contribute, and explore new possibilities.</p>
-
-        <a href="https://github.com/sharktide/InferencePort-ai">
-          <img
-            src="https://readme-stats-fast.vercel.app/api/pin/?username=sharktide&repo=InferencePort-ai&show_owner=true"
-            class="repo-image"
-          />
-        </a>
-
-        <a href="https://github.com/sharktide/InferencePort-web">
-          <img
-            src="https://readme-stats-fast.vercel.app/api/pin/?username=sharktide&repo=InferencePort-web&show_owner=true"
-            class="repo-image"
-          />
-        </a>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-
-    <footer class="bg-dark text-white text-center py-3">
-      <small>
-        © 2026 Rihaan Meher |
-        <a href="https://stats.uptimerobot.com/N1MpjMQC4U">
-          System Health
-        </a>
-      </small>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>

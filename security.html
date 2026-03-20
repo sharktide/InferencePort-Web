@@ -1,394 +1,909 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Security & Privacy — InferencePort AI</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="styles/main.css" />
+		<style>
+			:root {
+				--brand: #4f7cff;
+				--brand-dim: rgba(79, 124, 255, 0.12);
+				--brand-border: rgba(79, 124, 255, 0.28);
+				--surface: #0f1525;
+				--muted: #8b93a7;
+			}
+			body {
+				background: #080d1a;
+				font-family: "Inter", sans-serif;
+				color: #d6daea;
+			}
 
-<head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>InferencePort AI — Run models locally</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<link rel="icon" type="image/x-icon" href="img/favicon.ico">
-	<script src="scripts/theme.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-	<meta name="description"
-		content="InferencePort AI — a lightweight app and website for running local LLMs and exploring Hugging Face Spaces. Preview, run and share models from your desktop." />
-    <style>
-		:root {
-			--primary: #4f7cff;
-			--primary-soft: #eef2ff;
-			--text-dark: #0f172a;
-			--muted: #64748b;
-		}
+			.navbar {
+				background: rgba(8, 13, 26, 0.92) !important;
+				backdrop-filter: blur(12px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+			}
+			.navbar-brand {
+				font-weight: 800;
+				font-size: 1.1rem;
+				letter-spacing: -0.02em;
+				color: #fff !important;
+			}
+			.navbar-brand span {
+				color: var(--brand);
+			}
+			.nav-link {
+				color: var(--muted) !important;
+				font-size: 0.88rem;
+			}
+			.nav-link:hover,
+			.nav-link.active {
+				color: #fff !important;
+			}
+			.nav-pill {
+				background: var(--brand) !important;
+				color: #fff !important;
+				border-radius: 7px !important;
+				padding: 6px 16px !important;
+				font-weight: 600 !important;
+			}
 
-		body {
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
-			color: var(--text-dark);
-			background: #f8fafc;
-		}
+			.page-hero {
+				padding: 110px 0 56px;
+				text-align: center;
+				background: radial-gradient(
+					ellipse 60% 30% at 50% 0%,
+					rgba(79, 124, 255, 0.13) 0%,
+					transparent 60%
+				);
+			}
+			.section-tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				font-weight: 500;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--brand);
+				margin-bottom: 10px;
+			}
+			.page-title {
+				font-size: clamp(1.8rem, 4vw, 3rem);
+				font-weight: 800;
+				letter-spacing: -0.04em;
+				line-height: 1.1;
+				color: #fff;
+			}
+			.page-title .accent {
+				color: var(--brand);
+			}
+			.page-sub {
+				font-size: 1rem;
+				color: var(--muted);
+				max-width: 420px;
+				margin: 14px auto 0;
+				line-height: 1.65;
+			}
 
-		.hero-gradient {
-			background: radial-gradient(circle at 30% 30%, #6d8cff, #4f7cff, #1e293b);
-			color: white;
-		}
+			/* Sidebar TOC */
+			.toc {
+				position: sticky;
+				top: 80px;
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 12px;
+				padding: 20px;
+			}
+			.toc-title {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.66rem;
+				color: var(--muted);
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				margin-bottom: 14px;
+			}
+			.toc-link {
+				display: block;
+				font-size: 0.82rem;
+				color: var(--muted);
+				text-decoration: none;
+				padding: 6px 0;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+				transition: color 0.15s;
+			}
+			.toc-link:last-child {
+				border-bottom: none;
+			}
+			.toc-link:hover {
+				color: #fff;
+			}
+			.toc-link.sub {
+				padding-left: 12px;
+				font-size: 0.78rem;
+			}
 
-		.hero-title {
-			letter-spacing: -1px;
-		}
+			/* Doc content */
+			.doc-section {
+				margin-bottom: 48px;
+			}
+			.doc-section h2 {
+				font-size: 1.25rem;
+				font-weight: 800;
+				color: #fff;
+				letter-spacing: -0.02em;
+				margin-bottom: 4px;
+				padding-top: 8px;
+			}
+			.doc-section h3 {
+				font-size: 1rem;
+				font-weight: 700;
+				color: #fff;
+				margin-top: 20px;
+				margin-bottom: 6px;
+			}
+			.doc-section p {
+				font-size: 0.88rem;
+				color: #b0b8cc;
+				line-height: 1.75;
+				margin-bottom: 12px;
+			}
+			.doc-section ul {
+				font-size: 0.88rem;
+				color: #b0b8cc;
+				line-height: 1.75;
+				padding-left: 20px;
+				margin-bottom: 12px;
+			}
+			.doc-section ul li {
+				margin-bottom: 6px;
+			}
+			.doc-section strong {
+				color: #d6daea;
+			}
+			.doc-section a {
+				color: var(--brand);
+				text-decoration: none;
+			}
+			.doc-section a:hover {
+				text-decoration: underline;
+			}
+			.doc-section hr {
+				border-color: rgba(255, 255, 255, 0.07);
+				margin: 32px 0;
+			}
+			.doc-section .date-tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.7rem;
+				color: var(--muted);
+				background: rgba(255, 255, 255, 0.04);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 5px;
+				padding: 3px 9px;
+				display: inline-block;
+				margin-bottom: 16px;
+			}
 
-		.hero-text {
-			color: #e2e8f0;
-			max-width: 520px;
-		}
-    </style>
-</head>
+			/* Alert boxes */
+			.doc-alert {
+				border-radius: 10px;
+				padding: 14px 18px;
+				font-size: 0.84rem;
+				line-height: 1.6;
+				margin: 16px 0;
+			}
+			.doc-alert.info {
+				background: rgba(79, 124, 255, 0.08);
+				border: 1px solid rgba(79, 124, 255, 0.22);
+				color: #93b4ff;
+			}
+			.doc-alert.warn {
+				background: rgba(251, 191, 36, 0.07);
+				border: 1px solid rgba(251, 191, 36, 0.2);
+				color: #fcd34d;
+			}
+			.doc-alert.danger {
+				background: rgba(239, 68, 68, 0.07);
+				border: 1px solid rgba(239, 68, 68, 0.2);
+				color: #fca5a5;
+			}
+			.doc-alert strong {
+				color: inherit;
+			}
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand fw-bold">InferencePort AI</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="marketplace.html">Marketplace</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="install.html">Install</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="security.html">Security</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <section class="hero-gradient text-white py-5">
-      <div class="container hero-container">
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center text-md-start">
-            <h1
-              class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title"
-              style="color: #abc6ee !important"
-            >
-              <span class="me-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  fill="orange"
-                  class="bi bi-lightning-fill lightning-bolt"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-                </svg>
-              </span>
-              InferencePort AI
-            </h1>
-            <p class="lead mt-3 hero-text">
-              InferencePort makes it effortless to run, test, and share local AI models and Hugging Face Spaces from a clean desktop interface.
-            </p>
-            <a href="install.html" class="btn btn-light btn-lg mt-3 hero-btn"
-              >Install Now</a
-            >
-          </div>
-          <div class="col-md-6 text-center mt-4 mt-md-0 hero-image">
-            <img
-              src="img/examples/cucumber.png"
-              alt="App Screenshot"
-              class="img-fluid rounded shadow-lg"
-              style="width: 425px; height: 225px"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+			/* Contact card */
+			.contact-card {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 12px;
+				padding: 18px 20px;
+				margin-bottom: 10px;
+				display: flex;
+				align-items: center;
+				gap: 14px;
+			}
+			.contact-icon {
+				font-size: 1.2rem;
+				flex-shrink: 0;
+			}
+			.contact-label {
+				font-size: 0.78rem;
+				color: var(--muted);
+				margin-bottom: 2px;
+			}
+			.contact-val {
+				font-size: 0.84rem;
+				color: #d6daea;
+			}
+			.contact-val a {
+				color: var(--brand);
+				text-decoration: none;
+			}
+			.contact-val a:hover {
+				text-decoration: underline;
+			}
 
-	<main style="padding: 40px; max-width: 800px; margin: auto;">
-		<h1 id="terms-of-service">Terms of Service</h1>
-		<p><strong>Last updated:</strong> 23 Febuary 2026, 05:23 PM EST</p>
-		<p>These Terms of Service (&quot;Terms&quot;) govern your use of <strong>InferencePort AI</strong> (the
-			&quot;Application&quot;), developed by <strong>Rihaan Meher</strong> (the &quot;Developer&quot;). By
-			installing, accessing, or using the Application, you agree to these Terms. If you do not agree, do not use
-			the Application.</p>
-		<hr>
-		<h2 id="1-nature-of-the-application">1. Nature of the Application</h2>
-		<p>InferencePort AI is a desktop application that allows users to run <strong>locally installed generative
-				artificial intelligence models</strong> on their own devices. The Application does <strong>not</strong>
-			require the Developer to operate servers for AI inference, and AI-generated content is produced
-			<strong>entirely on the user’s device</strong>.
-		</p>
-		<p>The Developer does not control, monitor, review, filter, moderate, or store any AI-generated content produced
-			by the Application, unless explicity shared using report methods or the chat sync feature.</p>
-		<hr>
-		<h2 id="2-ai-generated-content-disclaimer">2. AI-Generated Content Disclaimer</h2>
-		<p>The Application enables the use of third-party and open-source AI models. These models may generate content
-			that is inaccurate, misleading, offensive, explicit, inappropriate, or otherwise harmful.</p>
-		<p>You acknowledge and agree that:</p>
-		<ul>
-			<li>All AI-generated content is produced automatically by models selected and executed by you</li>
-			<li>The Developer does not review, approve, or endorse any generated content</li>
-			<li>The Developer has no ability to prevent or alter specific outputs generated by local models</li>
-		</ul>
-		<p>You are solely responsible for how you interpret, use, share, or rely on any AI-generated content.</p>
-		<hr>
-		<h2 id="3-no-warranties">3. No Warranties</h2>
-		<p>THE APPLICATION AND ALL AI-GENERATED CONTENT ARE PROVIDED <strong>&quot;AS IS&quot;</strong> AND
-			<strong>&quot;AS AVAILABLE&quot;</strong>, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR
-			STATUTORY.
-		</p>
-		<p>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE DEVELOPER DISCLAIMS ALL WARRANTIES, INCLUDING BUT NOT
-			LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, ACCURACY,
-			RELIABILITY, AND SAFETY OF CONTENT.</p>
-		<hr>
-		<h2 id="4-limitation-of-liability">4. Limitation of Liability</h2>
-		<p>TO THE MAXIMUM EXTENT PERMITTED BY LAW:</p>
-		<ul>
-			<li>THE DEVELOPER SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL,
-				EXEMPLARY, OR PUNITIVE DAMAGES</li>
-			<li>THIS INCLUDES, WITHOUT LIMITATION, DAMAGES ARISING FROM AI-GENERATED CONTENT, USER PROMPTS, MODEL
-				BEHAVIOR, OR THIRD-PARTY MODELS</li>
-			<li>THE DEVELOPER SHALL NOT BE LIABLE FOR DATA LOSS, REPUTATIONAL HARM, PERSONAL INJURY, LEGAL CONSEQUENCES,
-				OR ANY OTHER DAMAGES RESULTING FROM USE OF THE APPLICATION</li>
-		</ul>
-		<p>YOU ASSUME ALL RISKS ASSOCIATED WITH THE USE OF THE APPLICATION AND ANY GENERATED OUTPUT.</p>
-		<hr>
-		<h2 id="5-user-responsibility">5. User Responsibility</h2>
-		<p>You agree that you are solely responsible for:</p>
-		<ul>
-			<li>Selecting and configuring AI models</li>
-			<li>Ensuring compliance with applicable laws and regulations</li>
-			<li>Evaluating the accuracy, legality, and appropriateness of AI-generated content</li>
-			<li>Any actions taken based on AI-generated outputs</li>
-		</ul>
-		<p>The Application is intended for <strong>informational and experimental purposes only</strong> and must not be
-			relied upon as professional, legal, medical, or financial advice.</p>
-		<hr>
-		<h2 id="6-third-party-software-and-open-source">6. Third-Party Software and Open Source</h2>
-		<p>The Application incorporates third-party software and open-source components, including but not limited to AI
-			models and runtimes. Such components are governed by their own respective licenses.</p>
-		<p>The Application itself is licensed under the <strong>Apache License, Version 2.0</strong>, which is
-			incorporated by reference. In the event of a conflict between these Terms and an open-source license, the
-			open-source license shall govern with respect to the covered components.</p>
-		<hr>
-		<h2 id="7-no-monitoring-or-moderation">7. No Monitoring or Moderation</h2>
-		<p>The Developer does not, unless used for in-app functions:</p>
-		<ul>
-			<li>Monitor user activity</li>
-			<li>Collect or store prompts or generated content</li>
-			<li>Moderate or filter AI outputs</li>
-			<li>Provide real-time content safeguards</li>
-		</ul>
-		<p>Any reporting or feedback provided by users is used solely to improve documentation, disclosures, or
-			application design.</p>
-		<hr>
-		<h2 id="8-reporting-inappropriate-content">8. Reporting Inappropriate Content</h2>
-		<p>If you encounter AI-generated content that you believe is inappropriate or harmful, you may report your
-			concerns to the Developer using the support contact provided in the Application or Store listing.</p>
-		<p>Reports do not require submission of prompts or generated content, and the Developer does not request or
-			collect such data.</p>
-		<hr>
-		<h2 id="9-termination">9. Termination</h2>
-		<p>The Developer reserves the right to modify, suspend, or discontinue the Application at any time without
-			notice. These Terms remain effective even after discontinuation.</p>
-		<hr>
-		<h2 id="10-governing-law">10. Governing Law</h2>
-		<p>These Terms shall be governed by and construed in accordance with the laws of the applicable jurisdiction,
-			without regard to conflict of law principles.</p>
-		<hr>
-		<h2 id="11-changes-to-these-terms">11. Changes to These Terms</h2>
-		<p>The Developer may update these Terms from time to time. Continued use of the Application after changes
-			constitutes acceptance of the revised Terms.</p>
-		<hr>
-		<h2 id="12-contact">12. Contact</h2>
-		<p>For support or inquiries, please contact the Developer using the support information provided in the <a
-				href="https://inferenceportai.vercel.app/security.html" target="_blank">Privacy Policy</a>.</p>
-		<hr>
-		<p>By using InferencePort AI, you acknowledge that you have read, understood, and agreed to these Terms of
-			Service. We reserve the right to change these terms at any time without any further notice.</p>
+			footer {
+				border-top: 1px solid rgba(255, 255, 255, 0.07);
+				font-size: 0.81rem;
+				color: var(--muted);
+			}
+			footer a {
+				color: var(--muted);
+				text-decoration: none;
+			}
+			footer a:hover {
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg sticky-top">
+			<div class="container">
+				<a class="navbar-brand" href="index.html"
+					>InferencePort<span>AI</span></a
+				>
+				<button
+					class="navbar-toggler border-0"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#nav"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="nav">
+					<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="marketplace.html"
+								>Marketplace</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="lightning.html"
+								>Lightning</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="install.html">Install</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pricing.html">Pricing</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" href="security.html"
+								>Security</a
+							>
+						</li>
+						<li class="nav-item ms-2">
+							<a
+								class="nav-link nav-pill"
+								href="install.html#install"
+								>Get Started</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
-		<not-a-tag id="privacy">
-		  <h1>Security & Privacy Policy</h1>
-		  <p><strong>Last updated:</strong> 16 February 2026</p>
-		
-		  <h2>Account Requirements</h2>
-		  <p>
-		    InferencePort AI <strong>does not require users to create an account</strong>.
-		    The application can be used without signing in.
-		  </p>
-		  <p>
-		    Signing in is optional and is only required if you choose to enable
-		    <strong>certain features</strong> such as chat syncing or server connecting.
-		  </p>
-		
-		  <h2>Chat Data & Syncing</h2>
-		  <p>
-		    By default, all chats are stored <strong>locally on your device</strong>.
-		    When you are <strong>not signed in</strong>, no chat data is transmitted to or stored on our servers.
-		  </p>
-		  <p>
-		    If you <strong>sign in and explicitly enable chat syncing</strong>, your chat messages and
-		    conversation metadata are collected and stored securely in order to synchronize your chats
-		    across devices.
-		  </p>
-		  <ul>
-		    <li>Chat syncing is <strong>disabled by default</strong></li>
-		    <li>Chats are only collected when <strong>both signed in AND syncing is enabled</strong></li>
-		    <li>You may disable chat syncing at any time, but this may not delete any current data.</li>
-		    <li>To request a deletion of your chats, please email <a href="mailto:inferenceport-auth@vorugaluav.resend.app">inferenceport-auth@vorugaluav.resend.app</a></li>
-		  </ul>
-			<ul>
-				<li>InferencePort Lightning is a cloud service that provides image and text generation to our users</li>
-				<li>Requests to this service, including but not limtied to, chat messages and sessions, may be processed
-					on our or our vendors/suppliers servers. We aim for zero-data retention, but we cannot garuntee this.
-					Please read and acknowledge the terms and prvacy policies of Pollinations.AI, Groq, and Cerebras AI, or
-					do not use this app
-				</li>
-			</ul>
-		
-		  <h2>Data Collected When Signing In</h2>
-		  <p>If you choose to create an account, we may collect:</p>
-		  <ul>
-		    <li>Email address (for authentication and account recovery)</li>
-		    <li>Name</li>
-		    <li>Encrypted authentication credentials</li>
-		    <li>Optional username (public-facing, not encrypted)</li>
-		    <li>Other data collected by signing in with a third-party authentication provider</li>
-		  </ul>
-		  <p>
-		    Usernames are optional and visible to others where applicable.
-		    Do not use personally identifying information in your username.
-		  </p>
-		
-		  <h2>Open Source Transparency</h2>
-		  <p>
-		    InferencePort AI is fully open source and available on
-		    <a href="https://github.com/sharktide/InferencePort-AI" target="_blank">GitHub</a>.
-		    This allows independent auditing, verification, and community contribution.
-		  </p>
-		
-		  <h2>Third-Party Services</h2>
-		  <p>
-		    InferencePort AI <strong>does not</strong> use third-party analytics, advertising, or tracking services by default.
-		  </p>
-		  <p>
-		    The application may interact with:
-		  </p>
-		  <ul>
-		    <li>Hugging Face Spaces</li>
-		    <li>User-configured or user-added websites</li>
-		    <li>Lightning AI models may optionally use external providers such as:
-		      <ul>
-		        <li><a href="https://pollinations.ai/privacy" target="_blank">Pollinations.ai Privacy Policy</a></li>
-		        <li><a href="https://www.groq.com/privacy" target="_blank">Groq Cloud Privacy Policy</a></li>
-		        <li><a href="https://www.cerebras.net/privacy" target="_blank">Cerebras Privacy Policy</a></li>
-		      </ul>
-		    </li>
-		  </ul>
-		  <p>
-		    Data transmitted to these services is always user-initiated. Please review their respective privacy policies.
-		  </p>
-		
-		  <h2>Data Handling Outside the U.S.</h2>
-		  <p>
-		    Some AI services and models may process data on servers located outside the United States.
-		    By using these services, you consent to the transfer, processing, and storage of data in
-		    foreign jurisdictions, which may have different data protection laws than your country of residence.
-		  </p>
-		  <p>
-		    We take reasonable measures to ensure that any data sent to external providers complies
-		    with applicable data protection laws, but InferencePort AI is not responsible for the privacy
-		    practices of third-party services.
-		  </p>
-		
-		  <h2>Security Practices</h2>
-		  <ul>
-		    <li>All code is reviewed and tested before release</li>
-		    <li>Dependencies are regularly updated to address vulnerabilities</li>
-		    <li>Sensitive data is encrypted where applicable</li>
-		    <li>Responsible disclosure of vulnerabilities is encouraged via email to <a href="mailto:inferenceport-security@vorugaluav.resend.app">inferenceport-security@vorugaluav.resend.app</a></li>
-		  </ul>
-		
-		  <h2>Contact</h2>
-		  <p>
-		    Security concerns, contact:
-		    <a href="mailto:inferenceport-security@vorugaluav.resend.app" style="color: var(--blue)">
-		      inferenceport-security@vorugaluav.resend.app
-		    </a>
-		  </p>
-		  <p>
-		    Please include the subject line "InferencePort AI Security Disclosure". For general questions, raise an issue on
-		    <a href="https://github.com/sharktide/inferenceport-ai/issues/new" target="_blank">GitHub</a> or email
-		    <strong>inferenceport-help@vorugaluav.resend.app</strong> with subject "InferencePort AI General Question".
-		    PLEASE DO NOT DISCLOSE SECURITY VULNERABILITIES ON GITHUB.
-		  </p>
-		
-		  <p>
-		    Reports and questions are generally reviewed within 1–2 weeks. Individual responses are not guaranteed.
-		  </p>
-		
-		  <p>
-		    We reserve the right to update this policy at any time. Changes will be reflected on this page.
-		  </p>
-		</not-a-tag>
+		<div class="page-hero">
+			<div class="container">
+				<div class="section-tag">Legal & Privacy</div>
+				<h1 class="page-title">
+					Security, Privacy<br /><span class="accent">& Terms</span>
+				</h1>
+				<p class="page-sub">
+					Everything you need to know about how InferencePort handles
+					your data and what you agree to by using it.
+				</p>
+			</div>
+		</div>
 
-		<br />
-		<not-a-tag id="reporting">
-			<h2>Reporting Inappropriate AI Content</h2>
-			<p>
-				If you encounter AI-generated content that is inappropriate, harmful, or violates
-				applicable laws or platform guidelines, you may report it by emailing:
-			</p>
+		<section class="pb-5">
+			<div class="container">
+				<div class="row g-4">
+					<!-- Sidebar TOC -->
+					<div class="col-lg-3 d-none d-lg-block">
+						<div class="toc">
+							<div class="toc-title">On this page</div>
+							<a class="toc-link" href="#privacy"
+								>Security & Privacy</a
+							>
+							<a class="toc-link sub" href="#account"
+								>Account Requirements</a
+							>
+							<a class="toc-link sub" href="#chat-data"
+								>Chat Data</a
+							>
+							<a class="toc-link sub" href="#data-collected"
+								>Data Collected</a
+							>
+							<a class="toc-link sub" href="#third-party"
+								>Third-Party Services</a
+							>
+							<a class="toc-link sub" href="#security-practices"
+								>Security Practices</a
+							>
+							<a class="toc-link sub" href="#contact">Contact</a>
+							<a class="toc-link" href="#tos">Terms of Service</a>
+							<a class="toc-link sub" href="#nature"
+								>1. Nature of App</a
+							>
+							<a class="toc-link sub" href="#disclaimer"
+								>2. AI Disclaimer</a
+							>
+							<a class="toc-link sub" href="#warranties"
+								>3. No Warranties</a
+							>
+							<a class="toc-link sub" href="#liability"
+								>4. Liability</a
+							>
+							<a class="toc-link sub" href="#responsibility"
+								>5. User Responsibility</a
+							>
+							<a class="toc-link sub" href="#opensource"
+								>6. Open Source</a
+							>
+							<a class="toc-link sub" href="#reporting"
+								>8. Reporting</a
+							>
+							<a class="toc-link" href="#contact-cards"
+								>Contact Us</a
+							>
+						</div>
+					</div>
 
-			<a href="mailto:inferenceport-security@vorugaluav.resend.app" style="color: var(--blue)">
-				inferenceport-reporting@vorugaluav.resend.app
-			</a>
+					<!-- Main content -->
+					<div class="col-lg-9">
+						<!-- Privacy -->
+						<div class="doc-section" id="privacy">
+							<div class="section-tag">
+								Security & Privacy Policy
+							</div>
+							<h2>Security &amp; Privacy Policy</h2>
+							<span class="date-tag"
+								>Last updated: 16 February 2026</span
+							>
 
-			<p>
-				This email address is monitored for content safety and abuse reports.
-				It is not intended for general support inquiries. Please include the exact
-				subject line "InferencePort AI inappropriate Content Disclosure". Reports
-				without this may not be reviewed
-			</p>
+							<div id="account">
+								<h3>Account Requirements</h3>
+								<p>
+									InferencePort AI
+									<strong
+										>does not require users to create an
+										account</strong
+									>. The application can be used without
+									signing in. Signing in is optional and is
+									only required if you choose to enable
+									certain features such as chat syncing or
+									server connecting.
+								</p>
+							</div>
 
-			<h3>Review & Enforcement Process</h3>
-			<p>
-				All reports are reviewed at our discretion. Upon review, we may:
-			</p>
-			<ul>
-				<li>Remove or restrict access to the reported content</li>
-				<li>Adjust safety filters, prompts, or model configurations</li>
-				<li>Disable access to specific features or models</li>
-				<li>Take further action as required by law</li>
-			</ul>
+							<div id="chat-data">
+								<h3>Chat Data &amp; Syncing</h3>
+								<p>
+									By default, all chats are stored
+									<strong>locally on your device</strong>.
+									When you are not signed in, no chat data is
+									transmitted to or stored on our servers.
+								</p>
+								<p>
+									If you sign in and explicitly enable chat
+									syncing, your chat messages and conversation
+									metadata are collected and stored securely
+									to synchronize your chats across devices.
+								</p>
+								<ul>
+									<li>
+										Chat syncing is
+										<strong>disabled by default</strong>
+									</li>
+									<li>
+										Chats are only collected when
+										<strong
+											>both signed in AND syncing is
+											enabled</strong
+										>
+									</li>
+									<li>
+										You may disable chat syncing at any
+										time, but this may not delete existing
+										data
+									</li>
+									<li>
+										To request deletion of your chats, email
+										<a
+											href="mailto:inferenceport-auth@vorugaluav.resend.app"
+											>inferenceport-auth@vorugaluav.resend.app</a
+										>
+									</li>
+								</ul>
+								<div class="doc-alert info">
+									<strong>☁ Lightning / Cloud Models:</strong>
+									Requests to InferencePort Lightning —
+									including chat messages and sessions — may
+									be processed on our or our vendors' servers.
+									We aim for zero-data retention but cannot
+									guarantee it. Please read the privacy
+									policies of
+									<a
+										href="https://pollinations.ai/privacy"
+										target="_blank"
+										>Pollinations.AI</a
+									>,
+									<a
+										href="https://www.groq.com/privacy"
+										target="_blank"
+										>Groq</a
+									>, and
+									<a
+										href="https://www.cerebras.net/privacy"
+										target="_blank"
+										>Cerebras AI</a
+									>
+									before using cloud features.
+								</div>
+							</div>
 
-			<h3>Communication & Abuse Handling</h3>
-			<p>
-				Individual responses are not guaranteed.
-				We reserve the right to ignore, filter, or block communications that are abusive,
-				malicious, or submitted in bad faith.
-			</p>
+							<div id="data-collected">
+								<h3>Data Collected When Signing In</h3>
+								<p>
+									If you choose to create an account, we may
+									collect:
+								</p>
+								<ul>
+									<li>
+										Email address (for authentication and
+										account recovery)
+									</li>
+									<li>Name</li>
+									<li>
+										Encrypted authentication credentials
+									</li>
+									<li>
+										Optional username (public-facing, not
+										encrypted)
+									</li>
+									<li>
+										Other data collected by third-party
+										authentication providers
+									</li>
+								</ul>
+								<p>
+									Do not use personally identifying
+									information in your username.
+								</p>
+							</div>
 
-			<p>
-				Reports are generally reviewed within a reasonable timeframe, typically
-				<strong>1-2 weeks</strong>. However, this may change and is not guaranteed.
-			</p>
-		</not-a-tag>
-	</main>
-  <footer class="bg-dark text-white text-center py-3">
-        <small>© 2026 Rihaan Meher | <a href="https://stats.uptimerobot.com/N1MpjMQC4U">System Health</a></small>
-  </footer>
+							<div id="third-party">
+								<h3>Third-Party Services</h3>
+								<p>
+									InferencePort AI
+									<strong>does not</strong> use third-party
+									analytics, advertising, or tracking services
+									by default. The application may interact
+									with:
+								</p>
+								<ul>
+									<li>Hugging Face Spaces</li>
+									<li>
+										User-configured or user-added websites
+									</li>
+									<li>
+										Lightning AI models may optionally use:
+										<a
+											href="https://pollinations.ai/privacy"
+											target="_blank"
+											>Pollinations.ai</a
+										>,
+										<a
+											href="https://www.groq.com/privacy"
+											target="_blank"
+											>Groq Cloud</a
+										>,
+										<a
+											href="https://www.cerebras.net/privacy"
+											target="_blank"
+											>Cerebras</a
+										>
+									</li>
+								</ul>
+								<p>
+									Data transmitted to these services is always
+									user-initiated. Some services may process
+									data on servers outside the United States.
+								</p>
+							</div>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+							<div id="security-practices">
+								<h3>Security Practices</h3>
+								<ul>
+									<li>
+										All code is reviewed and tested before
+										release
+									</li>
+									<li>
+										Dependencies are regularly updated to
+										address vulnerabilities
+									</li>
+									<li>
+										Sensitive data is encrypted where
+										applicable
+									</li>
+									<li>
+										InferencePort is
+										<strong>fully open source</strong> —
+										independently auditable on
+										<a
+											href="https://github.com/sharktide/InferencePort-AI"
+											target="_blank"
+											>GitHub</a
+										>
+									</li>
+								</ul>
+							</div>
 
+							<div id="contact">
+								<h3>Contact</h3>
+								<p>
+									For security concerns, email
+									<a
+										href="mailto:inferenceport-security@vorugaluav.resend.app"
+										>inferenceport-security@vorugaluav.resend.app</a
+									>
+									with subject line
+									<strong
+										>"InferencePort AI Security
+										Disclosure"</strong
+									>.
+								</p>
+								<div class="doc-alert danger">
+									<strong
+										>⚠ Do not disclose security
+										vulnerabilities on GitHub.</strong
+									>
+									Use the email above only.
+								</div>
+								<p>
+									For general questions, open a
+									<a
+										href="https://github.com/sharktide/inferenceport-ai/issues/new"
+										target="_blank"
+										>GitHub issue</a
+									>
+									or email
+									<a
+										href="mailto:inferenceport-help@vorugaluav.resend.app"
+										>inferenceport-help@vorugaluav.resend.app</a
+									>
+									with subject
+									<strong
+										>"InferencePort AI General
+										Question"</strong
+									>. Reports are generally reviewed within 1–2
+									weeks.
+								</p>
+							</div>
+						</div>
+
+						<hr />
+
+						<!-- ToS -->
+						<div class="doc-section" id="tos">
+							<div class="section-tag">Terms of Service</div>
+							<h2>Terms of Service</h2>
+							<span class="date-tag"
+								>Last updated: 23 February 2026</span
+							>
+							<p>
+								These Terms of Service ("Terms") govern your use
+								of <strong>InferencePort AI</strong> (the
+								"Application"), developed by
+								<strong>Rihaan Meher</strong> (the "Developer").
+								By installing, accessing, or using the
+								Application, you agree to these Terms.
+							</p>
+
+							<div id="nature">
+								<h3>1. Nature of the Application</h3>
+								<p>
+									InferencePort AI is a desktop application
+									that allows users to run
+									<strong
+										>locally installed generative AI
+										models</strong
+									>
+									on their own devices. The Application does
+									<strong>not</strong> require the Developer
+									to operate servers for AI inference, and
+									AI-generated content is produced
+									<strong
+										>entirely on the user's device</strong
+									>
+									(for local models).
+								</p>
+								<p>
+									The Developer does not control, monitor,
+									review, filter, moderate, or store any
+									AI-generated content produced by the
+									Application, unless explicitly shared using
+									report methods or the chat sync feature.
+								</p>
+							</div>
+
+							<div id="disclaimer">
+								<h3>2. AI-Generated Content Disclaimer</h3>
+								<p>
+									The Application enables the use of
+									third-party and open-source AI models. These
+									models may generate content that is
+									inaccurate, misleading, offensive, or
+									otherwise harmful.
+								</p>
+								<ul>
+									<li>
+										All AI-generated content is produced
+										automatically by models selected and
+										executed by you
+									</li>
+									<li>
+										The Developer does not review, approve,
+										or endorse any generated content
+									</li>
+									<li>
+										The Developer has no ability to prevent
+										or alter specific outputs generated by
+										local models
+									</li>
+								</ul>
+								<p>
+									You are solely responsible for how you
+									interpret, use, share, or rely on any
+									AI-generated content.
+								</p>
+							</div>
+
+							<div id="warranties">
+								<h3>3. No Warranties</h3>
+								<div class="doc-alert warn">
+									THE APPLICATION AND ALL AI-GENERATED CONTENT
+									ARE PROVIDED <strong>"AS IS"</strong> AND
+									<strong>"AS AVAILABLE"</strong>, WITHOUT
+									WARRANTIES OF ANY KIND. TO THE MAXIMUM
+									EXTENT PERMITTED BY APPLICABLE LAW, THE
+									DEVELOPER DISCLAIMS ALL WARRANTIES,
+									INCLUDING WARRANTIES OF MERCHANTABILITY,
+									FITNESS FOR A PARTICULAR PURPOSE,
+									NON-INFRINGEMENT, ACCURACY, RELIABILITY, AND
+									SAFETY OF CONTENT.
+								</div>
+							</div>
+
+							<div id="liability">
+								<h3>4. Limitation of Liability</h3>
+								<p>
+									To the maximum extent permitted by law, the
+									Developer shall not be liable for any
+									direct, indirect, incidental, consequential,
+									special, or punitive damages arising from
+									AI-generated content, user prompts, model
+									behavior, or third-party models. You assume
+									all risks associated with use of the
+									Application.
+								</p>
+							</div>
+
+							<div id="responsibility">
+								<h3>5. User Responsibility</h3>
+								<p>
+									You agree that you are solely responsible
+									for selecting and configuring AI models,
+									ensuring compliance with applicable laws,
+									evaluating the accuracy and legality of
+									AI-generated content, and any actions taken
+									based on AI outputs. The Application is
+									intended for
+									<strong
+										>informational and experimental purposes
+										only</strong
+									>
+									and must not be relied upon as professional,
+									legal, medical, or financial advice.
+								</p>
+							</div>
+
+							<div id="opensource">
+								<h3>
+									6. Third-Party Software &amp; Open Source
+								</h3>
+								<p>
+									The Application incorporates third-party and
+									open-source components governed by their own
+									licenses. The Application itself is licensed
+									under the
+									<strong>Apache License, Version 2.0</strong
+									>. In the event of a conflict between these
+									Terms and an open-source license, the
+									open-source license shall govern for covered
+									components.
+								</p>
+							</div>
+
+							<div id="reporting">
+								<h3>8. Reporting Inappropriate Content</h3>
+								<p>
+									If you encounter AI-generated content that
+									is inappropriate or harmful, email
+									<a
+										href="mailto:inferenceport-reporting@vorugaluav.resend.app"
+										>inferenceport-reporting@vorugaluav.resend.app</a
+									>
+									with subject line
+									<strong
+										>"InferencePort AI Inappropriate Content
+										Disclosure"</strong
+									>. Reports without this subject line may not
+									be reviewed.
+								</p>
+								<p>
+									Reports are reviewed within 1–2 weeks.
+									Individual responses are not guaranteed. We
+									reserve the right to ignore communications
+									submitted in bad faith.
+								</p>
+							</div>
+
+							<p
+								style="
+									margin-top: 24px;
+									font-size: 0.84rem;
+									color: var(--muted);
+								"
+							>
+								By using InferencePort AI, you acknowledge that
+								you have read, understood, and agreed to these
+								Terms. We reserve the right to change these
+								terms at any time without further notice.
+							</p>
+						</div>
+
+						<hr />
+
+						<!-- Contact cards -->
+						<div id="contact-cards">
+							<div class="section-tag">Get in Touch</div>
+							<h2
+								style="
+									font-size: 1.2rem;
+									font-weight: 800;
+									color: #fff;
+									margin-bottom: 20px;
+								"
+							>
+								Contact
+							</h2>
+							<div class="contact-card">
+								<div class="contact-icon">🔒</div>
+								<div>
+									<div class="contact-label">
+										Security Disclosures
+									</div>
+									<div class="contact-val">
+										<a
+											href="mailto:inferenceport-security@vorugaluav.resend.app"
+											>inferenceport-security@vorugaluav.resend.app</a
+										>
+									</div>
+								</div>
+							</div>
+							<div class="contact-card">
+								<div class="contact-icon">🚩</div>
+								<div>
+									<div class="contact-label">
+										Content Reports
+									</div>
+									<div class="contact-val">
+										<a
+											href="mailto:inferenceport-reporting@vorugaluav.resend.app"
+											>inferenceport-reporting@vorugaluav.resend.app</a
+										>
+									</div>
+								</div>
+							</div>
+							<div class="contact-card">
+								<div class="contact-icon">💬</div>
+								<div>
+									<div class="contact-label">
+										General Questions
+									</div>
+									<div class="contact-val">
+										<a
+											href="mailto:inferenceport-help@vorugaluav.resend.app"
+											>inferenceport-help@vorugaluav.resend.app</a
+										>
+										or
+										<a
+											href="https://github.com/sharktide/inferenceport-ai/issues/new"
+											target="_blank"
+											>GitHub Issues</a
+										>
+									</div>
+								</div>
+							</div>
+							<div class="contact-card">
+								<div class="contact-icon">🗑️</div>
+								<div>
+									<div class="contact-label">
+										Data Deletion Requests
+									</div>
+									<div class="contact-val">
+										<a
+											href="mailto:inferenceport-auth@vorugaluav.resend.app"
+											>inferenceport-auth@vorugaluav.resend.app</a
+										>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<footer class="py-4">
+			<div class="container">
+				<div
+					class="d-flex flex-wrap justify-content-between align-items-center gap-3"
+				>
+					<span
+						>© 2026 Rihaan Meher |
+						<a
+							href="https://stats.uptimerobot.com/N1MpjMQC4U"
+							target="_blank"
+							>System Health</a
+						></span
+					>
+					<div class="d-flex gap-3 flex-wrap">
+						<a href="index.html">Home</a
+						><a href="marketplace.html">Marketplace</a>
+						<a href="install.html">Install</a
+						><a href="pricing.html">Pricing</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>
