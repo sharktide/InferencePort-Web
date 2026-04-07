@@ -1,386 +1,700 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pricing – InferencePort AI</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --primary: #4f7cff;
-        --text-dark: #0f172a;
-        --muted: #64748b;
-      }
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
-        background: #f8fafc;
-        color: var(--text-dark);
-      }
-      .hero-gradient {
-        background: radial-gradient(
-          circle at 30% 30%,
-          #6d8cff,
-          #4f7cff,
-          #1e293b
-        );
-        color: white;
-      }
-      .card {
-        border: none;
-        border-radius: 18px;
-        transition: 0.25s;
-        padding: 10px;
-      }
-      .card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
-      }
-      .plan-highlight {
-        border: 2px solid var(--primary);
-        box-shadow: 0 20px 50px rgba(79, 124, 255, 0.25);
-      }
-      .price {
-        font-size: 46px;
-        font-weight: 700;
-      }
-      .muted {
-        color: var(--muted);
-      }
-      .feature-list {
-        list-style: none;
-        padding-left: 0;
-      }
-      .feature-list li {
-        padding: 6px 0;
-        font-size: 15px;
-      }
-      .limit-low {
-        color: #dc2626;
-        font-weight: 600;
-      }
-      .limit-mid {
-        color: #f59e0b;
-        font-weight: 600;
-      }
-      .limit-high {
-        color: #16a34a;
-        font-weight: 600;
-      }
-      .limit-unlimited {
-        color: #16a34a;
-        font-weight: 600;
-      }
-      .section-title {
-        font-weight: 700;
-        letter-spacing: -0.5px;
-      }
-      .btn-primary {
-        background: var(--primary);
-        border: none;
-      }
-      .btn-primary:hover {
-        background: #3d63d8;
-      }
-      .blurb {
-        font-size: 14px;
-        color: var(--muted);
-        margin-bottom: 15px;
-        min-height: 45px;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand fw-bold">InferencePort AI</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="marketplace.html">Marketplace</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="install.html">Install</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="security.html">Security</a>
-            </li>
-            <li class="nav-item"><a class="nav-link active">Pricing</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Pricing — InferencePort AI</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="styles/main.css" />
+		<style>
+			:root {
+				--brand: #4f7cff;
+				--brand-dim: rgba(79, 124, 255, 0.12);
+				--brand-border: rgba(79, 124, 255, 0.28);
+				--surface: #0f1525;
+				--muted: #8b93a7;
+			}
+			body {
+				background: #080d1a;
+				font-family: "Inter", sans-serif;
+				color: #d6daea;
+			}
+			.navbar {
+				background: rgba(8, 13, 26, 0.92) !important;
+				backdrop-filter: blur(12px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+			}
+			.navbar-brand {
+				font-weight: 800;
+				font-size: 1.1rem;
+				letter-spacing: -0.02em;
+				color: #fff !important;
+			}
+			.navbar-brand span {
+				color: var(--brand);
+			}
+			.nav-link {
+				color: var(--muted) !important;
+				font-size: 0.88rem;
+			}
+			.nav-link:hover,
+			.nav-link.active {
+				color: #fff !important;
+			}
+			.nav-pill {
+				background: var(--brand) !important;
+				color: #fff !important;
+				border-radius: 7px !important;
+				padding: 6px 16px !important;
+				font-weight: 600 !important;
+			}
 
-    <!-- HERO -->
-    <section class="hero-gradient py-5 text-center">
-      <div class="container">
-        <h1 class="display-5 fw-bold mb-3">
-          Flexible Pricing for Every AI Creator
-        </h1>
-        <p class="lead">
-          Run powerful AI locally for free — scale into the cloud when you need
-          more power.
-        </p>
-      </div>
-    </section>
+			.page-hero {
+				padding: 110px 0 60px;
+				text-align: center;
+				background: radial-gradient(
+					ellipse 65% 35% at 50% 0%,
+					rgba(79, 124, 255, 0.15) 0%,
+					transparent 60%
+				);
+			}
+			.section-tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				font-weight: 500;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--brand);
+				margin-bottom: 10px;
+			}
+			.page-title {
+				font-size: clamp(1.8rem, 4vw, 3rem);
+				font-weight: 800;
+				letter-spacing: -0.04em;
+				line-height: 1.1;
+				color: #fff;
+			}
+			.page-title .accent {
+				color: var(--brand);
+			}
+			.page-sub {
+				font-size: 1rem;
+				color: var(--muted);
+				max-width: 400px;
+				margin: 14px auto 0;
+				line-height: 1.65;
+			}
 
-    <!-- PRICING -->
-    <section class="py-5">
-      <div class="container">
-        <h2 class="text-center section-title mb-5">Choose Your Plan</h2>
-        <div class="row g-4 justify-content-center">
-          <!-- FREE -->
-          <div class="col-xl-4 col-lg-6">
-            <div class="card shadow-sm text-center h-100">
-              <div class="card-body">
-                <h4 class="fw-bold">Free Tier</h4>
-                <div class="blurb">
-                  Perfect for exploring AI locally with basic cloud access.
-                </div>
-                <div class="price">$0</div>
-                <div class="muted mb-3">forever</div>
-                <ul class="feature-list text-start">
-                  <li>
-                    💬 <span class="limit-low">50 Cloud Chats / day</span>
-                  </li>
-                  <li>🖼️ <span class="limit-low">10 Images / day</span></li>
-                  <li>🎬 <span class="limit-low">3 Videos / day</span></li>
-                  <li>🔊 <span class="limit-low">1 Audio / week</span></li>
-                  <hr />
-                  <li>
-                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
-                  </li>
-                  <li>✓ Local Model Marketplace</li>
-                  <li>✓ HuggingFace Spaces Viewer</li>
-                  <li>✓ Website Viewer</li>
-                  <li>✓ Local Model Hosting</li>
-                  <li>✓ Remote Server Connection</li>
-                </ul>
-                <button
-                  class="btn btn-outline-primary w-100 mt-3"
-                  onclick="window.location.href='install.html'"
-                >
-                  Get Started
-                </button>
-              </div>
-            </div>
-          </div>
+			.plan-card {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 14px;
+				padding: 26px 20px;
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+				position: relative;
+				transition:
+					border-color 0.2s,
+					transform 0.2s;
+			}
+			.plan-card:hover {
+				transform: translateY(-4px);
+				border-color: var(--brand-border);
+			}
+			.plan-card.popular {
+				border-color: var(--brand);
+				background: rgba(79, 124, 255, 0.06);
+			}
+			.popular-pill {
+				position: absolute;
+				top: -11px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: var(--brand);
+				color: #fff;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				font-weight: 500;
+				padding: 3px 12px;
+				border-radius: 50px;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				white-space: nowrap;
+			}
+			.plan-name {
+				font-weight: 800;
+				font-size: 0.93rem;
+				color: #fff;
+			}
+			.plan-desc {
+				font-size: 0.78rem;
+				color: var(--muted);
+				margin-top: 3px;
+			}
+			.plan-price {
+				font-size: 2.2rem;
+				font-weight: 800;
+				color: #fff;
+				letter-spacing: -0.04em;
+				line-height: 1;
+				margin: 18px 0 2px;
+			}
+			.plan-price sup {
+				font-size: 0.95rem;
+				vertical-align: super;
+				font-weight: 600;
+			}
+			.plan-period {
+				font-size: 0.74rem;
+				color: var(--muted);
+				margin-bottom: 16px;
+			}
+			.plan-hr {
+				border-color: rgba(255, 255, 255, 0.07);
+				margin: 14px 0;
+			}
+			.plan-section {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				color: var(--brand);
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				margin-bottom: 8px;
+			}
+			.plan-feature {
+				font-size: 0.81rem;
+				color: var(--muted);
+				display: flex;
+				align-items: center;
+				gap: 7px;
+				margin-bottom: 7px;
+			}
+			.plan-feature.hi {
+				color: #d6daea;
+			}
+			.btn-plan-primary {
+				background: var(--brand);
+				color: #fff;
+				border: none;
+				border-radius: 8px;
+				padding: 10px;
+				font-weight: 600;
+				font-size: 0.84rem;
+				width: 100%;
+				margin-top: auto;
+				transition: opacity 0.2s;
+			}
+			.btn-plan-primary:hover {
+				opacity: 0.85;
+				color: #fff;
+			}
+			.btn-plan-outline {
+				background: rgba(255, 255, 255, 0.05);
+				color: #d6daea;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 8px;
+				padding: 10px;
+				font-size: 0.84rem;
+				width: 100%;
+				margin-top: auto;
+				transition: background 0.2s;
+			}
+			.btn-plan-outline:hover {
+				background: rgba(255, 255, 255, 0.09);
+				color: #fff;
+			}
 
-          <!-- LIGHT -->
-          <div class="col-xl-4 col-lg-6">
-            <div class="card shadow-sm text-center h-100">
-              <div class="card-body">
-                <h4 class="fw-bold">AI Light</h4>
-                <div class="blurb">
-                  Ideal for casual AI users who want faster cloud generation and
-                  more creative tools.
-                </div>
-                <div class="price">$9.99</div>
-                <div class="muted mb-3">per month</div>
-                <ul class="feature-list text-start">
-                  <li>
-                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
-                  </li>
-                  <li>🖼️ <span class="limit-mid">50 Images / day</span></li>
-                  <li>🎬 <span class="limit-mid">10 Videos / day</span></li>
-                  <li>🔊 <span class="limit-mid">5 Audio / week</span></li>
-                  <hr />
-                  <li>
-                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
-                  </li>
-                  <li>✓ Local Model Marketplace</li>
-                  <li>✓ HuggingFace Spaces Viewer</li>
-                  <li>✓ Website Viewer</li>
-                  <li>✓ Local Model Hosting</li>
-                  <li>✓ Remote Server Connection</li>
-                </ul>
-                <button
-                  class="btn btn-primary w-100 mt-3"
-                  data-bs-toggle="modal"
-                  data-bs-target="#upgradeModal"
-                >
-                  Subscribe
-                </button>
-              </div>
-            </div>
-          </div>
+			.upgrade-box {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 14px;
+				padding: 28px 32px;
+				max-width: 560px;
+				margin: 0 auto;
+			}
+			.col-sm-6 {
+				min-width:300px;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			thead th {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.7rem;
+				color: var(--muted);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				padding: 12px 14px;
+				text-align: left;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+			}
+			thead th:first-child {
+				color: #d6daea;
+			}
+			tbody td {
+				padding: 12px 14px;
+				font-size: 0.84rem;
+				color: var(--muted);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+			}
+			tbody td:first-child {
+				color: #d6daea;
+			}
+			tbody tr:nth-child(even) td {
+				background: rgba(255, 255, 255, 0.015);
+			}
+			.yes {
+				color: #4ade80;
+			}
 
-          <!-- CORE -->
-          <div class="col-xl-4 col-lg-6">
-            <div class="card text-center h-100 plan-highlight">
-              <div class="card-body">
-                <h4 class="fw-bold">AI Core</h4>
-                <div class="blurb">
-                  The perfect balance of power and price for serious creators
-                  and developers.
-                </div>
-                <div class="price">$15.99</div>
-                <div class="muted mb-3">per month</div>
-                <ul class="feature-list text-start">
-                  <li>
-                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
-                  </li>
-                  <li>🖼️ <span class="limit-high">150 Images / day</span></li>
-                  <li>🎬 <span class="limit-high">30 Videos / day</span></li>
-                  <li>🔊 <span class="limit-high">25 Audio / week</span></li>
-                  <hr />
-                  <li>
-                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
-                  </li>
-                  <li>✓ Local Model Marketplace</li>
-                  <li>✓ HuggingFace Spaces Viewer</li>
-                  <li>✓ Website Viewer</li>
-                  <li>✓ Local Model Hosting</li>
-                  <li>✓ Remote Server Connection</li>
-                </ul>
-                <button
-                  class="btn btn-primary w-100 mt-3"
-                  data-bs-toggle="modal"
-                  data-bs-target="#upgradeModal"
-                >
-                  Subscribe
-                </button>
-              </div>
-            </div>
-          </div>
+			footer {
+				border-top: 1px solid rgba(255, 255, 255, 0.07);
+				font-size: 0.81rem;
+				color: var(--muted);
+			}
+			footer a {
+				color: var(--muted);
+				text-decoration: none;
+			}
+			footer a:hover {
+				color: #fff;
+			}
 
-          <!-- CREATOR -->
-          <div class="col-xl-4 col-lg-6">
-            <div class="card shadow-sm text-center h-100">
-              <div class="card-body">
-                <h4 class="fw-bold">AI Creator</h4>
-                <div class="blurb">
-                  Built for heavy AI creators generating images, video, and
-                  audio at scale.
-                </div>
-                <div class="price">$29.99</div>
-                <div class="muted mb-3">per month</div>
-                <ul class="feature-list text-start">
-                  <li>
-                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
-                  </li>
-                  <li>🖼️ <span class="limit-high">300 Images / day</span></li>
-                  <li>🎬 <span class="limit-high">50 Videos / day</span></li>
-                  <li>🔊 <span class="limit-high">45 Audio / week</span></li>
-                  <hr />
-                  <li>
-                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
-                  </li>
-                  <li>✓ Local Model Marketplace</li>
-                  <li>✓ HuggingFace Spaces Viewer</li>
-                  <li>✓ Website Viewer</li>
-                  <li>✓ Local Model Hosting</li>
-                  <li>✓ Remote Server Connection</li>
-                </ul>
-                <button
-                  class="btn btn-primary w-100 mt-3"
-                  data-bs-toggle="modal"
-                  data-bs-target="#upgradeModal"
-                >
-                  Subscribe
-                </button>
-              </div>
-            </div>
-          </div>
+			.btn-brand {
+				background: var(--brand);
+				color: #fff;
+				border: none;
+				border-radius: 9px;
+				padding: 11px 26px;
+				font-weight: 600;
+				font-size: 0.9rem;
+				box-shadow: 0 0 24px rgba(79, 124, 255, 0.28);
+				transition:
+					transform 0.2s,
+					opacity 0.2s;
+			}
+			.btn-brand:hover {
+				transform: translateY(-2px);
+				opacity: 0.9;
+				color: #fff;
+			}
+			.btn-ghost {
+				background: rgba(255, 255, 255, 0.05);
+				color: #d6daea;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 9px;
+				padding: 10px 22px;
+				font-size: 0.9rem;
+				transition: background 0.2s;
+			}
+			.btn-ghost:hover {
+				background: rgba(255, 255, 255, 0.09);
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg sticky-top">
+			<div class="container">
+				<a class="navbar-brand" href="index.html"
+					>InferencePort<span>AI</span></a
+				>
+				<button
+					class="navbar-toggler border-0"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#nav"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="nav">
+					<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="marketplace.html"
+								>Marketplace</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="lightning.html"
+								>Lightning</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="install.html">Install</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" href="pricing.html"
+								>Pricing</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="security.html"
+								>Security</a
+							>
+						</li>
+						<li class="nav-item ms-2">
+							<a
+								class="nav-link nav-pill"
+								href="install.html#install"
+								>Get Started</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
-          <!-- PROFESSIONAL -->
-          <div class="col-xl-4 col-lg-6">
-            <div class="card shadow-sm text-center h-100">
-              <div class="card-body">
-                <h4 class="fw-bold">AI Professional</h4>
-                <div class="blurb">
-                  Maximum generation power for studios, researchers, and
-                  high-volume AI workflows.
-                </div>
-                <div class="price">$99.99</div>
-                <div class="muted mb-3">per month</div>
-                <ul class="feature-list text-start">
-                  <li>
-                    💬 <span class="limit-unlimited">Unlimited Cloud Chat</span>
-                  </li>
-                  <li>
-                    🖼️ <span class="limit-unlimited">Unlimited Images</span>
-                  </li>
-                  <li>
-                    🎬 <span class="limit-unlimited">Unlimited Videos</span>
-                  </li>
-                  <li>🔊 <span class="limit-high">75 Audio / week</span></li>
-                  <hr />
-                  <li>
-                    ✓ <span class="limit-unlimited">Unlimited Local Chat</span>
-                  </li>
-                  <li>✓ Local Model Marketplace</li>
-                  <li>✓ HuggingFace Spaces Viewer</li>
-                  <li>✓ Website Viewer</li>
-                  <li>✓ Local Model Hosting</li>
-                  <li>✓ Remote Server Connection</li>
-                </ul>
-                <button
-                  class="btn btn-primary w-100 mt-3"
-                  data-bs-toggle="modal"
-                  data-bs-target="#upgradeModal"
-                >
-                  Subscribe
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+		<div class="page-hero">
+			<div class="container">
+				<div class="section-tag">Plans & Pricing</div>
+				<h1 class="page-title">
+					Start Free. <span class="accent">Scale to Cloud.</span>
+				</h1>
+				<p class="page-sub">
+					Every plan includes unlimited local chat. Upgrade to unlock
+					cloud generation at scale.
+				</p>
+			</div>
+		</div>
 
-    <div
-      class="modal fade"
-      id="upgradeModal"
-      tabindex="-1"
-      aria-labelledby="upgradeModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="upgradeModalLabel">Upgrade Info</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body text-center">
-            Open the app and click <strong>Upgrade</strong> to find out more.
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-primary w-100"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+		<section class="py-5">
+			<div class="container">
+				<div class="row g-3 align-items-start">
+					<div class="col-md col-sm-6">
+						<div class="plan-card">
+							<div class="plan-name">Free</div>
+							<div class="plan-desc">
+								Explore AI locally & try the cloud
+							</div>
+							<div class="plan-price">$0</div>
+							<div class="plan-period">forever</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 50 Cloud Chats / day
+							</div>
+							<div class="plan-feature">🖼️ 10 Images / day</div>
+							<div class="plan-feature">🎬 3 Videos / day</div>
+							<div class="plan-feature">🔊 1 Audio / week</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a
+								href="install.html"
+								class="btn btn-plan-outline mt-3"
+								>Get Started Free</a
+							>
+						</div>
+					</div>
+					<div class="col-md col-sm-6">
+						<div class="plan-card">
+							<div class="plan-name">AI Light</div>
+							<div class="plan-desc">
+								Casual cloud users & creators
+							</div>
+							<div class="plan-price"><sup>$</sup>9.99</div>
+							<div class="plan-period">per month</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 Unlimited Cloud Chat
+							</div>
+							<div class="plan-feature">🖼️ 50 Images / day</div>
+							<div class="plan-feature">🎬 10 Videos / day</div>
+							<div class="plan-feature">🔊 5 Audio / week</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a href="#" class="btn btn-plan-outline mt-3"
+								>Subscribe</a
+							>
+						</div>
+					</div>
+					<div class="col-md col-sm-6">
+						<div class="plan-card popular">
+							<div class="popular-pill">Most Popular</div>
+							<div class="plan-name">AI Core</div>
+							<div class="plan-desc">
+								Best value for serious creators
+							</div>
+							<div class="plan-price"><sup>$</sup>15.99</div>
+							<div class="plan-period">per month</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 Unlimited Cloud Chat
+							</div>
+							<div class="plan-feature hi">
+								🖼️ 150 Images / day
+							</div>
+							<div class="plan-feature hi">
+								🎬 30 Videos / day
+							</div>
+							<div class="plan-feature hi">
+								🔊 25 Audio / week
+							</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a href="#" class="btn btn-plan-primary mt-3"
+								>Subscribe</a
+							>
+						</div>
+					</div>
+					<div class="col-md col-sm-6">
+						<div class="plan-card">
+							<div class="plan-name">AI Creator</div>
+							<div class="plan-desc">
+								High-volume image & video work
+							</div>
+							<div class="plan-price"><sup>$</sup>29.99</div>
+							<div class="plan-period">per month</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 Unlimited Cloud Chat
+							</div>
+							<div class="plan-feature hi">
+								🖼️ 300 Images / day
+							</div>
+							<div class="plan-feature hi">
+								🎬 50 Videos / day
+							</div>
+							<div class="plan-feature hi">
+								🔊 45 Audio / week
+							</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a href="#" class="btn btn-plan-outline mt-3"
+								>Subscribe</a
+							>
+						</div>
+					</div>
+					<div class="col-md col-sm-6">
+						<div class="plan-card">
+							<div class="plan-name">AI Professional</div>
+							<div class="plan-desc">
+								Studios & high-volume workflows
+							</div>
+							<div class="plan-price"><sup>$</sup>99.99</div>
+							<div class="plan-period">per month</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">☁ Cloud</div>
+							<div class="plan-feature hi">
+								💬 Unlimited Cloud Chat
+							</div>
+							<div class="plan-feature hi">
+								🖼️ Unlimited Images
+							</div>
+							<div class="plan-feature hi">
+								🎬 Unlimited Videos
+							</div>
+							<div class="plan-feature">🔊 75 Audio / week</div>
+							<hr class="plan-hr" />
+							<div class="plan-section">🖥 Local</div>
+							<div class="plan-feature hi">
+								✓ Unlimited Local Chat
+							</div>
+							<div class="plan-feature hi">
+								✓ Marketplace Access
+							</div>
+							<div class="plan-feature hi">
+								✓ HuggingFace Spaces
+							</div>
+							<div class="plan-feature hi">✓ Remote Server</div>
+							<a href="#" class="btn btn-plan-outline mt-3"
+								>Subscribe</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-    <footer class="bg-dark text-white text-center py-3">
-      <small>© 2026 Rihaan Meher</small>
-    </footer>
+		<section class="py-4">
+			<div class="container">
+				<div class="upgrade-box text-center">
+					<strong style="color: #fff">How to upgrade?</strong>
+					<p
+						style="
+							color: var(--muted);
+							font-size: 0.88rem;
+							margin-top: 8px;
+						"
+					>
+						Open InferencePort and click
+						<strong style="color: #d6daea">Upgrade</strong> in the
+						app to manage your subscription and get access to cloud
+						tiers instantly.
+					</p>
+				</div>
+			</div>
+		</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+		<section class="py-5">
+			<div class="container">
+				<h2
+					style="
+						font-family: &quot;Inter&quot;, sans-serif;
+						font-weight: 800;
+						font-size: 1.6rem;
+						letter-spacing: -0.03em;
+						color: #fff;
+						text-align: center;
+						margin-bottom: 32px;
+					"
+				>
+					Feature Comparison
+				</h2>
+				<div class="table-responsive">
+					<table>
+						<thead>
+							<tr>
+								<th>Feature</th>
+								<th>Free</th>
+								<th>Light</th>
+								<th>Core</th>
+								<th>Creator</th>
+								<th>Pro</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Unlimited Local Chat</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+							</tr>
+							<tr>
+								<td>Model Marketplace</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+							</tr>
+							<tr>
+								<td>HuggingFace Spaces</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+							</tr>
+							<tr>
+								<td>Remote Server</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+							</tr>
+							<tr>
+								<td>Unlimited Cloud Chat</td>
+								<td style="opacity: 0.3">—</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+								<td class="yes">✓</td>
+							</tr>
+							<tr>
+								<td>Cloud Image Gen</td>
+								<td>10/day</td>
+								<td>50/day</td>
+								<td>150/day</td>
+								<td>300/day</td>
+								<td>Unlimited</td>
+							</tr>
+							<tr>
+								<td>Cloud Video Gen</td>
+								<td>3/day</td>
+								<td>10/day</td>
+								<td>30/day</td>
+								<td>50/day</td>
+								<td>Unlimited</td>
+							</tr>
+							<tr>
+								<td>Cloud Audio Gen</td>
+								<td>1/week</td>
+								<td>5/week</td>
+								<td>25/week</td>
+								<td>45/week</td>
+								<td>75/week</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<footer class="py-4">
+			<div class="container">
+				<div
+					class="d-flex flex-wrap justify-content-between align-items-center gap-3"
+				>
+					<span>© 2026 Rihaan Meher</span>
+					<div class="d-flex gap-3 flex-wrap">
+						<a href="index.html">Home</a
+						><a href="marketplace.html">Marketplace</a>
+						<a href="lightning.html">Lightning</a
+						><a href="install.html">Install</a>
+						<a href="security.html">Security</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
 </html>

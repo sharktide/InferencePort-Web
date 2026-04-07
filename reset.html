@@ -1,164 +1,348 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Reset Password — InferencePort AI</title>
+		<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+		<script src="scripts/theme.js"></script>
+		<style>
+			:root {
+				--brand: #4f7cff;
+				--brand-dim: rgba(79, 124, 255, 0.12);
+				--brand-border: rgba(79, 124, 255, 0.28);
+				--surface: #0f1525;
+				--muted: #8b93a7;
+			}
+			body {
+				background: #080d1a;
+				font-family: "Inter", sans-serif;
+				color: #d6daea;
+			}
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InferencePort AI — Run models locally</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-    <script src="scripts/theme.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <meta name="description"
-        content="InferencePort AI — a lightweight app and website for running local LLMs and exploring Hugging Face Spaces. Preview, run and share models from your desktop." />
-    <style>
-		:root {
-			--primary: #4f7cff;
-			--primary-soft: #eef2ff;
-			--text-dark: #0f172a;
-			--muted: #64748b;
-		}
+			.navbar {
+				background: rgba(8, 13, 26, 0.92) !important;
+				backdrop-filter: blur(12px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+			}
+			.navbar-brand {
+				font-weight: 800;
+				font-size: 1.1rem;
+				letter-spacing: -0.02em;
+				color: #fff !important;
+			}
+			.navbar-brand span {
+				color: var(--brand);
+			}
+			.nav-link {
+				color: var(--muted) !important;
+				font-size: 0.88rem;
+			}
+			.nav-link:hover,
+			.nav-link.active {
+				color: #fff !important;
+			}
 
-		body {
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
-			color: var(--text-dark);
-			background: #f8fafc;
-		}
+			.hero-section {
+				background: radial-gradient(
+					circle at 30% 40%,
+					rgba(109, 140, 255, 0.35),
+					rgba(79, 124, 255, 0.5),
+					rgba(15, 21, 37, 0.95)
+				);
+				padding: 80px 0;
+			}
+			.hero-title {
+				letter-spacing: -1px;
+				color: #abc6ee !important;
+			}
+			.hero-text {
+				color: #c8d4e8;
+				max-width: 520px;
+			}
 
-		.hero-gradient {
-			background: radial-gradient(circle at 30% 30%, #6d8cff, #4f7cff, #1e293b);
-			color: white;
-		}
+			/* Form card */
+			.form-card {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 16px;
+				padding: 40px 36px;
+				max-width: 460px;
+				margin: 0 auto;
+				position: relative;
+				overflow: hidden;
+			}
+			.form-card::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 3px;
+				background: linear-gradient(90deg, var(--brand), #7c3aed);
+			}
+			.form-card h2 {
+				font-size: 1.35rem;
+				font-weight: 800;
+				color: #fff;
+				letter-spacing: -0.03em;
+				text-align: center;
+				margin-bottom: 28px;
+			}
 
-		.hero-title {
-			letter-spacing: -1px;
-		}
+			.form-label {
+				font-size: 0.84rem;
+				color: #d6daea;
+				font-weight: 500;
+				margin-bottom: 6px;
+			}
+			.form-control {
+				background: #080d1a;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				color: #d6daea;
+				border-radius: 8px;
+				padding: 10px 14px;
+				font-size: 0.88rem;
+			}
+			.form-control:focus {
+				background: #080d1a;
+				color: #d6daea;
+				border-color: var(--brand-border);
+				box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.15);
+			}
+			.form-control::placeholder {
+				color: var(--muted);
+			}
 
-		.hero-text {
-			color: #e2e8f0;
-			max-width: 520px;
-		}
-    </style>
-</head>
+			.btn-submit {
+				background: var(--brand);
+				color: #fff;
+				border: none;
+				border-radius: 9px;
+				padding: 11px;
+				font-weight: 600;
+				font-size: 0.9rem;
+				width: 100%;
+				box-shadow: 0 0 20px rgba(79, 124, 255, 0.25);
+				transition:
+					opacity 0.18s,
+					transform 0.18s;
+				margin-top: 8px;
+			}
+			.btn-submit:hover {
+				opacity: 0.88;
+				transform: translateY(-1px);
+				color: #fff;
+			}
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand fw-bold">InferencePort AI</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="marketplace.html">Marketplace</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="install.html">Install</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="security.html">Security</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+			footer {
+				border-top: 1px solid rgba(255, 255, 255, 0.07);
+				font-size: 0.81rem;
+				color: var(--muted);
+			}
+			footer a {
+				color: var(--muted);
+				text-decoration: none;
+			}
+			footer a:hover {
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg sticky-top">
+			<div class="container">
+				<a class="navbar-brand" href="index.html"
+					>InferencePort<span>AI</span></a
+				>
+				<button
+					class="navbar-toggler border-0"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#nav"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="nav">
+					<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="marketplace.html"
+								>Marketplace</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="lightning.html"
+								>Lightning</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="install.html">Install</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="pricing.html">Pricing</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="security.html"
+								>Security</a
+							>
+						</li>
+						<li class="nav-item ms-2">
+							<a
+								class="nav-link nav-pill"
+								href="install.html#install"
+								>Get Started</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
 
-    <section class="hero-gradient text-white py-5">
-      <div class="container hero-container">
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center text-md-start">
-            <h1
-              class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title"
-              style="color: #abc6ee !important"
-            >
-              <span class="me-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  fill="orange"
-                  class="bi bi-lightning-fill lightning-bolt"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-                </svg>
-              </span>
-              InferencePort AI
-            </h1>
-            <p class="lead mt-3 hero-text">
-              InferencePort makes it effortless to run, test, and share local AI models and Hugging Face Spaces from a clean desktop interface.
-            </p>
-            <a href="install.html" class="btn btn-light btn-lg mt-3 hero-btn"
-              >Install Now</a
-            >
-          </div>
-          <div class="col-md-6 text-center mt-4 mt-md-0 hero-image">
-            <img
-              src="img/examples/cucumber.png"
-              alt="App Screenshot"
-              class="img-fluid rounded shadow-lg"
-              style="width: 425px; height: 225px"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
+		<!-- Hero -->
+		<section class="hero-section">
+			<div class="container">
+				<div class="row align-items-center">
+					<div class="col-md-6 text-center text-md-start">
+						<h1
+							class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title"
+						>
+							<span class="me-2">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="44"
+									height="44"
+									fill="orange"
+									class="bi bi-lightning-fill"
+									viewBox="0 0 16 16"
+								>
+									<path
+										d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z"
+									/>
+								</svg>
+							</span>
+							InferencePort AI
+						</h1>
+						<p class="lead mt-3 hero-text">
+							InferencePort makes it effortless to run, test, and
+							share local AI models and Hugging Face Spaces from a
+							clean desktop interface.
+						</p>
+						<a
+							href="install.html"
+							class="btn btn-light btn-lg mt-3 fw-semibold"
+							>Install Now</a
+						>
+					</div>
+					<div class="col-md-6 text-center mt-4 mt-md-0">
+						<img
+							src="img/examples/cucumber.png"
+							alt="App Screenshot"
+							class="img-fluid rounded shadow-lg"
+							style="
+								width: 425px;
+								height: 225px;
+								object-fit: cover;
+							"
+						/>
+					</div>
+				</div>
+			</div>
+		</section>
 
-    <main class="container py-5">
-        <section class="col-md-6 mx-auto">
-            <h2 class="text-center mb-4">Reset Password</h2>
-            <div class="mb-3">
-                <label for="pswrd-input" class="form-label">New Password</label>
-                <input type="password" id="pswrd-input" class="form-control" placeholder="Type New Password">
-            </div>
-            <div class="mb-3">
-                <label for="confirm-input" class="form-label">Confirm Password</label>
-                <input type="password" id="confirm-input" class="form-control" placeholder="Confirm Password">
-            </div>
-            <button id="submit" class="btn btn-success w-100">Submit</button>
-        </section>
-    </main>
+		<!-- Reset form -->
+		<main class="py-5">
+			<div class="container">
+				<div class="form-card">
+					<h2>Reset Password</h2>
+					<div class="mb-3">
+						<label for="pswrd-input" class="form-label"
+							>New Password</label
+						>
+						<input
+							type="password"
+							id="pswrd-input"
+							class="form-control"
+							placeholder="Type new password"
+						/>
+					</div>
+					<div class="mb-3">
+						<label for="confirm-input" class="form-label"
+							>Confirm Password</label
+						>
+						<input
+							type="password"
+							id="confirm-input"
+							class="form-control"
+							placeholder="Confirm password"
+						/>
+					</div>
+					<button id="submit" class="btn-submit">Submit</button>
+				</div>
+			</div>
+		</main>
 
-	  <footer class="bg-dark text-white text-center py-3">
-	        <small>© 2026 Rihaan Meher | <a href="https://stats.uptimerobot.com/N1MpjMQC4U">System Health</a></small>
-	  </footer>
+		<footer class="py-4">
+			<div class="container">
+				<div
+					class="d-flex flex-wrap justify-content-between align-items-center gap-3"
+				>
+					<span
+						>© 2026 Rihaan Meher |
+						<a
+							href="https://stats.uptimerobot.com/N1MpjMQC4U"
+							target="_blank"
+							>System Health</a
+						></span
+					>
+					<div class="d-flex gap-3 flex-wrap">
+						<a href="index.html">Home</a>
+						<a href="install.html">Install</a>
+						<a href="security.html">Security</a>
+					</div>
+				</div>
+			</div>
+		</footer>
 
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			const supabaseKey =
+				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwaXhlaGhkYnR6c2Jja2Zla3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNDI0MjcsImV4cCI6MjA3NjcxODQyN30.nR1KCSRQj1E_evQWnE2VaZzg7PgLp2kqt4eDKP2PkpE";
+			const supabaseUrl = "https://dpixehhdbtzsbckfektd.supabase.co";
+			const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+			const submitBtn = document.getElementById("submit");
+			const input1 = document.getElementById("pswrd-input");
+			const input2 = document.getElementById("confirm-input");
 
-    <script>
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwaXhlaGhkYnR6c2Jja2Zla3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNDI0MjcsImV4cCI6MjA3NjcxODQyN30.nR1KCSRQj1E_evQWnE2VaZzg7PgLp2kqt4eDKP2PkpE";
-        const supabaseUrl = "https://dpixehhdbtzsbckfektd.supabase.co";
-        const sb = supabase.createClient(supabaseUrl, supabaseKey);
-
-        const submitBtn = document.getElementById("submit");
-        const input1 = document.getElementById("pswrd-input");
-        const input2 = document.getElementById("confirm-input");
-
-        submitBtn.addEventListener("click", async () => {
-            if (input1.value !== input2.value) {
-                alert("Passwords do not match");
-                return;
-            }
-            const { error } = await sb.auth.updateUser({ password: input1.value });
-            if (!error) {
-                alert("Password reset successfully");
-                setTimeout(() => { window.location.href = "/"; }, 1000);
-            } else {
-                alert(error.message || error);
-            }
-        });
-    </script>
-</body>
-
+			submitBtn.addEventListener("click", async () => {
+				if (input1.value !== input2.value) {
+					alert("Passwords do not match");
+					return;
+				}
+				const { error } = await sb.auth.updateUser({
+					password: input1.value,
+				});
+				if (!error) {
+					alert("Password reset successfully");
+					setTimeout(() => {
+						window.location.href = "/";
+					}, 1000);
+				} else {
+					alert(error.message || error);
+				}
+			});
+		</script>
+	</body>
 </html>

@@ -1,53 +1,152 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>InferencePort AI</title>
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+		rel="stylesheet" />
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+	<style>
 		:root {
-			--primary: #4f7cff;
-			--primary-soft: #eef2ff;
-			--text-dark: #0f172a;
-			--muted: #64748b;
+			--brand: #4f7cff;
+			--brand-dim: rgba(79, 124, 255, 0.12);
+			--brand-border: rgba(79, 124, 255, 0.28);
+			--surface: #0f1525;
+			--muted: #8b93a7;
 		}
 
 		body {
-			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
-			color: var(--text-dark);
-			background: #f8fafc;
+			background: #080d1a;
+			font-family: "Inter", sans-serif;
+			color: #d6daea;
 		}
 
-		.hero-gradient {
-			background: radial-gradient(circle at 30% 30%, #6d8cff, #4f7cff, #1e293b);
-			color: white;
+		.navbar {
+			background: rgba(8, 13, 26, 0.92) !important;
+			backdrop-filter: blur(12px);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+		}
+
+		.navbar-brand {
+			font-weight: 800;
+			font-size: 1.1rem;
+			letter-spacing: -0.02em;
+			color: #fff !important;
+		}
+
+		.navbar-brand span {
+			color: var(--brand);
+		}
+
+		.nav-link {
+			color: var(--muted) !important;
+			font-size: 0.88rem;
+		}
+
+		.nav-link:hover,
+		.nav-link.active {
+			color: #fff !important;
+		}
+
+		.hero-section {
+			background: radial-gradient(circle at 30% 40%,
+					rgba(109, 140, 255, 0.35),
+					rgba(79, 124, 255, 0.5),
+					rgba(15, 21, 37, 0.95));
+			padding: 80px 0;
 		}
 
 		.hero-title {
 			letter-spacing: -1px;
+			color: #abc6ee !important;
 		}
 
 		.hero-text {
-			color: #e2e8f0;
+			color: #c8d4e8;
 			max-width: 520px;
 		}
-    </style>
-	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+
+		.redirect-card {
+			background: var(--surface);
+			border: 1px solid rgba(255, 255, 255, 0.07);
+			border-radius: 16px;
+			padding: 48px 36px;
+			text-align: center;
+			max-width: 480px;
+			margin: 0 auto;
+		}
+
+		.redirect-icon {
+			font-size: 2.4rem;
+			margin-bottom: 16px;
+		}
+
+		.redirect-title {
+			font-size: 1.2rem;
+			font-weight: 700;
+			color: #fff;
+			margin-bottom: 8px;
+			letter-spacing: -0.02em;
+		}
+
+		.redirect-sub {
+			font-size: 0.88rem;
+			color: var(--muted);
+			margin-bottom: 24px;
+		}
+
+		.btn-launch {
+			background: var(--brand);
+			color: #fff;
+			border: none;
+			border-radius: 9px;
+			padding: 11px 28px;
+			font-weight: 600;
+			font-size: 0.9rem;
+			box-shadow: 0 0 24px rgba(79, 124, 255, 0.28);
+			transition:
+				transform 0.18s,
+				opacity 0.18s;
+			cursor: pointer;
+		}
+
+		.btn-launch:hover {
+			transform: translateY(-2px);
+			opacity: 0.9;
+			color: #fff;
+		}
+
+		footer {
+			border-top: 1px solid rgba(255, 255, 255, 0.07);
+			font-size: 0.81rem;
+			color: var(--muted);
+		}
+
+		footer a {
+			color: var(--muted);
+			text-decoration: none;
+		}
+
+		footer a:hover {
+			color: #fff;
+		}
+	</style>
 </head>
 
 <body>
-	<!-- Navbar -->
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	<nav class="navbar navbar-expand-lg sticky-top">
 		<div class="container">
-			<a class="navbar-brand fw-bold" href="#">InferencePort AI</a>
-			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+			<a class="navbar-brand" href="index.html">InferencePort<span>AI</span></a>
+			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
 				<span class="navbar-toggler-icon"></span>
 			</button>
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav ms-auto">
+			<div class="collapse navbar-collapse" id="nav">
+				<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
 					<li class="nav-item">
 						<a class="nav-link" href="index.html">Home</a>
 					</li>
@@ -55,107 +154,118 @@
 						<a class="nav-link" href="marketplace.html">Marketplace</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="install.html">Download</a>
+						<a class="nav-link" href="lightning.html">Lightning</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="index.#community">Community</a>
+						<a class="nav-link" href="install.html">Install</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="pricing.html">Pricing</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="security.html">Security</a>
+					</li>
+					<li class="nav-item ms-2">
+						<a class="nav-link nav-pill" href="install.html#install">Get Started</a>
 					</li>
 				</ul>
 			</div>
 		</div>
 	</nav>
 
-    <section class="hero-gradient text-white py-5">
-      <div class="container hero-container">
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center text-md-start">
-            <h1
-              class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title"
-              style="color: #abc6ee !important"
-            >
-              <span class="me-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  fill="orange"
-                  class="bi bi-lightning-fill lightning-bolt"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-                </svg>
-              </span>
-              InferencePort AI
-            </h1>
-            <p class="lead mt-3 hero-text">
-              InferencePort makes it effortless to run, test, and share local AI models and Hugging Face Spaces from a clean desktop interface.
-            </p>
-            <a href="install.html" class="btn btn-light btn-lg mt-3 hero-btn"
-              >Install Now</a
-            >
-          </div>
-          <div class="col-md-6 text-center mt-4 mt-md-0 hero-image">
-            <img
-              src="img/examples/cucumber.png"
-              alt="App Screenshot"
-              class="img-fluid rounded shadow-lg"
-              style="width: 425px; height: 225px"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
-	<section id="download" class="bg-light py-5">
-		<div class="container text-center">
-			<h2 class="fw-bold">You are being redirected to the authorized application</h2>
-      <p id="nothing">If nothing happened, try launching the app manually:</p>
-      <button class="btn btn-primary" id="launch">Launch</button>
-			<div id="auth-error" class="alert alert-danger d-none mt-3"></div>
-
-		</div
+	<!-- Hero -->
+	<section class="hero-section">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-md-6 text-center text-md-start">
+					<h1
+						class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title">
+						<span class="me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="orange"
+								class="bi bi-lightning-fill" viewBox="0 0 16 16">
+								<path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
+							</svg>
+						</span>
+						InferencePort AI
+					</h1>
+					<p class="lead mt-3 hero-text">
+						InferencePort makes it effortless to run, test, and share local AI
+						models and Hugging Face Spaces from a clean desktop interface.
+					</p>
+					<a href="install.html" class="btn btn-light btn-lg mt-3 fw-semibold">Install Now</a>
+				</div>
+				<div class="col-md-6 text-center mt-4 mt-md-0">
+					<img src="img/examples/cucumber.png" alt="App Screenshot" class="img-fluid rounded shadow-lg"
+						style="width: 425px; height: 225px; object-fit: cover" />
+				</div>
+			</div>
+		</div>
 	</section>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+
+	<!-- Redirect section -->
+	<section class="py-5">
+		<div class="container">
+			<div class="redirect-card">
+				<div class="redirect-icon">🔐</div>
+				<div class="redirect-title">Redirecting to the app…</div>
+				<div class="redirect-sub" id="nothing">
+					If nothing happened, launch the app manually:
+				</div>
+				<button class="btn-launch" id="launch">Launch</button>
+				<div id="auth-error" class="alert alert-danger d-none mt-4"
+					style="border-radius: 10px; font-size: 0.84rem"></div>
+			</div>
+		</div>
+	</section>
+
+	<footer class="py-4">
+		<div class="container">
+			<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+				<span>© 2026 Rihaan Meher</span>
+				<div class="d-flex gap-3 flex-wrap">
+					<a href="index.html">Home</a>
+					<a href="install.html">Install</a>
+					<a href="security.html">Security</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
 		(function () {
-  const hash = window.location.hash.slice(1);
-  if (!hash) return;
-	const queryString = window.location.search;
-	
-	const urlParams = new URLSearchParams(queryString);
-  const params = new URLSearchParams(hash);
-  const error = params.get("error");
-  const errorDescription = params.get("error_description");
+			const hash = window.location.hash.slice(1);
+			if (!hash) return;
 
-  if (error) {
-    const errorBox = document.getElementById("auth-error");
-    errorBox.textContent =
-      errorDescription
-        ? decodeURIComponent(errorDescription)
-        : "Authentication failed. Please try again.";
-    errorBox.classList.remove("d-none");
-    return;
-  }
+			const queryString = window.location.search;
+			const urlParams = new URLSearchParams(queryString);
+			const params = new URLSearchParams(hash);
+			const error = params.get("error");
+			const errorDescription = params.get("error_description");
 
-  let deepLink
+			if (error) {
+				const errorBox = document.getElementById("auth-error");
+				errorBox.textContent = errorDescription
+					? decodeURIComponent(errorDescription)
+					: "Authentication failed. Please try again.";
+				errorBox.classList.remove("d-none");
+				return;
+			}
 
-  if (urlParams.get("rd")) {
-	  deepLink = urlParams.get("rd") + "#" + hash 
-  }
-	else deepLink = `inferenceport-ai:///auth/callback#${hash}`;
+			let deepLink;
+			if (urlParams.get("rd")) {
+				deepLink = urlParams.get("rd") + "#" + hash;
+			} else {
+				deepLink = `inferenceport-ai:///auth/callback#${hash}`;
+			}
 
-  document.getElementById("launch").addEventListener("click", () => {
-    window.location.href = deepLink;
-  });
-  window.location.href = deepLink;
-})();
-</script>
+			document.getElementById("launch").addEventListener("click", () => {
+				window.location.href = deepLink;
+			});
 
-  </script>
-
+			window.location.href = deepLink;
+		})();
+	</script>
 </body>
 
 </html>

@@ -1,381 +1,641 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Download InferencePort AI | Windows, macOS, Linux</title>
-    <meta name="description" content="Download InferencePort AI for Windows, macOS, and Linux. Get GPU-accelerated builds with Vulkan, CUDA, and ROCm support to run AI models locally on your desktop.">
-    <meta name="keywords" content="InferencePort AI, AI models, local AI, Hugging Face, AI marketplace, run AI locally, AI software">
-    <meta name="author" content="Rihaan Meher">
+<html lang="en" data-bs-theme="dark">
 
-    <meta property="og:title" content="InferencePort AI | Run AI Models Locally & Explore Marketplace">
-    <meta property="og:description" content="Run AI models locally, explore Hugging Face Spaces, and discover AI tools through InferencePort's desktop interface.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://inference.js.org/install.html">
-    <meta property="og:image" content="https://inference.js.org/img/favicon.ico">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Download InferencePort AI | Windows, macOS, Linux</title>
+	<meta name="description"
+		content="Download InferencePort AI for Windows, macOS, and Linux. Get GPU-accelerated builds with Vulkan, CUDA, and ROCm support to run AI models locally on your desktop." />
+	<meta name="keywords"
+		content="InferencePort AI, AI models, local AI, Hugging Face, AI marketplace, run AI locally, AI software" />
+	<meta name="author" content="Rihaan Meher" />
+	<meta property="og:title" content="InferencePort AI | Run AI Models Locally & Explore Marketplace" />
+	<meta property="og:description"
+		content="Run AI models locally, explore Hugging Face Spaces, and discover AI tools through InferencePort's desktop interface." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://inference.js.org/install.html" />
+	<meta property="og:image" content="https://inference.js.org/img/favicon.ico" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Download InferencePort AI | Run AI Models Locally" />
+	<meta name="twitter:description" content="Download InferencePort AI for Windows, macOS, and Linux." />
+	<meta name="twitter:image" content="https://inference.js.org/img/favicon.ico" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+		rel="stylesheet" />
+	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+	<style>
+		:root {
+			--brand: #4f7cff;
+			--brand-dim: rgba(79, 124, 255, 0.12);
+			--brand-border: rgba(79, 124, 255, 0.28);
+			--surface: #0f1525;
+			--muted: #8b93a7;
+		}
 
-    <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:title" content="Download InferencePort AI | Run AI Models Locally"/>
-    <meta name="twitter:description" content="Download InferencePort AI for Windows, macOS, and Linux. Get GPU-accelerated builds with Vulkan, CUDA, and ROCm support to run AI models locally on your desktop."/>
-    <meta name="twitter:image" content="https://inference.js.org/img/favicon.ico"/>
+		body {
+			background: #080d1a;
+			font-family: "Inter", sans-serif;
+			color: #d6daea;
+		}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+		.navbar {
+			background: rgba(8, 13, 26, 0.92) !important;
+			backdrop-filter: blur(12px);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+		}
 
-    <style>
-      :root {
-        --primary: #4f7cff;
-        --primary-soft: #eef2ff;
-        --text-dark: #0f172a;
-        --muted: #64748b;
-      }
+		.navbar-brand {
+			font-weight: 800;
+			font-size: 1.1rem;
+			letter-spacing: -0.02em;
+			color: #fff !important;
+		}
 
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial;
-        color: var(--text-dark);
-        background: #f8fafc;
-      }
+		.navbar-brand span {
+			color: var(--brand);
+		}
 
-      .hero-gradient {
-        background: radial-gradient(circle at 30% 30%, #6d8cff, #4f7cff, #1e293b);
-        color: white;
-      }
+		.nav-link {
+			color: var(--muted) !important;
+			font-size: 0.88rem;
+		}
 
-      .hero-title {
-        letter-spacing: -1px;
-      }
+		.nav-link:hover,
+		.nav-link.active {
+			color: #fff !important;
+		}
 
-      .hero-text {
-        color: #e2e8f0;
-        max-width: 520px;
-      }
+		.nav-pill {
+			background: var(--brand) !important;
+			color: #fff !important;
+			border-radius: 7px !important;
+			padding: 6px 16px !important;
+			font-weight: 600 !important;
+		}
 
-      a {
-        color: #257ea5;
-        text-decoration: none;
-      }
-    </style>
+		/* Hero */
+		.hero-section {
+			background: radial-gradient(circle at 30% 40%,
+					rgba(109, 140, 255, 0.35),
+					rgba(79, 124, 255, 0.5),
+					rgba(15, 21, 37, 0.95));
+			padding: 80px 0;
+		}
 
-    <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-  </head>
+		.hero-title {
+			letter-spacing: -1px;
+			color: #abc6ee !important;
+		}
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand fw-bold">InferencePort AI</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+		.hero-text {
+			color: #c8d4e8;
+			max-width: 520px;
+		}
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="marketplace.html">Marketplace</a></li>
-            <li class="nav-item"><a class="nav-link active" href="install.html">Install</a></li>
-            <li class="nav-item"><a class="nav-link" href="security.html">Security</a></li>
-            <li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+		/* Recommended card */
+		#recommended-download .rec-card {
+			background: var(--surface);
+			border: 1px solid var(--brand-border);
+			border-radius: 14px;
+			padding: 24px 28px;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
 
-    <section class="hero-gradient text-white py-5">
-      <div class="container hero-container">
-        <div class="row align-items-center">
-          <div class="col-md-6 text-center text-md-start">
-            <h1 class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title" style="color: #abc6ee !important">
-              <span class="me-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="orange" class="bi bi-lightning-fill lightning-bolt" viewBox="0 0 16 16">
-                  <path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-                </svg>
-              </span>
-              InferencePort AI
-            </h1>
+		@media (min-width: 768px) {
+			#recommended-download .rec-card {
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+			}
+		}
 
-            <p class="lead mt-3 hero-text">
-              InferencePort makes it effortless to run, test, and share local AI models and Hugging Face Spaces from a clean desktop interface.
-            </p>
+		.rec-title {
+			font-weight: 700;
+			font-size: 1.05rem;
+			color: #fff;
+			margin-bottom: 3px;
+		}
 
-            <a href="#install" class="btn btn-light btn-lg mt-3 hero-btn">Install Now</a>
-          </div>
+		.rec-meta {
+			font-size: 0.82rem;
+			color: var(--muted);
+		}
 
-          <div class="col-md-6 text-center mt-4 mt-md-0 hero-image">
-            <img src="img/examples/cucumber.png" alt="App Screenshot" class="img-fluid rounded shadow-lg" style="width: 425px; height: 225px"/>
-          </div>
-        </div>
-      </div>
-    </section>
+		.rec-filename {
+			font-family: "JetBrains Mono", monospace;
+			font-size: 0.75rem;
+			color: var(--muted);
+		}
 
-    <section id="install" class="py-5">
-      <div class="container">
-        <h2 class="fw-bold text-center mb-4">Download & Install</h2>
+		.rec-switch {
+			font-size: 0.8rem;
+			color: var(--brand);
+			text-decoration: none;
+		}
 
-        <!-- Recommended download -->
-        <div id="recommended-download" class="mb-4"></div>
+		.rec-switch:hover {
+			text-decoration: underline;
+		}
 
-        <ul class="nav nav-tabs justify-content-center" id="installTabs" role="tablist">
-          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#windows" id="windows-tab">Windows</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac" id="mac-tab">macOS</button></li>
-          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#linux" id="linux-tab">Linux</button></li>
-        </ul>
+		.btn-rec-dl {
+			background: var(--brand);
+			color: #fff;
+			border: none;
+			border-radius: 9px;
+			padding: 11px 28px;
+			font-weight: 600;
+			font-size: 0.9rem;
+			white-space: nowrap;
+			box-shadow: 0 0 24px rgba(79, 124, 255, 0.3);
+			transition:
+				transform 0.18s,
+				opacity 0.18s;
+			text-decoration: none;
+			display: inline-block;
+		}
 
-        <div class="tab-content mt-4" id="installTabsContent">
-          <div class="tab-pane fade show active" id="windows"></div>
-          <div class="tab-pane fade" id="mac"></div>
-          <div class="tab-pane fade" id="linux"></div>
-        </div>
-      </div>
-    </section>
+		.btn-rec-dl:hover {
+			transform: translateY(-2px);
+			opacity: 0.9;
+			color: #fff;
+		}
 
-    <section id="community" class="py-5 bg-light">
-      <div class="container text-center">
-        <h2 class="fw-bold">Join the Community</h2>
-        <p>Collaborate, contribute, and explore new possibilities with developers worldwide.</p>
+		/* Tabs */
+		.nav-tabs {
+			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		}
 
-        <a href="https://github.com/sharktide/InferencePort-ai" class="btn btn-outline-dark me-2">GitHub Repo (App)</a>
-        <a href="https://github.com/sharktide/InferencePort-web" class="btn btn-outline-dark">GitHub Repo (Web)</a>
-      </div>
-    </section>
+		.nav-tabs .nav-link {
+			color: var(--muted) !important;
+			border: none;
+			border-bottom: 2px solid transparent;
+			font-size: 0.88rem;
+			font-weight: 500;
+			padding: 10px 20px;
+			border-radius: 0;
+			background: transparent !important;
+		}
 
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-      <small>© 2026 Rihaan Meher | <a href="https://stats.uptimerobot.com/N1MpjMQC4U">System Health</a></small>
-    </footer>
+		.nav-tabs .nav-link:hover {
+			color: #d6daea !important;
+		}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		.nav-tabs .nav-link.active {
+			color: #fff !important;
+			border-bottom-color: var(--brand) !important;
+		}
 
-    <script>
-      let manualArchOverride = null;
+		/* Download cards inside tabs */
+		.dl-card {
+			background: var(--surface);
+			border: 1px solid rgba(255, 255, 255, 0.07);
+			border-radius: 12px;
+			margin-bottom: 14px;
+			overflow: hidden;
+		}
 
-      async function loadRelease() {
-        const res = await fetch("https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest");
-        const release = await res.json();
-        const assets = (release.assets || []).filter(a => !/\.blockmap$/i.test(a.name));
+		.dl-card-header {
+			background: rgba(255, 255, 255, 0.03);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+			padding: 12px 18px;
+			font-weight: 600;
+			font-size: 0.88rem;
+			color: #fff;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
 
-        // Asset classifiers
-        const isWindows = a => /windows|setup|\.exe$|\.msi$|\.7z$|\.zip$/i.test(a.name) && !/\.appx$/i.test(a.name) && !/mac/i.test(a.name);
-        const isMac = a => /mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) && !/setup|Windows/i.test(a.name);
-        const isLinux = a => /linux/i.test(a.name);
+		.dl-card-body {
+			padding: 4px 0;
+		}
 
-        const isX64 = a => /x64|amd64|x86_64/i.test(a.name);
-        const isArm64 = a => /arm64|aarch64/i.test(a.name);
-        const isCuda = a => /cuda/i.test(a.name);
-        const isRocm = a => /rocm/i.test(a.name);
-        const isJetpack5 = a => /jetpack5/i.test(a.name);
-        const isJetpack6 = a => /jetpack6/i.test(a.name);
+		.list-group-item {
+			background: transparent !important;
+			border-color: rgba(255, 255, 255, 0.05) !important;
+			padding: 11px 18px;
+			font-size: 0.84rem;
+			color: var(--muted);
+		}
 
-        // Filtered lists
-        const winX64 = assets.filter(a => isWindows(a) && isX64(a) && !isCuda(a) && !isRocm(a));
-        const winArm64 = assets.filter(a => isWindows(a) && isArm64(a));
-        const winCuda = assets.filter(a => isWindows(a) && isCuda(a));
-        const winRocm = assets.filter(a => isWindows(a) && isRocm(a));
+		.list-group-item a {
+			color: var(--brand);
+			text-decoration: none;
+			font-family: "JetBrains Mono", monospace;
+			font-size: 0.8rem;
+		}
 
-        const macX64 = assets.filter(a => isMac(a) && isX64(a));
-        const macArm64 = assets.filter(a => isMac(a) && isArm64(a));
+		.list-group-item a:hover {
+			text-decoration: underline;
+		}
 
-        const linuxX64 = assets.filter(a => isLinux(a) && isX64(a) && !isCuda(a) && !isRocm(a));
-        const linuxArm64 = assets.filter(a => isLinux(a) && isArm64(a) && !isJetpack5(a) && !isJetpack6(a) && !isCuda(a));
-        const linuxCuda = assets.filter(a => isLinux(a) && isCuda(a));
-        const linuxRocm = assets.filter(a => isLinux(a) && isRocm(a));
-        const jetpack5 = assets.filter(a => isLinux(a) && isJetpack5(a));
-        const jetpack6 = assets.filter(a => isLinux(a) && isJetpack6(a));
+		.list-group-item:first-child {
+			border-top: none !important;
+		}
 
-        const assetGroups = {
-          winX64, winArm64, winCuda, winRocm,
-          macX64, macArm64,
-          linuxX64, linuxArm64, linuxCuda, linuxRocm, jetpack5, jetpack6
-        };
+		.gpu-badge {
+			background: rgba(251, 191, 36, 0.12);
+			color: #fbbf24;
+			border: 1px solid rgba(251, 191, 36, 0.25);
+			font-family: "JetBrains Mono", monospace;
+			font-size: 0.6rem;
+			padding: 2px 8px;
+			border-radius: 4px;
+			font-weight: 500;
+			letter-spacing: 0.05em;
+		}
 
-        function detectPlatform() {
-          const ua = navigator.userAgent || "";
-          const platform = navigator.platform || "";
+		.no-builds {
+			color: var(--muted);
+			font-size: 0.83rem;
+			padding: 14px 18px;
+		}
 
-          let os = null;
-          let arch = null;
+		/* Community */
+		.community-section {
+			background: var(--surface);
+			border-top: 1px solid rgba(255, 255, 255, 0.07);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+		}
 
-          if (/Win/i.test(platform) || /Windows/i.test(ua)) os = "windows";
-          else if (/Mac/i.test(platform)) os = "mac";
-          else if (/Linux|X11|Ubuntu|Debian|Fedora|Arch/i.test(platform + ua)) os = "linux";
+		.btn-gh {
+			background: rgba(255, 255, 255, 0.05);
+			color: #d6daea;
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			border-radius: 8px;
+			padding: 9px 20px;
+			font-size: 0.88rem;
+			text-decoration: none;
+			transition: background 0.18s;
+		}
 
-          if (os === "mac") {
-            arch = manualArchOverride || "arm64";
-          } else {
-            if (/arm64|aarch64/i.test(ua + platform)) arch = "arm64";
-            else if (/x86_64|Win64|WOW64|amd64/i.test(ua + platform)) arch = "x64";
-          }
+		.btn-gh:hover {
+			background: rgba(255, 255, 255, 0.1);
+			color: #fff;
+		}
 
-          return { os, arch };
-        }
+		footer {
+			border-top: 1px solid rgba(255, 255, 255, 0.07);
+			font-size: 0.81rem;
+			color: var(--muted);
+		}
 
-        // <span data-color="green">Add auto-switch functionality</span>
-        function switchToOSTab(os) {
-          // Get the bootstrap tab instance
-          const tabElements = {
-            windows: document.getElementById('windows-tab'),
-            mac: document.getElementById('mac-tab'),
-            linux: document.getElementById('linux-tab')
-          };
+		footer a {
+			color: var(--muted);
+			text-decoration: none;
+		}
 
-          // Initialize all tabs
-          const tabInstances = {};
-          Object.keys(tabElements).forEach(key => {
-            if (tabElements[key]) {
-              tabInstances[key] = new bootstrap.Tab(tabElements[key]);
-            }
-          });
+		footer a:hover {
+			color: #fff;
+		}
+	</style>
+</head>
 
-          // Activate the appropriate tab based on OS
-          if (os === 'windows' && tabInstances.windows) {
-            tabInstances.windows.show();
-          } else if (os === 'mac' && tabInstances.mac) {
-            tabInstances.mac.show();
-          } else if (os === 'linux' && tabInstances.linux) {
-            tabInstances.linux.show();
-          }
-        }
+<body>
+	<nav class="navbar navbar-expand-lg sticky-top">
+		<div class="container">
+			<a class="navbar-brand" href="index.html">InferencePort<span>AI</span></a>
+			<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="nav">
+				<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+					<li class="nav-item">
+						<a class="nav-link" href="index.html">Home</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="marketplace.html">Marketplace</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="lightning.html">Lightning</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link active" href="install.html">Install</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="pricing.html">Pricing</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="security.html">Security</a>
+					</li>
+					<li class="nav-item ms-2">
+						<a class="nav-link nav-pill" href="install.html#install"
+							>Get Started</a
+						>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
 
-        function chooseRecommendedAsset(info) {
-          const { os, arch } = info;
+	<!-- Hero -->
+	<section class="hero-section">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-md-6 text-center text-md-start">
+					<h1
+						class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title">
+						<span class="me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="orange"
+								class="bi bi-lightning-fill" viewBox="0 0 16 16">
+								<path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
+							</svg>
+						</span>
+						InferencePort AI
+					</h1>
+					<p class="lead mt-3 hero-text">
+						InferencePort makes it effortless to run, test, and share local AI
+						models and Hugging Face Spaces from a clean desktop interface.
+					</p>
+					<a href="#install" class="btn btn-light btn-lg mt-3 fw-semibold">Install Now</a>
+				</div>
+				<div class="col-md-6 text-center mt-4 mt-md-0">
+					<img src="img/examples/cucumber.png" alt="App Screenshot" class="img-fluid rounded shadow-lg"
+						style="width: 425px; height: 225px; object-fit: cover" />
+				</div>
+			</div>
+		</div>
+	</section>
 
-          if (os === "windows") {
-            if (arch === "arm64" && winArm64.length) return winArm64[0];
-            if (winX64.length) return winX64[0];
-            if (winCuda.length) return winCuda[0];
-            if (winRocm.length) return winRocm[0];
-          }
+	<!-- Download section -->
+	<section id="install" class="py-5">
+		<div class="container">
+			<h2 class="fw-bold text-center mb-4" style="color: #fff; letter-spacing: -0.02em">
+				Download &amp; Install
+			</h2>
 
-          if (os === "mac") {
-            if (arch === "arm64" && macArm64.length) return macArm64[0];
-            if (arch === "x64" && macX64.length) return macX64[0];
-          }
+			<!-- Recommended download — populated by JS -->
+			<div id="recommended-download" class="mb-4"></div>
 
-          if (os === "linux") {
-            if (arch === "arm64" && linuxArm64.length) return linuxArm64[0];
-            if (linuxX64.length) return linuxX64[0];
-            if (linuxCuda.length) return linuxCuda[0];
-            if (linuxRocm.length) return linuxRocm[0];
-            if (jetpack6.length) return jetpack6[0];
-            if (jetpack5.length) return jetpack5[0];
-          }
+			<!-- Platform tabs -->
+			<ul class="nav nav-tabs justify-content-center mb-0" id="installTabs" role="tablist">
+				<li class="nav-item">
+					<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#windows" id="windows-tab">
+						🪟 Windows
+					</button>
+				</li>
+				<li class="nav-item">
+					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac" id="mac-tab">
+						🍎 macOS
+					</button>
+				</li>
+				<li class="nav-item">
+					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#linux" id="linux-tab">
+						🐧 Linux
+					</button>
+				</li>
+			</ul>
 
-          return null;
-        }
+			<div class="tab-content mt-4" id="installTabsContent">
+				<div class="tab-pane fade show active" id="windows"></div>
+				<div class="tab-pane fade" id="mac"></div>
+				<div class="tab-pane fade" id="linux"></div>
+			</div>
+		</div>
+	</section>
 
-        function renderRecommended() {
-          const container = document.getElementById("recommended-download");
-          const info = detectPlatform();
-          const asset = chooseRecommendedAsset(info);
+	<!-- Community -->
+	<section class="community-section py-5">
+		<div class="container text-center">
+			<h2 class="fw-bold mb-2" style="color: #fff; letter-spacing: -0.02em">
+				Join the Community
+			</h2>
+			<p style="color: var(--muted); margin-bottom: 24px">
+				Collaborate, contribute, and explore new possibilities with developers
+				worldwide.
+			</p>
+			<div class="d-flex justify-content-center gap-3 flex-wrap">
+				<a href="https://github.com/sharktide/InferencePort-ai" class="btn-gh">GitHub Repo (App)</a>
+				<a href="https://github.com/sharktide/InferencePort-web" class="btn-gh">GitHub Repo (Web)</a>
+			</div>
+		</div>
+	</section>
 
-          if (!asset) {
-            container.innerHTML = `
-              <div class="card border-0 shadow-sm p-4 text-center">
-                <h4 class="fw-bold mb-2">Recommended download</h4>
-                <p class="text-muted mb-0">No matching build found. Please choose from the tabs below.</p>
-              </div>`;
-            return;
-          }
+	<footer class="py-4">
+		<div class="container">
+			<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+				<span>© 2026 Rihaan Meher |
+					<a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank">System Health</a></span>
+				<div class="d-flex gap-3 flex-wrap">
+					<a href="index.html">Home</a>
+					<a href="marketplace.html">Marketplace</a>
+					<a href="security.html">Security</a>
+					<a href="pricing.html">Pricing</a>
+				</div>
+			</div>
+		</div>
+	</footer>
 
-          const platformLabel = `${info.os.toUpperCase()} ${info.arch.toUpperCase()}`;
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		let manualArchOverride = null;
 
-          container.innerHTML = `
-            <div class="card border-0 shadow-sm p-4 d-flex flex-column flex-md-row align-items-center justify-content-between">
-              <div class="text-center text-md-start mb-3 mb-md-0">
-                <h4 class="fw-bold mb-1">Recommended download for your system</h4>
-                <p class="mb-1 text-muted">${platformLabel}</p>
-                <p class="mb-0 small text-muted">File: ${asset.name}</p>
+		async function loadRelease() {
+			const res = await fetch(
+				"https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest",
+			);
+			const release = await res.json();
+			const assets = (release.assets || []).filter(
+				(a) => !/\.blockmap$/i.test(a.name),
+			);
 
-                ${
-                  info.os === "mac" && info.arch === "arm64"
-                    ? `<small class="text-muted">
-                        Not on Apple Silicon?
-                        <a href="#" id="switch-intel">Switch to Intel build</a>
-                      </small>`
-                    : ""
-                }
-              </div>
+			const isWindows = (a) =>
+				/windows|setup|\.exe$|\.msi$|\.7z$|\.zip$/i.test(a.name) &&
+				!/\.appx$/i.test(a.name) &&
+				!/mac/i.test(a.name);
+			const isMac = (a) =>
+				/mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) &&
+				!/setup|Windows/i.test(a.name);
+			const isLinux = (a) => /linux/i.test(a.name);
+			const isX64 = (a) => /x64|amd64|x86_64/i.test(a.name);
+			const isArm64 = (a) => /arm64|aarch64/i.test(a.name);
+			const isCuda = (a) => /cuda/i.test(a.name);
+			const isRocm = (a) => /rocm/i.test(a.name);
+			const isJp5 = (a) => /jetpack5/i.test(a.name);
+			const isJp6 = (a) => /jetpack6/i.test(a.name);
 
-              <div class="text-center">
-                <a href="${asset.browser_download_url}" class="btn btn-primary btn-lg px-4">Download now</a>
-              </div>
+			const winX64 = assets.filter(
+				(a) => isWindows(a) && isX64(a) && !isCuda(a) && !isRocm(a),
+			);
+			const winArm64 = assets.filter((a) => isWindows(a) && isArm64(a));
+			const winCuda = assets.filter((a) => isWindows(a) && isCuda(a));
+			const winRocm = assets.filter((a) => isWindows(a) && isRocm(a));
+			const macX64 = assets.filter((a) => isMac(a) && isX64(a));
+			const macArm64 = assets.filter((a) => isMac(a) && isArm64(a));
+			const linuxX64 = assets.filter(
+				(a) => isLinux(a) && isX64(a) && !isCuda(a) && !isRocm(a),
+			);
+			const linuxArm64 = assets.filter(
+				(a) =>
+					isLinux(a) && isArm64(a) && !isJp5(a) && !isJp6(a) && !isCuda(a),
+			);
+			const linuxCuda = assets.filter((a) => isLinux(a) && isCuda(a));
+			const linuxRocm = assets.filter((a) => isLinux(a) && isRocm(a));
+			const jetpack5 = assets.filter((a) => isLinux(a) && isJp5(a));
+			const jetpack6 = assets.filter((a) => isLinux(a) && isJp6(a));
+
+			function detectPlatform() {
+				const ua = navigator.userAgent || "",
+					pl = navigator.platform || "";
+				let os = null,
+					arch = null;
+				if (/Win/i.test(pl) || /Windows/i.test(ua)) os = "windows";
+				else if (/Mac/i.test(pl)) os = "mac";
+				else if (/Linux|X11|Ubuntu|Debian|Fedora|Arch/i.test(pl + ua))
+					os = "linux";
+				if (os === "mac") {
+					arch = manualArchOverride || "arm64";
+				} else {
+					if (/arm64|aarch64/i.test(ua + pl)) arch = "arm64";
+					else if (/x86_64|Win64|WOW64|amd64/i.test(ua + pl)) arch = "x64";
+				}
+				return { os, arch };
+			}
+
+			function switchToOSTab(os) {
+				const map = {
+					windows: "windows-tab",
+					mac: "mac-tab",
+					linux: "linux-tab",
+				};
+				const el = document.getElementById(map[os]);
+				if (el) bootstrap.Tab.getOrCreateInstance(el).show();
+			}
+
+			function chooseRecommendedAsset({ os, arch }) {
+				if (os === "windows") {
+					if (arch === "arm64" && winArm64.length) return winArm64[0];
+					if (winX64.length) return winX64[0];
+					if (winCuda.length) return winCuda[0];
+					if (winRocm.length) return winRocm[0];
+				}
+				if (os === "mac") {
+					if (arch === "arm64" && macArm64.length) return macArm64[0];
+					if (arch === "x64" && macX64.length) return macX64[0];
+				}
+				if (os === "linux") {
+					if (arch === "arm64" && linuxArm64.length) return linuxArm64[0];
+					if (linuxX64.length) return linuxX64[0];
+					if (linuxCuda.length) return linuxCuda[0];
+					if (linuxRocm.length) return linuxRocm[0];
+					if (jetpack6.length) return jetpack6[0];
+					if (jetpack5.length) return jetpack5[0];
+				}
+				return null;
+			}
+
+			function renderRecommended() {
+				const container = document.getElementById("recommended-download");
+				const info = detectPlatform();
+				const asset = chooseRecommendedAsset(info);
+
+				if (!asset) {
+					container.innerHTML = `
+          <div class="rec-card" style="text-align:center">
+            <div>
+              <div class="rec-title">Recommended download</div>
+              <div class="rec-meta">No matching build found — choose from the tabs below.</div>
             </div>
-          `;
-
-          if (info.os === "mac" && info.arch === "arm64") {
-            document.getElementById("switch-intel").onclick = e => {
-              e.preventDefault();
-              manualArchOverride = "x64";
-              renderRecommended();
-            };
-          }
-          
-          // <span data-color="green">After rendering, switch to the correct tab</span>
-          switchToOSTab(info.os);
-        }
-
-        renderRecommended();
-
-        function renderCards(title, assets, isGpu = false) {
-          if (!assets.length) {
-            return `
-              <div class="card mb-3">
-                <div class="card-header fw-bold">${title}${isGpu ? ' <span class="badge bg-warning text-dark">GPU</span>' : ''}</div>
-                <div class="card-body"><p class="mb-0 text-muted">No builds available.</p></div>
-              </div>`;
-          }
-
-          return `
-            <div class="card mb-3">
-              <div class="card-header fw-bold">${title}${isGpu ? ' <span class="badge bg-warning text-dark">GPU</span>' : ''}</div>
-              <div class="card-body">
-                <ul class="list-group">
-                  ${assets.map(a => `<li class="list-group-item"><a href="${a.browser_download_url}">${a.name}</a></li>`).join("")}
-                </ul>
-              </div>
-            </div>`;
-        }
-
-        document.getElementById("windows").innerHTML = `
-          <h4 class="mb-3">Windows Downloads</h4>
-          ${renderCards("Windows x64 (CPU)", winX64)}
-          ${renderCards("Windows ARM64", winArm64)}
-          ${renderCards("GPU Builds", [...winCuda, ...winRocm], true)}
-          <div class="card mb-3">
-            <div class="card-header fw-bold">Source Code</div>
-            <div class="card-body"><ul class="list-group" id="win-source-links"></ul></div>
           </div>`;
+					return;
+				}
 
-        document.getElementById("mac").innerHTML = `
-          <h4 class="mb-3">macOS Downloads</h4>
-          ${renderCards("macOS Intel (x64)", macX64)}
-          ${renderCards("macOS Apple Silicon (ARM64)", macArm64)}
-          <div class="card mb-3">
-            <div class="card-header fw-bold">Source Code</div>
-            <div class="card-body"><ul class="list-group" id="mac-source-links"></ul></div>
-          </div>`;
+				const platformLabel = `${(info.os || "").toUpperCase()} ${(info.arch || "").toUpperCase()}`;
+				container.innerHTML = `
+        <div class="rec-card">
+          <div>
+            <div class="rec-title">Recommended download for your system</div>
+            <div class="rec-meta">${platformLabel}</div>
+            <div class="rec-filename">${asset.name}</div>
+            ${info.os === "mac" && info.arch === "arm64" ? `<a href="#" class="rec-switch" id="switch-intel">Not on Apple Silicon? Switch to Intel build</a>` : ""}
+          </div>
+          <div>
+            <a href="${asset.browser_download_url}" class="btn-rec-dl">Download now</a>
+          </div>
+        </div>`;
 
-        document.getElementById("linux").innerHTML = `
-          <h4 class="mb-3">Linux Downloads</h4>
-          ${renderCards("Linux x64 (CPU)", linuxX64)}
-          ${renderCards("Linux ARM64 (CPU)", linuxArm64)}
-          ${renderCards("GPU Builds", [...linuxCuda, ...linuxRocm, ...jetpack5, ...jetpack6], true)}
-          <div class="card mb-3">
-            <div class="card-header fw-bold">Source Code</div>
-            <div class="card-body"><ul class="list-group" id="linux-source-links"></ul></div>
-          </div>`;
+				if (info.os === "mac" && info.arch === "arm64") {
+					document.getElementById("switch-intel").onclick = (e) => {
+						e.preventDefault();
+						manualArchOverride = "x64";
+						renderRecommended();
+					};
+				}
 
-        function sourceLinks(release) {
-          return `
-            <li class="list-group-item"><a href="${release.tarball_url}">Download Tarball</a></li>
-            <li class="list-group-item"><a href="${release.zipball_url}">Download ZIP Archive</a></li>
-            <li class="list-group-item"><a href="${release.html_url}">View Release Page</a></li>
-          `;
-        }
+				switchToOSTab(info.os);
+			}
 
-        document.getElementById("win-source-links").innerHTML = sourceLinks(release);
-        document.getElementById("mac-source-links").innerHTML = sourceLinks(release);
-        document.getElementById("linux-source-links").innerHTML = sourceLinks(release);
-      }
+			renderRecommended();
 
-      loadRelease();
-    </script>
+			function renderCards(title, assetList, isGpu = false) {
+				const gpuBadge = isGpu ? ' <span class="gpu-badge">GPU</span>' : "";
+				if (!assetList.length)
+					return `
+        <div class="dl-card">
+          <div class="dl-card-header">${title}${gpuBadge}</div>
+          <div class="no-builds">No builds available.</div>
+        </div>`;
+				return `
+        <div class="dl-card">
+          <div class="dl-card-header">${title}${gpuBadge}</div>
+          <div class="dl-card-body">
+            <ul class="list-group list-group-flush">
+              ${assetList.map((a) => `<li class="list-group-item"><a href="${a.browser_download_url}">${a.name}</a></li>`).join("")}
+            </ul>
+          </div>
+        </div>`;
+			}
 
-  </body>
+			function sourceLinks(r) {
+				return `
+        <li class="list-group-item"><a href="${r.tarball_url}">Download Tarball</a></li>
+        <li class="list-group-item"><a href="${r.zipball_url}">Download ZIP Archive</a></li>
+        <li class="list-group-item"><a href="${r.html_url}">View Release Page</a></li>`;
+			}
+
+			document.getElementById("windows").innerHTML = `
+      <h5 class="fw-bold mb-3" style="color:#fff">Windows Downloads</h5>
+      ${renderCards("Windows x64 (CPU)", winX64)}
+      ${renderCards("Windows ARM64", winArm64)}
+      ${renderCards("GPU Builds", [...winCuda, ...winRocm], true)}
+      <div class="dl-card">
+        <div class="dl-card-header">Source Code</div>
+        <div class="dl-card-body"><ul class="list-group list-group-flush" id="win-source-links"></ul></div>
+      </div>`;
+
+			document.getElementById("mac").innerHTML = `
+      <h5 class="fw-bold mb-3" style="color:#fff">macOS Downloads</h5>
+      ${renderCards("macOS Intel (x64)", macX64)}
+      ${renderCards("macOS Apple Silicon (ARM64)", macArm64)}
+      <div class="dl-card">
+        <div class="dl-card-header">Source Code</div>
+        <div class="dl-card-body"><ul class="list-group list-group-flush" id="mac-source-links"></ul></div>
+      </div>`;
+
+			document.getElementById("linux").innerHTML = `
+      <h5 class="fw-bold mb-3" style="color:#fff">Linux Downloads</h5>
+      ${renderCards("Linux x64 (CPU)", linuxX64)}
+      ${renderCards("Linux ARM64 (CPU)", linuxArm64)}
+      ${renderCards("GPU Builds", [...linuxCuda, ...linuxRocm, ...jetpack5, ...jetpack6], true)}
+      <div class="dl-card">
+        <div class="dl-card-header">Source Code</div>
+        <div class="dl-card-body"><ul class="list-group list-group-flush" id="linux-source-links"></ul></div>
+      </div>`;
+
+			document.getElementById("win-source-links").innerHTML =
+				sourceLinks(release);
+			document.getElementById("mac-source-links").innerHTML =
+				sourceLinks(release);
+			document.getElementById("linux-source-links").innerHTML =
+				sourceLinks(release);
+		}
+
+		loadRelease();
+	</script>
+</body>
+
 </html>
