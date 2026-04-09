@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>InferencePort AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- Inline early theme to prevent flash of wrong theme -->
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('ipai_theme');
+        if (t) document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+      } catch(e){}
+    })();
+  </script>
+  <link rel="stylesheet" href="/css/tokens.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/sidebar.css" />
+  <link rel="stylesheet" href="/css/chat.css" />
+  <link rel="stylesheet" href="/css/modals.css" />
+  <link rel="stylesheet" href="/css/input.css" />
+  <style>
+    html, body { overflow: hidden; height: 100%; max-height: var(--app-height, 100dvh); width: 100%; max-width: 100%; }
+    #app { display: flex; height: var(--app-height, 100dvh); overflow: hidden; width: 100%; max-width: 100%; }
+    @media (max-width: 768px) {
+      #main {
+        height: var(--app-height, 100dvh);
+        max-height: var(--app-height, 100dvh);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      /* Push content below the fixed top bar */
+      .chat-view, .welcome-view { padding-top: 0; }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script
+  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+  async
+  defer
+></script>
+<link rel="preconnect" href="https://challenges.cloudflare.com" />
+</head>
+<body>
+  <!-- Share import overlay -->
+  <div id="share-import-banner" class="share-banner hidden">
+    <div class="share-banner-inner">
+      <span class="share-icon">🔗</span>
+      <span id="share-banner-text">Importing shared session…</span>
+      <button id="share-import-btn" class="btn-primary">Import Session</button>
+      <button id="share-dismiss-btn" class="btn-ghost">Dismiss</button>
+    </div>
+  </div>
+
+  <!-- Mobile top bar (hidden on desktop via CSS) -->
+  <div id="mobile-top-bar">
+    <button id="mobile-sidebar-btn" class="mobile-bar-btn" title="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="mobile-bar-title">InferencePort AI</span>
+    <button id="mobile-newchat-btn" class="mobile-bar-btn" title="New Chat">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
+
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar collapsed">
+      <div class="sidebar-top">
+        <div class="sidebar-top-row">
+          <button id="new-chat-btn" class="sidebar-icon-btn" title="New Chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <button id="toggle-sidebar-btn" class="sidebar-icon-btn" title="Toggle sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </button>
+        </div>
+
+        <div class="sidebar-top-switcher">
+          <div class="sidebar-top-divider"></div>
+          <div class="sidebar-top-switcher-inner">
+            <div id="sidebar-mode-tabs" class="sidebar-mode-tabs">
+              <button class="sidebar-mode-tab active" data-sidebar-mode="chats">Chats</button>
+              <button class="sidebar-mode-tab" data-sidebar-mode="media">Media</button>
+            </div>
+            <button id="sidebar-trash-btn" class="sidebar-trash-btn" title="Open Trash">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-sessions" id="sidebar-sessions">
+        <div id="sidebar-chat-pane" class="sidebar-pane active">
+          <div class="session-list" id="session-list"></div>
+        </div>
+
+        <div id="sidebar-media-pane" class="sidebar-pane hidden">
+          <div class="sidebar-subtabs">
+            <div class="sidebar-pane-heading">
+              <div class="sidebar-pane-kicker">Media</div>
+              <div class="sidebar-pane-title">Cloud Files</div>
+            </div>
+            <button id="media-create-btn" class="sidebar-create-btn" title="Create or upload" aria-label="Create or upload media">
+              <span class="sidebar-create-plus">+</span>
+            </button>
+          </div>
+          <div id="media-breadcrumbs" class="media-breadcrumbs"></div>
+          <div id="media-selection-bar" class="sidebar-selection-bar hidden"></div>
+          <div id="media-list" class="media-list"></div>
+          <div id="media-usage-panel" class="media-usage-panel"></div>
+        </div>
+
+        <div id="sidebar-trash-overlay" class="sidebar-trash-overlay" aria-hidden="true">
+          <div class="sidebar-trash-header">
+            <button id="sidebar-trash-back" class="sidebar-back-btn" title="Back">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="sidebar-trash-heading">
+              <div id="sidebar-trash-title" class="sidebar-trash-title">Trash</div>
+              <div id="sidebar-trash-subtitle" class="sidebar-trash-subtitle"></div>
+            </div>
+          </div>
+          <div id="sidebar-trash-selection-bar" class="sidebar-selection-bar hidden"></div>
+          <div id="sidebar-trash-list" class="sidebar-trash-list"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom" id="sidebar-bottom">
+        <!-- Shown when not signed in -->
+        <div id="guest-section" class="account-section">
+          <!-- Collapsed: icon-only sign-in button -->
+          <button id="signin-icon-btn" class="btn-signin-icon" title="Sign In">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          </button>
+          <!-- Expanded: full sign-in button -->
+          <button id="signin-btn" class="btn-signin">Sign In</button>
+          <button id="settings-btn-guest" class="sidebar-icon-btn" title="Settings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+
+        <!-- Shown when signed in -->
+        <div id="user-section" class="account-section hidden">
+          <button id="user-profile-btn" class="user-profile-btn">
+            <div class="user-avatar" id="user-avatar">?</div>
+            <div class="user-info">
+              <span class="user-name" id="user-name-display">—</span>
+              <span class="user-plan" id="user-plan-display">Free</span>
+            </div>
+          </button>
+          <button id="settings-btn" class="sidebar-icon-btn" title="Settings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main chat area -->
+    <main id="main">
+      <!-- Terms of service banner -->
+      <div id="tos-banner">
+        <p>
+          By interacting with this website, you agree to 
+          <a href="terms.html" target="_blank" rel="noopener noreferrer">these Terms of Service</a>
+          and 
+          <a href="privacy.html" target="_blank" rel="noopener noreferrer">this privacy policy</a>.
+        </p>
+      </div>
+
+      <!-- Welcome / new chat state -->
+      <div id="welcome-view" class="welcome-view">
+        <h1 class="welcome-title">What's on your mind?</h1>
+        <div class="welcome-input-wrap">
+          <div class="center-input-container">
+            <div id="center-file-preview-row" class="input-file-preview-row"></div>
+            <div class="center-input-row">
+              <div class="attach-btn-wrap">
+                <button id="center-attach-btn" class="attach-btn" title="Attach">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+              </div>
+              <textarea id="center-input" class="center-textarea" placeholder="Ask anything…" rows="1"></textarea>
+            <div class="center-input-actions">
+              <button id="center-tool-search" class="tool-btn" data-tool="webSearch" title="Web Search">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </button>
+              <button id="center-tool-image" class="tool-btn" data-tool="imageGen" title="Image">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </button>
+              <button id="center-tool-video" class="tool-btn" data-tool="videoGen" title="Video">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              </button>
+              <button id="center-tool-audio" class="tool-btn" data-tool="audioGen" title="Audio">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </button>
+              <button id="center-send-btn" class="send-btn-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/></svg>
+              </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active chat view -->
+      <div id="chat-view" class="chat-view hidden">
+        <div id="chat-messages" class="chat-messages"></div>
+      </div>
+
+      <!-- Bottom input (active during chat) -->
+      <div id="bottom-input-bar" class="bottom-input-bar hidden">
+        <div class="bottom-input-wrap">
+          <button id="bottom-attach-btn" class="attach-btn-bottom" title="Attach">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <div class="bottom-textarea-wrap">
+            <div class="tool-row">
+              <button class="tool-btn-sm active" data-tool="webSearch" title="Web Search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Search</span>
+              </button>
+              <button class="tool-btn-sm" data-tool="imageGen" title="Image">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Image</span>
+              </button>
+              <button class="tool-btn-sm" data-tool="videoGen" title="Video">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                <span>Video</span>
+              </button>
+              <button class="tool-btn-sm" data-tool="audioGen" title="Audio">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <span>Audio</span>
+              </button>
+            </div>
+            <div id="file-preview-row" class="input-file-preview-row"></div>
+            <textarea id="bottom-input" class="bottom-textarea" placeholder="Ask anything…" rows="1"></textarea>
+          </div>
+          <button id="bottom-send-btn" class="send-btn-bottom">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21L23 12 2 3v7l15 2-15 2v7z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <aside id="media-editor-panel" class="media-editor-panel hidden">
+        <div class="media-editor-header">
+          <div class="media-editor-heading">
+            <div class="media-editor-title" id="media-editor-title">Untitled</div>
+            <div class="media-editor-meta" id="media-editor-meta"></div>
+          </div>
+          <button id="media-editor-close" class="sidebar-icon-btn" title="Close editor">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div id="media-editor-toolbar" class="media-editor-toolbar hidden"></div>
+        <div id="media-editor-status" class="media-editor-status hidden"></div>
+        <div id="media-editor-content" class="media-editor-content"></div>
+        <div class="media-editor-footer">
+          <button class="btn-ghost" id="media-editor-cancel">Close</button>
+          <button class="btn-primary" id="media-editor-save">Save</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Context Menus -->
+  <div id="session-context-menu" class="context-menu hidden"></div>
+  <div id="user-context-menu" class="context-menu hidden"></div>
+  <div id="attach-context-menu" class="context-menu hidden"></div>
+
+  <!-- Modals -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div id="modal-box" class="modal-box"></div>
+  </div>
+
+  <!-- Turnstile verification overlay (shows until user verifies) -->
+  <div id="turnstile-overlay" class="modal-overlay turnstile-overlay">
+    <div class="turnstile-box" id="turnstile-box">
+      <div class="turnstile-message">Please verify you are human to continue using the chat.</div>
+      <div id="turnstile-widget">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAC1ZXKIhZ9Kdz8j9" data-callback="onTurnstileSuccess"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification area -->
+  <div id="notifications" class="notifications"></div>
+
+  <!-- Hidden file input -->
+  <input type="file" id="file-input" accept=".txt,.md,.json,.js,.ts,.css,.py,.html,.htm,.xml,.csv,.rtf,text/*" multiple style="display:none" />
+  <input type="file" id="image-input" accept="image/*" multiple style="display:none" />
+  <input type="file" id="media-upload-input" multiple style="display:none" />
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <!-- Turnstile widget handler (shows verification overlay) -->
+  <script type="module" src="/js/turnstile.js"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

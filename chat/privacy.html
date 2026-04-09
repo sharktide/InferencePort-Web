@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InferencePort Privacy Policy</title>
+  <style>
+    :root {
+      --bg: #090b10;
+      --bg-soft: #121621;
+      --panel: rgba(19, 23, 33, 0.84);
+      --panel-strong: rgba(26, 32, 45, 0.92);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f5f7fb;
+      --muted: #aab3c5;
+      --accent: #ffd84d;
+      --accent-2: #7dd3fc;
+      --good: #86efac;
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(125, 211, 252, 0.18), transparent 34%),
+        radial-gradient(circle at top right, rgba(255, 216, 77, 0.12), transparent 28%),
+        linear-gradient(180deg, #080a0e, #0b0d12 28%, #0f1320 100%);
+      line-height: 1.65;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 72px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background:
+        linear-gradient(135deg, rgba(255, 216, 77, 0.12), rgba(125, 211, 252, 0.08)),
+        rgba(10, 12, 17, 0.88);
+      box-shadow: var(--shadow);
+      padding: 36px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -100px auto;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 216, 77, 0.28), transparent 70%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(2.3rem, 5vw, 4.6rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0;
+      color: #d6dceb;
+      font-size: 1.05rem;
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .hero-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      backdrop-filter: blur(14px);
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .card p,
+    .card li {
+      color: #d7ddec;
+    }
+
+    .card ul {
+      margin: 14px 0 0;
+      padding-left: 18px;
+    }
+
+    .callout {
+      border: 1px solid rgba(134, 239, 172, 0.22);
+      background: linear-gradient(180deg, rgba(134, 239, 172, 0.08), rgba(134, 239, 172, 0.02));
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .timeline-item {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+    }
+
+    .timeline-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .shell { width: min(100%, calc(100% - 20px)); padding-top: 20px; }
+      .hero, .card { padding: 22px; border-radius: 24px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="eyebrow">InferencePort AI • Privacy Policy</div>
+      <h1>Your Data, In Context</h1>
+      <p>
+        InferencePort needs some information to run chats, store media, synchronize signed-in settings,
+        enforce limits, and keep the service safe. This policy explains what is collected, why it is used,
+        and where third-party services may be involved.
+      </p>
+      <div class="hero-links">
+        <a href="./">Back To Chat</a>
+        <a href="./terms.html">Read Terms Of Service</a>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>What We Collect</h2>
+        <ul>
+          <li>Connection and security data such as IP address, user agent, timestamps, and verification state.</li>
+          <li>Authentication and account identifiers when you sign in.</li>
+          <li>Chat messages, uploaded files, saved memories, personalization prompts, and generated media when you use those features.</li>
+          <li>Guest identifiers and client identifiers stored locally so guest sessions and per-device limits work correctly.</li>
+          <li>Usage, subscription, and quota data returned by service providers that handle billing and rate limits.</li>
+        </ul>
+      </article>
+
+      <article class="card callout">
+        <h2>Short Version</h2>
+        <p>
+          The website does not operate without processing data. It stores the information needed to provide chats,
+          uploads, memories, settings, moderation and abuse prevention, and account-linked features.
+        </p>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>How Data Is Used</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <strong>Core product delivery</strong>
+            Chat history, prompt settings, and media files are used so the interface can reopen previous work and keep your sessions coherent.
+          </div>
+          <div class="timeline-item">
+            <strong>Security and reliability</strong>
+            Verification, device session tracking, and operational logging help reduce abuse, fraud, and accidental account conflicts.
+          </div>
+          <div class="timeline-item">
+            <strong>Billing and limits</strong>
+            Subscription and usage systems are queried so the website can show plan data, tool quotas, and free-tier limits like daily web searches.
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>Third-Party Services</h2>
+        <ul>
+          <li>Authentication and account services may process sign-in requests and account metadata.</li>
+          <li>Verification providers may process challenge tokens and connection metadata.</li>
+          <li>Model, search, generation, billing, and quota services may receive the data necessary to complete your request.</li>
+        </ul>
+        <p>
+          Avoid submitting highly sensitive information unless you understand that third-party infrastructure may be involved in fulfilling the request.
+        </p>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Retention And Control</h2>
+        <ul>
+          <li>You can delete chats, media, memories, or accounts using the website controls that are available to you.</li>
+          <li>Operational logs, short-lived backups, or abuse-prevention records may persist temporarily where needed for reliability or security.</li>
+          <li>Guest content can still be stored for the duration needed to support the guest experience and cleanup policy.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>Security Note</h2>
+        <p>
+          InferencePort uses protective controls, but no internet service can promise absolute security. Review generated outputs before relying on them,
+          and do not assume uploaded or generated content is risk-free.
+        </p>
+      </article>
+    </section>
+
+    <footer>
+      This privacy policy is a product-level explanation of how the current website works and may evolve as features or providers change.
+    </footer>
+  </div>
+</body>
+</html>
