@@ -1,11 +1,12 @@
-
-
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const https = require('https'); // needed for proxy
 
 const root = path.resolve(__dirname);
 const port = process.env.PORT || 8080;
+
+const HF_URL = "https://incognitolm-chat.hf.space";
 
 const mime = {
   '.html': 'text/html',
@@ -36,15 +37,44 @@ function sendFile(res, filePath) {
   });
 }
 
+function proxyToHF(req, res) {
+  try {
+    const url = new URL(req.url, `http://${req.headers.host}`);
+
+    // 🔥 Remove `/chat` prefix ONLY
+    const proxiedPath = url.pathname.replace(/^\/chat/, '') || '/';
+
+    // Preserve query string
+    const targetUrl = HF_URL + proxiedPath + url.search;
+
+    https.get(targetUrl, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res);
+    }).on('error', (err) => {
+      console.error(err);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Proxy error');
+    });
+
+  } catch (e) {
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Bad request');
+  }
+}
+
 const server = http.createServer((req, res) => {
   try {
+    // ✅ Handle /chat route FIRST
+    if (req.url.startsWith('/chat')) {
+      return proxyToHF(req, res);
+    }
+
     // Prevent path traversal
     const safeSuffix = path.normalize(req.url.split('?')[0]).replace(/^\/+/, '');
     let filePath = path.join(root, safeSuffix);
 
     fs.stat(filePath, (err, stats) => {
       if (!err && stats.isDirectory()) {
-        // If directory, try index.html
         filePath = path.join(filePath, 'index.html');
       }
 
@@ -52,7 +82,6 @@ const server = http.createServer((req, res) => {
         if (!err2 && stats2.isFile()) {
           sendFile(res, filePath);
         } else {
-          // Fallback to root index.html (SPA-friendly)
           const indexFile = path.join(root, 'index.html');
           fs.stat(indexFile, (ie, is) => {
             if (!ie && is.isFile()) {
