@@ -7,6 +7,22 @@
     {
       "source": "/chat/:path*",
       "destination": "https://incognitolm-chat.hf.space/:path*"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "https://incognitolm-chat.hf.space/js/:path*"
+    },
+    {
+      "source": "/css/:path*",
+      "destination": "https://incognitolm-chat.hf.space/css/:path*"
+    },
+    {
+      "source": "/static/:path*",
+      "destination": "https://incognitolm-chat.hf.space/static/:path*"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "https://incognitolm-chat.hf.space/assets/:path*"
     }
   ]
 }
