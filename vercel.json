@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/chat",
+      "destination": "https://incognitolm-chat.hf.space"
+    },
+    {
+      "source": "/chat/:path*",
+      "destination": "https://incognitolm-chat.hf.space/:path*"
+    }
+  ]
+}
