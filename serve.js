@@ -41,23 +41,39 @@ function proxyToHF(req, res) {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
 
-    // 🔥 Remove `/chat` prefix ONLY
-    const proxiedPath = url.pathname.replace(/^\/chat/, '') || '/';
+    // Remove /chat prefix
+    let proxiedPath = url.pathname.replace(/^\/chat/, '');
+    if (proxiedPath === '') proxiedPath = '/';
 
-    // Preserve query string
-    const targetUrl = HF_URL + proxiedPath + url.search;
+    const targetUrl = new URL(HF_URL + proxiedPath + url.search);
 
-    https.get(targetUrl, (proxyRes) => {
+    const options = {
+      hostname: targetUrl.hostname,
+      path: targetUrl.pathname + targetUrl.search,
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: targetUrl.hostname, // 🔥 critical
+      },
+    };
+
+    const proxyReq = https.request(options, (proxyRes) => {
       res.writeHead(proxyRes.statusCode, proxyRes.headers);
       proxyRes.pipe(res);
-    }).on('error', (err) => {
+    });
+
+    proxyReq.on('error', (err) => {
       console.error(err);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.writeHead(500);
       res.end('Proxy error');
     });
 
+    // Pipe body (for POST, etc.)
+    req.pipe(proxyReq);
+
   } catch (e) {
-    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    console.error(e);
+    res.writeHead(500);
     res.end('Bad request');
   }
 }
