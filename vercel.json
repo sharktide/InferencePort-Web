@@ -23,11 +23,6 @@
     {
       "source": "/assets/:path*",
       "destination": "https://incognitolm-chat.hf.space/assets/:path*"
-    },
-    {
-      "source": "/oauth-callback.html",
-      "destination": "https://incognitolm-chat.hf.space/oauth-callback.html",
-      "permanent": false
     }
   ]
 }
