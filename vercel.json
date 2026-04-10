@@ -23,6 +23,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://incognitolm-chat.hf.space/api/:path*"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://incognitolm-chat.hf.space/admin/:path*"
     }
   ]
 }
