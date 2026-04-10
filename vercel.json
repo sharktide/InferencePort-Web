@@ -19,6 +19,10 @@
     {
       "source": "/css/:path*",
       "destination": "https://incognitolm-chat.hf.space/css/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://incognitolm-chat.hf.space/api/:path*"
     }
   ]
 }
