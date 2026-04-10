@@ -2,7 +2,11 @@
   "rewrites": [
     {
       "source": "/chat",
-      "destination": "https://incognitolm-chat.hf.space"
+      "destination": "https://incognitolm-chat.hf.space/"
+    },
+    {
+      "source": "/chat/",
+      "destination": "https://incognitolm-chat.hf.space/"
     },
     {
       "source": "/chat/:path*",
@@ -15,14 +19,6 @@
     {
       "source": "/css/:path*",
       "destination": "https://incognitolm-chat.hf.space/css/:path*"
-    },
-    {
-      "source": "/static/:path*",
-      "destination": "https://incognitolm-chat.hf.space/static/:path*"
-    },
-    {
-      "source": "/assets/:path*",
-      "destination": "https://incognitolm-chat.hf.space/assets/:path*"
     }
   ]
 }
