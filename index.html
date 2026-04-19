@@ -642,13 +642,16 @@
 			<div class="container">
 
 				<!-- Header -->
-				<div class="row align-items-center mb-2">
-					<div class="col-lg-7">
+				<div class="row align-items-center mb-2 g-4">
+					<div class="col-lg-6">
 						<div class="lr-eyebrow"><span class="lr-bolt">⚡</span> Lightning Smart Routing</div>
 						<h2 class="lr-title">One prompt.<br><span class="accent-gold">Infinite intelligence behind it.</span></h2>
 						<p class="lr-sub">
-							Lightning doesn't just run fast - it thinks smart. Each prompt is automatically routed to the best model for the task: OpenAI for reasoning, NVIDIA Nemotron for ultra-long contexts, Meta Llama for fast and efficient work, Qwen for multilingual & coding, with Perplexity Sonar coming soon. All in milliseconds, all invisible to you.
+							Lightning doesn't just run fast — it thinks smart. Each prompt is automatically routed to the best model for the task: OpenAI for reasoning, NVIDIA Nemotron for ultra-long contexts, Meta Llama for fast and efficient work, Qwen for multilingual &amp; coding, with Perplexity Sonar coming soon. All in milliseconds, all invisible to you.
 						</p>
+					</div>
+					<div class="col-lg-6 d-flex justify-content-center align-items-center">
+						<canvas id="lr-orbit-canvas" width="380" height="380" style="max-width:100%;display:block;"></canvas>
 					</div>
 				</div>
 
@@ -729,6 +732,11 @@
 			</div>
 		</section>
 		<div class="lr-divider"></div>
+		<!-- ═══════════════════════════════════════════════════
+		     END LIGHTNING SMART ROUTING SECTION
+		     ═══════════════════════════════════════════════════ -->
+
+		<!-- ── Frontier Models / Cloud section ── -->
 		<section class="py-5">
 			<div class="container">
 				<div class="row align-items-center g-5">
@@ -1030,111 +1038,310 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
 		(function() {
-			const toggleState = { search: false, img: false, vid: false, audio: false };
-			let attachedImageB64 = null;
-			let attachedImageType = null;
-			let attachedImageName = null;
 
-			window.lrToggle = function(key) {
-				toggleState[key] = !toggleState[key];
-				const btn = document.getElementById('tog-' + key);
-				btn.classList.toggle('active', toggleState[key]);
-			};
+		/* ── Plasma ball canvas ─────────────────────────────── */
+		/* ── Plasma ball ─────────────────────────────────────── */
+		const canvas = document.getElementById('lr-orbit-canvas');
+		if (canvas) {
+			const ctx = canvas.getContext('2d');
+			const W = canvas.width, H = canvas.height;
+			const cx = W / 2, cy = H / 2;
+			const ORBIT_R = 140;
+			const CENTER_R = 36;
+			const NODE_R = 32;
+			const SPEED = 0.22; // radians/sec orbit
 
-			window.lrImageAttached = function(input) {
-				const file = input.files[0];
-				if (!file) return;
-				attachedImageName = file.name;
-				attachedImageType = file.type || 'image/jpeg';
-				const reader = new FileReader();
-				reader.onload = function(e) {
-					attachedImageB64 = e.target.result.split(',')[1];
-					document.getElementById('lr-img-name').textContent = attachedImageName;
-					document.getElementById('lr-img-preview').style.display = 'inline-flex';
-					document.querySelector('.lr-upload-btn').classList.add('has-file');
-					document.getElementById('lr-upload-label').textContent = 'Attached';
-				};
-				reader.readAsDataURL(file);
-			};
+			const providers = [
+				{ name: 'OpenAI',      baseAngle: 0,                      color: '#e0e0e0', soon: false },
+				{ name: 'NVIDIA',      baseAngle: (Math.PI*2)/5,          color: '#76b900', soon: false },
+				{ name: 'Meta Llama',  baseAngle: (Math.PI*4)/5,          color: '#5b9ef9', soon: false },
+				{ name: 'Qwen',        baseAngle: (Math.PI*6)/5,          color: '#64b4ff', soon: false },
+				{ name: 'Perplexity',  baseAngle: (Math.PI*8)/5,          color: '#18c8b4', soon: true  },
+			];
 
-			window.lrClearImage = function() {
-				attachedImageB64 = null;
-				attachedImageType = null;
-				attachedImageName = null;
-				document.getElementById('lr-img-preview').style.display = 'none';
-				document.querySelector('.lr-upload-btn').classList.remove('has-file');
-				document.getElementById('lr-upload-label').textContent = 'Image';
-				document.getElementById('lr-img-upload').value = '';
-			};
+			// Each arc is a persistent plasma connection with its own crackling path
+			// Each bolt: { provIdx, segments[], phase, life, maxLife, active }
+			const bolts = providers.map((p, i) => ({
+				provIdx: i,
+				segs: [],
+				phase: Math.random() * Math.PI * 2,
+				life: 0,
+				maxLife: 80 + Math.random() * 60,
+				active: false,
+				nextSpawn: i * 22,
+			}));
 
-			window.lrAnalyze = async function() {
-				const promptText = document.getElementById("lr-prompt").value.trim();
-				if (!promptText && !attachedImageB64) return;
+			function rng(min, max) { return min + Math.random() * (max - min); }
 
-				const btn    = document.getElementById("lr-analyze-btn");
-				const spin   = document.getElementById("lr-btn-spinner");
-				const btnTxt = document.getElementById("lr-btn-text");
-				const errEl  = document.getElementById("lr-error");
-				const resEl  = document.getElementById("lr-result");
-
-				btn.disabled = true;
-				spin.style.display = "block";
-				btnTxt.textContent = "Routing…";
-				errEl.style.display = "none";
-				resEl.style.display = "none";
-
-				// Build message content — support image attachment
-				let msgContent;
-				if (attachedImageB64) {
-					msgContent = [
-						{ type: "image_url", image_url: { url: `data:${attachedImageType};base64,${attachedImageB64}` } }
-					];
-					if (promptText) msgContent.push({ type: "text", text: promptText });
-				} else {
-					msgContent = promptText;
+			// Build a jagged lightning path from (x1,y1) to (x2,y2) with n segments
+			function buildBolt(x1, y1, x2, y2, segs) {
+				const pts = [{ x: x1, y: y1 }];
+				const dx = x2 - x1, dy = y2 - y1;
+				const len = Math.sqrt(dx*dx + dy*dy);
+				const perp = { x: -dy / len, y: dx / len };
+				for (let i = 1; i < segs; i++) {
+					const t = i / segs;
+					const bx = x1 + dx * t + perp.x * rng(-len * 0.18, len * 0.18);
+					const by = y1 + dy * t + perp.y * rng(-len * 0.18, len * 0.18);
+					pts.push({ x: bx, y: by });
 				}
+				pts.push({ x: x2, y: y2 });
+				return pts;
+			}
 
-				// Build tools array from active toggles
-				const tools = [];
-				if (toggleState.search) tools.push({ type: "function", function: { name: "web_search", description: "Search the web" } });
-				if (toggleState.img)    tools.push({ type: "function", function: { name: "image_generation", description: "Generate images" } });
-				if (toggleState.vid)    tools.push({ type: "function", function: { name: "video_generation", description: "Generate video" } });
-				if (toggleState.audio)  tools.push({ type: "function", function: { name: "audio_generation", description: "Generate audio" } });
+			function drawBolt(pts, alpha, color, width) {
+				ctx.save();
+				ctx.globalAlpha = alpha;
+				ctx.strokeStyle = color;
+				ctx.lineWidth = width;
+				ctx.lineCap = 'round';
+				ctx.lineJoin = 'round';
+				ctx.beginPath();
+				ctx.moveTo(pts[0].x, pts[0].y);
+				for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+				ctx.stroke();
+				ctx.restore();
+			}
 
-				const payload = {
-					prompt: [{ role: "user", content: msgContent }]
-				};
-				if (tools.length > 0) payload.tools = tools;
+			let frame_t = 0;
+			function frame(ts) {
+				ctx.clearRect(0, 0, W, H);
+				frame_t = ts * 0.001;
 
-				try {
-					const resp = await fetch("https://sharktide-lightning.hf.space/gen/prompt_analyze", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify(payload)
-					});
-					if (!resp.ok) throw new Error(`${resp.status}`);
-					const data = await resp.json();
+				// Orbit ring
+				ctx.save();
+				ctx.beginPath();
+				ctx.arc(cx, cy, ORBIT_R, 0, Math.PI * 2);
+				ctx.strokeStyle = 'rgba(251,191,36,0.1)';
+				ctx.lineWidth = 1;
+				ctx.setLineDash([3, 7]);
+				ctx.stroke();
+				ctx.setLineDash([]);
+				ctx.restore();
 
-					const modelName = data
-					const provider  = data.provider   || data.provider_name || "";
+				// Update + draw bolts
+				bolts.forEach((bolt) => {
+					const prov = providers[bolt.provIdx];
+					const nodeAngle = prov.baseAngle + frame_t * SPEED;
+					const nx = cx + Math.cos(nodeAngle) * ORBIT_R;
+					const ny = cy + Math.sin(nodeAngle) * ORBIT_R;
+					// direction from center surface to node surface
+					const dist = Math.sqrt((nx-cx)**2 + (ny-cy)**2);
+					const ux = (nx-cx)/dist, uy = (ny-cy)/dist;
+					const sx = cx + ux * CENTER_R;
+					const sy = cy + uy * CENTER_R;
+					const ex = nx - ux * NODE_R;
+					const ey = ny - uy * NODE_R;
 
-					document.getElementById("lr-result-icon").textContent     = "⚡";
-					document.getElementById("lr-result-model").textContent    = modelName;
-					document.getElementById("lr-result-provider").textContent = provider ? `via ${provider}` : "";
-					resEl.style.display = "block";
-				} catch(e) {
-					errEl.textContent   = "Couldn't reach the routing API — please try again.";
-					errEl.style.display = "block";
-				} finally {
-					btn.disabled = false;
-					spin.style.display = "none";
-					btnTxt.textContent = "⚡ Analyze";
-				}
+					if (!bolt.active) {
+						bolt.nextSpawn--;
+						if (bolt.nextSpawn <= 0) {
+							bolt.active = true;
+							bolt.life = 0;
+							bolt.maxLife = 70 + Math.random() * 90;
+							bolt.segs = buildBolt(sx, sy, ex, ey, 7);
+							bolt.nextSpawn = 30 + Math.random() * 60;
+						}
+					}
+
+					if (bolt.active) {
+						bolt.life++;
+
+						// Crackle: rebuild segments every few frames for shimmer
+						if (bolt.life % 3 === 0) {
+							bolt.segs = buildBolt(sx, sy, ex, ey, 7);
+						}
+
+						const lifeRatio = bolt.life / bolt.maxLife;
+						const baseAlpha = lifeRatio < 0.15
+							? lifeRatio / 0.15
+							: lifeRatio > 0.75
+							? 1 - (lifeRatio - 0.75) / 0.25
+							: 1;
+
+						// Outer glow (thick, very transparent)
+						drawBolt(bolt.segs, baseAlpha * 0.18, prov.soon ? '#18c8b4' : '#fbbf24', 7);
+						// Mid glow
+						drawBolt(bolt.segs, baseAlpha * 0.38, prov.soon ? '#18c8b4' : '#ffd466', 3.5);
+						// Core bright
+						drawBolt(bolt.segs, baseAlpha * 0.9,  prov.soon ? '#aff5ec' : '#ffffff', 1.2);
+
+						// Occasional crackle branch (short random fork near midpoint)
+						if (bolt.life % 5 === 0 && baseAlpha > 0.5) {
+							const mid = bolt.segs[3];
+							const bx2 = mid.x + rng(-18, 18);
+							const by2 = mid.y + rng(-18, 18);
+							const branch = buildBolt(mid.x, mid.y, bx2, by2, 3);
+							drawBolt(branch, baseAlpha * 0.5, prov.soon ? '#18c8b4' : '#ffd466', 1);
+						}
+
+						if (bolt.life >= bolt.maxLife) bolt.active = false;
+					}
+				});
+
+				// Provider nodes
+				providers.forEach((prov) => {
+					const angle = prov.baseAngle + frame_t * SPEED;
+					const nx = cx + Math.cos(angle) * ORBIT_R;
+					const ny = cy + Math.sin(angle) * ORBIT_R;
+
+					// Node circle
+					ctx.save();
+					ctx.beginPath();
+					ctx.arc(nx, ny, NODE_R, 0, Math.PI * 2);
+					ctx.fillStyle = '#0b1020';
+					ctx.fill();
+					ctx.strokeStyle = prov.soon ? 'rgba(24,200,180,0.35)' : prov.color;
+					ctx.lineWidth = 1.5;
+					if (prov.soon) ctx.setLineDash([4, 4]);
+					ctx.stroke();
+					ctx.setLineDash([]);
+					ctx.restore();
+
+					// Provider name text
+					ctx.save();
+					ctx.fillStyle = prov.soon ? 'rgba(24,200,180,0.6)' : prov.color;
+					ctx.font = `600 9.5px "Inter", sans-serif`;
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					// split "Meta Llama" to two lines
+					const lines = prov.name.split(' ');
+					if (lines.length === 2) {
+						ctx.fillText(lines[0], nx, ny - 6);
+						ctx.fillText(lines[1], nx, ny + 6);
+					} else {
+						ctx.fillText(prov.name, nx, ny);
+					}
+					if (prov.soon) {
+						ctx.font = `400 7.5px "Inter", sans-serif`;
+						ctx.fillStyle = 'rgba(24,200,180,0.45)';
+						ctx.fillText('soon', nx, ny + 42);
+					}
+					ctx.restore();
+				});
+
+				// Center node
+				ctx.save();
+				// Soft gold halo
+				ctx.beginPath();
+				ctx.arc(cx, cy, CENTER_R + 10, 0, Math.PI * 2);
+				ctx.fillStyle = 'rgba(251,191,36,0.05)';
+				ctx.fill();
+				ctx.beginPath();
+				ctx.arc(cx, cy, CENTER_R, 0, Math.PI * 2);
+				ctx.fillStyle = '#0b1020';
+				ctx.fill();
+				ctx.strokeStyle = '#fbbf24';
+				ctx.lineWidth = 1.8;
+				ctx.stroke();
+				ctx.font = `600 13px "Inter", sans-serif`;
+				ctx.fillStyle = '#fbbf24';
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'middle';
+				ctx.fillText('Lightning', cx, cy);
+				ctx.restore();
+
+				requestAnimationFrame(frame);
+			}
+			requestAnimationFrame(frame);
+		}
+
+		/* ── Toggle + form state ──────────────────────────────── */
+		const toggleState = { search: false, img: false, vid: false, audio: false };
+		let attachedImageB64 = null;
+		let attachedImageType = null;
+		let attachedImageName = null;
+
+		window.lrToggle = function(key) {
+			toggleState[key] = !toggleState[key];
+			document.getElementById('tog-' + key).classList.toggle('active', toggleState[key]);
+		};
+
+		window.lrImageAttached = function(input) {
+			const file = input.files[0];
+			if (!file) return;
+			attachedImageName = file.name;
+			attachedImageType = file.type || 'image/jpeg';
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				attachedImageB64 = e.target.result.split(',')[1];
+				document.getElementById('lr-img-name').textContent = attachedImageName;
+				document.getElementById('lr-img-preview').style.display = 'inline-flex';
+				document.querySelector('.lr-upload-btn').classList.add('has-file');
+				document.getElementById('lr-upload-label').textContent = 'Attached';
 			};
+			reader.readAsDataURL(file);
+		};
 
-			document.getElementById("lr-prompt").addEventListener("keydown", function(e) {
-				if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); lrAnalyze(); }
-			});
+		window.lrClearImage = function() {
+			attachedImageB64 = null; attachedImageType = null; attachedImageName = null;
+			document.getElementById('lr-img-preview').style.display = 'none';
+			document.querySelector('.lr-upload-btn').classList.remove('has-file');
+			document.getElementById('lr-upload-label').textContent = 'Image';
+			document.getElementById('lr-img-upload').value = '';
+		};
+
+		window.lrAnalyze = async function() {
+			const promptText = document.getElementById('lr-prompt').value.trim();
+			if (!promptText && !attachedImageB64) return;
+
+			const btn    = document.getElementById('lr-analyze-btn');
+			const spin   = document.getElementById('lr-btn-spinner');
+			const btnTxt = document.getElementById('lr-btn-text');
+			const errEl  = document.getElementById('lr-error');
+			const resEl  = document.getElementById('lr-result');
+
+			btn.disabled = true;
+			spin.style.display = 'block';
+			btnTxt.textContent = 'Routing…';
+			errEl.style.display = 'none';
+			resEl.style.display = 'none';
+
+			let msgContent;
+			if (attachedImageB64) {
+				msgContent = [{ type: 'image_url', image_url: { url: `data:${attachedImageType};base64,${attachedImageB64}` } }];
+				if (promptText) msgContent.push({ type: 'text', text: promptText });
+			} else {
+				msgContent = promptText;
+			}
+
+			const tools = [];
+			if (toggleState.search) tools.push({ type: 'function', function: { name: 'web_search',        description: 'Search the web'    } });
+			if (toggleState.img)    tools.push({ type: 'function', function: { name: 'image_generation',  description: 'Generate images'   } });
+			if (toggleState.vid)    tools.push({ type: 'function', function: { name: 'video_generation',  description: 'Generate video'    } });
+			if (toggleState.audio)  tools.push({ type: 'function', function: { name: 'audio_generation',  description: 'Generate audio'    } });
+
+			const payload = { prompt: [{ role: 'user', content: msgContent }] };
+			if (tools.length > 0) payload.tools = tools;
+
+			try {
+				const resp = await fetch('https://sharktide-lightning.hf.space/gen/prompt_analyze', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+				if (!resp.ok) throw new Error(resp.status);
+				const data = await resp.json();
+				const modelName = data.model_name || data.model || data.name || JSON.stringify(data);
+				const provider  = data.provider   || data.provider_name || '';
+				document.getElementById('lr-result-icon').textContent     = '⚡';
+				document.getElementById('lr-result-model').textContent    = modelName;
+				document.getElementById('lr-result-provider').textContent = provider ? `via ${provider}` : '';
+				resEl.style.display = 'block';
+			} catch(e) {
+				errEl.textContent   = 'Couldn\'t reach the routing API — please try again.';
+				errEl.style.display = 'block';
+			} finally {
+				btn.disabled = false;
+				spin.style.display = 'none';
+				btnTxt.textContent = '⚡ Analyze';
+			}
+		};
+
+		document.getElementById('lr-prompt').addEventListener('keydown', function(e) {
+			if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); lrAnalyze(); }
+		});
+
 		})();
 		</script>
 	</body>
