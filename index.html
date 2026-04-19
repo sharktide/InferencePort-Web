@@ -4,14 +4,8 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>InferencePort AI | Cloud & Local AI Models</title>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-			rel="stylesheet"
-		/>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/main.css" />
 		<style>
 			:root {
@@ -38,17 +32,12 @@
 				letter-spacing: -0.02em;
 				color: #fff !important;
 			}
-			.navbar-brand span {
-				color: var(--brand);
-			}
+			.navbar-brand span { color: var(--brand); }
 			.nav-link {
 				color: var(--muted) !important;
 				font-size: 0.88rem;
 			}
-			.nav-link:hover,
-			.nav-link.active {
-				color: #fff !important;
-			}
+			.nav-link:hover, .nav-link.active { color: #fff !important; }
 			.nav-pill {
 				background: var(--brand) !important;
 				color: #fff !important;
@@ -57,15 +46,24 @@
 				font-weight: 600 !important;
 				font-size: 0.85rem;
 			}
+			.nav-pill-chat {
+				background: rgba(251,191,36,0.15) !important;
+				color: #fbbf24 !important;
+				border: 1px solid rgba(251,191,36,0.35) !important;
+				border-radius: 7px !important;
+				padding: 6px 16px !important;
+				font-weight: 600 !important;
+			}
+			.nav-pill-chat:hover {
+				background: rgba(251,191,36,0.25) !important;
+				color: #fde68a !important;
+			}
 
+			/* ── Hero ── */
 			.hero-section {
 				padding: 110px 0 72px;
 				text-align: center;
-				background: radial-gradient(
-					ellipse 70% 40% at 50% 0%,
-					rgba(79, 124, 255, 0.17) 0%,
-					transparent 60%
-				);
+				background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(79, 124, 255, 0.17) 0%, transparent 60%);
 			}
 			.hero-eyebrow {
 				display: inline-flex;
@@ -84,22 +82,14 @@
 				margin-bottom: 22px;
 			}
 			.pulse {
-				width: 7px;
-				height: 7px;
+				width: 7px; height: 7px;
 				background: var(--brand);
 				border-radius: 50%;
 				animation: pulse 2s ease infinite;
 			}
 			@keyframes pulse {
-				0%,
-				100% {
-					opacity: 1;
-					transform: scale(1);
-				}
-				50% {
-					opacity: 0.4;
-					transform: scale(0.8);
-				}
+				0%, 100% { opacity: 1; transform: scale(1); }
+				50% { opacity: 0.4; transform: scale(0.8); }
 			}
 			.hero-title {
 				font-size: clamp(2rem, 5vw, 3.6rem);
@@ -108,9 +98,7 @@
 				line-height: 1.1;
 				color: #fff;
 			}
-			.hero-title .accent {
-				color: var(--brand);
-			}
+			.hero-title .accent { color: var(--brand); }
 			.hero-subtitle {
 				font-size: 1rem;
 				color: var(--muted);
@@ -124,12 +112,9 @@
 				color: #fff;
 				letter-spacing: -0.04em;
 			}
-			.stat-label {
-				font-size: 0.76rem;
-				color: var(--muted);
-				margin-top: 2px;
-			}
+			.stat-label { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
 
+			/* ── Shared section styles ── */
 			.section-tag {
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.68rem;
@@ -146,9 +131,7 @@
 				line-height: 1.15;
 				color: #fff;
 			}
-			.section-title .accent {
-				color: var(--brand);
-			}
+			.section-title .accent { color: var(--brand); }
 			.section-sub {
 				color: var(--muted);
 				font-size: 0.93rem;
@@ -156,44 +139,25 @@
 				line-height: 1.65;
 			}
 
+			/* ── Cards ── */
 			.ip-card {
 				background: var(--surface);
 				border: 1px solid rgba(255, 255, 255, 0.07);
 				border-radius: 14px;
 				padding: 22px;
 				height: 100%;
-				transition:
-					border-color 0.2s,
-					transform 0.2s;
+				transition: border-color 0.2s, transform 0.2s;
 			}
-			.ip-card:hover {
-				border-color: var(--brand-border);
-				transform: translateY(-3px);
-			}
+			.ip-card:hover { border-color: var(--brand-border); transform: translateY(-3px); }
 			.ip-card.featured {
 				border-color: var(--brand-border);
-				background: linear-gradient(
-					135deg,
-					rgba(79, 124, 255, 0.07),
-					rgba(79, 124, 255, 0.02)
-				);
+				background: linear-gradient(135deg, rgba(79, 124, 255, 0.07), rgba(79, 124, 255, 0.02));
 			}
-			.feat-icon {
-				font-size: 1.4rem;
-				margin-bottom: 10px;
-			}
-			.feat-title {
-				font-weight: 700;
-				font-size: 0.95rem;
-				color: #fff;
-				margin-bottom: 6px;
-			}
-			.feat-body {
-				font-size: 0.83rem;
-				color: var(--muted);
-				line-height: 1.6;
-			}
+			.feat-icon { font-size: 1.4rem; margin-bottom: 10px; }
+			.feat-title { font-weight: 700; font-size: 0.95rem; color: #fff; margin-bottom: 6px; }
+			.feat-body { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
 
+			/* ── Model rows ── */
 			.model-row {
 				display: flex;
 				align-items: center;
@@ -202,50 +166,23 @@
 				border: 1px solid rgba(255, 255, 255, 0.07);
 				border-radius: 12px;
 				padding: 14px 18px;
-				transition:
-					border-color 0.2s,
-					transform 0.2s;
+				transition: border-color 0.2s, transform 0.2s;
 			}
-			.model-row:hover {
-				border-color: var(--brand-border);
-				transform: translateX(3px);
-			}
-			.model-row.featured {
-				border-color: var(--brand-border);
-				background: rgba(79, 124, 255, 0.06);
-			}
+			.model-row:hover { border-color: var(--brand-border); transform: translateX(3px); }
+			.model-row.featured { border-color: var(--brand-border); background: rgba(79, 124, 255, 0.06); }
 			.model-icon {
-				width: 38px;
-				height: 38px;
+				width: 38px; height: 38px;
 				border-radius: 8px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
+				display: flex; align-items: center; justify-content: center;
 				font-size: 1.1rem;
 				flex-shrink: 0;
 			}
-			.icon-blue {
-				background: rgba(79, 124, 255, 0.15);
-			}
-			.icon-cyan {
-				background: rgba(6, 182, 212, 0.15);
-			}
-			.icon-purple {
-				background: rgba(124, 58, 237, 0.15);
-			}
-			.icon-green {
-				background: rgba(16, 185, 129, 0.15);
-			}
-			.model-name {
-				font-weight: 700;
-				font-size: 0.88rem;
-				color: #fff;
-			}
-			.model-desc {
-				font-size: 0.75rem;
-				color: var(--muted);
-				margin-top: 1px;
-			}
+			.icon-blue  { background: rgba(79, 124, 255, 0.15); }
+			.icon-cyan  { background: rgba(6, 182, 212, 0.15); }
+			.icon-purple{ background: rgba(124, 58, 237, 0.15); }
+			.icon-green { background: rgba(16, 185, 129, 0.15); }
+			.model-name { font-weight: 700; font-size: 0.88rem; color: #fff; }
+			.model-desc { font-size: 0.75rem; color: var(--muted); margin-top: 1px; }
 			.tag {
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.58rem;
@@ -256,27 +193,12 @@
 				text-transform: uppercase;
 				white-space: nowrap;
 			}
-			.tag-cloud {
-				background: rgba(79, 124, 255, 0.12);
-				color: var(--brand);
-				border: 1px solid var(--brand-border);
-			}
-			.tag-fast {
-				background: rgba(6, 182, 212, 0.12);
-				color: #06b6d4;
-				border: 1px solid rgba(6, 182, 212, 0.25);
-			}
-			.tag-new {
-				background: rgba(124, 58, 237, 0.12);
-				color: #a78bfa;
-				border: 1px solid rgba(124, 58, 237, 0.25);
-			}
-			.tag-local {
-				background: rgba(16, 185, 129, 0.12);
-				color: #10b981;
-				border: 1px solid rgba(16, 185, 129, 0.25);
-			}
+			.tag-cloud  { background: rgba(79, 124, 255, 0.12); color: var(--brand); border: 1px solid var(--brand-border); }
+			.tag-fast   { background: rgba(6, 182, 212, 0.12); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.25); }
+			.tag-new    { background: rgba(124, 58, 237, 0.12); color: #a78bfa; border: 1px solid rgba(124, 58, 237, 0.25); }
+			.tag-local  { background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); }
 
+			/* ── Compare box ── */
 			.compare-box {
 				background: var(--surface);
 				border: 1px solid rgba(255, 255, 255, 0.07);
@@ -287,22 +209,11 @@
 			.compare-box::before {
 				content: "";
 				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
+				top: 0; left: 0; right: 0;
 				height: 3px;
-				background: linear-gradient(
-					90deg,
-					var(--brand),
-					#7c3aed,
-					#06b6d4
-				);
+				background: linear-gradient(90deg, var(--brand), #7c3aed, #06b6d4);
 			}
-			.compare-list {
-				list-style: none;
-				padding: 0;
-				margin: 0;
-			}
+			.compare-list { list-style: none; padding: 0; margin: 0; }
 			.compare-list li {
 				display: flex;
 				align-items: center;
@@ -312,9 +223,7 @@
 				font-size: 0.84rem;
 				color: var(--muted);
 			}
-			.compare-list li:last-child {
-				border-bottom: none;
-			}
+			.compare-list li:last-child { border-bottom: none; }
 			.col-label {
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.68rem;
@@ -322,22 +231,11 @@
 				text-transform: uppercase;
 				margin-bottom: 14px;
 			}
-			.col-dot {
-				display: inline-block;
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				margin-right: 6px;
-			}
-			.dot-cloud {
-				background: var(--brand);
-				box-shadow: 0 0 8px rgba(79, 124, 255, 0.6);
-			}
-			.dot-local {
-				background: #10b981;
-				box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-			}
+			.col-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+			.dot-cloud { background: var(--brand); box-shadow: 0 0 8px rgba(79, 124, 255, 0.6); }
+			.dot-local { background: #10b981; box-shadow: 0 0 8px rgba(16, 185, 129, 0.6); }
 
+			/* ── Pricing ── */
 			.plan-card {
 				background: var(--surface);
 				border: 1px solid rgba(255, 255, 255, 0.07);
@@ -347,22 +245,13 @@
 				flex-direction: column;
 				height: 100%;
 				position: relative;
-				transition:
-					border-color 0.2s,
-					transform 0.2s;
+				transition: border-color 0.2s, transform 0.2s;
 			}
-			.plan-card:hover {
-				transform: translateY(-4px);
-				border-color: var(--brand-border);
-			}
-			.plan-card.popular {
-				border-color: var(--brand);
-				background: rgba(79, 124, 255, 0.06);
-			}
+			.plan-card:hover { transform: translateY(-4px); border-color: var(--brand-border); }
+			.plan-card.popular { border-color: var(--brand); background: rgba(79, 124, 255, 0.06); }
 			.popular-pill {
 				position: absolute;
-				top: -11px;
-				left: 50%;
+				top: -11px; left: 50%;
 				transform: translateX(-50%);
 				background: var(--brand);
 				color: #fff;
@@ -375,84 +264,20 @@
 				text-transform: uppercase;
 				white-space: nowrap;
 			}
-			.plan-name {
-				font-weight: 800;
-				font-size: 0.93rem;
-				color: #fff;
-			}
-			.plan-price {
-				font-size: 2rem;
-				font-weight: 800;
-				color: #fff;
-				letter-spacing: -0.04em;
-				line-height: 1;
-				margin: 16px 0 2px;
-			}
-			.plan-price sup {
-				font-size: 0.95rem;
-				vertical-align: super;
-				font-weight: 600;
-			}
-			.plan-period {
-				font-size: 0.74rem;
-				color: var(--muted);
-				margin-bottom: 16px;
-			}
-			.plan-hr {
-				border-color: rgba(255, 255, 255, 0.07);
-				margin: 14px 0;
-			}
-			.plan-section {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.6rem;
-				color: var(--brand);
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin-bottom: 8px;
-			}
-			.plan-feature {
-				font-size: 0.81rem;
-				color: var(--muted);
-				display: flex;
-				align-items: center;
-				gap: 7px;
-				margin-bottom: 7px;
-			}
-			.plan-feature.hi {
-				color: #d6daea;
-			}
-			.btn-plan-primary {
-				background: var(--brand);
-				color: #fff;
-				border: none;
-				border-radius: 8px;
-				padding: 9px;
-				font-weight: 600;
-				font-size: 0.84rem;
-				width: 100%;
-				margin-top: auto;
-				transition: opacity 0.2s;
-			}
-			.btn-plan-primary:hover {
-				opacity: 0.85;
-				color: #fff;
-			}
-			.btn-plan-outline {
-				background: rgba(255, 255, 255, 0.05);
-				color: #d6daea;
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				border-radius: 8px;
-				padding: 9px;
-				font-size: 0.84rem;
-				width: 100%;
-				margin-top: auto;
-				transition: background 0.2s;
-			}
-			.btn-plan-outline:hover {
-				background: rgba(255, 255, 255, 0.09);
-				color: #fff;
-			}
+			.plan-name { font-weight: 800; font-size: 0.93rem; color: #fff; }
+			.plan-price { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1; margin: 16px 0 2px; }
+			.plan-price sup { font-size: 0.95rem; vertical-align: super; font-weight: 600; }
+			.plan-period { font-size: 0.74rem; color: var(--muted); margin-bottom: 16px; }
+			.plan-hr { border-color: rgba(255, 255, 255, 0.07); margin: 14px 0; }
+			.plan-section { font-family: "JetBrains Mono", monospace; font-size: 0.6rem; color: var(--brand); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+			.plan-feature { font-size: 0.81rem; color: var(--muted); display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+			.plan-feature.hi { color: #d6daea; }
+			.btn-plan-primary { background: var(--brand); color: #fff; border: none; border-radius: 8px; padding: 9px; font-weight: 600; font-size: 0.84rem; width: 100%; margin-top: auto; transition: opacity 0.2s; }
+			.btn-plan-primary:hover { opacity: 0.85; color: #fff; }
+			.btn-plan-outline { background: rgba(255, 255, 255, 0.05); color: #d6daea; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 9px; font-size: 0.84rem; width: 100%; margin-top: auto; transition: background 0.2s; }
+			.btn-plan-outline:hover { background: rgba(255, 255, 255, 0.09); color: #fff; }
 
+			/* ── Buttons ── */
 			.btn-brand {
 				background: var(--brand);
 				color: #fff;
@@ -462,15 +287,9 @@
 				font-weight: 600;
 				font-size: 0.9rem;
 				box-shadow: 0 0 24px rgba(79, 124, 255, 0.28);
-				transition:
-					transform 0.2s,
-					opacity 0.2s;
+				transition: transform 0.2s, opacity 0.2s;
 			}
-			.btn-brand:hover {
-				transform: translateY(-2px);
-				opacity: 0.9;
-				color: #fff;
-			}
+			.btn-brand:hover { transform: translateY(-2px); opacity: 0.9; color: #fff; }
 			.btn-ghost {
 				background: rgba(255, 255, 255, 0.05);
 				color: #d6daea;
@@ -480,121 +299,323 @@
 				font-size: 0.9rem;
 				transition: background 0.2s;
 			}
-			.btn-ghost:hover {
-				background: rgba(255, 255, 255, 0.09);
-				color: #fff;
+			.btn-ghost:hover { background: rgba(255, 255, 255, 0.09); color: #fff; }
+
+			/* ── Footer ── */
+			footer { border-top: 1px solid rgba(255, 255, 255, 0.07); font-size: 0.81rem; color: var(--muted); }
+			footer a { color: var(--muted); text-decoration: none; }
+			footer a:hover { color: #fff; }
+
+			/* ════════════════════════════════════════════
+			   LIGHTNING SMART ROUTING SECTION
+			   ════════════════════════════════════════════ */
+			.lr-section {
+				position: relative;
+				overflow: hidden;
+			}
+			.lr-section::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background:
+					radial-gradient(ellipse 55% 45% at 50% 100%, rgba(251,191,36,0.07) 0%, transparent 60%),
+					radial-gradient(ellipse 35% 30% at 15% 50%, rgba(79,124,255,0.05) 0%, transparent 55%);
+				pointer-events: none;
+			}
+			/* divider above/below */
+			.lr-divider {
+				height: 1px;
+				background: rgba(255,255,255,0.07);
+				margin: 0;
 			}
 
-			footer {
-				border-top: 1px solid rgba(255, 255, 255, 0.07);
-				font-size: 0.81rem;
-				color: var(--muted);
+			.lr-eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 7px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				font-weight: 500;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: #fbbf24;
+				background: rgba(251,191,36,0.08);
+				border: 1px solid rgba(251,191,36,0.22);
+				border-radius: 50px;
+				padding: 5px 14px;
+				margin-bottom: 18px;
 			}
-			footer a {
-				color: var(--muted);
-				text-decoration: none;
+			.lr-bolt { animation: lrPulseBolt 1.8s ease infinite; }
+			@keyframes lrPulseBolt {
+				0%,100% { opacity: 1; }
+				50%      { opacity: 0.35; }
 			}
-			footer a:hover {
+			.lr-title {
+				font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+				font-weight: 800;
+				letter-spacing: -0.04em;
+				line-height: 1.1;
 				color: #fff;
 			}
-		
-			.nav-pill-chat {
-				background: rgba(251,191,36,0.15) !important;
-				color: #fbbf24 !important;
-				border: 1px solid rgba(251,191,36,0.35) !important;
-				border-radius: 7px !important;
-				padding: 6px 16px !important;
-				font-weight: 600 !important;
+			.lr-title .accent-gold { color: #fbbf24; }
+			.lr-sub {
+				font-size: 0.9rem;
+				color: #8b93a7;
+				max-width: 490px;
+				line-height: 1.65;
+				margin-top: 14px;
 			}
-			.nav-pill-chat:hover {
-				background: rgba(251,191,36,0.25) !important;
-				color: #fde68a !important;
+
+
+
+			/* Interactive card */
+			.lr-card {
+				background: var(--surface);
+				border: 1px solid rgba(255,255,255,0.08);
+				border-radius: 16px;
+				overflow: hidden;
+				position: relative;
 			}
+			.lr-card::before {
+				content: "";
+				position: absolute;
+				top: 0; left: 0; right: 0;
+				height: 3px;
+				background: linear-gradient(90deg, #fbbf24, #f59e0b, #4f7cff, #06b6d4);
+			}
+			.lr-card-inner { padding: 26px 26px 22px; }
+			.lr-card-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: #fbbf24;
+				margin-bottom: 13px;
+			}
+			.lr-prompt-input {
+				width: 100%;
+				background: rgba(255,255,255,0.03);
+				border: 1px solid rgba(255,255,255,0.1);
+				border-radius: 10px;
+				color: #d6daea;
+				font-family: "Inter", sans-serif;
+				font-size: 0.88rem;
+				line-height: 1.6;
+				padding: 13px 15px;
+				resize: none;
+				outline: none;
+				transition: border-color 0.2s;
+				box-sizing: border-box;
+			}
+			.lr-prompt-input::placeholder { color: #4b5563; }
+			.lr-prompt-input:focus { border-color: rgba(251,191,36,0.4); }
+			.lr-analyze-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 7px;
+				background: rgba(251,191,36,0.1);
+				color: #fbbf24;
+				border: 1px solid rgba(251,191,36,0.26);
+				border-radius: 8px;
+				padding: 7px 16px;
+				font-size: 0.84rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: background 0.2s, transform 0.15s;
+				font-family: "Inter", sans-serif;
+				white-space: nowrap;
+			}
+			.lr-analyze-btn:hover:not(:disabled) { background: rgba(251,191,36,0.2); transform: translateY(-1px); }
+			.lr-analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+			/* Toolbar */
+			.lr-toolbar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 10px;
+				margin-top: 10px;
+				flex-wrap: wrap;
+			}
+			.lr-toolbar-toggles {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				flex-wrap: wrap;
+			}
+			.lr-toolbar-actions {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				flex-shrink: 0;
+			}
+			.lr-toggle {
+				display: inline-flex;
+				align-items: center;
+				gap: 5px;
+				background: rgba(255,255,255,0.04);
+				border: 1px solid rgba(255,255,255,0.09);
+				border-radius: 7px;
+				padding: 6px 11px;
+				font-size: 0.76rem;
+				font-weight: 500;
+				color: #8b93a7;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				transition: background 0.15s, border-color 0.15s, color 0.15s;
+				user-select: none;
+			}
+			.lr-toggle svg { width: 13px; height: 13px; flex-shrink: 0; }
+			.lr-toggle:hover { background: rgba(255,255,255,0.08); color: #d6daea; border-color: rgba(255,255,255,0.16); }
+			.lr-toggle.active {
+				background: rgba(79,124,255,0.14);
+				border-color: rgba(79,124,255,0.38);
+				color: #7fa8ff;
+			}
+			/* Per-toggle active accent colours */
+			#tog-search.active  { background: rgba(6,182,212,0.12);  border-color: rgba(6,182,212,0.35);  color: #06b6d4; }
+			#tog-img.active     { background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.35); color: #a78bfa; }
+			#tog-vid.active     { background: rgba(239,68,68,0.1);   border-color: rgba(239,68,68,0.3);   color: #f87171; }
+			#tog-audio.active   { background: rgba(16,185,129,0.11); border-color: rgba(16,185,129,0.32); color: #10b981; }
+
+			/* Upload button */
+			.lr-upload-btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 5px;
+				background: rgba(255,255,255,0.04);
+				border: 1px solid rgba(255,255,255,0.09);
+				border-radius: 7px;
+				padding: 6px 11px;
+				font-size: 0.76rem;
+				font-weight: 500;
+				color: #8b93a7;
+				cursor: pointer;
+				font-family: "Inter", sans-serif;
+				transition: background 0.15s, border-color 0.15s, color 0.15s;
+				user-select: none;
+				white-space: nowrap;
+			}
+			.lr-upload-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+			.lr-upload-btn:hover { background: rgba(255,255,255,0.08); color: #d6daea; border-color: rgba(255,255,255,0.16); }
+			.lr-upload-btn.has-file { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.3); color: #fbbf24; }
+
+			/* Image preview chip */
+			.lr-img-preview {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				background: rgba(251,191,36,0.07);
+				border: 1px solid rgba(251,191,36,0.22);
+				border-radius: 6px;
+				padding: 5px 10px;
+				font-size: 0.75rem;
+				color: #fbbf24;
+				margin-top: 8px;
+				max-width: 100%;
+			}
+			.lr-img-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
+			.lr-img-remove {
+				background: none;
+				border: none;
+				padding: 0;
+				margin: 0;
+				color: #fbbf24;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				opacity: 0.6;
+				transition: opacity 0.15s;
+				flex-shrink: 0;
+			}
+			.lr-img-remove:hover { opacity: 1; }
+			.lr-img-remove svg { width: 10px; height: 10px; }
+			.lr-btn-spinner {
+				width: 12px; height: 12px;
+				border: 2px solid rgba(251,191,36,0.25);
+				border-top-color: #fbbf24;
+				border-radius: 50%;
+				animation: lrSpin 0.65s linear infinite;
+				display: none;
+			}
+			@keyframes lrSpin { to { transform: rotate(360deg); } }
+			.lr-result {
+				margin-top: 16px;
+				display: none;
+				animation: lrFadeUp 0.3s ease both;
+			}
+			@keyframes lrFadeUp {
+				from { opacity: 0; transform: translateY(7px); }
+				to   { opacity: 1; transform: translateY(0); }
+			}
+			.lr-result-row {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				background: rgba(251,191,36,0.05);
+				border: 1px solid rgba(251,191,36,0.18);
+				border-radius: 10px;
+				padding: 13px 15px;
+			}
+			.lr-result-icon {
+				font-size: 1.2rem;
+				flex-shrink: 0;
+				width: 34px; height: 34px;
+				background: rgba(251,191,36,0.1);
+				border-radius: 8px;
+				display: flex; align-items: center; justify-content: center;
+			}
+			.lr-result-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.59rem;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: #8b93a7;
+			}
+			.lr-result-model { font-weight: 700; font-size: 0.93rem; color: #fbbf24; margin-top: 2px; }
+			.lr-result-provider { font-size: 0.75rem; color: #8b93a7; margin-top: 2px; }
+			.lr-error { color: #f87171; font-size: 0.79rem; margin-top: 9px; display: none; }
 		</style>
 	</head>
 	<body>
 		<nav class="navbar navbar-expand-lg sticky-top">
 			<div class="container">
-				<a class="navbar-brand" href="index.html"
-					>InferencePort<span>AI</span></a
-				>
-				<button
-					class="navbar-toggler border-0"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#nav"
-				>
+				<a class="navbar-brand" href="index.html">InferencePort<span>AI</span></a>
+				<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="nav">
 					<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
-						<li class="nav-item">
-							<a class="nav-link active" href="index.html"
-								>Home</a
-							>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="marketplace.html"
-								>Marketplace</a
-							>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="lightning.html"
-								>Lightning</a
-							>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="install.html">Install</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="pricing.html">Pricing</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="security.html"
-								>Security</a
-							>
-						</li>
-											<li class="nav-item ms-1">
-						<a class="nav-link nav-pill-chat" href="chat/">Chat Now</a>
-					</li>
-						<li class="nav-item ms-2">
-							<a
-								class="nav-link nav-pill"
-								href="install.html#install"
-								>Get Started</a
-							>
-						</li>
+						<li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+						<li class="nav-item"><a class="nav-link" href="marketplace.html">Marketplace</a></li>
+						<li class="nav-item"><a class="nav-link" href="lightning.html">Lightning</a></li>
+						<li class="nav-item"><a class="nav-link" href="install.html">Install</a></li>
+						<li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
+						<li class="nav-item"><a class="nav-link" href="security.html">Security</a></li>
+						<li class="nav-item ms-1"><a class="nav-link nav-pill-chat" href="chat/">Chat Now</a></li>
+						<li class="nav-item ms-2"><a class="nav-link nav-pill" href="install.html#install">Get Started</a></li>
 					</ul>
 				</div>
 			</div>
 		</nav>
 
+		<!-- ── Hero ── -->
 		<section class="hero-section">
 			<div class="container">
 				<div class="hero-eyebrow">
-					<span class="pulse"></span> Cloud model access — now
-					available
+					<span class="pulse"></span> Cloud model access — now available
 				</div>
 				<h1 class="hero-title">
-					AI Models, <span class="accent">Cloud-Powered</span><br />&
-					Locally Private.
+					AI Models, <span class="accent">Cloud-Powered</span><br />& Locally Private.
 				</h1>
 				<p class="hero-subtitle">
-					Run frontier cloud models instantly, or keep everything on
-					your machine. One clean desktop app — your choice.
+					Run frontier cloud models instantly, or keep everything on your machine. One clean desktop app — your choice.
 				</p>
 				<div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-					<a href="install.html" class="btn btn-brand"
-						>Get InferencePort Free</a
-					>
-					<a href="marketplace.html" class="btn btn-ghost"
-						>Browse Models →</a
-					>
+					<a href="install.html" class="btn btn-brand">Get InferencePort Free</a>
+					<a href="marketplace.html" class="btn btn-ghost">Browse Models →</a>
 				</div>
-				<div
-					class="mt-5 pt-4"
-					style="border-top: 1px solid rgba(255, 255, 255, 0.07)"
-				>
+				<div class="mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.07)">
 					<div class="row justify-content-center g-4">
 						<div class="col-auto text-center">
 							<div class="stat-num">1,000</div>
@@ -613,28 +634,115 @@
 			</div>
 		</section>
 
+		<!-- ═══════════════════════════════════════════════════
+		     LIGHTNING SMART ROUTING SECTION
+		     ═══════════════════════════════════════════════════ -->
+		<div class="lr-divider"></div>
+		<section class="py-5 lr-section">
+			<div class="container">
+
+				<!-- Header -->
+				<div class="row align-items-center mb-2">
+					<div class="col-lg-7">
+						<div class="lr-eyebrow"><span class="lr-bolt">⚡</span> Lightning Smart Routing</div>
+						<h2 class="lr-title">One prompt.<br><span class="accent-gold">Infinite intelligence behind it.</span></h2>
+						<p class="lr-sub">
+							Lightning doesn't just run fast - it thinks smart. Each prompt is automatically routed to the best model for the task: OpenAI for reasoning, NVIDIA Nemotron for ultra-long contexts, Meta Llama for fast and efficient work, Qwen for multilingual & coding, with Perplexity Sonar coming soon. All in milliseconds, all invisible to you.
+						</p>
+					</div>
+				</div>
+
+				<!-- Interactive prompt router card — full width -->
+				<div class="row mt-4">
+					<div class="col-12">
+						<div class="lr-card">
+							<div class="lr-card-inner">
+								<div class="lr-card-label">⚡ Try the router — type any prompt</div>
+								<textarea
+									id="lr-prompt"
+									class="lr-prompt-input"
+									rows="3"
+									placeholder="e.g. Write a Python async HTTP server… or Search the web for today's AI news… or Translate this to Chinese…"
+								></textarea>
+
+								<!-- Toolbar bar -->
+								<div class="lr-toolbar">
+									<!-- Toggles -->
+									<div class="lr-toolbar-toggles">
+										<button class="lr-toggle" id="tog-search" onclick="lrToggle('search')" title="Web Search">
+											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.4"/><line x1="9.7" y1="9.7" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+											Search
+										</button>
+										<button class="lr-toggle" id="tog-img" onclick="lrToggle('img')" title="Image Generation">
+											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6" r="1.2" fill="currentColor"/><path d="M1.5 11l3.5-3.5 2.5 2.5 2-2 3 3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+											Image Gen
+										</button>
+										<button class="lr-toggle" id="tog-vid" onclick="lrToggle('vid')" title="Video Generation">
+											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="3" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M11 6.2l3-1.7v7l-3-1.7V6.2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+											Video Gen
+										</button>
+										<button class="lr-toggle" id="tog-audio" onclick="lrToggle('audio')" title="Audio Generation">
+											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8.5a5 5 0 0 0 10 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="13.5" x2="8" y2="15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+											Audio Gen
+										</button>
+									</div>
+
+									<!-- Right side: image upload + analyze -->
+									<div class="lr-toolbar-actions">
+										<label class="lr-upload-btn" for="lr-img-upload" title="Attach image">
+											<input type="file" id="lr-img-upload" accept="image/*" style="display:none" onchange="lrImageAttached(this)">
+											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v9M5 4l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+											<span id="lr-upload-label">Image</span>
+										</label>
+										<button class="lr-analyze-btn" id="lr-analyze-btn" onclick="lrAnalyze()">
+											<span id="lr-btn-spinner" class="lr-btn-spinner"></span>
+											<span id="lr-btn-text">⚡ Analyze</span>
+										</button>
+									</div>
+								</div>
+
+								<!-- Image preview chip -->
+								<div id="lr-img-preview" class="lr-img-preview" style="display:none;">
+									<svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;flex-shrink:0"><rect x=".5" y=".5" width="13" height="13" rx="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="4" cy="4.5" r="1" fill="currentColor"/><path d="M.5 9.5l3-3 2 2 2-2 3 3" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+									<span id="lr-img-name">image.png</span>
+									<button onclick="lrClearImage()" class="lr-img-remove" title="Remove">
+										<svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+									</button>
+								</div>
+
+								<div id="lr-error" class="lr-error"></div>
+								<div id="lr-result" class="lr-result">
+									<div class="lr-result-row">
+										<div class="lr-result-icon" id="lr-result-icon">⚡</div>
+										<div>
+											<div class="lr-result-label">Lightning routed to</div>
+											<div class="lr-result-model" id="lr-result-model">—</div>
+											<div class="lr-result-provider" id="lr-result-provider"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</section>
+		<div class="lr-divider"></div>
 		<section class="py-5">
 			<div class="container">
 				<div class="row align-items-center g-5">
 					<div class="col-lg-5">
 						<div class="section-tag">☁ Cloud Models</div>
 						<h2 class="section-title mb-3">
-							Frontier models,<br /><span class="accent"
-								>no setup required.</span
-							>
+							Frontier models,<br /><span class="accent">no setup required.</span>
 						</h2>
 						<p class="section-sub mb-4">
-							Access the world's most capable models through the
-							cloud — no GPU, no configuration. Just open the app
-							and start generating.
+							Access the world's most capable models through the cloud — no GPU, no configuration. Just open the app and start generating.
 						</p>
 						<div class="d-flex gap-2 flex-wrap">
-							<a href="install.html" class="btn btn-brand"
-								>Try Cloud Models</a
-							>
-							<a href="pricing.html" class="btn btn-ghost"
-								>See Pricing</a
-							>
+							<a href="install.html" class="btn btn-brand">Try Cloud Models</a>
+							<a href="pricing.html" class="btn btn-ghost">See Pricing</a>
 						</div>
 					</div>
 					<div class="col-lg-7">
@@ -642,52 +750,32 @@
 							<div class="model-row featured">
 								<div class="model-icon icon-blue">⚡</div>
 								<div class="flex-grow-1">
-									<div class="model-name">
-										Lightning Text v2
-									</div>
-									<div class="model-desc">
-										Up to 1,000 words/sec · low-latency
-										streaming
-									</div>
+									<div class="model-name">Lightning Text v2</div>
+									<div class="model-desc">Up to 1,000 words/sec · low-latency streaming</div>
 								</div>
 								<span class="tag tag-fast">FASTEST</span>
 							</div>
 							<div class="model-row">
 								<div class="model-icon icon-cyan">🎨</div>
 								<div class="flex-grow-1">
-									<div class="model-name">
-										Lightning Image Turbo
-									</div>
-									<div class="model-desc">
-										Ultra-realistic images · sci-fi &
-										cinematic quality
-									</div>
+									<div class="model-name">Lightning Image Turbo</div>
+									<div class="model-desc">Ultra-realistic images · sci-fi & cinematic quality</div>
 								</div>
 								<span class="tag tag-cloud">CLOUD</span>
 							</div>
 							<div class="model-row">
 								<div class="model-icon icon-purple">🎬</div>
 								<div class="flex-grow-1">
-									<div class="model-name">
-										Cloud Video Generation
-									</div>
-									<div class="model-desc">
-										High-quality AI video generation
-										on-demand
-									</div>
+									<div class="model-name">Cloud Video Generation</div>
+									<div class="model-desc">High-quality AI video generation on-demand</div>
 								</div>
 								<span class="tag tag-new">NEW</span>
 							</div>
 							<div class="model-row">
 								<div class="model-icon icon-green">🖥</div>
 								<div class="flex-grow-1">
-									<div class="model-name">
-										Local Models (Ollama)
-									</div>
-									<div class="model-desc">
-										100% on-device · private · offline
-										capable
-									</div>
+									<div class="model-name">Local Models (Ollama)</div>
+									<div class="model-desc">100% on-device · private · offline capable</div>
 								</div>
 								<span class="tag tag-local">LOCAL</span>
 							</div>
@@ -697,6 +785,7 @@
 			</div>
 		</section>
 
+		<!-- ── Features grid ── -->
 		<section class="py-5">
 			<div class="container">
 				<div class="text-center mb-4">
@@ -707,15 +796,9 @@
 					<div class="col-md-8">
 						<div class="ip-card featured h-100">
 							<div class="feat-icon">☁️</div>
-							<div class="feat-title">
-								Cloud-First Architecture
-							</div>
+							<div class="feat-title">Cloud-First Architecture</div>
 							<p class="feat-body">
-								InferencePort's cloud tier connects you directly
-								to frontier models — no local hardware needed.
-								Get instant AI capabilities with zero setup:
-								authenticate and start generating across text,
-								image, video, and audio.
+								InferencePort's cloud tier connects you directly to frontier models — no local hardware needed. Get instant AI capabilities with zero setup: authenticate and start generating across text, image, video, and audio.
 							</p>
 						</div>
 					</div>
@@ -724,9 +807,7 @@
 							<div class="feat-icon">🔐</div>
 							<div class="feat-title">Privacy-First Local</div>
 							<p class="feat-body">
-								Prefer to keep data on-device? Run any
-								Ollama-compatible model locally. Nothing leaves
-								your machine.
+								Prefer to keep data on-device? Run any Ollama-compatible model locally. Nothing leaves your machine.
 							</p>
 						</div>
 					</div>
@@ -735,8 +816,7 @@
 							<div class="feat-icon">⚡</div>
 							<div class="feat-title">Lightning Fast</div>
 							<p class="feat-body">
-								Cloud text generation up to 1,000 words/sec with
-								optimized streaming pipelines.
+								Cloud text generation up to 1,000 words/sec with optimized streaming pipelines.
 							</p>
 						</div>
 					</div>
@@ -745,8 +825,7 @@
 							<div class="feat-icon">🌐</div>
 							<div class="feat-title">Cross-Platform</div>
 							<p class="feat-body">
-								Windows, macOS, and Linux — one download,
-								unified interface across all your machines.
+								Windows, macOS, and Linux — one download, unified interface across all your machines.
 							</p>
 						</div>
 					</div>
@@ -755,8 +834,7 @@
 							<div class="feat-icon">🤗</div>
 							<div class="feat-title">HuggingFace Spaces</div>
 							<p class="feat-body">
-								Browse and preview thousands of community AI
-								demos in the built-in spaces viewer.
+								Browse and preview thousands of community AI demos in the built-in spaces viewer.
 							</p>
 						</div>
 					</div>
@@ -764,6 +842,7 @@
 			</div>
 		</section>
 
+		<!-- ── Cloud vs Local ── -->
 		<section class="py-5">
 			<div class="container">
 				<div class="compare-box p-4 p-md-5">
@@ -773,10 +852,7 @@
 					</h2>
 					<div class="row g-4">
 						<div class="col-md-5">
-							<div class="col-label">
-								<span class="col-dot dot-cloud"></span>Cloud
-								Models
-							</div>
+							<div class="col-label"><span class="col-dot dot-cloud"></span>Cloud Models</div>
 							<ul class="compare-list">
 								<li>✦ No GPU or hardware required</li>
 								<li>✦ Instant access to frontier models</li>
@@ -785,28 +861,13 @@
 								<li>✦ Image, video & audio generation</li>
 							</ul>
 						</div>
-						<div
-							class="col-md-2 d-none d-md-flex align-items-center justify-content-center"
-						>
-							<span
-								style="
-									font-family:
-										&quot;JetBrains Mono&quot;, monospace;
-									font-size: 0.72rem;
-									color: var(--muted);
-								"
-								>vs</span
-							>
+						<div class="col-md-2 d-none d-md-flex align-items-center justify-content-center">
+							<span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted)">vs</span>
 						</div>
 						<div class="col-md-5">
-							<div class="col-label">
-								<span class="col-dot dot-local"></span>Local
-								Models
-							</div>
+							<div class="col-label"><span class="col-dot dot-local"></span>Local Models</div>
 							<ul class="compare-list">
-								<li>
-									✦ 100% private — nothing leaves your device
-								</li>
+								<li>✦ 100% private — nothing leaves your device</li>
 								<li>✦ Works fully offline</li>
 								<li>✦ Unlimited local chat</li>
 								<li>✦ Full Ollama model compatibility</li>
@@ -818,15 +879,13 @@
 			</div>
 		</section>
 
+		<!-- ── Pricing ── -->
 		<section class="py-5">
 			<div class="container">
 				<div class="text-center mb-5">
 					<div class="section-tag">Plans</div>
 					<h2 class="section-title">Scale when you're ready.</h2>
-					<p class="section-sub mx-auto mt-2">
-						Start free with generous limits. Upgrade for unlimited
-						cloud generation.
-					</p>
+					<p class="section-sub mx-auto mt-2">Start free with generous limits. Upgrade for unlimited cloud generation.</p>
 				</div>
 				<div class="row g-3">
 					<div class="col-md-3">
@@ -836,29 +895,17 @@
 							<div class="plan-period">forever</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">☁ Cloud</div>
-							<div class="plan-feature hi">
-								💬 50 Cloud Chats / day
-							</div>
+							<div class="plan-feature hi">💬 50 Cloud Chats / day</div>
 							<div class="plan-feature">🖼️ 10 Images / day</div>
 							<div class="plan-feature">🎬 3 Videos / day</div>
 							<div class="plan-feature">🔊 1 Audio / week</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">🖥 Local</div>
-							<div class="plan-feature hi">
-								✓ Unlimited Local Chat
-							</div>
-							<div class="plan-feature hi">
-								✓ Marketplace Access
-							</div>
-							<div class="plan-feature hi">
-								✓ HuggingFace Spaces
-							</div>
+							<div class="plan-feature hi">✓ Unlimited Local Chat</div>
+							<div class="plan-feature hi">✓ Marketplace Access</div>
+							<div class="plan-feature hi">✓ HuggingFace Spaces</div>
 							<div class="plan-feature hi">✓ Remote Server</div>
-							<a
-								href="install.html"
-								class="btn btn-plan-outline mt-3"
-								>Get Started</a
-							>
+							<a href="install.html" class="btn btn-plan-outline mt-3">Get Started</a>
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -868,29 +915,17 @@
 							<div class="plan-period">per month</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">☁ Cloud</div>
-							<div class="plan-feature hi">
-								💬 Unlimited Cloud Chat
-							</div>
+							<div class="plan-feature hi">💬 Unlimited Cloud Chat</div>
 							<div class="plan-feature">🖼️ 50 Images / day</div>
 							<div class="plan-feature">🎬 10 Videos / day</div>
 							<div class="plan-feature">🔊 5 Audio / week</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">🖥 Local</div>
-							<div class="plan-feature hi">
-								✓ Unlimited Local Chat
-							</div>
-							<div class="plan-feature hi">
-								✓ Marketplace Access
-							</div>
-							<div class="plan-feature hi">
-								✓ HuggingFace Spaces
-							</div>
+							<div class="plan-feature hi">✓ Unlimited Local Chat</div>
+							<div class="plan-feature hi">✓ Marketplace Access</div>
+							<div class="plan-feature hi">✓ HuggingFace Spaces</div>
 							<div class="plan-feature hi">✓ Remote Server</div>
-							<a
-								href="pricing.html"
-								class="btn btn-plan-outline mt-3"
-								>Subscribe</a
-							>
+							<a href="pricing.html" class="btn btn-plan-outline mt-3">Subscribe</a>
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -901,31 +936,17 @@
 							<div class="plan-period">per month</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">☁ Cloud</div>
-							<div class="plan-feature hi">
-								💬 Unlimited Cloud Chat
-							</div>
-							<div class="plan-feature hi">
-								🖼️ 150 Images / day
-							</div>
+							<div class="plan-feature hi">💬 Unlimited Cloud Chat</div>
+							<div class="plan-feature hi">🖼️ 150 Images / day</div>
 							<div class="plan-feature">🎬 30 Videos / day</div>
 							<div class="plan-feature">🔊 25 Audio / week</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">🖥 Local</div>
-							<div class="plan-feature hi">
-								✓ Unlimited Local Chat
-							</div>
-							<div class="plan-feature hi">
-								✓ Marketplace Access
-							</div>
-							<div class="plan-feature hi">
-								✓ HuggingFace Spaces
-							</div>
+							<div class="plan-feature hi">✓ Unlimited Local Chat</div>
+							<div class="plan-feature hi">✓ Marketplace Access</div>
+							<div class="plan-feature hi">✓ HuggingFace Spaces</div>
 							<div class="plan-feature hi">✓ Remote Server</div>
-							<a
-								href="pricing.html"
-								class="btn btn-plan-primary mt-3"
-								>Subscribe</a
-							>
+							<a href="pricing.html" class="btn btn-plan-primary mt-3">Subscribe</a>
 						</div>
 					</div>
 					<div class="col-md-3">
@@ -935,86 +956,50 @@
 							<div class="plan-period">per month</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">☁ Cloud</div>
-							<div class="plan-feature hi">
-								💬 Unlimited Cloud Chat
-							</div>
-							<div class="plan-feature hi">
-								🖼️ Unlimited Images
-							</div>
-							<div class="plan-feature hi">
-								🎬 Unlimited Videos
-							</div>
+							<div class="plan-feature hi">💬 Unlimited Cloud Chat</div>
+							<div class="plan-feature hi">🖼️ Unlimited Images</div>
+							<div class="plan-feature hi">🎬 Unlimited Videos</div>
 							<div class="plan-feature">🔊 75 Audio / week</div>
 							<hr class="plan-hr" />
 							<div class="plan-section">🖥 Local</div>
-							<div class="plan-feature hi">
-								✓ Unlimited Local Chat
-							</div>
-							<div class="plan-feature hi">
-								✓ Marketplace Access
-							</div>
-							<div class="plan-feature hi">
-								✓ HuggingFace Spaces
-							</div>
+							<div class="plan-feature hi">✓ Unlimited Local Chat</div>
+							<div class="plan-feature hi">✓ Marketplace Access</div>
+							<div class="plan-feature hi">✓ HuggingFace Spaces</div>
 							<div class="plan-feature hi">✓ Remote Server</div>
-							<a
-								href="pricing.html"
-								class="btn btn-plan-outline mt-3"
-								>Subscribe</a
-							>
+							<a href="pricing.html" class="btn btn-plan-outline mt-3">Subscribe</a>
 						</div>
 					</div>
 				</div>
 			</div>
 		</section>
 
+		<!-- ── Open Source ── -->
 		<section class="py-5">
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag">Open Source</div>
 					<h2 class="section-title">Join the Community</h2>
-					<p class="section-sub mx-auto mt-2">
-						Collaborate, contribute, and explore new possibilities
-						with developers worldwide.
-					</p>
+					<p class="section-sub mx-auto mt-2">Collaborate, contribute, and explore new possibilities with developers worldwide.</p>
 				</div>
 				<div class="row justify-content-center g-3">
 					<div class="col-md-5">
-						<a
-							href="https://github.com/sharktide/InferencePort-ai"
-							class="ip-card d-block text-decoration-none"
-							style="color: inherit"
-						>
+						<a href="https://github.com/sharktide/InferencePort-ai" class="ip-card d-block text-decoration-none" style="color:inherit">
 							<div class="d-flex align-items-center gap-3">
-								<div style="font-size: 1.6rem">📦</div>
+								<div style="font-size:1.6rem">📦</div>
 								<div>
-									<div class="feat-title">
-										InferencePort App
-									</div>
-									<div class="feat-body">
-										The desktop application — open source on
-										GitHub.
-									</div>
+									<div class="feat-title">InferencePort App</div>
+									<div class="feat-body">The desktop application — open source on GitHub.</div>
 								</div>
 							</div>
 						</a>
 					</div>
 					<div class="col-md-5">
-						<a
-							href="https://github.com/sharktide/InferencePort-web"
-							class="ip-card d-block text-decoration-none"
-							style="color: inherit"
-						>
+						<a href="https://github.com/sharktide/InferencePort-web" class="ip-card d-block text-decoration-none" style="color:inherit">
 							<div class="d-flex align-items-center gap-3">
-								<div style="font-size: 1.6rem">🌐</div>
+								<div style="font-size:1.6rem">🌐</div>
 								<div>
-									<div class="feat-title">
-										InferencePort Web
-									</div>
-									<div class="feat-body">
-										This website's source — contribute on
-										GitHub.
-									</div>
+									<div class="feat-title">InferencePort Web</div>
+									<div class="feat-body">This website's source — contribute on GitHub.</div>
 								</div>
 							</div>
 						</a>
@@ -1025,28 +1010,15 @@
 
 		<footer class="py-4">
 			<div class="container">
-				<div
-					class="d-flex flex-wrap justify-content-between align-items-center gap-3"
-				>
-					<span
-						>© 2026 Rihaan Meher |
-						<a
-							href="https://stats.uptimerobot.com/N1MpjMQC4U"
-							target="_blank"
-							>System Health</a
-						></span
-					>
+				<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+					<span>© 2026 Rihaan Meher | <a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank">System Health</a></span>
 					<div class="d-flex gap-3 flex-wrap">
 						<a href="marketplace.html">Marketplace</a>
 						<a href="lightning.html">Lightning</a>
 						<a href="install.html">Install</a>
 						<a href="pricing.html">Pricing</a>
 						<a href="security.html">Security</a>
-						<a
-							href="https://inferenceport-ai.readthedocs.io"
-							target="_blank"
-							>Docs</a
-						>
+						<a href="https://inferenceport-ai.readthedocs.io" target="_blank">Docs</a>
 						<a href="privacy.html">Privacy</a>
 						<a href="terms.html">Terms</a>
 						<a href="feedback.html">Feedback</a>
@@ -1056,5 +1028,114 @@
 		</footer>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+		(function() {
+			const toggleState = { search: false, img: false, vid: false, audio: false };
+			let attachedImageB64 = null;
+			let attachedImageType = null;
+			let attachedImageName = null;
+
+			window.lrToggle = function(key) {
+				toggleState[key] = !toggleState[key];
+				const btn = document.getElementById('tog-' + key);
+				btn.classList.toggle('active', toggleState[key]);
+			};
+
+			window.lrImageAttached = function(input) {
+				const file = input.files[0];
+				if (!file) return;
+				attachedImageName = file.name;
+				attachedImageType = file.type || 'image/jpeg';
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					attachedImageB64 = e.target.result.split(',')[1];
+					document.getElementById('lr-img-name').textContent = attachedImageName;
+					document.getElementById('lr-img-preview').style.display = 'inline-flex';
+					document.querySelector('.lr-upload-btn').classList.add('has-file');
+					document.getElementById('lr-upload-label').textContent = 'Attached';
+				};
+				reader.readAsDataURL(file);
+			};
+
+			window.lrClearImage = function() {
+				attachedImageB64 = null;
+				attachedImageType = null;
+				attachedImageName = null;
+				document.getElementById('lr-img-preview').style.display = 'none';
+				document.querySelector('.lr-upload-btn').classList.remove('has-file');
+				document.getElementById('lr-upload-label').textContent = 'Image';
+				document.getElementById('lr-img-upload').value = '';
+			};
+
+			window.lrAnalyze = async function() {
+				const promptText = document.getElementById("lr-prompt").value.trim();
+				if (!promptText && !attachedImageB64) return;
+
+				const btn    = document.getElementById("lr-analyze-btn");
+				const spin   = document.getElementById("lr-btn-spinner");
+				const btnTxt = document.getElementById("lr-btn-text");
+				const errEl  = document.getElementById("lr-error");
+				const resEl  = document.getElementById("lr-result");
+
+				btn.disabled = true;
+				spin.style.display = "block";
+				btnTxt.textContent = "Routing…";
+				errEl.style.display = "none";
+				resEl.style.display = "none";
+
+				// Build message content — support image attachment
+				let msgContent;
+				if (attachedImageB64) {
+					msgContent = [
+						{ type: "image_url", image_url: { url: `data:${attachedImageType};base64,${attachedImageB64}` } }
+					];
+					if (promptText) msgContent.push({ type: "text", text: promptText });
+				} else {
+					msgContent = promptText;
+				}
+
+				// Build tools array from active toggles
+				const tools = [];
+				if (toggleState.search) tools.push({ type: "function", function: { name: "web_search", description: "Search the web" } });
+				if (toggleState.img)    tools.push({ type: "function", function: { name: "image_generation", description: "Generate images" } });
+				if (toggleState.vid)    tools.push({ type: "function", function: { name: "video_generation", description: "Generate video" } });
+				if (toggleState.audio)  tools.push({ type: "function", function: { name: "audio_generation", description: "Generate audio" } });
+
+				const payload = {
+					prompt: [{ role: "user", content: msgContent }]
+				};
+				if (tools.length > 0) payload.tools = tools;
+
+				try {
+					const resp = await fetch("https://sharktide-lightning.hf.space/gen/prompt_analyze", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(payload)
+					});
+					if (!resp.ok) throw new Error(`${resp.status}`);
+					const data = await resp.json();
+
+					const modelName = data
+					const provider  = data.provider   || data.provider_name || "";
+
+					document.getElementById("lr-result-icon").textContent     = "⚡";
+					document.getElementById("lr-result-model").textContent    = modelName;
+					document.getElementById("lr-result-provider").textContent = provider ? `via ${provider}` : "";
+					resEl.style.display = "block";
+				} catch(e) {
+					errEl.textContent   = "Couldn't reach the routing API — please try again.";
+					errEl.style.display = "block";
+				} finally {
+					btn.disabled = false;
+					spin.style.display = "none";
+					btnTxt.textContent = "⚡ Analyze";
+				}
+			};
+
+			document.getElementById("lr-prompt").addEventListener("keydown", function(e) {
+				if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); lrAnalyze(); }
+			});
+		})();
+		</script>
 	</body>
 </html>
