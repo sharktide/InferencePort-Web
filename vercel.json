@@ -1,0 +1,32 @@
+{
+  "rewrites": [
+    {
+      "source": "/chat",
+      "destination": "https://incognitolm-chat.hf.space/"
+    },
+    {
+      "source": "/chat/",
+      "destination": "https://incognitolm-chat.hf.space/"
+    },
+    {
+      "source": "/chat/:path*",
+      "destination": "https://incognitolm-chat.hf.space/:path*"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "https://incognitolm-chat.hf.space/js/:path*"
+    },
+    {
+      "source": "/css/:path*",
+      "destination": "https://incognitolm-chat.hf.space/css/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://incognitolm-chat.hf.space/api/:path*"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://incognitolm-chat.hf.space/admin/:path*"
+    }
+  ]
+}

@@ -1,81 +1,146 @@
-
-
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const net = require('net');
 
 const root = path.resolve(__dirname);
 const port = process.env.PORT || 8080;
 
-const mime = {
-  '.html': 'text/html',
-  '.css': 'text/css',
-  '.js': 'application/javascript',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.gif': 'image/gif',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-  '.woff': 'font/woff',
-  '.woff2': 'font/woff2'
-};
+const HF_HOST = "incognitolm-chat.hf.space";
 
+function isAsset(pathname) {
+  return pathname.startsWith('/js') ||
+         pathname.startsWith('/css') ||
+         pathname.startsWith('/static') ||
+         pathname.startsWith('/assets') ||
+         pathname.startsWith('/favicon') ||
+         pathname.startsWith('/fonts');
+}
+
+// 🔥 MAIN PROXY
+function proxyToHF(req, res) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+
+  let pathname = url.pathname;
+
+  // Strip /chat
+  if (pathname.startsWith('/chat')) {
+    pathname = pathname.replace(/^\/chat/, '') || '/';
+  }
+
+  const options = {
+    hostname: HF_HOST,
+    path: pathname + url.search,
+    method: req.method,
+    headers: {
+      ...req.headers,
+      host: HF_HOST,
+      origin: `https://${HF_HOST}`, // 🔥 important for HF
+      referer: `https://${HF_HOST}/`,
+    }
+  };
+
+  const proxyReq = https.request(options, (proxyRes) => {
+    let chunks = [];
+
+    const contentType = proxyRes.headers['content-type'] || '';
+
+    // 🔥 If HTML, rewrite paths
+    if (contentType.includes('text/html')) {
+      proxyRes.on('data', chunk => chunks.push(chunk));
+      proxyRes.on('end', () => {
+        let body = Buffer.concat(chunks).toString('utf8');
+
+        // rewrite absolute paths → /chat/*
+        body = body.replace(/(href|src)=["']\/(.*?)["']/g, '$1="/chat/$2"');
+
+        res.writeHead(proxyRes.statusCode, proxyRes.headers);
+        res.end(body);
+      });
+    } else {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res);
+    }
+  });
+
+  proxyReq.on('error', (err) => {
+    console.error(err);
+    res.writeHead(500);
+    res.end('Proxy error');
+  });
+
+  req.pipe(proxyReq);
+}
+
+// 🔥 WEBSOCKET SUPPORT
+function handleUpgrade(req, socket, head) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+
+  let pathname = url.pathname;
+
+  if (pathname.startsWith('/chat')) {
+    pathname = pathname.replace(/^\/chat/, '') || '/';
+  }
+
+  const target = net.connect(443, HF_HOST, () => {
+    socket.write(
+      `GET ${pathname} HTTP/1.1\r\n` +
+      `Host: ${HF_HOST}\r\n` +
+      `Upgrade: websocket\r\n` +
+      `Connection: Upgrade\r\n` +
+      `Sec-WebSocket-Key: ${req.headers['sec-websocket-key']}\r\n` +
+      `Sec-WebSocket-Version: 13\r\n\r\n`
+    );
+
+    target.write(head);
+    target.pipe(socket);
+    socket.pipe(target);
+  });
+
+  target.on('error', () => socket.destroy());
+}
+
+// 🔥 STATIC SERVER (unchanged)
 function sendFile(res, filePath) {
-  const ext = path.extname(filePath).toLowerCase();
-  const type = mime[ext] || 'application/octet-stream';
   fs.readFile(filePath, (err, data) => {
     if (err) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Internal Server Error');
+      res.writeHead(500);
+      res.end('Error');
       return;
     }
-    res.writeHead(200, { 'Content-Type': type });
+    res.writeHead(200);
     res.end(data);
   });
 }
 
 const server = http.createServer((req, res) => {
   try {
-    // Prevent path traversal
-    const safeSuffix = path.normalize(req.url.split('?')[0]).replace(/^\/+/, '');
-    let filePath = path.join(root, safeSuffix);
+    const url = new URL(req.url, `http://${req.headers.host}`);
 
-    fs.stat(filePath, (err, stats) => {
-      if (!err && stats.isDirectory()) {
-        // If directory, try index.html
-        filePath = path.join(filePath, 'index.html');
-      }
+    // ✅ Proxy ALL chat + assets
+    if (url.pathname.startsWith('/chat') || isAsset(url.pathname)) {
+      return proxyToHF(req, res);
+    }
 
-      fs.stat(filePath, (err2, stats2) => {
-        if (!err2 && stats2.isFile()) {
-          sendFile(res, filePath);
-        } else {
-          // Fallback to root index.html (SPA-friendly)
-          const indexFile = path.join(root, 'index.html');
-          fs.stat(indexFile, (ie, is) => {
-            if (!ie && is.isFile()) {
-              sendFile(res, indexFile);
-            } else {
-              res.writeHead(404, { 'Content-Type': 'text/plain' });
-              res.end('404 Not Found');
-            }
-          });
-        }
-      });
-    });
+    // fallback static
+    let filePath = path.join(root, url.pathname);
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      return sendFile(res, filePath);
+    }
+
+    sendFile(res, path.join(root, 'index.html'));
+
   } catch (e) {
-    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    console.error(e);
+    res.writeHead(500);
     res.end('Server error');
   }
 });
 
-server.listen(port, () => {
-  console.log(`Serving ${root} at http://localhost:${port}`);
-});
+// 🔥 attach websocket handler
+server.on('upgrade', handleUpgrade);
 
-process.on('SIGINT', () => {
-  console.log('Shutting down server');
-  server.close(() => process.exit(0));
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
