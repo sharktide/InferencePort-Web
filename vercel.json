@@ -29,7 +29,7 @@
       "destination": "https://incognitolm-chat.hf.space/admin/:path*"
     },
     {
-      "source": "/api/(.*)",
+      "source": "/ip-api/(.*)",
       "destination": "https://sharktide-lightning.hf.space/$1"
     }
   ]
