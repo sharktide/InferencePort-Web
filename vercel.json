@@ -31,6 +31,10 @@
     {
       "source": "/ip-api/(.*)",
       "destination": "https://sharktide-lightning.hf.space/$1"
+    },
+    {
+      "source": "/v1/(.*)",
+      "destination": "https://sharktide-lightning.hf.space/gen/$1"
     }
   ]
 }
