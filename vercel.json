@@ -2,12 +2,14 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     {
-      "source": "/chat"
-      "destination": "https://sharktide-chat.hf.space"
+      "source": "/chat",
+      "destination": "https://sharktide-chat.hf.space",
+      "permanent": false
     },
     {
       "source": "/chat/:path*",
-      "destination": "https://sharktide-chat.hf.space/:path*"
+      "destination": "https://sharktide-chat.hf.space/:path*",
+      "permanent": false
     }
   ],
   "rewrites": [
