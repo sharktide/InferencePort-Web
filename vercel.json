@@ -9,7 +9,7 @@
       "source": "/chat/:path*",
       "destination": "https://sharktide-chat.hf.space/:path*"
     }
-  ]
+  ],
   "rewrites": [
     {
       "source": "/ip-api/(.*)",
