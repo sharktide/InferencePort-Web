@@ -1,33 +1,16 @@
 {
-  "rewrites": [
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
     {
-      "source": "/chat",
-      "destination": "https://sharktide-chat.hf.space/"
-    },
-    {
-      "source": "/chat/",
-      "destination": "https://sharktide-chat.hf.space/"
+      "source": "/chat"
+      "destination": "https://sharktide-chat.hf.space"
     },
     {
       "source": "/chat/:path*",
       "destination": "https://sharktide-chat.hf.space/:path*"
-    },
-    {
-      "source": "/js/:path*",
-      "destination": "https://sharktide-chat.hf.space/js/:path*"
-    },
-    {
-      "source": "/css/:path*",
-      "destination": "https://sharktide-chat.hf.space/css/:path*"
-    },
-    {
-      "source": "/api/:path*",
-      "destination": "https://sharktide-chat.hf.space/api/:path*"
-    },
-    {
-      "source": "/admin/:path*",
-      "destination": "https://sharktide-chat.hf.space/admin/:path*"
-    },
+    }
+  ]
+  "rewrites": [
     {
       "source": "/ip-api/(.*)",
       "destination": "https://sharktide-lightning.hf.space/$1"
