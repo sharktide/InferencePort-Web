@@ -7,6 +7,11 @@
       "permanent": false
     },
     {
+      "source": "/chat/",
+      "destination": "https://sharktide-chat.hf.space",
+      "permanent": false
+    },
+    {
       "source": "/chat/:path*",
       "destination": "https://sharktide-chat.hf.space/:path*",
       "permanent": false
