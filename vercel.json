@@ -26,5 +26,9 @@
       "source": "/v1/(.*)",
       "destination": "https://sharktide-lightning.hf.space/gen/$1"
     }
+    {
+      "source": "/MISC/(.*)",
+      "destination": "https://raw.githubusercontent.com/sharktide/inferenceport-ai/refs/heads/main/MISC/$1"
+    }
   ]
 }
