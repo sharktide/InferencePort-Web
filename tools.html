@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>InferencePort AI Tools</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+		<style>
+			:root { --brand:#4f7cff; --surface:#0f1525; --muted:#8b93a7; --border:rgba(255,255,255,0.08); }
+			body { background:#080d1a; color:#d6daea; font-family:"Inter",sans-serif; }
+			.navbar { background:rgba(8,13,26,.92)!important; border-bottom:1px solid rgba(255,255,255,.07); }
+			.navbar-brand { color:#fff!important; font-weight:800; letter-spacing:-.02em; }
+			.navbar-brand span { color:var(--brand); }
+			.hero { padding:72px 0 40px; text-align:center; }
+			.hero h1 { color:#fff; font-weight:800; letter-spacing:-.03em; }
+			.hero p { color:var(--muted); max-width:680px; margin:12px auto 0; }
+			.search-shell { max-width:840px; margin:20px auto 0; display:grid; gap:10px; }
+			.search-row { display:grid; grid-template-columns:1fr auto; gap:10px; }
+			.input {
+				background:var(--surface); border:1px solid var(--border); color:#d6daea; border-radius:10px;
+				padding:11px 14px; font-size:.9rem;
+			}
+			.input:focus { outline:none; border-color:rgba(79,124,255,.5); box-shadow:0 0 0 3px rgba(79,124,255,.16); }
+			.btn-open {
+				background:rgba(79,124,255,.12); border:1px solid rgba(79,124,255,.34); color:#7fa8ff;
+				border-radius:10px; padding:10px 16px; font-weight:600;
+			}
+			.tools-grid { max-width:1100px; margin:24px auto 70px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+			.tool-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; display:grid; gap:10px; }
+			.tool-name { font-weight:700; color:#fff; }
+			.tool-meta { font-size:.76rem; color:var(--muted); font-family:"JetBrains Mono",monospace; word-break:break-all; }
+			.tool-desc { font-size:.84rem; color:#c3cbdf; line-height:1.55; min-height:46px; }
+			.tool-actions { display:flex; gap:8px; }
+			.tool-btn {
+				flex:1; background:rgba(79,124,255,.1); border:1px solid rgba(79,124,255,.3);
+				color:#7fa8ff; border-radius:9px; padding:8px 10px; font-size:.82rem; font-weight:600; text-align:center; text-decoration:none;
+			}
+			.tool-btn:hover { background:rgba(79,124,255,.2); color:#a9c2ff; }
+			.empty { max-width:840px; margin:24px auto 0; color:var(--muted); text-align:center; }
+			@media (max-width: 980px) { .tools-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+			@media (max-width: 640px) { .tools-grid { grid-template-columns:1fr; } .search-row { grid-template-columns:1fr; } }
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg sticky-top">
+			<div class="container">
+				<a class="navbar-brand" href="index.html">InferencePort<span>AI</span></a>
+				<div class="ms-auto"><a class="btn btn-sm btn-outline-light" href="install.html">Install App</a></div>
+			</div>
+		</nav>
+		<section class="hero">
+			<div class="container">
+				<h1>Tool Marketplace</h1>
+				<p>Explore available tools and open InferencePort AI with a deep link to import by tool UUID.</p>
+				<div class="search-shell">
+					<input id="search-tools" class="input" placeholder="Search tools by name, language, UUID, or author" />
+					<div class="search-row">
+						<input id="manual-tool-id" class="input" placeholder="Paste tool UUID to open app import flow" />
+						<button id="open-manual-tool" class="btn-open" type="button">Open in App</button>
+					</div>
+				</div>
+			</div>
+		</section>
+		<div id="empty" class="empty" style="display:none;">No matching tools found.</div>
+		<section id="tools-grid" class="tools-grid"></section>
+
+		<script>
+			const REGISTRY_URL = "https://sharktide-lightning.hf.space/tool-registry/tools";
+			let allTools = [];
+			const toolsGrid = document.getElementById("tools-grid");
+			const searchInput = document.getElementById("search-tools");
+			const manualInput = document.getElementById("manual-tool-id");
+			const openManualBtn = document.getElementById("open-manual-tool");
+			const emptyState = document.getElementById("empty");
+
+			function deepLinkForTool(id) {
+				return `inferenceport-ai:///renderer/chat?tool=${encodeURIComponent(id)}`;
+			}
+
+			function escapeHtml(value) {
+				return String(value)
+					.replace(/&/g, "&amp;")
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;")
+					.replace(/"/g, "&quot;")
+					.replace(/'/g, "&#39;");
+			}
+
+			function renderTools(list) {
+				toolsGrid.innerHTML = "";
+				if (!list.length) {
+					emptyState.style.display = "block";
+					return;
+				}
+				emptyState.style.display = "none";
+				list.forEach((tool) => {
+					const card = document.createElement("article");
+					card.className = "tool-card";
+					const desc = tool.functionality || tool.openai?.description || "No description provided.";
+					const id = tool.id || "";
+					card.innerHTML = `
+						<div class="tool-name">${escapeHtml(tool.name || "Unnamed Tool")}</div>
+						<div class="tool-meta">${escapeHtml(id)} • ${escapeHtml((tool.language || "unknown").toUpperCase())}</div>
+						<div class="tool-meta">by ${escapeHtml(tool.authorEmail || "unknown")}</div>
+						<div class="tool-desc">${escapeHtml(desc)}</div>
+						<div class="tool-actions">
+							<a class="tool-btn" href="${deepLinkForTool(id)}">Get in App</a>
+						</div>
+					`;
+					toolsGrid.appendChild(card);
+				});
+			}
+
+			function applyFilter() {
+				const q = (searchInput.value || "").trim().toLowerCase();
+				if (!q) return renderTools(allTools);
+				const filtered = allTools.filter((tool) => {
+					const bag = [
+						tool.name,
+						tool.id,
+						tool.language,
+						tool.authorEmail,
+						tool.functionality,
+						tool.openai?.description,
+					]
+						.filter(Boolean)
+						.join(" ")
+						.toLowerCase();
+					return bag.includes(q);
+				});
+				renderTools(filtered);
+			}
+
+			async function loadTools() {
+				try {
+					const response = await fetch(REGISTRY_URL);
+					if (!response.ok) throw new Error(`HTTP ${response.status}`);
+					const payload = await response.json();
+					allTools = Array.isArray(payload.tools) ? payload.tools : [];
+					renderTools(allTools);
+				} catch (error) {
+					emptyState.style.display = "block";
+					emptyState.textContent = "Unable to load tools right now.";
+				}
+			}
+
+			searchInput.addEventListener("input", applyFilter);
+			openManualBtn.addEventListener("click", () => {
+				const id = (manualInput.value || "").trim();
+				if (!id) return;
+				window.location.href = deepLinkForTool(id);
+			});
+
+			const hashId = decodeURIComponent((window.location.hash || "").replace(/^#/, ""));
+			if (hashId) manualInput.value = hashId;
+
+			loadTools();
+		</script>
+	</body>
+</html>
