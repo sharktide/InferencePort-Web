@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InferencePort AI Developer Console</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
+      <div>
+        <h1 id="app-name">InferencePort AI Developer Console</h1>
+        <p>Pay-2-Go API dashboard</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a id="home-link" href="https://inference.js.org" target="_blank" rel="noreferrer">Home</a>
+      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card" id="auth-card">
+      <h2>Account</h2>
+      <p class="muted" id="auth-state">Sign in to access the Pay-2-Go API.</p>
+
+      <form id="email-auth-form" class="stack">
+        <input id="email-input" type="email" placeholder="Email" required />
+        <input id="password-input" type="password" placeholder="Password" required />
+        <div class="row">
+          <button type="submit" id="login-btn">Sign in</button>
+          <button type="button" id="signup-btn" class="ghost">Sign up</button>
+        </div>
+      </form>
+
+      <div class="stack">
+        <button id="google-btn" class="ghost">Continue with Google</button>
+        <button id="github-btn" class="ghost">Continue with GitHub</button>
+      </div>
+
+      <div class="row small-row">
+        <button id="forgot-btn" class="text-btn" type="button">Forgot password</button>
+        <button id="delete-btn" class="danger text-btn" type="button" hidden>Delete account</button>
+      </div>
+    </section>
+
+    <section class="card" id="wallet-card">
+      <h2>Credits</h2>
+      <div class="stat-grid">
+        <article>
+          <span>Remaining</span>
+          <strong id="credits-remaining">0.0000</strong>
+        </article>
+        <article>
+          <span>Total purchased</span>
+          <strong id="credits-total">0.0000</strong>
+        </article>
+        <article>
+          <span>Total used</span>
+          <strong id="credits-used">0.0000</strong>
+        </article>
+      </div>
+      <p class="muted tiny">Credit balances are enforced server-side. Low balance requests return HTTP 402.</p>
+    </section>
+
+    <section class="card wide" id="notices-card">
+      <h2>Notifications</h2>
+      <div id="notice-list" class="stack"></div>
+    </section>
+
+    <section class="card wide" id="pricing-card">
+      <h2>Credit Packs</h2>
+      <div id="pack-grid" class="pack-grid"></div>
+      <h3>Usage Rates</h3>
+      <ul id="rate-list" class="rate-list"></ul>
+    </section>
+
+    <section class="card wide" id="models-card">
+      <h2>Models</h2>
+      <div id="models-grid" class="models-grid"></div>
+    </section>
+
+    <section class="card wide" id="playground-card">
+      <h2>Live Playground</h2>
+      <p class="muted tiny">Every successful generation consumes credits.</p>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="text">Text</button>
+        <button class="tab" data-tab="image">Image</button>
+        <button class="tab" data-tab="video">Video</button>
+        <button class="tab" data-tab="audio">Audio</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="text">
+        <textarea id="text-prompt" rows="6" placeholder="Ask something..."></textarea>
+        <button id="run-text">Generate text</button>
+        <pre id="text-output" class="output"></pre>
+      </div>
+
+      <div class="tab-panel" data-panel="image">
+        <textarea id="image-prompt" rows="4" placeholder="Describe an image..."></textarea>
+        <button id="run-image">Generate image</button>
+        <div id="image-output" class="media-output"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="video">
+        <textarea id="video-prompt" rows="4" placeholder="Describe a video..."></textarea>
+        <label>Duration (seconds)
+          <input id="video-duration" type="number" min="1" max="10" value="5" />
+        </label>
+        <button id="run-video">Generate video</button>
+        <div id="video-output" class="media-output"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="audio">
+        <textarea id="audio-prompt" rows="4" placeholder="Describe audio/music/sfx..."></textarea>
+        <label>Audio type
+          <select id="audio-type">
+            <option value="sfx">Music / SFX</option>
+            <option value="tts">Speech (TTS)</option>
+          </select>
+        </label>
+        <label>Charge duration estimate (seconds)
+          <input id="audio-duration" type="number" min="1" max="90" value="10" />
+        </label>
+        <button id="run-audio">Generate audio</button>
+        <div id="audio-output" class="media-output"></div>
+      </div>
+    </section>
+
+    <section class="card wide" id="ledger-card">
+      <h2>Recent Usage & Purchases</h2>
+      <div id="ledger-table" class="ledger"></div>
+    </section>
+  </main>
+
+  <template id="notice-template">
+    <article class="notice"><strong></strong><p></p></article>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
