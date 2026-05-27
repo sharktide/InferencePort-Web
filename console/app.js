@@ -169,27 +169,6 @@ function renderLedger(entries) {
   });
 }
 
-async function reconcileCheckoutIfPresent() {
-  const params = new URLSearchParams(window.location.search);
-  const checkoutSessionId = params.get("session_id") || params.get("checkout_session_id");
-  if (!checkoutSessionId || !session) return;
-
-  try {
-    await fetchJson("/v1/billing/reconcile-checkout-session", {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ checkout_session_id: checkoutSessionId })
-    });
-    showToast("Credits added successfully.");
-    params.delete("session_id");
-    params.delete("checkout_session_id");
-    const clean = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-    history.replaceState({}, "", clean);
-  } catch (error) {
-    showToast(`Credit reconciliation failed: ${error.message}`);
-  }
-}
-
 function renderAuthState() {
   if (session?.user) {
     el.authState.textContent = `Signed in as ${session.user.email}`;
@@ -220,7 +199,6 @@ async function initSupabase() {
   renderAuthState();
 
   if (session) {
-    await reconcileCheckoutIfPresent();
     await refreshAccount().catch((e) => showToast(e.message));
   }
 
@@ -228,7 +206,6 @@ async function initSupabase() {
     session = nextSession;
     renderAuthState();
     if (session) {
-      await reconcileCheckoutIfPresent();
       await refreshAccount().catch((e) => showToast(e.message));
     }
   });
