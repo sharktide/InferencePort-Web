@@ -18,6 +18,15 @@ const el = {
   forgotBtn: document.getElementById("forgot-btn"),
   deleteBtn: document.getElementById("delete-btn"),
   logoutBtn: document.getElementById("logout-btn"),
+  // auth view toggles
+  signedOutView: document.getElementById("signed-out-view"),
+  signedInView: document.getElementById("signed-in-view"),
+  userAvatar: document.getElementById("user-avatar"),
+  userEmailDisplay: document.getElementById("user-email-display"),
+  // wallet toggle
+  walletContent: document.getElementById("wallet-content"),
+  walletLocked: document.getElementById("wallet-locked"),
+  // notices
   noticeList: document.getElementById("notice-list"),
   packGrid: document.getElementById("pack-grid"),
   modelsGrid: document.getElementById("models-grid"),
@@ -42,6 +51,12 @@ const el = {
   audioDuration: document.getElementById("audio-duration"),
   audioOutput: document.getElementById("audio-output")
 };
+
+// Cards that require sign-in
+const PROTECTED_CARDS = [
+  "wallet-card", "notices-card", "pricing-card",
+  "models-card", "playground-card", "ledger-card"
+];
 
 function showToast(message) {
   console.log(message);
@@ -94,7 +109,7 @@ function renderConfig() {
     const disabled = !link;
     card.innerHTML = `
       <strong>${pack.label}</strong>
-      <div>${Number(pack.credits).toFixed(4)} credits</div>
+      <div class="credit-amount">${Number(pack.credits).toFixed(4)} cr</div>
       <div class="muted">$${Number(pack.amountUsd).toFixed(2)} USD</div>
       <button ${disabled ? "disabled" : ""}>${disabled ? "Link pending" : "Add credits"}</button>
     `;
@@ -152,36 +167,69 @@ async function refreshAccount() {
 function renderLedger(entries) {
   el.ledgerTable.innerHTML = "";
   if (!entries.length) {
-    el.ledgerTable.textContent = "No ledger entries yet.";
+    el.ledgerTable.innerHTML = `<div class="locked-overlay" style="min-height:60px;">No ledger entries yet.</div>`;
     return;
   }
+
+  // Header row
+  const header = document.createElement("div");
+  header.className = "ledger-header";
+  header.innerHTML = `
+    <span>Type</span>
+    <span>Credits</span>
+    <span>Units</span>
+    <span>Date</span>
+  `;
+  el.ledgerTable.appendChild(header);
 
   entries.forEach((entry) => {
     const row = document.createElement("div");
     row.className = "ledger-row";
     row.innerHTML = `
-      <div><strong>${entry.entry_type}</strong><div class="muted tiny">${entry.usage_kind || "-"}</div></div>
-      <div>${Number(entry.delta_credits || 0).toFixed(4)} credits</div>
-      <div>${entry.units != null ? entry.units : "-"} ${entry.unit_label || ""}</div>
+      <div><strong>${entry.entry_type}</strong><div class="muted tiny">${entry.usage_kind || "—"}</div></div>
+      <div style="font-family:var(--mono);font-size:0.8rem;">${Number(entry.delta_credits || 0).toFixed(4)}</div>
+      <div style="font-family:var(--mono);font-size:0.8rem;">${entry.units != null ? entry.units : "—"} ${entry.unit_label || ""}</div>
       <div class="muted tiny">${entry.created_at || ""}</div>
     `;
     el.ledgerTable.appendChild(row);
   });
 }
 
+function setProtectedCardsVisible(visible) {
+  PROTECTED_CARDS.forEach((id) => {
+    const card = document.getElementById(id);
+    if (card) card.style.display = visible ? "" : "none";
+  });
+}
+
 function renderAuthState() {
   if (session?.user) {
-    el.authState.textContent = `Signed in as ${session.user.email}`;
-    el.logoutBtn.hidden = false;
-    el.deleteBtn.hidden = false;
+    el.signedOutView.style.display = "none";
+    el.signedInView.style.display = "flex";
+    el.logoutBtn.style.display = "";
+
+    const email = session.user.email || "";
+    el.userEmailDisplay.textContent = email;
+    el.userAvatar.textContent = email ? email[0].toUpperCase() : "?";
+
+    setProtectedCardsVisible(true);
+
+    el.walletContent.style.display = "";
+    el.walletLocked.style.display = "none";
   } else {
-    el.authState.textContent = "Sign in to access the Pay-2-Go API.";
-    el.logoutBtn.hidden = true;
-    el.deleteBtn.hidden = true;
-    el.creditsRemaining.textContent = "0.0000";
-    el.creditsTotal.textContent = "0.0000";
-    el.creditsUsed.textContent = "0.0000";
-    el.ledgerTable.textContent = "Sign in to view usage and purchases.";
+    el.signedOutView.style.display = "";
+    el.signedInView.style.display = "none";
+    el.logoutBtn.style.display = "none";
+
+    setProtectedCardsVisible(false);
+
+    el.walletContent.style.display = "none";
+    el.walletLocked.style.display = "";
+
+    el.creditsRemaining.textContent = "—";
+    el.creditsTotal.textContent = "—";
+    el.creditsUsed.textContent = "—";
+    el.ledgerTable.textContent = "";
   }
 }
 
@@ -322,7 +370,7 @@ function setupAuthActions() {
   });
 }
 
-function setBusy(button, isBusy, text = "Working...") {
+function setBusy(button, isBusy, text = "Working…") {
   if (!button) return;
   if (isBusy) {
     button.dataset.originalText = button.textContent;
@@ -338,16 +386,14 @@ function setupPlayground() {
   el.runText.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
     setBusy(el.runText, true);
-    el.textOutput.textContent = "Generating...";
+    el.textOutput.textContent = "Generating…";
     try {
       const result = await fetchJson("/v1/chat/completions", {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({
           stream: false,
-          messages: [
-            { role: "user", content: el.textPrompt.value || "Hello" }
-          ]
+          messages: [{ role: "user", content: el.textPrompt.value || "Hello" }]
         })
       });
       el.textOutput.textContent = JSON.stringify(result, null, 2);
@@ -362,7 +408,7 @@ function setupPlayground() {
   el.runImage.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
     setBusy(el.runImage, true);
-    el.imageOutput.textContent = "Generating...";
+    el.imageOutput.textContent = "Generating…";
     try {
       const result = await fetchJson("/v1/images/generations", {
         method: "POST",
@@ -383,7 +429,7 @@ function setupPlayground() {
   el.runVideo.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
     setBusy(el.runVideo, true);
-    el.videoOutput.textContent = "Generating...";
+    el.videoOutput.textContent = "Generating…";
     try {
       const response = await fetch(`${apiBase()}/v1/videos/generations`, {
         method: "POST",
@@ -411,7 +457,7 @@ function setupPlayground() {
   el.runAudio.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
     setBusy(el.runAudio, true);
-    el.audioOutput.textContent = "Generating...";
+    el.audioOutput.textContent = "Generating…";
     try {
       const response = await fetch(`${apiBase()}/v1/audio/generations`, {
         method: "POST",
@@ -442,6 +488,8 @@ async function init() {
   cfg = await fetchJson("/v1/config");
   renderConfig();
   setupTabs();
+  // Protected cards start hidden (set in HTML); ensure consistent state
+  setProtectedCardsVisible(false);
   await initSupabase();
   setupAuthActions();
   setupPlayground();

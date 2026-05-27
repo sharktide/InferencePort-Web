@@ -7,9 +7,6 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="bg-orb orb-a"></div>
-  <div class="bg-orb orb-b"></div>
-
   <header class="topbar">
     <div class="brand">
       <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
@@ -20,74 +17,91 @@
     </div>
     <div class="top-actions">
       <a id="home-link" href="https://inference.js.org" target="_blank" rel="noreferrer">Home</a>
-      <button id="logout-btn" class="ghost" hidden>Sign out</button>
+      <button id="logout-btn" class="ghost" style="display:none;">Sign out</button>
     </div>
   </header>
 
   <main class="grid">
+
+    <!-- AUTH CARD -->
     <section class="card" id="auth-card">
       <h2>Account</h2>
-      <p class="muted" id="auth-state">Sign in to access the Pay-2-Go API.</p>
 
-      <form id="email-auth-form" class="stack">
-        <input id="email-input" type="email" placeholder="Email" required />
-        <input id="password-input" type="password" placeholder="Password" required />
-        <div class="row">
-          <button type="submit" id="login-btn">Sign in</button>
-          <button type="button" id="signup-btn" class="ghost">Sign up</button>
+      <!-- Signed-out view (default visible) -->
+      <div id="signed-out-view" class="stack">
+        <p class="muted tiny" id="auth-state">Sign in to access the Pay-2-Go API.</p>
+        <form id="email-auth-form" class="stack">
+          <input id="email-input" type="email" placeholder="Email" required />
+          <input id="password-input" type="password" placeholder="Password" required />
+          <div class="row">
+            <button type="submit" id="login-btn" style="flex:1;">Sign in</button>
+            <button type="button" id="signup-btn" class="ghost" style="flex:1;">Sign up</button>
+          </div>
+        </form>
+        <div class="stack">
+          <button id="google-btn" class="ghost">Continue with Google</button>
+          <button id="github-btn" class="ghost">Continue with GitHub</button>
         </div>
-      </form>
-
-      <div class="stack">
-        <button id="google-btn" class="ghost">Continue with Google</button>
-        <button id="github-btn" class="ghost">Continue with GitHub</button>
+        <button id="forgot-btn" class="text-btn" type="button">Forgot password?</button>
       </div>
 
-      <div class="row small-row">
-        <button id="forgot-btn" class="text-btn" type="button">Forgot password</button>
-        <button id="delete-btn" class="danger text-btn" type="button" hidden>Delete account</button>
+      <!-- Signed-in view (default hidden) -->
+      <div id="signed-in-view" class="signed-in-view" style="display:none;">
+        <div class="user-badge">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-email" id="user-email-display">—</div>
+        </div>
+        <button id="delete-btn" class="text-btn danger" type="button">Delete account</button>
       </div>
     </section>
 
+    <!-- WALLET CARD -->
     <section class="card" id="wallet-card">
       <h2>Credits</h2>
-      <div class="stat-grid">
-        <article>
-          <span>Remaining</span>
-          <strong id="credits-remaining">0.0000</strong>
-        </article>
-        <article>
-          <span>Total purchased</span>
-          <strong id="credits-total">0.0000</strong>
-        </article>
-        <article>
-          <span>Total used</span>
-          <strong id="credits-used">0.0000</strong>
-        </article>
+      <div id="wallet-content" style="display:none;">
+        <div class="stat-grid">
+          <article>
+            <span>Remaining</span>
+            <strong id="credits-remaining">—</strong>
+          </article>
+          <article>
+            <span>Total purchased</span>
+            <strong id="credits-total">—</strong>
+          </article>
+          <article>
+            <span>Total used</span>
+            <strong id="credits-used">—</strong>
+          </article>
+        </div>
+        <p class="muted tiny" style="margin-top:1rem;">Credit balances enforced server-side. Low balance returns HTTP 402.</p>
       </div>
-      <p class="muted tiny">Credit balances are enforced server-side. Low balance requests return HTTP 402.</p>
+      <div id="wallet-locked" class="locked-overlay">Sign in to view your credit balance</div>
     </section>
 
-    <section class="card wide" id="notices-card">
+    <!-- NOTICES CARD (hidden until signed in) -->
+    <section class="card wide" id="notices-card" style="display:none;">
       <h2>Notifications</h2>
       <div id="notice-list" class="stack"></div>
     </section>
 
-    <section class="card wide" id="pricing-card">
+    <!-- PRICING CARD (hidden until signed in) -->
+    <section class="card wide" id="pricing-card" style="display:none;">
       <h2>Credit Packs</h2>
       <div id="pack-grid" class="pack-grid"></div>
       <h3>Usage Rates</h3>
       <ul id="rate-list" class="rate-list"></ul>
     </section>
 
-    <section class="card wide" id="models-card">
+    <!-- MODELS CARD (hidden until signed in) -->
+    <section class="card wide" id="models-card" style="display:none;">
       <h2>Models</h2>
       <div id="models-grid" class="models-grid"></div>
     </section>
 
-    <section class="card wide" id="playground-card">
+    <!-- PLAYGROUND CARD (hidden until signed in) -->
+    <section class="card wide" id="playground-card" style="display:none;">
       <h2>Live Playground</h2>
-      <p class="muted tiny">Every successful generation consumes credits.</p>
+      <p class="muted tiny" style="margin-bottom:1.25rem;">Every successful generation consumes credits.</p>
 
       <div class="tabs">
         <button class="tab active" data-tab="text">Text</button>
@@ -97,7 +111,7 @@
       </div>
 
       <div class="tab-panel active" data-panel="text">
-        <textarea id="text-prompt" rows="6" placeholder="Ask something..."></textarea>
+        <textarea id="text-prompt" rows="5" placeholder="Ask something..."></textarea>
         <button id="run-text">Generate text</button>
         <pre id="text-output" class="output"></pre>
       </div>
@@ -118,7 +132,7 @@
       </div>
 
       <div class="tab-panel" data-panel="audio">
-        <textarea id="audio-prompt" rows="4" placeholder="Describe audio/music/sfx..."></textarea>
+        <textarea id="audio-prompt" rows="4" placeholder="Describe audio / music / sfx..."></textarea>
         <label>Audio type
           <select id="audio-type">
             <option value="sfx">Music / SFX</option>
@@ -133,15 +147,13 @@
       </div>
     </section>
 
-    <section class="card wide" id="ledger-card">
-      <h2>Recent Usage & Purchases</h2>
+    <!-- LEDGER CARD (hidden until signed in) -->
+    <section class="card wide" id="ledger-card" style="display:none;">
+      <h2>Recent Usage &amp; Purchases</h2>
       <div id="ledger-table" class="ledger"></div>
     </section>
-  </main>
 
-  <template id="notice-template">
-    <article class="notice"><strong></strong><p></p></article>
-  </template>
+  </main>
 
   <script type="module" src="app.js"></script>
 </body>
