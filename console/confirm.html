@@ -8,24 +8,70 @@
   <style>
     body {
       margin: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fefce8; /* light yellow */
+      background: #fefce8;
       font-family: system-ui, sans-serif;
       color: #1e293b;
     }
 
+    /* NAVBAR */
+    .topbar {
+      width: 100%;
+      background: white;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .top-actions a,
+    .top-actions button {
+      font-size: 14px;
+      color: #334155;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .ghost {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.15);
+      background: white;
+    }
+
+    /* CARD */
     .box {
+      margin: 80px auto;
       text-align: center;
       padding: 40px 32px;
       background: white;
       border-radius: 16px;
       border: 1px solid rgba(0,0,0,0.06);
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      max-width: 420px;
-      width: 100%;
+      max-width: 480px;
       animation: fadeIn 0.6s ease-out;
     }
 
@@ -34,8 +80,20 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- Logo + Name slide in from left --- */
+    /* INLINE HEADER BLOCK */
+    .header-inline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      margin-bottom: 20px;
+    }
+
+    /* Logo + Name slide from left */
     .brand-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       animation: slideLeft 0.6s ease-out;
     }
 
@@ -48,26 +106,24 @@
       width: 70px;
       height: 70px;
       object-fit: contain;
-      margin-bottom: 8px;
     }
 
-    .brand {
+    .brand-name {
       font-size: 18px;
       font-weight: 600;
-      margin-bottom: 20px;
+      margin-top: 6px;
       color: #334155;
     }
 
-    /* --- Checkmark slides in from right --- */
+    /* Checkmark slides from right */
     .check {
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: #dbeafe; /* soft blue */
+      background: #dbeafe;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
       animation: slideRight 0.6s ease-out;
     }
 
@@ -96,15 +152,14 @@
     h1 {
       font-size: 24px;
       margin-bottom: 8px;
-      letter-spacing: -0.02em;
     }
 
     p {
       font-size: 15px;
       color: #475569;
-      line-height: 1.5;
     }
 
+    /* Receipt */
     .receipt {
       margin-top: 20px;
       text-align: left;
@@ -123,6 +178,7 @@
       color: #64748b;
     }
 
+    /* Button */
     .btn {
       margin-top: 22px;
       display: inline-block;
@@ -133,27 +189,59 @@
       text-decoration: none;
       font-size: 15px;
       font-weight: 500;
-      transition: background 0.2s ease;
     }
 
     .btn:hover {
       background: #2563eb;
     }
+
+    /* Confetti canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- NAVBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
+      <div>
+        <h1 id="app-name">InferencePort AI Developer Console</h1>
+        <p>Pay-2-Go API dashboard</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a id="home-link" href="https://inference.js.org" target="_blank" rel="noreferrer">Home</a>
+      <button id="logout-btn" class="ghost" style="display:none;">Sign out</button>
+    </div>
+  </header>
+
+  <!-- CONFETTI -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- CARD -->
   <div class="box">
 
-    <div class="brand-block">
-      <img src="assets/logo.png" class="logo" alt="InferencePort AI Logo">
-      <div class="brand">InferencePort AI</div>
-    </div>
+    <div class="header-inline">
+      <div class="brand-block">
+        <img src="assets/logo.png" class="logo" alt="InferencePort AI Logo">
+        <div class="brand-name">InferencePort AI</div>
+      </div>
 
-    <div class="check">
-      <svg viewBox="0 0 24 24">
-        <path d="M5 12.5 10 17 20 7" />
-      </svg>
+      <div class="check">
+        <svg viewBox="0 0 24 24">
+          <path d="M5 12.5 10 17 20 7" />
+        </svg>
+      </div>
     </div>
 
     <h1>Payment Confirmed</h1>
@@ -172,6 +260,45 @@
   </div>
 
   <script>
+    /* Confetti burst */
+    function launchConfetti() {
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const confetti = [];
+      const colors = ["#3b82f6", "#60a5fa", "#fde047", "#facc15"];
+
+      for (let i = 0; i < 150; i++) {
+        confetti.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          r: Math.random() * 6 + 4,
+          c: colors[Math.floor(Math.random() * colors.length)],
+          s: Math.random() * 3 + 2
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confetti.forEach((p) => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.c;
+          ctx.fill();
+
+          p.y += p.s;
+          if (p.y > canvas.height) p.y = -10;
+        });
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    }
+
+    /* Load receipt */
     async function loadReceipt() {
       const params = new URLSearchParams(window.location.search);
       const sessionId = params.get("session_id");
@@ -190,14 +317,9 @@
           return;
         }
 
-        document.getElementById("product").innerText =
-          data.product?.name || "Unknown";
-
-        document.getElementById("amount").innerText =
-          `${(data.amount_total / 100).toFixed(2)} ${data.currency.toUpperCase()}`;
-
-        document.getElementById("email").innerText =
-          data.customer_email || "N/A";
+        document.getElementById("product").innerText = data.product?.name || "Unknown";
+        document.getElementById("amount").innerText = `${(data.amount_total / 100).toFixed(2)} ${data.currency.toUpperCase()}`;
+        document.getElementById("email").innerText = data.customer_email || "N/A";
 
         const pm = data.payment_method;
         document.getElementById("pm").innerText =
@@ -206,6 +328,8 @@
         document.getElementById("receipt").style.display = "block";
         document.getElementById("loading").style.display = "none";
 
+        launchConfetti();
+
       } catch (err) {
         document.getElementById("loading").innerText = "Error loading details.";
       }
@@ -213,5 +337,6 @@
 
     loadReceipt();
   </script>
+
 </body>
 </html>
