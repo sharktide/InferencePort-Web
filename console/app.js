@@ -109,7 +109,7 @@ function renderConfig() {
     const disabled = !link;
     card.innerHTML = `
       <strong>${pack.label}</strong>
-      <div class="credit-amount">${Number(pack.credits).toFixed(4)} cr</div>
+      <div class="credit-amount">${Number(pack.credits).toFixed(4)} credits</div>
       <div class="muted">$${Number(pack.amountUsd).toFixed(2)} USD</div>
       <button ${disabled ? "disabled" : ""}>${disabled ? "Link pending" : "Add credits"}</button>
     `;
