@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Payment Confirmed</title>
+  <title>Payment Confirmed — InferencePort AI</title>
 
   <style>
     body {
@@ -24,7 +24,7 @@
       border-radius: 16px;
       border: 1px solid rgba(0,0,0,0.06);
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      max-width: 380px;
+      max-width: 420px;
       width: 100%;
       animation: fadeIn 0.6s ease-out;
     }
@@ -32,6 +32,20 @@
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+
+    .brand {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #334155;
     }
 
     .check {
@@ -97,11 +111,32 @@
     .label {
       color: #64748b;
     }
+
+    .btn {
+      margin-top: 22px;
+      display: inline-block;
+      padding: 10px 18px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #2563eb;
+    }
   </style>
 </head>
 
 <body>
   <div class="box">
+
+    <img src="assets/logo.png" class="logo" alt="InferencePort AI Logo">
+    <div class="brand">InferencePort AI</div>
+
     <div class="check">
       <svg viewBox="0 0 24 24">
         <path d="M5 12.5 10 17 20 7" />
@@ -119,6 +154,8 @@
     </div>
 
     <p id="loading" style="margin-top:15px; color:#64748b;">Fetching order details…</p>
+
+    <a href="index.html" class="btn">Return to Dashboard</a>
   </div>
 
   <script>
