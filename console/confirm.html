@@ -5,92 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Payment Confirmed — InferencePort AI</title>
 
+  <!-- Your full stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+
   <style>
-    body {
-      margin: 0;
-      background: #fefce8;
-      font-family: system-ui, sans-serif;
-      color: #1e293b;
-    }
-
-    /* NAVBAR */
-    .topbar {
-      width: 100%;
-      background: white;
-      border-bottom: 1px solid rgba(0,0,0,0.08);
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .topbar .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-logo {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .top-actions a,
-    .top-actions button {
-      font-size: 14px;
-      color: #334155;
-      text-decoration: none;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .ghost {
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(0,0,0,0.15);
-      background: white;
-    }
-
-    /* CARD */
-    .box {
-      margin: 80px auto;
-      text-align: center;
-      padding: 40px 32px;
-      background: white;
-      border-radius: 16px;
-      border: 1px solid rgba(0,0,0,0.06);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      max-width: 480px;
-      animation: fadeIn 0.6s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* INLINE HEADER BLOCK */
-    .header-inline {
+    /* Inline header animation */
+    .success-header {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 22px;
-      margin-bottom: 20px;
+      gap: 28px;
+      margin-bottom: 24px;
     }
 
-    /* Logo + Name slide from left */
-    .brand-block {
+    .brand-inline {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -102,21 +30,22 @@
       to   { opacity: 1; transform: translateX(0); }
     }
 
-    .logo {
+    .brand-inline img {
       width: 70px;
       height: 70px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
       object-fit: contain;
     }
 
-    .brand-name {
-      font-size: 18px;
+    .brand-inline .name {
+      font-size: 1rem;
       font-weight: 600;
       margin-top: 6px;
-      color: #334155;
+      color: var(--text);
     }
 
-    /* Checkmark slides from right */
-    .check {
+    .checkmark {
       width: 80px;
       height: 80px;
       border-radius: 50%;
@@ -132,10 +61,10 @@
       to   { opacity: 1; transform: translateX(0); }
     }
 
-    .check svg {
+    .checkmark svg {
       width: 42px;
       height: 42px;
-      stroke: #3b82f6;
+      stroke: var(--accent);
       stroke-width: 3;
       fill: none;
       stroke-linecap: round;
@@ -149,68 +78,70 @@
       to   { stroke-dasharray: 60; stroke-dashoffset: 0; }
     }
 
-    h1 {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    p {
-      font-size: 15px;
-      color: #475569;
-    }
-
-    /* Receipt */
-    .receipt {
-      margin-top: 20px;
-      text-align: left;
-      background: #fafafa;
-      border-radius: 12px;
-      padding: 14px 16px;
-      border: 1px solid rgba(0,0,0,0.05);
-      font-size: 14px;
-    }
-
-    .receipt div {
-      margin-bottom: 6px;
-    }
-
-    .label {
-      color: #64748b;
-    }
-
-    /* Button */
-    .btn {
-      margin-top: 22px;
-      display: inline-block;
-      padding: 10px 18px;
-      background: #3b82f6;
-      color: white;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 500;
-    }
-
-    .btn:hover {
-      background: #2563eb;
-    }
-
     /* Confetti canvas */
     #confetti-canvas {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
       z-index: 999;
+    }
+
+    /* Success card */
+    .success-card {
+      max-width: 480px;
+      margin: 80px auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    .receipt-box {
+      margin-top: 20px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .receipt-box div { margin-bottom: 6px; }
+    .label { color: var(--muted); }
+
+    .btn-row {
+      margin-top: 22px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-link {
+      font-size: 0.88rem;
+      padding: 0.72rem 1.25rem;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn-link:hover {
+      background: #0055e0;
+      box-shadow: 0 4px 16px rgba(26,107,255,0.3);
+      transform: translateY(-1px);
     }
   </style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
+  <!-- TOPBAR (from your stylesheet) -->
   <header class="topbar">
     <div class="brand">
       <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
@@ -225,74 +156,85 @@
     </div>
   </header>
 
-  <!-- CONFETTI -->
+  <!-- Confetti -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- CARD -->
-  <div class="box">
+  <!-- SUCCESS CARD -->
+  <div class="success-card">
 
-    <div class="header-inline">
-      <div class="brand-block">
-        <img src="assets/logo.png" class="logo" alt="InferencePort AI Logo">
-        <div class="brand-name">InferencePort AI</div>
+    <div class="success-header">
+      <div class="brand-inline">
+        <img src="assets/logo.png" alt="InferencePort AI Logo">
+        <div class="name">InferencePort AI</div>
       </div>
 
-      <div class="check">
+      <div class="checkmark">
         <svg viewBox="0 0 24 24">
           <path d="M5 12.5 10 17 20 7" />
         </svg>
       </div>
     </div>
 
-    <h1>Payment Confirmed</h1>
+    <h2 style="margin-bottom: 6px;">Payment Confirmed</h2>
     <p>Your credits will be added to your account shortly.</p>
 
-    <div id="receipt" class="receipt" style="display:none;">
+    <div id="receipt" class="receipt-box">
       <div><span class="label">Product:</span> <span id="product"></span></div>
       <div><span class="label">Amount:</span> <span id="amount"></span></div>
       <div><span class="label">Email:</span> <span id="email"></span></div>
       <div><span class="label">Payment Method:</span> <span id="pm"></span></div>
     </div>
 
-    <p id="loading" style="margin-top:15px; color:#64748b;">Fetching order details…</p>
+    <p id="loading" class="muted" style="margin-top: 15px;">Fetching order details…</p>
 
-    <a href="index.html" class="btn">Return to Dashboard</a>
+    <div class="btn-row">
+      <a href="index.html" class="btn-link">Return to Dashboard</a>
+      <a id="receipt-btn" href="#" class="btn-link" style="background: var(--accent-2); color: black;">View Receipt</a>
+    </div>
   </div>
 
   <script>
-    /* Confetti burst */
-    function launchConfetti() {
+    /* Single confetti burst */
+    function burstConfetti() {
       const canvas = document.getElementById("confetti-canvas");
       const ctx = canvas.getContext("2d");
 
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      const confetti = [];
-      const colors = ["#3b82f6", "#60a5fa", "#fde047", "#facc15"];
+      const pieces = [];
+      const colors = ["#1a6bff", "#60a5fa", "#f5c400", "#facc15"];
 
-      for (let i = 0; i < 150; i++) {
-        confetti.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height - canvas.height,
+      for (let i = 0; i < 120; i++) {
+        pieces.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
           r: Math.random() * 6 + 4,
           c: colors[Math.floor(Math.random() * colors.length)],
-          s: Math.random() * 3 + 2
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8,
+          a: 1
         });
       }
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        confetti.forEach((p) => {
+
+        pieces.forEach((p) => {
+          ctx.globalAlpha = p.a;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
           ctx.fillStyle = p.c;
           ctx.fill();
 
-          p.y += p.s;
-          if (p.y > canvas.height) p.y = -10;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.a -= 0.015;
         });
-        requestAnimationFrame(draw);
+
+        if (pieces.some(p => p.a > 0)) {
+          requestAnimationFrame(draw);
+        }
       }
 
       draw();
@@ -328,7 +270,11 @@
         document.getElementById("receipt").style.display = "block";
         document.getElementById("loading").style.display = "none";
 
-        launchConfetti();
+        // Receipt link
+        document.getElementById("receipt-btn").href = data.receipt_url || "#";
+
+        // Confetti burst
+        burstConfetti();
 
       } catch (err) {
         document.getElementById("loading").innerText = "Error loading details.";
