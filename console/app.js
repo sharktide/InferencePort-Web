@@ -35,6 +35,17 @@ const el = {
   creditsTotal: document.getElementById("credits-total"),
   creditsUsed: document.getElementById("credits-used"),
   ledgerTable: document.getElementById("ledger-table"),
+  apiKeyCard: document.getElementById("api-keys-card"),
+  apiKeyName: document.getElementById("api-key-name"),
+  apiKeyExpiry: document.getElementById("api-key-expiry"),
+  apiKeyStatus: document.getElementById("api-key-status"),
+  apiKeyList: document.getElementById("api-key-list"),
+  apiKeyReveal: document.getElementById("api-key-reveal"),
+  apiKeySecret: document.getElementById("api-key-secret"),
+  createApiKeyBtn: document.getElementById("create-api-key-btn"),
+  refreshApiKeysBtn: document.getElementById("refresh-api-keys-btn"),
+  copyApiKeyBtn: document.getElementById("copy-api-key-btn"),
+  closeApiKeyRevealBtn: document.getElementById("close-api-key-reveal-btn"),
   runText: document.getElementById("run-text"),
   textPrompt: document.getElementById("text-prompt"),
   textOutput: document.getElementById("text-output"),
@@ -55,8 +66,205 @@ const el = {
 // Cards that require sign-in
 const PROTECTED_CARDS = [
   "wallet-card", "notices-card", "pricing-card",
-  "models-card", "playground-card", "ledger-card"
+  "models-card", "playground-card", "ledger-card", "api-keys-card"
 ];
+
+let currentRawApiKey = "";
+let currentApiKeyName = "";
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (match) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[match] || match));
+}
+
+function formatDateTime(value) {
+  if (!value) return "Never";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleString();
+}
+
+function getApiKeyStatus(apiKey) {
+  if (apiKey.isRevoked) {
+    return { label: "Revoked", className: "is-revoked" };
+  }
+  if (apiKey.isExpired) {
+    return { label: "Expired", className: "is-expired" };
+  }
+  return { label: "Active", className: "is-active" };
+}
+
+function setApiKeyStatus(message) {
+  if (el.apiKeyStatus) {
+    el.apiKeyStatus.textContent = message;
+  }
+}
+
+function hideApiKeyReveal() {
+  currentRawApiKey = "";
+  currentApiKeyName = "";
+  if (el.apiKeyReveal) {
+    el.apiKeyReveal.style.display = "none";
+  }
+  if (el.apiKeySecret) {
+    el.apiKeySecret.textContent = "";
+  }
+}
+
+function showApiKeyReveal(rawKey, name) {
+  currentRawApiKey = rawKey;
+  currentApiKeyName = name;
+  if (el.apiKeySecret) {
+    el.apiKeySecret.textContent = rawKey;
+  }
+  if (el.apiKeyReveal) {
+    el.apiKeyReveal.style.display = "";
+  }
+}
+
+function renderApiKeys(items) {
+  if (!el.apiKeyList) return;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    el.apiKeyList.innerHTML = `
+      <div class="locked-overlay" style="margin-top:1rem;">
+        No API keys yet. Generate one to authenticate Lightning requests without a Supabase session JWT.
+      </div>
+    `;
+    return;
+  }
+
+  el.apiKeyList.innerHTML = items.map((apiKey) => {
+    const status = getApiKeyStatus(apiKey);
+    return `
+      <article class="api-key-row">
+        <div class="api-key-row-head">
+          <div class="api-key-row-title">
+            <div class="api-key-name">${escapeHtml(apiKey.name)}</div>
+            <div class="api-key-prefix">${escapeHtml(apiKey.keyPrefix)}...</div>
+          </div>
+          <div class="api-key-badge ${status.className}">${escapeHtml(status.label)}</div>
+        </div>
+        <div class="api-key-meta">
+          <span>Created: ${escapeHtml(formatDateTime(apiKey.createdAt))}</span>
+          <span>Last used: ${escapeHtml(formatDateTime(apiKey.lastUsedAt))}</span>
+          <span>Expires: ${escapeHtml(apiKey.expiresAt ? formatDateTime(apiKey.expiresAt) : "Never")}</span>
+        </div>
+        <div class="api-key-actions">
+          <button
+            type="button"
+            class="ghost"
+            data-api-key-action="revoke"
+            data-api-key-id="${escapeHtml(apiKey.id)}"
+            ${apiKey.isRevoked ? "disabled" : ""}
+          >
+            ${apiKey.isRevoked ? "Revoked" : "Revoke Key"}
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  el.apiKeyList.querySelectorAll('[data-api-key-action="revoke"]').forEach((button) => {
+    button.addEventListener("click", () => {
+      const keyId = button.dataset.apiKeyId;
+      if (!keyId) return;
+      void revokeApiKey(keyId);
+    });
+  });
+}
+
+async function refreshApiKeys() {
+  if (!session?.access_token) {
+    if (el.apiKeyList) {
+      el.apiKeyList.innerHTML = `
+        <div class="locked-overlay" style="margin-top:1rem;">
+          Sign in to create and manage Lightning API keys.
+        </div>
+      `;
+    }
+    setApiKeyStatus("Sign in to create and manage Lightning API keys.");
+    return;
+  }
+
+  try {
+    const response = await fetchJson("/v1/lightning-api-keys", { headers: authHeaders() });
+    renderApiKeys(response.items || []);
+    setApiKeyStatus("Use a generated key as Authorization: Bearer <your-api-key> when calling Lightning.");
+  } catch (error) {
+    if (el.apiKeyList) {
+      el.apiKeyList.innerHTML = `
+        <div class="locked-overlay" style="margin-top:1rem;">
+          Could not load API keys.
+        </div>
+      `;
+    }
+    setApiKeyStatus(`Could not load API keys: ${error.message || String(error)}`);
+  }
+}
+
+async function createApiKey() {
+  if (!session?.access_token) {
+    showToast("Sign in first, then create an API key.");
+    return;
+  }
+
+  const name = el.apiKeyName?.value.trim() || "";
+  const expiresAt = el.apiKeyExpiry?.value.trim() || null;
+  if (!name) {
+    setApiKeyStatus("Please enter a name for this key.");
+    return;
+  }
+
+  setBusy(el.createApiKeyBtn, true, "Creating…");
+  setApiKeyStatus("Creating API key...");
+
+  try {
+    const result = await fetchJson("/v1/lightning-api-keys", {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ name, expiresAt })
+    });
+
+    if (!result?.apiKey || !result?.rawKey) {
+      throw new Error("Could not create API key");
+    }
+
+    if (el.apiKeyName) el.apiKeyName.value = "";
+    if (el.apiKeyExpiry) el.apiKeyExpiry.value = "";
+    showApiKeyReveal(result.rawKey, result.apiKey.name);
+    setApiKeyStatus("New key created. Copy it now before closing the reveal panel.");
+    await refreshApiKeys();
+  } catch (error) {
+    setApiKeyStatus(`Error: ${error.message || String(error)}`);
+  } finally {
+    setBusy(el.createApiKeyBtn, false);
+  }
+}
+
+async function revokeApiKey(keyId) {
+  const target = prompt("Type REVOKE to confirm this API key should be revoked.");
+  if (target !== "REVOKE") return;
+
+  try {
+    const result = await fetchJson(`/v1/lightning-api-keys/${encodeURIComponent(keyId)}`, {
+      method: "DELETE",
+      headers: authHeaders()
+    });
+    if (!result?.success) {
+      throw new Error("Could not revoke API key");
+    }
+    setApiKeyStatus(`Revoked API key "${result.apiKey?.name || keyId}".`);
+    await refreshApiKeys();
+  } catch (error) {
+    setApiKeyStatus(`Could not revoke API key: ${error.message || String(error)}`);
+  }
+}
 
 function showToast(message) {
   console.log(message);
@@ -216,6 +424,7 @@ function renderAuthState() {
 
     el.walletContent.style.display = "";
     el.walletLocked.style.display = "none";
+    if (el.apiKeyCard) el.apiKeyCard.style.display = "";
   } else {
     el.signedOutView.style.display = "";
     el.signedInView.style.display = "none";
@@ -225,11 +434,16 @@ function renderAuthState() {
 
     el.walletContent.style.display = "none";
     el.walletLocked.style.display = "";
+    if (el.apiKeyCard) el.apiKeyCard.style.display = "none";
+    hideApiKeyReveal();
 
     el.creditsRemaining.textContent = "—";
     el.creditsTotal.textContent = "—";
     el.creditsUsed.textContent = "—";
     el.ledgerTable.textContent = "";
+    if (el.apiKeyList) {
+      el.apiKeyList.textContent = "";
+    }
   }
 }
 
@@ -248,6 +462,7 @@ async function initSupabase() {
 
   if (session) {
     await refreshAccount().catch((e) => showToast(e.message));
+    await refreshApiKeys().catch((e) => showToast(e.message));
   }
 
   supabase.auth.onAuthStateChange(async (_event, nextSession) => {
@@ -255,6 +470,7 @@ async function initSupabase() {
     renderAuthState();
     if (session) {
       await refreshAccount().catch((e) => showToast(e.message));
+      await refreshApiKeys().catch((e) => showToast(e.message));
     }
   });
 }
@@ -367,6 +583,30 @@ function setupAuthActions() {
 
   el.logoutBtn.addEventListener("click", async () => {
     await supabase.auth.signOut();
+  });
+}
+
+function setupApiKeyActions() {
+  el.createApiKeyBtn?.addEventListener("click", () => {
+    void createApiKey();
+  });
+
+  el.refreshApiKeysBtn?.addEventListener("click", () => {
+    void refreshApiKeys();
+  });
+
+  el.copyApiKeyBtn?.addEventListener("click", async () => {
+    if (!currentRawApiKey) return;
+    try {
+      await navigator.clipboard.writeText(currentRawApiKey);
+      setApiKeyStatus(`Copied API key for "${currentApiKeyName || "new key"}".`);
+    } catch (error) {
+      setApiKeyStatus(`Copy failed: ${error.message || String(error)}`);
+    }
+  });
+
+  el.closeApiKeyRevealBtn?.addEventListener("click", () => {
+    hideApiKeyReveal();
   });
 }
 
@@ -492,7 +732,11 @@ async function init() {
   setProtectedCardsVisible(false);
   await initSupabase();
   setupAuthActions();
+  setupApiKeyActions();
   setupPlayground();
+  if (session?.access_token) {
+    await refreshApiKeys();
+  }
 }
 
 init().catch((error) => {

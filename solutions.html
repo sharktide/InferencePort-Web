@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solutions — InferencePort AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles/main.css" />
+    <style>
+      :root {
+        --brand: #4f7cff;
+        --brand-dim: rgba(79, 124, 255, 0.12);
+        --brand-border: rgba(79, 124, 255, 0.28);
+        --surface: #0f1525;
+        --muted: #8b93a7;
+        --gold: #fbbf24;
+      }
+      body {
+        background: #080d1a;
+        font-family: "Inter", sans-serif;
+        color: #d6daea;
+      }
+      .navbar {
+        background: rgba(8, 13, 26, 0.92) !important;
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .navbar-brand {
+        font-weight: 800;
+        font-size: 1.1rem;
+        letter-spacing: -0.02em;
+        color: #fff !important;
+      }
+      .navbar-brand span {
+        color: var(--brand);
+      }
+      .nav-link {
+        color: var(--muted) !important;
+        font-size: 0.88rem;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: #fff !important;
+      }
+      .nav-pill {
+        background: var(--brand) !important;
+        color: #fff !important;
+        border-radius: 7px !important;
+        padding: 6px 16px !important;
+        font-weight: 600 !important;
+      }
+      .nav-pill-chat {
+        background: rgba(251,191,36,0.15) !important;
+        color: #fbbf24 !important;
+        border: 1px solid rgba(251,191,36,0.35) !important;
+        border-radius: 7px !important;
+        padding: 6px 16px !important;
+        font-weight: 600 !important;
+      }
+      .nav-pill-chat:hover {
+        background: rgba(251,191,36,0.25) !important;
+        color: #fde68a !important;
+      }
+
+      .hero-section {
+        padding: 110px 0 72px;
+        text-align: center;
+        background: radial-gradient(ellipse 65% 40% at 50% 0%, rgba(79, 124, 255, 0.17) 0%, transparent 60%);
+      }
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gold);
+        background: rgba(251,191,36,0.08);
+        border: 1px solid rgba(251,191,36,0.22);
+        border-radius: 50px;
+        padding: 5px 14px;
+        margin-bottom: 22px;
+      }
+      .hero-title {
+        font-size: clamp(2rem, 5vw, 3.6rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.08;
+        color: #fff;
+      }
+      .hero-title .accent { color: var(--brand); }
+      .hero-subtitle {
+        font-size: 1rem;
+        color: var(--muted);
+        max-width: 760px;
+        margin: 16px auto 0;
+        line-height: 1.65;
+      }
+
+      .section-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--brand);
+        margin-bottom: 10px;
+      }
+      .section-title {
+        font-size: clamp(1.5rem, 3vw, 2.2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: #fff;
+      }
+      .section-title .accent { color: var(--gold); }
+      .section-sub {
+        color: var(--muted);
+        font-size: 0.93rem;
+        max-width: 720px;
+        line-height: 1.65;
+      }
+
+      .solution-card {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 24px;
+        height: 100%;
+        transition: border-color 0.2s, transform 0.2s;
+      }
+      .solution-card:hover { border-color: var(--brand-border); transform: translateY(-3px); }
+      .solution-card.featured {
+        border-color: var(--brand-border);
+        background: linear-gradient(135deg, rgba(79, 124, 255, 0.08), rgba(79, 124, 255, 0.02));
+      }
+      .solution-kicker {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        color: var(--gold);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .solution-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .solution-body {
+        font-size: 0.88rem;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .solution-list {
+        list-style: none;
+        padding: 0;
+        margin: 16px 0 0;
+      }
+      .solution-list li {
+        font-size: 0.84rem;
+        color: #d6daea;
+        margin-bottom: 8px;
+      }
+      .solution-list li::before {
+        content: "→ ";
+        color: var(--gold);
+        margin-right: 4px;
+      }
+
+      .compare-box {
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .compare-box::before {
+        content: "";
+        display: block;
+        height: 3px;
+        background: linear-gradient(90deg, var(--brand), #fbbf24, #06b6d4);
+      }
+      .compare-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .compare-table th,
+      .compare-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        vertical-align: top;
+      }
+      .compare-table th {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      .compare-table td {
+        font-size: 0.86rem;
+        color: #d6daea;
+      }
+      .compare-table tr:last-child td { border-bottom: none; }
+      .compare-table .best {
+        color: var(--gold);
+        font-weight: 700;
+      }
+
+      .pricing-card {
+        background: var(--surface);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 14px;
+        padding: 24px;
+        height: 100%;
+      }
+      .pricing-card.popular {
+        border-color: var(--brand);
+        background: rgba(79, 124, 255, 0.06);
+      }
+      .plan-price {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.04em;
+        margin: 14px 0 2px;
+      }
+      .plan-note {
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        font-size: 0.81rem;
+        color: var(--muted);
+      }
+      footer a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+      footer a:hover {
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">InferencePort<span>AI</span></a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="marketplace.html">Marketplace</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="lightning.html">Lightning</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="solutions.html">Solutions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="install.html">Install</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="pricing.html">Pricing</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="security.html">Security</a>
+            </li>
+            <li class="nav-item ms-1">
+              <a class="nav-link nav-pill-chat" href="chat/">Chat Now</a>
+            </li>
+            <li class="nav-item ms-2">
+              <a class="nav-link nav-pill" href="install.html#install">Get Started</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-eyebrow">Solutions Overview</div>
+        <h1 class="hero-title">
+          One stack for <span class="accent">hosting, chat, and billing.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Use the hosted Lightning server for cloud generation, the subscription API for day-to-day chatting, and the P2G API when you need stable, credit-metered production integrations.
+        </p>
+        <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+          <a href="https://inference.js.org/console" class="btn btn-primary">Open Console</a>
+          <a href="https://inferenceport-ai.readthedocs.io" class="btn btn-outline-light">Read Docs</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="section-tag">What We Run</div>
+        <h2 class="section-title mb-3">
+          The services behind the <span class="accent">InferencePort AI</span> stack.
+        </h2>
+        <p class="section-sub mb-4">
+          Each part of the platform has a specific job: hosting serves the backend, the generation API powers the default chat experience, the P2G API handles metered production workloads, and the console ties billing together.
+        </p>
+
+        <div class="row g-3">
+          <div class="col-md-6 col-lg-3">
+            <div class="solution-card featured">
+              <div class="solution-kicker">Server Hosting</div>
+              <div class="solution-title">Lightning backend</div>
+              <div class="solution-body">
+                Hosted on <code>sharktide-lightning.hf.space</code>. It serves the public API, wallet logic, subscription resolution, and the Stripe reconciliation flow.
+              </div>
+              <ul class="solution-list">
+                <li>Public config and model discovery</li>
+                <li>Subscription and usage endpoints</li>
+                <li>Stripe webhook and reconciliation support</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="solution-card">
+              <div class="solution-kicker">Generation API</div>
+              <div class="solution-title">Subscription chat</div>
+              <div class="solution-body">
+                Best for high-volume, low-token chatting. This is the default chat path, but it uses strict plan quotas and abuse controls.
+              </div>
+              <ul class="solution-list">
+                <li>Ideal for everyday chatbot traffic</li>
+                <li>Subscription-backed limits</li>
+                <li>OpenAI-style chat endpoint</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="solution-card">
+              <div class="solution-kicker">P2G API</div>
+              <div class="solution-title">Credit-billed production API</div>
+              <div class="solution-body">
+                Best for enterprise integrations and stable production services. Requests charge credits from your wallet instead of consuming plan quotas.
+              </div>
+              <ul class="solution-list">
+                <li>Predictable wallet balance</li>
+                <li>Separate credit ledger</li>
+                <li>Managed through the console</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="solution-card">
+              <div class="solution-kicker">Chat Services</div>
+              <div class="solution-title">Local + cloud chat</div>
+              <div class="solution-body">
+                Use local chat for offline work and the cloud chat stack when you need hosted access, sync, or shared usage across devices.
+              </div>
+              <ul class="solution-list">
+                <li>Local chat for private work</li>
+                <li>Cloud chat for hosted access</li>
+                <li>Optional sync and media storage</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="section-tag">Pick The Right API</div>
+        <h2 class="section-title mb-3">
+          Subscription generation for <span class="accent">chatty workloads</span>, P2G for production.
+        </h2>
+        <div class="compare-box">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Use case</th>
+                <th>Best fit</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Regular chat UI, assistant, or day-to-day usage</td>
+                <td class="best">Generation API</td>
+                <td>Default chat path, optimized for regular chatting and low token usage, but bounded by plan limits.</td>
+              </tr>
+              <tr>
+                <td>Enterprise integration or customer-facing backend</td>
+                <td class="best">P2G API</td>
+                <td>Credit-metered calls with a separate wallet and ledger, which is easier to treat as a production service.</td>
+              </tr>
+              <tr>
+                <td>Need account management, balances, or API keys</td>
+                <td class="best">Console Dashboard</td>
+                <td>Use the console to view billing, buy packs, create API keys, and review usage in one place.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="section-tag">Pricing</div>
+        <h2 class="section-title mb-3">
+          Two billing models. <span class="accent">Two different jobs.</span>
+        </h2>
+        <p class="section-sub mb-4">
+          The subscription generation API is bundled with plan quotas, while P2G is charged against credits in your wallet. The console always shows the live pricing and usage values.
+        </p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="pricing-card popular">
+              <div class="solution-kicker">Generation (Subscription)</div>
+              <div class="solution-title">Best for regular chatting</div>
+              <div class="plan-price">Plan quotas</div>
+              <div class="plan-note">
+                Included with your subscription tier. Good for high-volume, low-token chat traffic, but bounded by strict abuse and token limits.
+              </div>
+              <ul class="solution-list mt-3">
+                <li>Daily cloud-chat quota by plan</li>
+                <li>Additional image, video, and audio limits</li>
+                <li>Default chat experience in the app</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="pricing-card">
+              <div class="solution-kicker">P2G (Credits)</div>
+              <div class="solution-title">Best for production APIs</div>
+              <div class="plan-price">Credit pack billing</div>
+              <div class="plan-note">
+                Current default server rates are credit-based and visible in the console. The repository defaults are 0.75 credits per million text tokens, 0.02 per image, 0.01 per video second, and 0.01 per audio second.
+              </div>
+              <ul class="solution-list mt-3">
+                <li>Separate wallet and ledger</li>
+                <li>Recharge by purchasing credit packs</li>
+                <li>Recommended for enterprise and production use</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="section-tag">Getting Started</div>
+        <h2 class="section-title mb-3">
+          Start with the right path, then <span class="accent">scale from there.</span>
+        </h2>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="solution-card">
+              <div class="solution-kicker">Step 1</div>
+              <div class="solution-title">Sign in and inspect your account</div>
+              <div class="solution-body">
+                Open the console to view your wallet, current plan, usage history, and API keys.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="solution-card">
+              <div class="solution-kicker">Step 2</div>
+              <div class="solution-title">Choose the API that matches your workload</div>
+              <div class="solution-body">
+                Use the subscription Generation API for day-to-day chatting and the P2G API for stable production services.
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="solution-card">
+              <div class="solution-kicker">Step 3</div>
+              <div class="solution-title">Ship with the right billing model</div>
+              <div class="solution-body">
+                Keep chat traffic on subscription quotas and move production or enterprise traffic to the credit-based P2G API.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-4">
+      <div class="container d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+        <div>InferencePort AI</div>
+        <div class="d-flex gap-3 flex-wrap">
+          <a href="index.html">Home</a>
+          <a href="lightning.html">Lightning</a>
+          <a href="pricing.html">Pricing</a>
+          <a href="https://inference.js.org/console">Console</a>
+          <a href="https://inferenceport-ai.readthedocs.io">Docs</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

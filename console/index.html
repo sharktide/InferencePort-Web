@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>InferencePort AI Developer Console</title>
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("session_id")) {
+        window.location.replace(`confirm.html${window.location.search}${window.location.hash}`);
+      }
+    })();
+  </script>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -11,8 +19,8 @@
     <div class="brand">
       <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
       <div>
-        <h1 id="app-name">InferencePort AI Developer Console</h1>
-        <p>Pay-2-Go API dashboard</p>
+        <h1 id="app-name"><span class="brand-emphasis">InferencePort AI</span> Developer Console</h1>
+        <p><span class="brand-emphasis">InferencePort AI</span> Pay-2-Go API dashboard</p>
       </div>
     </div>
     <div class="top-actions">
@@ -151,6 +159,35 @@
     <section class="card wide" id="ledger-card" style="display:none;">
       <h2>Recent Usage &amp; Purchases</h2>
       <div id="ledger-table" class="ledger"></div>
+    </section>
+
+    <!-- API KEYS CARD (hidden until signed in) -->
+    <section class="card wide" id="api-keys-card" style="display:none;">
+      <h2>Lightning API Keys</h2>
+      <div class="api-key-shell">
+        <div class="api-key-form stack">
+          <p class="muted tiny">
+            Create long-lived API keys for hosted scripts, servers, and production integrations.
+          </p>
+          <input id="api-key-name" type="text" maxlength="64" placeholder="Production deploy, CI, backend service..." />
+          <input id="api-key-expiry" type="text" placeholder="Optional ISO expiry, e.g. 2026-12-31T23:59:59Z" />
+          <div class="row">
+            <button id="create-api-key-btn" type="button" style="flex:1;">Generate API Key</button>
+            <button id="refresh-api-keys-btn" type="button" class="ghost" style="flex:1;">Refresh Keys</button>
+          </div>
+          <p id="api-key-status" class="muted tiny">Sign in to create and manage Lightning API keys.</p>
+        </div>
+        <aside id="api-key-reveal" class="api-key-reveal" style="display:none;">
+          <h3>API key created</h3>
+          <p class="muted tiny">Copy this secret now. It is only shown once.</p>
+          <pre id="api-key-secret" class="api-key-secret"></pre>
+          <div class="row">
+            <button id="copy-api-key-btn" type="button" style="flex:1;">Copy Key</button>
+            <button id="close-api-key-reveal-btn" type="button" class="ghost" style="flex:1;">Dismiss</button>
+          </div>
+        </aside>
+      </div>
+      <div id="api-key-list" class="api-key-list"></div>
     </section>
 
   </main>
