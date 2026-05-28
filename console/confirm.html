@@ -34,11 +34,21 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* --- Logo + Name slide in from left --- */
+    .brand-block {
+      animation: slideLeft 0.6s ease-out;
+    }
+
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(-40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
     .logo {
       width: 70px;
       height: 70px;
       object-fit: contain;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .brand {
@@ -48,6 +58,7 @@
       color: #334155;
     }
 
+    /* --- Checkmark slides in from right --- */
     .check {
       width: 80px;
       height: 80px;
@@ -57,13 +68,12 @@
       align-items: center;
       justify-content: center;
       margin: 0 auto 20px;
-      animation: pop 0.5s ease-out;
+      animation: slideRight 0.6s ease-out;
     }
 
-    @keyframes pop {
-      0%   { transform: scale(0.4); opacity: 0; }
-      60%  { transform: scale(1.15); opacity: 1; }
-      100% { transform: scale(1); }
+    @keyframes slideRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
     }
 
     .check svg {
@@ -75,6 +85,7 @@
       stroke-linecap: round;
       stroke-linejoin: round;
       animation: draw 0.6s ease-out forwards;
+      animation-delay: 0.2s;
     }
 
     @keyframes draw {
@@ -134,8 +145,10 @@
 <body>
   <div class="box">
 
-    <img src="assets/logo.png" class="logo" alt="InferencePort AI Logo">
-    <div class="brand">InferencePort AI</div>
+    <div class="brand-block">
+      <img src="assets/logo.png" class="logo" alt="InferencePort AI Logo">
+      <div class="brand">InferencePort AI</div>
+    </div>
 
     <div class="check">
       <svg viewBox="0 0 24 24">
