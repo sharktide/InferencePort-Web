@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payment Confirmed</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fefce8; /* light yellow */
+      font-family: system-ui, sans-serif;
+      color: #1e293b;
+    }
+
+    .box {
+      text-align: center;
+      padding: 40px 32px;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      max-width: 380px;
+      width: 100%;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .check {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #dbeafe; /* soft blue */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      animation: pop 0.5s ease-out;
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(0.4); opacity: 0; }
+      60%  { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    .check svg {
+      width: 42px;
+      height: 42px;
+      stroke: #3b82f6;
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      animation: draw 0.6s ease-out forwards;
+    }
+
+    @keyframes draw {
+      from { stroke-dasharray: 60; stroke-dashoffset: 60; }
+      to   { stroke-dasharray: 60; stroke-dashoffset: 0; }
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .receipt {
+      margin-top: 20px;
+      text-align: left;
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 1px solid rgba(0,0,0,0.05);
+      font-size: 14px;
+    }
+
+    .receipt div {
+      margin-bottom: 6px;
+    }
+
+    .label {
+      color: #64748b;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+    <div class="check">
+      <svg viewBox="0 0 24 24">
+        <path d="M5 12.5 10 17 20 7" />
+      </svg>
+    </div>
+
+    <h1>Payment Confirmed</h1>
+    <p>Your credits will be added to your account shortly.</p>
+
+    <div id="receipt" class="receipt" style="display:none;">
+      <div><span class="label">Product:</span> <span id="product"></span></div>
+      <div><span class="label">Amount:</span> <span id="amount"></span></div>
+      <div><span class="label">Email:</span> <span id="email"></span></div>
+      <div><span class="label">Payment Method:</span> <span id="pm"></span></div>
+    </div>
+
+    <p id="loading" style="margin-top:15px; color:#64748b;">Fetching order details…</p>
+  </div>
+
+  <script>
+    async function loadReceipt() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get("session_id");
+
+      if (!sessionId) {
+        document.getElementById("loading").innerText = "Missing session_id.";
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://sharktide-lightning.hf.space/v1/stripe/reconcile/${sessionId}`);
+        const data = await res.json();
+
+        if (!data.ok) {
+          document.getElementById("loading").innerText = "Unable to load payment details.";
+          return;
+        }
+
+        document.getElementById("product").innerText =
+          data.product?.name || "Unknown";
+
+        document.getElementById("amount").innerText =
+          `${(data.amount_total / 100).toFixed(2)} ${data.currency.toUpperCase()}`;
+
+        document.getElementById("email").innerText =
+          data.customer_email || "N/A";
+
+        const pm = data.payment_method;
+        document.getElementById("pm").innerText =
+          pm?.brand ? `${pm.brand.toUpperCase()} •••• ${pm.last4}` : "N/A";
+
+        document.getElementById("receipt").style.display = "block";
+        document.getElementById("loading").style.display = "none";
+
+      } catch (err) {
+        document.getElementById("loading").innerText = "Error loading details.";
+      }
+    }
+
+    loadReceipt();
+  </script>
+</body>
+</html>
