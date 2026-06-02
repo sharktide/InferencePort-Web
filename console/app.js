@@ -58,7 +58,6 @@ const el = {
   videoOutput: document.getElementById("video-output"),
   runAudio: document.getElementById("run-audio"),
   audioPrompt: document.getElementById("audio-prompt"),
-  audioType: document.getElementById("audio-type"),
   audioDuration: document.getElementById("audio-duration"),
   audioOutput: document.getElementById("audio-output")
 };
@@ -704,7 +703,6 @@ function setupPlayground() {
         headers: authHeaders(),
         body: JSON.stringify({
           prompt: el.audioPrompt.value || "Energetic electronic beat",
-          audio_type: el.audioType.value,
           duration_seconds: Number(el.audioDuration.value || 10)
         })
       });
