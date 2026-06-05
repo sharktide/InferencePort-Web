@@ -15,16 +15,6 @@
       "source": "/chat/:path*",
       "destination": "https://sharktide-chat.hf.space/:path*",
       "permanent": false
-    },
-    {
-      "source": "/console",
-      "destination": "https://console.inferenceport.ai",
-      "permanent": true
-    },
-    {
-      "source": "/console/(.*)",
-      "destination": "https://console.inferenceport.ai/$1",
-      "permanent": true
     }
   ],
   "rewrites": [
