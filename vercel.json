@@ -35,14 +35,24 @@
       "destination": "https://raw.githubusercontent.com/sharktide/inferenceport-ai/refs/heads/main/MISC/$1"
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
           "value": "console.inferenceport.ai"
         }
       ],
-      "destination": "/console/:path*"
+      "destination": "/console/$1*"
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "console.inferenceport.ai"
+        }
+      ],
+      "destination": "/console/index.html"
     }
   ]
 }
