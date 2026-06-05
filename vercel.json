@@ -37,14 +37,14 @@
   ],
   "routes": [
     {
-      "src": "/:path*",
+      "src": "/(.*)",
       "has": [
         {
           "type": "host",
           "value": "console.inferenceport.ai"
         }
       ],
-      "dest": "/console/:path*"
+      "dest": "/console/$1"
     }
   ]
 }
