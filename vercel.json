@@ -18,7 +18,18 @@
     },
     {
       "source": "/console",
-      "destination": "console/index.html"
+      "destination": "https://console.inferenceport.ai",
+      "permanent": true
+    },
+    {
+      "source": "/console/",
+      "destination": "https://console.inferenceport.ai",
+      "permanent": true
+    },
+    {
+      "source": "/console/:path*",
+      "destination": "https://console.inferenceport.ai/:path*",
+      "permanent": true
     }
   ],
   "rewrites": [
