@@ -15,7 +15,7 @@
       "source": "/chat/:path*",
       "destination": "https://sharktide-chat.hf.space/:path*",
       "permanent": false
-    },
+    }
   ],
   "rewrites": [
     {
