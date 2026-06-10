@@ -86,17 +86,81 @@ a { color: var(--accent); text-decoration: none; }
 .top-actions a:hover { background: var(--surface-2); color: var(--text); }
 
 /* ── LAYOUT ─────────────────────────────────────────── */
-main.grid {
+main.console-shell {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr);
   gap: 1.5rem;
   padding: 2rem;
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
+  align-items: start;
+}
+
+.console-nav {
+  position: sticky;
+  top: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  height: fit-content;
+}
+
+.console-nav-tab {
+  width: 100%;
+  justify-content: flex-start;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid transparent;
+  padding: 0.8rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: normal;
+  text-align: left;
+}
+
+.console-nav-tab:hover:not(.active) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.console-nav-tab.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(26,107,255,0.22);
+}
+
+.console-content {
+  min-width: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.console-panel {
+  display: none;
+  gap: 1.5rem;
+}
+
+.console-panel.active {
+  display: grid;
+}
+
+.panel-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.panel-grid-account {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
 .card {
-  grid-column: span 4;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -105,12 +169,32 @@ main.grid {
 }
 .card.wide { grid-column: span 12; }
 
-#auth-card   { grid-column: span 5; }
+#auth-card { grid-column: span 5; }
 #wallet-card { grid-column: span 7; }
 
 @media (max-width: 960px) {
-  .card, .card.wide, #auth-card, #wallet-card { grid-column: span 12; }
-  main.grid { padding: 1rem; gap: 1rem; }
+  main.console-shell {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .console-nav {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .console-nav-tab {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .card, .card.wide, #auth-card, #wallet-card {
+    grid-column: span 12;
+  }
+
   .api-key-shell { grid-template-columns: 1fr; }
 }
 
@@ -197,16 +281,16 @@ button {
 }
 
 /* primary */
-button:not(.ghost):not(.text-btn):not(.danger-btn):not(.tab) {
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab) {
   background: var(--accent);
   color: #fff;
 }
-button:not(.ghost):not(.text-btn):not(.danger-btn):not(.tab):hover {
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):hover {
   background: #0055e0;
   box-shadow: 0 4px 16px rgba(26,107,255,0.3);
   transform: translateY(-1px);
 }
-button:not(.ghost):not(.text-btn):not(.danger-btn):not(.tab):disabled {
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
@@ -511,26 +595,68 @@ button.danger { color: var(--danger) !important; }
   border: 1.5px solid var(--border);
   border-radius: 12px;
   padding: 1.1rem 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
+  display: grid;
+  gap: 0.8rem;
   transition: border-color 0.15s, transform 0.15s;
 }
 .model-card:hover { border-color: #c8c0b0; transform: translateY(-1px); }
-.model-card img {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+
+.model-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.model-card strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: block;
+  line-height: 1.35;
+}
+
+.model-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.32rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
   flex-shrink: 0;
 }
-.model-card strong { font-size: 0.9rem; font-weight: 600; display: block; }
-.model-card p {
+
+.model-pill.is-text {
+  color: #0f766e;
+  background: rgba(20, 184, 166, 0.12);
+  border-color: rgba(20, 184, 166, 0.22);
+}
+
+.model-pill.is-config {
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.10);
+  border-color: rgba(124, 58, 237, 0.18);
+}
+
+.model-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.model-key {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.model-value {
   font-family: var(--mono);
-  font-size: 0.7rem;
-  color: var(--accent);
-  margin: 3px 0 0;
-  font-weight: 500;
+  font-size: 0.74rem;
+  color: var(--text);
+  word-break: break-word;
 }
 
 /* ── PLAYGROUND ──────────────────────────────────────── */
@@ -545,7 +671,7 @@ button.danger { color: var(--danger) !important; }
   margin-bottom: 1.25rem;
 }
 
-.tab {
+.playground-tab {
   background: transparent;
   color: var(--muted);
   border-radius: 7px;
@@ -554,16 +680,20 @@ button.danger { color: var(--danger) !important; }
   font-weight: 500;
   border: none;
 }
-.tab.active {
+.playground-tab.active {
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow);
   font-weight: 600;
 }
-.tab:hover:not(.active) { color: var(--text); }
+.playground-tab:hover:not(.active) { color: var(--text); }
 
-.tab-panel { display: none; flex-direction: column; gap: 0.85rem; }
-.tab-panel.active { display: flex; }
+.playground-panel { display: none; flex-direction: column; gap: 0.85rem; }
+.playground-panel.active { display: flex; }
+
+.panel-lock {
+  margin-bottom: 1rem;
+}
 
 .output {
   font-family: var(--mono);
@@ -658,10 +788,6 @@ button.danger { color: var(--danger) !important; }
   font-weight: 500;
 }
 #logout-btn:hover { border-color: var(--danger); color: var(--danger); }
-
-/* ── YELLOW ACCENT DECORATION ────────────────────────── */
-.card:nth-child(1) { border-top: 3px solid var(--accent-2); }
-.card:nth-child(2) { border-top: 3px solid var(--accent); }
 
 @media (max-width: 680px) {
   .stat-grid { grid-template-columns: 1fr; }
