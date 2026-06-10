@@ -101,29 +101,20 @@ function formatModelSlug(model) {
 }
 
 function formatModelPricing(model) {
-  const modalities = [
-    ...(Array.isArray(model?.input_modalities) ? model.input_modalities : []),
-    ...(Array.isArray(model?.output_modalities) ? model.output_modalities : [])
-  ];
-  if (modalities.includes("video")) return "$0.01/second";
-  if (modalities.includes("audio")) return "$0.01/second";
-
   const pricing = model?.pricing || {};
   const parts = [];
   if (pricing.prompt != null && pricing.completion != null) {
-    const promptPerMillion = (Number(pricing.prompt) * 1_000_000).toFixed(2);
-    const completionPerMillion = (Number(pricing.completion) * 1_000_000).toFixed(2);
-    parts.push(`prompt $${promptPerMillion}/1M tokens`);
-    parts.push(`completion $${completionPerMillion}/1M tokens`);
+    parts.push(`prompt ${pricing.prompt}`);
+    parts.push(`completion ${pricing.completion}`);
   }
   if (pricing.image != null && String(pricing.image) !== "0") {
-    parts.push(`image $${pricing.image}`);
+    parts.push(`image ${pricing.image}`);
   }
   if (pricing.request != null && String(pricing.request) !== "0") {
-    parts.push(`request $${pricing.request}`);
+    parts.push(`request ${pricing.request}`);
   }
   if (pricing.input_cache_read != null && String(pricing.input_cache_read) !== "0") {
-    parts.push(`cache $${pricing.input_cache_read}`);
+    parts.push(`cache ${pricing.input_cache_read}`);
   }
   return parts.length ? parts.join(" · ") : "Pricing unavailable";
 }
@@ -202,7 +193,7 @@ function renderModels() {
       label: String(model.type || formatModalities(model)).toUpperCase(),
       name: model.name || model.id || "Unnamed model",
       slug: formatModelSlug(model) || "—",
-      pricing: formatModelPricing(model),
+      pricing: model.pricing ? formatModelPricing(model) : "Existing configuration",
       source: "config"
     });
   });
