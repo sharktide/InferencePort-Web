@@ -29,182 +29,161 @@
     </div>
   </header>
 
-  <main class="console-shell">
-    <aside class="console-nav" aria-label="Console sections">
-      <button type="button" class="console-nav-tab active" data-console-tab="account">Account management</button>
-      <button type="button" class="console-nav-tab" data-console-tab="models">Models</button>
-      <button type="button" class="console-nav-tab" data-console-tab="api-key">API key</button>
-      <button type="button" class="console-nav-tab" data-console-tab="usage">Usage</button>
-    </aside>
+  <main class="grid">
 
-    <section class="console-content">
-      <div class="console-panel active" data-console-panel="account">
-        <div class="panel-grid panel-grid-account">
-          <!-- AUTH CARD -->
-          <section class="card" id="auth-card">
-            <h2>Account</h2>
+    <!-- AUTH CARD -->
+    <section class="card" id="auth-card">
+      <h2>Account</h2>
 
-            <!-- Signed-out view (default visible) -->
-            <div id="signed-out-view" class="stack">
-              <p class="muted tiny" id="auth-state">Sign in to access the Pay-2-Go API.</p>
-              <form id="email-auth-form" class="stack">
-                <input id="email-input" type="email" placeholder="Email" required />
-                <input id="password-input" type="password" placeholder="Password" required />
-                <div class="row">
-                  <button type="submit" id="login-btn" style="flex:1;">Sign in</button>
-                  <button type="button" id="signup-btn" class="ghost" style="flex:1;">Sign up</button>
-                </div>
-              </form>
-              <div class="stack">
-                <button id="google-btn" class="ghost">Continue with Google</button>
-                <button id="github-btn" class="ghost">Continue with GitHub</button>
-              </div>
-              <button id="forgot-btn" class="text-btn" type="button">Forgot password?</button>
-            </div>
-
-            <!-- Signed-in view (default hidden) -->
-            <div id="signed-in-view" class="signed-in-view" style="display:none;">
-              <div class="user-badge">
-                <div class="user-avatar" id="user-avatar">?</div>
-                <div class="user-email" id="user-email-display">—</div>
-              </div>
-              <button id="delete-btn" class="text-btn danger" type="button">Delete account</button>
-            </div>
-          </section>
-
-          <!-- WALLET CARD -->
-          <section class="card" id="wallet-card">
-            <h2>Credits</h2>
-            <div id="wallet-content" style="display:none;">
-              <div class="stat-grid">
-                <article>
-                  <span>Remaining</span>
-                  <strong id="credits-remaining">—</strong>
-                </article>
-                <article>
-                  <span>Total purchased</span>
-                  <strong id="credits-total">—</strong>
-                </article>
-                <article>
-                  <span>Total used</span>
-                  <strong id="credits-used">—</strong>
-                </article>
-              </div>
-              <p class="muted tiny" style="margin-top:1rem;">Credit balances enforced server-side. Low balance returns HTTP 402.</p>
-            </div>
-            <div id="wallet-locked" class="locked-overlay">Sign in to view your credit balance</div>
-          </section>
+      <!-- Signed-out view (default visible) -->
+      <div id="signed-out-view" class="stack">
+        <p class="muted tiny" id="auth-state">Sign in to access the Pay-2-Go API.</p>
+        <form id="email-auth-form" class="stack">
+          <input id="email-input" type="email" placeholder="Email" required />
+          <input id="password-input" type="password" placeholder="Password" required />
+          <div class="row">
+            <button type="submit" id="login-btn" style="flex:1;">Sign in</button>
+            <button type="button" id="signup-btn" class="ghost" style="flex:1;">Sign up</button>
+          </div>
+        </form>
+        <div class="stack">
+          <button id="google-btn" class="ghost">Continue with Google</button>
+          <button id="github-btn" class="ghost">Continue with GitHub</button>
         </div>
-
-        <!-- NOTICES CARD (hidden until signed in) -->
-        <section class="card wide" id="notices-card" style="display:none;">
-          <h2>Notifications</h2>
-          <div id="notice-list" class="stack"></div>
-        </section>
-
-        <!-- PRICING CARD (hidden until signed in) -->
-        <section class="card wide" id="pricing-card" style="display:none;">
-          <h2>Credit Packs</h2>
-          <div id="pack-grid" class="pack-grid"></div>
-          <h3>Usage Rates</h3>
-          <ul id="rate-list" class="rate-list"></ul>
-        </section>
+        <button id="forgot-btn" class="text-btn" type="button">Forgot password?</button>
       </div>
 
-      <div class="console-panel" data-console-panel="models">
-        <div id="models-panel-locked" class="locked-overlay panel-lock">Sign in to view available models and run the playground.</div>
-        <section class="card wide" id="models-card" style="display:none;">
-          <h2>Models</h2>
-          <div id="models-grid" class="models-grid"></div>
-        </section>
-
-        <section class="card wide" id="playground-card" style="display:none;">
-          <h2>Live Playground</h2>
-          <p class="muted tiny" style="margin-bottom:1.25rem;">Every successful generation consumes credits.</p>
-
-          <div class="tabs">
-            <button class="playground-tab active" data-tab="text">Text</button>
-            <button class="playground-tab" data-tab="image">Image</button>
-            <button class="playground-tab" data-tab="video">Video</button>
-            <button class="playground-tab" data-tab="audio">Audio</button>
-          </div>
-
-          <div class="playground-panel active" data-panel="text">
-            <label>Text model
-              <select id="text-model-select"></select>
-            </label>
-            <textarea id="text-prompt" rows="5" placeholder="Ask something..."></textarea>
-            <button id="run-text">Generate text</button>
-            <pre id="text-output" class="output"></pre>
-          </div>
-
-          <div class="playground-panel" data-panel="image">
-            <textarea id="image-prompt" rows="4" placeholder="Describe an image..."></textarea>
-            <button id="run-image">Generate image</button>
-            <div id="image-output" class="media-output"></div>
-          </div>
-
-          <div class="playground-panel" data-panel="video">
-            <textarea id="video-prompt" rows="4" placeholder="Describe a video..."></textarea>
-            <label>Duration (seconds)
-              <input id="video-duration" type="number" min="1" max="10" value="5" />
-            </label>
-            <button id="run-video">Generate video</button>
-            <div id="video-output" class="media-output"></div>
-          </div>
-
-          <div class="playground-panel" data-panel="audio">
-            <textarea id="audio-prompt" rows="4" placeholder="Describe audio / music / sfx..."></textarea>
-            <label>Charge duration estimate (seconds)
-              <input id="audio-duration" type="number" min="1" max="90" value="10" />
-            </label>
-            <button id="run-audio">Generate audio</button>
-            <div id="audio-output" class="media-output"></div>
-          </div>
-        </section>
-      </div>
-
-      <div class="console-panel" data-console-panel="api-key">
-        <div id="api-key-panel-locked" class="locked-overlay panel-lock">Sign in to create and manage Lightning API keys.</div>
-        <!-- API KEYS CARD (hidden until signed in) -->
-        <section class="card wide" id="api-keys-card" style="display:none;">
-          <h2>Lightning API Keys</h2>
-          <div class="api-key-shell">
-            <div class="api-key-form stack">
-              <p class="muted tiny">
-                Create long-lived API keys for hosted scripts, servers, and production integrations.
-              </p>
-              <input id="api-key-name" type="text" maxlength="64" placeholder="Production deploy, CI, backend service..." />
-              <input id="api-key-expiry" type="text" placeholder="Optional ISO expiry, e.g. 2026-12-31T23:59:59Z" />
-              <div class="row">
-                <button id="create-api-key-btn" type="button" style="flex:1;">Generate API Key</button>
-                <button id="refresh-api-keys-btn" type="button" class="ghost" style="flex:1;">Refresh Keys</button>
-              </div>
-              <p id="api-key-status" class="muted tiny">Sign in to create and manage Lightning API keys.</p>
-            </div>
-            <aside id="api-key-reveal" class="api-key-reveal" style="display:none;">
-              <h3>API key created</h3>
-              <p class="muted tiny">Copy this secret now. It is only shown once.</p>
-              <pre id="api-key-secret" class="api-key-secret"></pre>
-              <div class="row">
-                <button id="copy-api-key-btn" type="button" style="flex:1;">Copy Key</button>
-                <button id="close-api-key-reveal-btn" type="button" class="ghost" style="flex:1;">Dismiss</button>
-              </div>
-            </aside>
-          </div>
-          <div id="api-key-list" class="api-key-list"></div>
-        </section>
-      </div>
-
-      <div class="console-panel" data-console-panel="usage">
-        <div id="usage-panel-locked" class="locked-overlay panel-lock">Sign in to view recent usage and purchases.</div>
-        <!-- LEDGER CARD (hidden until signed in) -->
-        <section class="card wide" id="ledger-card" style="display:none;">
-          <h2>Recent Usage &amp; Purchases</h2>
-          <div id="ledger-table" class="ledger"></div>
-        </section>
+      <!-- Signed-in view (default hidden) -->
+      <div id="signed-in-view" class="signed-in-view" style="display:none;">
+        <div class="user-badge">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-email" id="user-email-display">—</div>
+        </div>
+        <button id="delete-btn" class="text-btn danger" type="button">Delete account</button>
       </div>
     </section>
+
+    <!-- WALLET CARD -->
+    <section class="card" id="wallet-card">
+      <h2>Credits</h2>
+      <div id="wallet-content" style="display:none;">
+        <div class="stat-grid">
+          <article>
+            <span>Remaining</span>
+            <strong id="credits-remaining">—</strong>
+          </article>
+          <article>
+            <span>Total purchased</span>
+            <strong id="credits-total">—</strong>
+          </article>
+          <article>
+            <span>Total used</span>
+            <strong id="credits-used">—</strong>
+          </article>
+        </div>
+        <p class="muted tiny" style="margin-top:1rem;">Credit balances enforced server-side. Low balance returns HTTP 402.</p>
+      </div>
+      <div id="wallet-locked" class="locked-overlay">Sign in to view your credit balance</div>
+    </section>
+
+    <!-- NOTICES CARD (hidden until signed in) -->
+    <section class="card wide" id="notices-card" style="display:none;">
+      <h2>Notifications</h2>
+      <div id="notice-list" class="stack"></div>
+    </section>
+
+    <!-- PRICING CARD (hidden until signed in) -->
+    <section class="card wide" id="pricing-card" style="display:none;">
+      <h2>Credit Packs</h2>
+      <div id="pack-grid" class="pack-grid"></div>
+      <h3>Usage Rates</h3>
+      <ul id="rate-list" class="rate-list"></ul>
+    </section>
+
+    <!-- MODELS CARD (hidden until signed in) -->
+    <section class="card wide" id="models-card" style="display:none;">
+      <h2>Models</h2>
+      <div id="models-grid" class="models-grid"></div>
+    </section>
+
+    <!-- PLAYGROUND CARD (hidden until signed in) -->
+    <section class="card wide" id="playground-card" style="display:none;">
+      <h2>Live Playground</h2>
+      <p class="muted tiny" style="margin-bottom:1.25rem;">Every successful generation consumes credits.</p>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="text">Text</button>
+        <button class="tab" data-tab="image">Image</button>
+        <button class="tab" data-tab="video">Video</button>
+        <button class="tab" data-tab="audio">Audio</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="text">
+        <textarea id="text-prompt" rows="5" placeholder="Ask something..."></textarea>
+        <button id="run-text">Generate text</button>
+        <pre id="text-output" class="output"></pre>
+      </div>
+
+      <div class="tab-panel" data-panel="image">
+        <textarea id="image-prompt" rows="4" placeholder="Describe an image..."></textarea>
+        <button id="run-image">Generate image</button>
+        <div id="image-output" class="media-output"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="video">
+        <textarea id="video-prompt" rows="4" placeholder="Describe a video..."></textarea>
+        <label>Duration (seconds)
+          <input id="video-duration" type="number" min="1" max="10" value="5" />
+        </label>
+        <button id="run-video">Generate video</button>
+        <div id="video-output" class="media-output"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="audio">
+        <textarea id="audio-prompt" rows="4" placeholder="Describe audio / music / sfx..."></textarea>
+        <label>Charge duration estimate (seconds)
+          <input id="audio-duration" type="number" min="1" max="90" value="10" />
+        </label>
+        <button id="run-audio">Generate audio</button>
+        <div id="audio-output" class="media-output"></div>
+      </div>
+    </section>
+
+    <!-- LEDGER CARD (hidden until signed in) -->
+    <section class="card wide" id="ledger-card" style="display:none;">
+      <h2>Recent Usage &amp; Purchases</h2>
+      <div id="ledger-table" class="ledger"></div>
+    </section>
+
+    <!-- API KEYS CARD (hidden until signed in) -->
+    <section class="card wide" id="api-keys-card" style="display:none;">
+      <h2>Lightning API Keys</h2>
+      <div class="api-key-shell">
+        <div class="api-key-form stack">
+          <p class="muted tiny">
+            Create long-lived API keys for hosted scripts, servers, and production integrations.
+          </p>
+          <input id="api-key-name" type="text" maxlength="64" placeholder="Production deploy, CI, backend service..." />
+          <input id="api-key-expiry" type="text" placeholder="Optional ISO expiry, e.g. 2026-12-31T23:59:59Z" />
+          <div class="row">
+            <button id="create-api-key-btn" type="button" style="flex:1;">Generate API Key</button>
+            <button id="refresh-api-keys-btn" type="button" class="ghost" style="flex:1;">Refresh Keys</button>
+          </div>
+          <p id="api-key-status" class="muted tiny">Sign in to create and manage Lightning API keys.</p>
+        </div>
+        <aside id="api-key-reveal" class="api-key-reveal" style="display:none;">
+          <h3>API key created</h3>
+          <p class="muted tiny">Copy this secret now. It is only shown once.</p>
+          <pre id="api-key-secret" class="api-key-secret"></pre>
+          <div class="row">
+            <button id="copy-api-key-btn" type="button" style="flex:1;">Copy Key</button>
+            <button id="close-api-key-reveal-btn" type="button" class="ghost" style="flex:1;">Dismiss</button>
+          </div>
+        </aside>
+      </div>
+      <div id="api-key-list" class="api-key-list"></div>
+    </section>
+
   </main>
 
   <script type="module" src="app.js"></script>

@@ -6,8 +6,6 @@ let session = null;
 const FALLBACK_API_BASE_URL = "https://sharktide-lightning.hf.space";
 
 const el = {
-  consoleNavTabs: Array.from(document.querySelectorAll("[data-console-tab]")),
-  consolePanels: Array.from(document.querySelectorAll("[data-console-panel]")),
   appName: document.getElementById("app-name"),
   homeLink: document.getElementById("home-link"),
   authState: document.getElementById("auth-state"),
@@ -32,7 +30,6 @@ const el = {
   noticeList: document.getElementById("notice-list"),
   packGrid: document.getElementById("pack-grid"),
   modelsGrid: document.getElementById("models-grid"),
-  textModelSelect: document.getElementById("text-model-select"),
   rateList: document.getElementById("rate-list"),
   creditsRemaining: document.getElementById("credits-remaining"),
   creditsTotal: document.getElementById("credits-total"),
@@ -62,22 +59,17 @@ const el = {
   runAudio: document.getElementById("run-audio"),
   audioPrompt: document.getElementById("audio-prompt"),
   audioDuration: document.getElementById("audio-duration"),
-  audioOutput: document.getElementById("audio-output"),
-  modelsPanelLocked: document.getElementById("models-panel-locked"),
-  apiKeyPanelLocked: document.getElementById("api-key-panel-locked"),
-  usagePanelLocked: document.getElementById("usage-panel-locked")
+  audioOutput: document.getElementById("audio-output")
 };
 
 // Cards that require sign-in
 const PROTECTED_CARDS = [
-  "notices-card", "pricing-card",
+  "wallet-card", "notices-card", "pricing-card",
   "models-card", "playground-card", "ledger-card", "api-keys-card"
 ];
 
 let currentRawApiKey = "";
 let currentApiKeyName = "";
-let remoteTextModels = [];
-let currentTextModelId = "";
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (match) => ({
@@ -94,132 +86,6 @@ function formatDateTime(value) {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return value;
   return parsed.toLocaleString();
-}
-
-function formatModelSlug(model) {
-  return model?.openrouter?.slug || model?.slug || model?.upstream_id || model?.id || "";
-}
-
-function formatModelPricing(model) {
-  const pricing = model?.pricing || {};
-  const parts = [];
-  if (pricing.prompt != null && pricing.completion != null) {
-    parts.push(`prompt ${pricing.prompt}`);
-    parts.push(`completion ${pricing.completion}`);
-  }
-  if (pricing.image != null && String(pricing.image) !== "0") {
-    parts.push(`image ${pricing.image}`);
-  }
-  if (pricing.request != null && String(pricing.request) !== "0") {
-    parts.push(`request ${pricing.request}`);
-  }
-  if (pricing.input_cache_read != null && String(pricing.input_cache_read) !== "0") {
-    parts.push(`cache ${pricing.input_cache_read}`);
-  }
-  return parts.length ? parts.join(" · ") : "Pricing unavailable";
-}
-
-function formatModalities(model) {
-  const modalities = Array.isArray(model?.input_modalities) ? model.input_modalities : [];
-  if (!modalities.length) return "Configured model";
-  return modalities.map((value) => String(value).toUpperCase()).join(" / ");
-}
-
-function isTextModel(model) {
-  const input = Array.isArray(model?.input_modalities) ? model.input_modalities : [];
-  const output = Array.isArray(model?.output_modalities) ? model.output_modalities : [];
-  return input.includes("text") && output.includes("text");
-}
-
-function getTextModels() {
-  const textModels = remoteTextModels.slice();
-  (cfg.models || []).forEach((model) => {
-    if (isTextModel(model)) {
-      textModels.push(model);
-    }
-  });
-  const seen = new Set();
-  return textModels.filter((model) => {
-    const key = formatModelSlug(model) || model.name;
-    if (!key || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
-function renderTextModelSelect() {
-  if (!el.textModelSelect) return;
-
-  const textModels = getTextModels();
-  if (!textModels.length) {
-    el.textModelSelect.innerHTML = `<option value="">No text models available</option>`;
-    el.textModelSelect.disabled = true;
-    currentTextModelId = "";
-    return;
-  }
-
-  const preferredIds = [currentTextModelId, textModels[0]?.id, textModels[0]?.upstream_id, formatModelSlug(textModels[0])].filter(Boolean);
-  const nextSelected = preferredIds.find((candidate) => textModels.some((model) => [model.id, model.upstream_id, formatModelSlug(model)].filter(Boolean).includes(candidate)));
-  currentTextModelId = nextSelected || textModels[0].id || textModels[0].upstream_id || formatModelSlug(textModels[0]);
-
-  el.textModelSelect.innerHTML = textModels.map((model) => {
-    const slug = formatModelSlug(model);
-    const value = model.id || model.upstream_id || slug;
-    const selected = value === currentTextModelId || slug === currentTextModelId;
-    return `<option value="${escapeHtml(value)}" ${selected ? "selected" : ""}>${escapeHtml(model.name)} — ${escapeHtml(slug)} (${escapeHtml(formatModelPricing(model))})</option>`;
-  }).join("");
-
-  el.textModelSelect.disabled = false;
-}
-
-function renderModels() {
-  if (!el.modelsGrid) return;
-
-  const cards = [];
-
-  getTextModels().forEach((model) => {
-    cards.push({
-      label: "Text",
-      name: model.name,
-      slug: formatModelSlug(model),
-      pricing: formatModelPricing(model),
-      source: "text"
-    });
-  });
-
-  (cfg.models || []).forEach((model) => {
-    if (isTextModel(model)) return;
-    cards.push({
-      label: String(model.type || formatModalities(model)).toUpperCase(),
-      name: model.name || model.id || "Unnamed model",
-      slug: formatModelSlug(model) || "—",
-      pricing: model.pricing ? formatModelPricing(model) : "Existing configuration",
-      source: "config"
-    });
-  });
-
-  el.modelsGrid.innerHTML = "";
-  cards.forEach((model) => {
-    const card = document.createElement("article");
-    card.className = "model-card";
-    card.innerHTML = `
-      <div class="model-card-top">
-        <strong>${escapeHtml(model.name)}</strong>
-        <span class="model-pill ${model.source === "text" ? "is-text" : "is-config"}">${escapeHtml(model.label)}</span>
-      </div>
-      <div class="model-meta">
-        <span class="model-key">Slug</span>
-        <span class="model-value">${escapeHtml(model.slug)}</span>
-      </div>
-      <div class="model-meta">
-        <span class="model-key">Pricing</span>
-        <span class="model-value">${escapeHtml(model.pricing)}</span>
-      </div>
-    `;
-    el.modelsGrid.appendChild(card);
-  });
-
-  renderTextModelSelect();
 }
 
 function getApiKeyStatus(apiKey) {
@@ -429,18 +295,6 @@ function authHeaders() {
   };
 }
 
-async function loadRemoteTextModels() {
-  const response = await fetch("https://sharktide-lightning.hf.space/v1/models");
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(data.detail || data.error || `HTTP ${response.status}`);
-  }
-
-  const items = Array.isArray(data.data) ? data.data : [];
-  remoteTextModels = items.filter((model) => isTextModel(model) && (model.is_ready !== false));
-  renderModels();
-}
-
 function renderConfig() {
   document.title = `${cfg.dashboard.appName} Developer Console`;
   el.appName.textContent = `${cfg.dashboard.appName} Developer Console`;
@@ -488,7 +342,19 @@ function renderConfig() {
     <li>${p.audioCreditPerSecond} credits per second of audio (music/sfx)</li>
   `;
 
-  renderModels();
+  el.modelsGrid.innerHTML = "";
+  (cfg.models || []).forEach((model) => {
+    const card = document.createElement("article");
+    card.className = "model-card";
+    card.innerHTML = `
+      <img src="./assets/logo.png" alt="logo" />
+      <div>
+        <strong>${model.name}</strong>
+        <p>${String(model.type || "model").toUpperCase()}</p>
+      </div>
+    `;
+    el.modelsGrid.appendChild(card);
+  });
 }
 
 async function refreshAccount() {
@@ -543,25 +409,6 @@ function setProtectedCardsVisible(visible) {
   });
 }
 
-function setPanelLockedState(locked) {
-  if (el.modelsPanelLocked) el.modelsPanelLocked.style.display = locked ? "" : "none";
-  if (el.apiKeyPanelLocked) el.apiKeyPanelLocked.style.display = locked ? "" : "none";
-  if (el.usagePanelLocked) el.usagePanelLocked.style.display = locked ? "" : "none";
-}
-
-function setConsolePanel(nextPanel) {
-  const fallbackPanel = session?.user ? "models" : "account";
-  const targetPanel = nextPanel || fallbackPanel;
-
-  el.consoleNavTabs.forEach((tab) => {
-    tab.classList.toggle("active", tab.dataset.consoleTab === targetPanel);
-  });
-
-  el.consolePanels.forEach((panel) => {
-    panel.classList.toggle("active", panel.dataset.consolePanel === targetPanel);
-  });
-}
-
 function renderAuthState() {
   if (session?.user) {
     el.signedOutView.style.display = "none";
@@ -573,7 +420,6 @@ function renderAuthState() {
     el.userAvatar.textContent = email ? email[0].toUpperCase() : "?";
 
     setProtectedCardsVisible(true);
-    setPanelLockedState(false);
 
     el.walletContent.style.display = "";
     el.walletLocked.style.display = "none";
@@ -584,8 +430,6 @@ function renderAuthState() {
     el.logoutBtn.style.display = "none";
 
     setProtectedCardsVisible(false);
-    setPanelLockedState(true);
-    setConsolePanel("account");
 
     el.walletContent.style.display = "none";
     el.walletLocked.style.display = "";
@@ -630,20 +474,12 @@ async function initSupabase() {
   });
 }
 
-function setupConsoleNav() {
-  el.consoleNavTabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      setConsolePanel(tab.dataset.consoleTab);
-    });
-  });
-}
-
 function setupTabs() {
-  document.querySelectorAll(".playground-tab").forEach((tab) => {
+  document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       const next = tab.dataset.tab;
-      document.querySelectorAll(".playground-tab").forEach((t) => t.classList.toggle("active", t === tab));
-      document.querySelectorAll(".playground-panel").forEach((panel) => {
+      document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t === tab));
+      document.querySelectorAll(".tab-panel").forEach((panel) => {
         panel.classList.toggle("active", panel.dataset.panel === next);
       });
     });
@@ -786,22 +622,16 @@ function setBusy(button, isBusy, text = "Working…") {
 }
 
 function setupPlayground() {
-  el.textModelSelect?.addEventListener("change", () => {
-    currentTextModelId = el.textModelSelect.value;
-  });
-
   el.runText.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
     setBusy(el.runText, true);
     el.textOutput.textContent = "Generating…";
     try {
-      const selectedModel = el.textModelSelect?.value || currentTextModelId || undefined;
       const result = await fetchJson("/v1/chat/completions", {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({
           stream: false,
-          model: selectedModel,
           messages: [{ role: "user", content: el.textPrompt.value || "Hello" }]
         })
       });
@@ -895,19 +725,13 @@ function setupPlayground() {
 async function init() {
   cfg = await fetchJson("/v1/config");
   renderConfig();
-  setupConsoleNav();
   setupTabs();
-  setConsolePanel("account");
   // Protected cards start hidden (set in HTML); ensure consistent state
   setProtectedCardsVisible(false);
   await initSupabase();
   setupAuthActions();
   setupApiKeyActions();
   setupPlayground();
-  await loadRemoteTextModels().catch((error) => {
-    console.warn(error);
-    renderModels();
-  });
   if (session?.access_token) {
     await refreshApiKeys();
   }
