@@ -97,7 +97,7 @@ function formatDateTime(value) {
 }
 
 function formatModelSlug(model) {
-  return model?.openrouter?.slug || model?.slug || model?.upstream_id || model?.id || "";
+  return model?.id || model?.upstream_id || model?.openrouter?.slug || "";
 }
 
 function formatModelPricing(model) {
@@ -166,7 +166,7 @@ function renderTextModelSelect() {
     const slug = formatModelSlug(model);
     const value = model.id || model.upstream_id || slug;
     const selected = value === currentTextModelId || slug === currentTextModelId;
-    return `<option value="${escapeHtml(value)}" ${selected ? "selected" : ""}>${escapeHtml(model.name)} — ${escapeHtml(slug)} (${escapeHtml(formatModelPricing(model))})</option>`;
+    return `<option value="${escapeHtml(value)}" ${selected ? "selected" : ""}>${escapeHtml(model.name)}</option>`;
   }).join("");
 
   el.textModelSelect.disabled = false;
@@ -201,6 +201,20 @@ function renderModels() {
   el.modelsGrid.innerHTML = "";
   cards.forEach((model) => {
     const card = document.createElement("article");
+    if (model.label === "VIDEO" || model.label === "AUDIO") {
+      model.pricing = "$0.01 per second";
+    } else if (model.label === "IMAGE") {
+      model.pricing = "$0.02 per image";
+    } else if (model.label === "Text") {
+      const raw = model.pricing
+
+      const pricing = Object.fromEntries(
+        [...raw.matchAll(/(\w+)\s([\d.]+)/g)]
+          .map(([_, k, v]) => [k, +(v * 1_000_000).toFixed(2)])
+      );
+
+      model.pricing = `In: $${pricing.prompt}/M · Out: $${pricing.completion}/M`;
+    }
     card.className = "model-card";
     card.innerHTML = `
       <div class="model-card-top">
