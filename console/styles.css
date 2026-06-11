@@ -18,6 +18,21 @@
   --shadow-lg: 0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
 }
 
+[data-theme="dark"] {
+  --bg:        #111113;
+  --surface:   #1a1a1f;
+  --surface-2: #222228;
+  --border:    #2e2e35;
+  --text:      #e8e6e1;
+  --muted:     #8a8578;
+  --accent:    #4a90ff;
+  --accent-2:  #f5c400;
+  --accent-3:  #4a90ff;
+  --danger:    #f04e6a;
+  --shadow:    0 2px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.25);
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -30,6 +45,84 @@ body {
     radial-gradient(ellipse 50% 40% at 85% 90%, rgba(26,107,255,0.12) 0%, transparent 55%),
     radial-gradient(ellipse 40% 30% at 80% 5%,  rgba(26,107,255,0.07) 0%, transparent 40%);
   min-height: 100vh;
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(245,196,0,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(74,144,255,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 80% 5%,  rgba(74,144,255,0.04) 0%, transparent 40%);
+}
+
+[data-theme="dark"] .topbar {
+  background: rgba(17,17,19,0.88);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] button.ghost {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] button.ghost:hover {
+  background: #2a2a32;
+  border-color: #444;
+}
+
+[data-theme="dark"] .console-nav-tab.active {
+  background: var(--accent);
+}
+
+[data-theme="dark"] .user-badge {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .stat-grid article,
+[data-theme="dark"] .card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74,144,255,0.15);
+}
+
+[data-theme="dark"] pre,
+[data-theme="dark"] code {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+[data-theme="dark"] .locked-overlay {
+  background: var(--surface);
+  color: var(--muted);
+}
+
+[data-theme="dark"] .console-nav {
+  background: #151518;
+  border-right-color: var(--border);
+}
+
+[data-theme="dark"] .sidebar-user-tag {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .sidebar-user-avatar {
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
 }
 
 /* ── TOPBAR ─────────────────────────────────────────── */
@@ -75,6 +168,12 @@ body {
 
 .top-actions { display: flex; align-items: center; gap: 0.6rem; }
 
+#theme-toggle {
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.45rem 0.6rem;
+}
+
 a { color: var(--accent); text-decoration: none; }
 .top-actions a {
   font-size: 0.85rem;
@@ -99,7 +198,7 @@ main.console-shell {
   flex-direction: column;
   gap: 0.25rem;
   padding: 1.25rem 0.75rem;
-  background: var(--surface);
+  background: #faf8f4;
   border-right: 1px solid var(--border);
   height: calc(100vh - 64px);
   overflow-y: auto;
@@ -136,6 +235,42 @@ main.console-shell {
 .console-nav-tab.active {
   background: var(--accent);
   color: #fff;
+}
+
+.sidebar-user-tag {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.sidebar-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sidebar-user-email {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .console-content {
@@ -195,6 +330,10 @@ main.console-shell {
 
   .console-nav-label {
     display: none;
+  }
+
+  .sidebar-user-tag {
+    display: none !important;
   }
 
   .console-nav-tab {

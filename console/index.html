@@ -25,6 +25,10 @@
     </div>
     <div class="top-actions">
       <a id="home-link" href="https://inference.js.org" target="_blank" rel="noreferrer">Home</a>
+      <button id="theme-toggle" class="ghost" type="button" aria-label="Toggle dark mode">
+        <span class="theme-icon-light">&#9788;</span>
+        <span class="theme-icon-dark" style="display:none;">&#9790;</span>
+      </button>
       <button id="logout-btn" class="ghost" style="display:none;">Sign out</button>
     </div>
   </header>
@@ -36,6 +40,10 @@
       <button type="button" class="console-nav-tab" data-console-tab="models">Models</button>
       <button type="button" class="console-nav-tab" data-console-tab="api-key">API key</button>
       <button type="button" class="console-nav-tab" data-console-tab="usage">Usage</button>
+      <div class="sidebar-user-tag" id="sidebar-user-tag" style="display:none;">
+        <div class="sidebar-user-avatar" id="sidebar-user-avatar">?</div>
+        <span class="sidebar-user-email" id="sidebar-user-email"></span>
+      </div>
     </aside>
 
     <section class="console-content">

@@ -65,8 +65,38 @@ const el = {
   audioOutput: document.getElementById("audio-output"),
   modelsPanelLocked: document.getElementById("models-panel-locked"),
   apiKeyPanelLocked: document.getElementById("api-key-panel-locked"),
-  usagePanelLocked: document.getElementById("usage-panel-locked")
+  usagePanelLocked: document.getElementById("usage-panel-locked"),
+  themeToggle: document.getElementById("theme-toggle"),
+  themeIconLight: document.querySelector(".theme-icon-light"),
+  themeIconDark: document.querySelector(".theme-icon-dark"),
+  sidebarUserTag: document.getElementById("sidebar-user-tag"),
+  sidebarUserAvatar: document.getElementById("sidebar-user-avatar"),
+  sidebarUserEmail: document.getElementById("sidebar-user-email")
 };
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  if (el.themeIconLight && el.themeIconDark) {
+    el.themeIconLight.style.display = theme === "dark" ? "none" : "";
+    el.themeIconDark.style.display = theme === "dark" ? "" : "none";
+  }
+}
+
+function initTheme() {
+  const saved = localStorage.getItem("console-theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  applyTheme(saved || (prefersDark ? "dark" : "light"));
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  const next = current === "dark" ? "light" : "dark";
+  localStorage.setItem("console-theme", next);
+  applyTheme(next);
+}
+
+initTheme();
+el.themeToggle?.addEventListener("click", toggleTheme);
 
 // Cards that require sign-in
 const PROTECTED_CARDS = [
@@ -586,6 +616,12 @@ function renderAuthState() {
     el.userEmailDisplay.textContent = email;
     el.userAvatar.textContent = email ? email[0].toUpperCase() : "?";
 
+    if (el.sidebarUserTag) {
+      el.sidebarUserTag.style.display = "flex";
+      el.sidebarUserEmail.textContent = email;
+      el.sidebarUserAvatar.textContent = email ? email[0].toUpperCase() : "?";
+    }
+
     setProtectedCardsVisible(true);
     setPanelLockedState(false);
 
@@ -596,6 +632,8 @@ function renderAuthState() {
     el.signedOutView.style.display = "";
     el.signedInView.style.display = "none";
     el.logoutBtn.style.display = "none";
+
+    if (el.sidebarUserTag) el.sidebarUserTag.style.display = "none";
 
     setProtectedCardsVisible(false);
     setPanelLockedState(true);
