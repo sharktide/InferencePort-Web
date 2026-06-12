@@ -949,6 +949,130 @@ button.danger { color: var(--danger) !important; }
   .ledger-header, .ledger-row { grid-template-columns: 1fr; }
 }
 
+/* ── API DOC CONTENT ───────────────────────────────────── */
+.api-doc-content {
+  line-height: 1.7;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+.api-doc-content p { margin-bottom: 1rem; }
+.api-doc-content h3 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 1.8rem 0 0.8rem;
+}
+.api-doc-content ul, .api-doc-content ol {
+  padding-left: 1.4rem;
+  margin-bottom: 1rem;
+}
+.api-doc-content li { margin-bottom: 0.4rem; }
+.api-doc-content code {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  background: var(--surface-2);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.api-doc-content pre.code-block {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  overflow: auto;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* ── SHIELD FORM ──────────────────────────────────────── */
+.shield-form {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ── SHIELD RESULT ────────────────────────────────────── */
+.shield-result {
+  display: grid;
+  gap: 1.25rem;
+}
+.shield-result h3 {
+  margin: 0;
+}
+.shield-result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.shield-stat {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.shield-stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+.shield-stat-value {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.shield-decision-allow { color: #0f766e; }
+.shield-decision-challenge { color: #b45309; }
+.shield-decision-rate_limit { color: #7c3aed; }
+.shield-decision-review { color: #b45309; }
+.shield-decision-block { color: var(--danger); }
+
+.shield-threats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.shield-threat-tag {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(26,107,255,0.08);
+  border: 1px solid rgba(26,107,255,0.18);
+  color: var(--accent);
+}
+
+.shield-reasons {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.shield-reasons li {
+  font-size: 0.88rem;
+  color: var(--text);
+  padding: 0.65rem 0.9rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  line-height: 1.4;
+}
+.shield-reasons li::before { content: '→  '; color: var(--accent-2); font-weight: 700; }
+
+@media (max-width: 680px) {
+  .shield-result-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 640px) {
   .brand-emphasis {
     display: none !important;

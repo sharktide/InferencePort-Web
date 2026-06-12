@@ -40,6 +40,9 @@
       <button type="button" class="console-nav-tab" data-console-tab="models">Models</button>
       <button type="button" class="console-nav-tab" data-console-tab="api-key">API key</button>
       <button type="button" class="console-nav-tab" data-console-tab="usage">Usage</button>
+      <button type="button" class="console-nav-tab" data-console-tab="gen-api">Generation (Subscription)</button>
+      <button type="button" class="console-nav-tab" data-console-tab="payg-api">P2G API</button>
+      <button type="button" class="console-nav-tab" data-console-tab="shield">Shield</button>
       <div class="sidebar-user-tag" id="sidebar-user-tag" style="display:none;">
         <div class="sidebar-user-avatar" id="sidebar-user-avatar">?</div>
         <span class="sidebar-user-email" id="sidebar-user-email"></span>
@@ -211,6 +214,212 @@
         <section class="card wide" id="ledger-card" style="display:none;">
           <h2>Recent Usage &amp; Purchases</h2>
           <div id="ledger-table" class="ledger"></div>
+        </section>
+      </div>
+
+      <!-- GENERATION (SUBSCRIPTION) API PANEL -->
+      <div class="console-panel" data-console-panel="gen-api">
+        <div id="gen-api-panel-locked" class="locked-overlay panel-lock" style="display:none;">Sign in to test the Subscription API.</div>
+        <section class="card wide" id="gen-api-docs-card">
+          <h2>Subscription API (Generation)</h2>
+          <div class="api-doc-content">
+            <p>The <strong>Generation API</strong> (prefix <code>/gen</code>) provides AI generation backed by your plan's subscription quota. Each subscription tier (Free, Light, Core, Creator, Professional) includes daily/weekly usage limits.</p>
+            <h3>Endpoints</h3>
+            <ul>
+              <li><code>POST /gen/chat/completions</code> — Text chat completions</li>
+              <li><code>POST /gen/images/generations</code> — Image generation</li>
+              <li><code>POST /gen/videos/generations</code> — Video generation</li>
+              <li><code>POST /gen/audio/generations</code> — Audio/music generation</li>
+              <li><code>GET /gen/models</code> — Available model listing</li>
+            </ul>
+            <h3>Authentication</h3>
+            <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
+            <h3>Rate Limits</h3>
+            <p>Rate limits are determined by your subscription tier. See your plan for specific daily/weekly quotas.</p>
+          </div>
+        </section>
+        <section class="card wide" id="gen-api-playground-card" style="display:none;">
+          <h2>Subscription API Playground</h2>
+          <p class="muted tiny" style="margin-bottom:1.25rem;">Test the Subscription API endpoints.</p>
+          <div class="tabs">
+            <button class="playground-tab active" data-tab="gen-text">Text</button>
+            <button class="playground-tab" data-tab="gen-image">Image</button>
+          </div>
+          <div class="playground-panel active" data-panel="gen-text">
+            <label>Model
+              <select id="gen-text-model-select"></select>
+            </label>
+            <textarea id="gen-text-prompt" rows="5" placeholder="Ask something..."></textarea>
+            <button id="run-gen-text">Generate text</button>
+            <pre id="gen-text-output" class="output"></pre>
+          </div>
+          <div class="playground-panel" data-panel="gen-image">
+            <textarea id="gen-image-prompt" rows="4" placeholder="Describe an image..."></textarea>
+            <button id="run-gen-image">Generate image</button>
+            <div id="gen-image-output" class="media-output"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- P2G API PANEL -->
+      <div class="console-panel" data-console-panel="payg-api">
+        <div id="payg-api-panel-locked" class="locked-overlay panel-lock" style="display:none;">Sign in to test the P2G API.</div>
+        <section class="card wide" id="payg-api-docs-card">
+          <h2>Pay-2-Go (P2G) API</h2>
+          <div class="api-doc-content">
+            <p>The <strong>Pay-2-Go API</strong> (prefix <code>/v1</code>) provides credit-billed AI generation. Purchase credits and consume them per request. No monthly subscription required — only pay for what you use.</p>
+            <h3>Endpoints</h3>
+            <ul>
+              <li><code>POST /v1/chat/completions</code> — Text chat completions</li>
+              <li><code>POST /v1/images/generations</code> — Image generation</li>
+              <li><code>POST /v1/videos/generations</code> — Video generation</li>
+              <li><code>POST /v1/audio/generations</code> — Audio/music generation</li>
+              <li><code>GET /v1/models</code> — Available models</li>
+              <li><code>GET /v1/me</code> — Account &amp; wallet info</li>
+              <li><code>GET /v1/credits/ledger</code> — Credit transaction history</li>
+              <li><code>GET /POST /v1/lightning-api-keys</code> — API key management</li>
+            </ul>
+            <h3>Authentication</h3>
+            <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
+            <h3>Pricing</h3>
+            <p>Credits are consumed per request. View your <strong>Account</strong> tab for current credit balance and purchase packs. See the <strong>Models</strong> tab for per-model pricing.</p>
+          </div>
+        </section>
+        <section class="card wide" id="payg-api-playground-card" style="display:none;">
+          <h2>P2G API Playground</h2>
+          <p class="muted tiny" style="margin-bottom:1.25rem;">Test the Pay-2-Go API. Every successful generation consumes credits.</p>
+          <div class="tabs">
+            <button class="playground-tab active" data-tab="payg-text">Text</button>
+            <button class="playground-tab" data-tab="payg-image">Image</button>
+            <button class="playground-tab" data-tab="payg-video">Video</button>
+            <button class="playground-tab" data-tab="payg-audio">Audio</button>
+          </div>
+          <div class="playground-panel active" data-panel="payg-text">
+            <label>Model
+              <select id="payg-text-model-select"></select>
+            </label>
+            <textarea id="payg-text-prompt" rows="5" placeholder="Ask something..."></textarea>
+            <button id="run-payg-text">Generate text</button>
+            <pre id="payg-text-output" class="output"></pre>
+          </div>
+          <div class="playground-panel" data-panel="payg-image">
+            <textarea id="payg-image-prompt" rows="4" placeholder="Describe an image..."></textarea>
+            <button id="run-payg-image">Generate image</button>
+            <div id="payg-image-output" class="media-output"></div>
+          </div>
+          <div class="playground-panel" data-panel="payg-video">
+            <textarea id="payg-video-prompt" rows="4" placeholder="Describe a video..."></textarea>
+            <label>Duration (seconds)
+              <input id="payg-video-duration" type="number" min="1" max="10" value="5" />
+            </label>
+            <button id="run-payg-video">Generate video</button>
+            <div id="payg-video-output" class="media-output"></div>
+          </div>
+          <div class="playground-panel" data-panel="payg-audio">
+            <textarea id="payg-audio-prompt" rows="4" placeholder="Describe audio / music / sfx..."></textarea>
+            <label>Charge duration estimate (seconds)
+              <input id="payg-audio-duration" type="number" min="1" max="90" value="10" />
+            </label>
+            <button id="run-payg-audio">Generate audio</button>
+            <div id="payg-audio-output" class="media-output"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- SHIELD PANEL -->
+      <div class="console-panel" data-console-panel="shield">
+        <section class="card wide" id="shield-docs-card">
+          <h2>AI Shield</h2>
+          <div class="api-doc-content">
+            <p><strong>AI Shield</strong> is an intelligent abuse prevention and fraud detection system. It analyzes requests in real time to detect and prevent abuse, fraud, and malicious usage of your AI applications.</p>
+            <h3>How It Works</h3>
+            <p>Shield employs a multi-layered analysis pipeline:</p>
+            <ol>
+              <li><strong>Signal Collection</strong> — Gathers email, IP, phone, device, content, and behavioral signals from each request.</li>
+              <li><strong>Heuristic Analysis</strong> — Runs fast pattern-based checks for prompt injection, spam, and known abuse patterns.</li>
+              <li><strong>Intelligence Collection</strong> — Queries external and internal intelligence sources for IP reputation, email risk, device fingerprinting, and more.</li>
+              <li><strong>Agent Analysis</strong> — Specialized agents analyze identity fraud, exfiltration attempts, prompt threats, content policy violations, and payment fraud.</li>
+              <li><strong>Relationship Graph</strong> — Maps entity relationships to detect duplicate accounts and coordinated campaigns.</li>
+              <li><strong>Historical Memory</strong> — Checks encrypted global and customer-specific memory for prior abuse history.</li>
+              <li><strong>LLM Reasoning</strong> — Synthesizes all evidence through an LLM for final risk scoring and decision.</li>
+              <li><strong>Decision Engine</strong> — Produces a final verdict: <code>allow</code>, <code>challenge</code>, <code>rate_limit</code>, <code>review</code>, or <code>block</code>.</li>
+            </ol>
+            <h3>Endpoint</h3>
+            <p><code>POST /ai-shield/analyze</code> — Submit signals for abuse analysis.</p>
+            <h3>Request Body</h3>
+            <pre class="code-block">{
+  "email": "user@example.com",
+  "phone": "+1234567890",
+  "username": "johndoe",
+  "ip": "203.0.113.1",
+  "device_fingerprint": "abc123...",
+  "content": "...",
+  "geolocation": { ... },
+  "signup_time": "2025-01-01T00:00:00Z",
+  "metadata": { ... }
+}</pre>
+            <h3>Response Fields</h3>
+            <ul>
+              <li><code>risk_score</code> — 0-100 overall risk</li>
+              <li><code>confidence</code> — 0-1 confidence in the decision</li>
+              <li><code>decision</code> — allow, challenge, rate_limit, review, or block</li>
+              <li><code>threat_categories</code> — Identified threat types</li>
+              <li><code>reasons</code> — Human-readable explanations</li>
+              <li><code>evidence</code> — Detailed evidence items</li>
+              <li><code>investigation</code> — Tools used, evidence count, campaign info</li>
+            </ul>
+          </div>
+        </section>
+        <div id="shield-playground-locked" class="locked-overlay panel-lock" style="display:none;">Sign in to test the AI Shield analysis.</div>
+        <section class="card wide" id="shield-playground-card" style="display:none;">
+          <h2>Shield Playground</h2>
+          <p class="muted tiny" style="margin-bottom:1.25rem;">Submit signals to the Shield analysis engine and inspect the decision.</p>
+          <div class="shield-form">
+            <label>Email
+              <input id="shield-email" type="email" placeholder="user@example.com" />
+            </label>
+            <label>Phone
+              <input id="shield-phone" type="text" placeholder="+1234567890" />
+            </label>
+            <label>IP Address
+              <input id="shield-ip" type="text" placeholder="203.0.113.1" />
+            </label>
+            <label>Username
+              <input id="shield-username" type="text" placeholder="johndoe" />
+            </label>
+            <label>Device Fingerprint
+              <input id="shield-device" type="text" placeholder="abc123..." />
+            </label>
+            <label>Content
+              <textarea id="shield-content" rows="4" placeholder="Content to analyze for prompt injection, policy violations..."></textarea>
+            </label>
+            <button id="run-shield-analyze">Run Analysis</button>
+          </div>
+          <div id="shield-result" class="shield-result" style="display:none;">
+            <h3>Analysis Result</h3>
+            <div class="shield-result-grid">
+              <div class="shield-stat">
+                <span class="shield-stat-label">Risk Score</span>
+                <span class="shield-stat-value" id="shield-risk-score">—</span>
+              </div>
+              <div class="shield-stat">
+                <span class="shield-stat-label">Confidence</span>
+                <span class="shield-stat-value" id="shield-confidence">—</span>
+              </div>
+              <div class="shield-stat">
+                <span class="shield-stat-label">Decision</span>
+                <span class="shield-stat-value" id="shield-decision">—</span>
+              </div>
+            </div>
+            <h3>Threat Categories</h3>
+            <div id="shield-threats" class="shield-threats"></div>
+            <h3>Reasons</h3>
+            <ul id="shield-reasons" class="shield-reasons"></ul>
+            <h3>Investigation</h3>
+            <pre id="shield-investigation" class="output"></pre>
+            <h3>Full Response</h3>
+            <pre id="shield-full-response" class="output"></pre>
+          </div>
         </section>
       </div>
     </section>

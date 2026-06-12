@@ -71,7 +71,55 @@ const el = {
   themeIconDark: document.querySelector(".theme-icon-dark"),
   sidebarUserTag: document.getElementById("sidebar-user-tag"),
   sidebarUserAvatar: document.getElementById("sidebar-user-avatar"),
-  sidebarUserEmail: document.getElementById("sidebar-user-email")
+  sidebarUserEmail: document.getElementById("sidebar-user-email"),
+  // gen-api panel
+  genPanelLocked: document.getElementById("gen-api-panel-locked"),
+  genDocsCard: document.getElementById("gen-api-docs-card"),
+  genPlaygroundCard: document.getElementById("gen-api-playground-card"),
+  genTextModelSelect: document.getElementById("gen-text-model-select"),
+  genTextPrompt: document.getElementById("gen-text-prompt"),
+  genTextOutput: document.getElementById("gen-text-output"),
+  runGenText: document.getElementById("run-gen-text"),
+  genImagePrompt: document.getElementById("gen-image-prompt"),
+  genImageOutput: document.getElementById("gen-image-output"),
+  runGenImage: document.getElementById("run-gen-image"),
+  // payg-api panel
+  paygPanelLocked: document.getElementById("payg-api-panel-locked"),
+  paygDocsCard: document.getElementById("payg-api-docs-card"),
+  paygPlaygroundCard: document.getElementById("payg-api-playground-card"),
+  paygTextModelSelect: document.getElementById("payg-text-model-select"),
+  paygTextPrompt: document.getElementById("payg-text-prompt"),
+  paygTextOutput: document.getElementById("payg-text-output"),
+  runPaygText: document.getElementById("run-payg-text"),
+  paygImagePrompt: document.getElementById("payg-image-prompt"),
+  paygImageOutput: document.getElementById("payg-image-output"),
+  runPaygImage: document.getElementById("run-payg-image"),
+  paygVideoPrompt: document.getElementById("payg-video-prompt"),
+  paygVideoDuration: document.getElementById("payg-video-duration"),
+  paygVideoOutput: document.getElementById("payg-video-output"),
+  runPaygVideo: document.getElementById("run-payg-video"),
+  paygAudioPrompt: document.getElementById("payg-audio-prompt"),
+  paygAudioDuration: document.getElementById("payg-audio-duration"),
+  paygAudioOutput: document.getElementById("payg-audio-output"),
+  runPaygAudio: document.getElementById("run-payg-audio"),
+  // shield panel
+  shieldPlaygroundLocked: document.getElementById("shield-playground-locked"),
+  shieldPlaygroundCard: document.getElementById("shield-playground-card"),
+  shieldEmail: document.getElementById("shield-email"),
+  shieldPhone: document.getElementById("shield-phone"),
+  shieldIp: document.getElementById("shield-ip"),
+  shieldUsername: document.getElementById("shield-username"),
+  shieldDevice: document.getElementById("shield-device"),
+  shieldContent: document.getElementById("shield-content"),
+  runShieldAnalyze: document.getElementById("run-shield-analyze"),
+  shieldResult: document.getElementById("shield-result"),
+  shieldRiskScore: document.getElementById("shield-risk-score"),
+  shieldConfidence: document.getElementById("shield-confidence"),
+  shieldDecision: document.getElementById("shield-decision"),
+  shieldThreats: document.getElementById("shield-threats"),
+  shieldReasons: document.getElementById("shield-reasons"),
+  shieldInvestigation: document.getElementById("shield-investigation"),
+  shieldFullResponse: document.getElementById("shield-full-response")
 };
 
 function applyTheme(theme) {
@@ -101,7 +149,10 @@ el.themeToggle?.addEventListener("click", toggleTheme);
 // Cards that require sign-in
 const PROTECTED_CARDS = [
   "notices-card", "pricing-card",
-  "models-card", "playground-card", "ledger-card", "api-keys-card"
+  "models-card", "playground-card", "ledger-card", "api-keys-card",
+  "gen-api-playground-card",
+  "payg-api-playground-card",
+  "shield-playground-card"
 ];
 
 let currentRawApiKey = "";
@@ -264,6 +315,8 @@ function renderModels() {
   });
 
   renderTextModelSelect();
+  renderGenTextModelSelect();
+  renderPaygTextModelSelect();
 }
 
 function getApiKeyStatus(apiKey) {
@@ -591,6 +644,9 @@ function setPanelLockedState(locked) {
   if (el.modelsPanelLocked) el.modelsPanelLocked.style.display = locked ? "" : "none";
   if (el.apiKeyPanelLocked) el.apiKeyPanelLocked.style.display = locked ? "" : "none";
   if (el.usagePanelLocked) el.usagePanelLocked.style.display = locked ? "" : "none";
+  if (el.genPanelLocked) el.genPanelLocked.style.display = locked ? "" : "none";
+  if (el.paygPanelLocked) el.paygPanelLocked.style.display = locked ? "" : "none";
+  if (el.shieldPlaygroundLocked) el.shieldPlaygroundLocked.style.display = locked ? "" : "none";
 }
 
 function setConsolePanel(nextPanel) {
@@ -944,6 +1000,259 @@ function setupPlayground() {
   });
 }
 
+function renderGenTextModelSelect() {
+  if (!el.genTextModelSelect) return;
+  const textModels = getTextModels();
+  if (!textModels.length) {
+    el.genTextModelSelect.innerHTML = `<option value="">No text models available</option>`;
+    el.genTextModelSelect.disabled = true;
+    return;
+  }
+  const selected = textModels[0].id || textModels[0].upstream_id || formatModelSlug(textModels[0]);
+  el.genTextModelSelect.innerHTML = textModels.map((model) => {
+    const slug = formatModelSlug(model);
+    const value = model.id || model.upstream_id || slug;
+    return `<option value="${escapeHtml(value)}">${escapeHtml(model.name)}</option>`;
+  }).join("");
+  el.genTextModelSelect.disabled = false;
+}
+
+function renderPaygTextModelSelect() {
+  if (!el.paygTextModelSelect) return;
+  const textModels = getTextModels();
+  if (!textModels.length) {
+    el.paygTextModelSelect.innerHTML = `<option value="">No text models available</option>`;
+    el.paygTextModelSelect.disabled = true;
+    return;
+  }
+  const selected = textModels[0].id || textModels[0].upstream_id || formatModelSlug(textModels[0]);
+  el.paygTextModelSelect.innerHTML = textModels.map((model) => {
+    const slug = formatModelSlug(model);
+    const value = model.id || model.upstream_id || slug;
+    return `<option value="${escapeHtml(value)}">${escapeHtml(model.name)}</option>`;
+  }).join("");
+  el.paygTextModelSelect.disabled = false;
+}
+
+function setupGenApiPlayground() {
+  el.runGenText?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runGenText, true);
+    el.genTextOutput.textContent = "Generating…";
+    try {
+      const selectedModel = el.genTextModelSelect?.value || undefined;
+      const result = await fetchJson("/gen/chat/completions", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          stream: false,
+          model: selectedModel,
+          messages: [{ role: "user", content: el.genTextPrompt.value || "Hello" }]
+        })
+      });
+      el.genTextOutput.textContent = JSON.stringify(result, null, 2);
+      await refreshAccount();
+    } catch (error) {
+      el.genTextOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runGenText, false);
+    }
+  });
+
+  el.runGenImage?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runGenImage, true);
+    el.genImageOutput.textContent = "Generating…";
+    try {
+      const result = await fetchJson("/gen/images/generations", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ prompt: el.genImagePrompt.value || "A colorful neon city." })
+      });
+      const b64 = result?.data?.[0]?.b64_json;
+      if (!b64) throw new Error("No image returned");
+      el.genImageOutput.innerHTML = `<img src="data:image/jpeg;base64,${b64}" alt="Generated image" />`;
+      await refreshAccount();
+    } catch (error) {
+      el.genImageOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runGenImage, false);
+    }
+  });
+}
+
+function setupPaygPlayground() {
+  el.runPaygText?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runPaygText, true);
+    el.paygTextOutput.textContent = "Generating…";
+    try {
+      const selectedModel = el.paygTextModelSelect?.value || undefined;
+      const result = await fetchJson("/v1/chat/completions", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          stream: false,
+          model: selectedModel,
+          messages: [{ role: "user", content: el.paygTextPrompt.value || "Hello" }]
+        })
+      });
+      el.paygTextOutput.textContent = JSON.stringify(result, null, 2);
+      await refreshAccount();
+    } catch (error) {
+      el.paygTextOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runPaygText, false);
+    }
+  });
+
+  el.runPaygImage?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runPaygImage, true);
+    el.paygImageOutput.textContent = "Generating…";
+    try {
+      const result = await fetchJson("/v1/images/generations", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({ prompt: el.paygImagePrompt.value || "A colorful neon city." })
+      });
+      const b64 = result?.data?.[0]?.b64_json;
+      if (!b64) throw new Error("No image returned");
+      el.paygImageOutput.innerHTML = `<img src="data:image/jpeg;base64,${b64}" alt="Generated image" />`;
+      await refreshAccount();
+    } catch (error) {
+      el.paygImageOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runPaygImage, false);
+    }
+  });
+
+  el.runPaygVideo?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runPaygVideo, true);
+    el.paygVideoOutput.textContent = "Generating…";
+    try {
+      const response = await fetch(`${apiBase()}/v1/videos/generations`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          prompt: el.paygVideoPrompt.value || "A drifting cloudscape at sunset.",
+          duration: Number(el.paygVideoDuration.value || 5)
+        })
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.detail || payload.error || "Video generation failed");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      el.paygVideoOutput.innerHTML = `<video controls src="${url}"></video>`;
+      await refreshAccount();
+    } catch (error) {
+      el.paygVideoOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runPaygVideo, false);
+    }
+  });
+
+  el.runPaygAudio?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runPaygAudio, true);
+    el.paygAudioOutput.textContent = "Generating…";
+    try {
+      const response = await fetch(`${apiBase()}/v1/audio/generations`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          prompt: el.paygAudioPrompt.value || "Energetic electronic beat",
+          duration_seconds: Number(el.paygAudioDuration.value || 10)
+        })
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.detail || payload.error || "Audio generation failed");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      el.paygAudioOutput.innerHTML = `<audio controls src="${url}"></audio>`;
+      await refreshAccount();
+    } catch (error) {
+      el.paygAudioOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runPaygAudio, false);
+    }
+  });
+}
+
+function setupShieldPlayground() {
+  el.runShieldAnalyze?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runShieldAnalyze, true);
+    if (el.shieldResult) el.shieldResult.style.display = "none";
+    try {
+      const body = {};
+      const emailVal = el.shieldEmail?.value?.trim();
+      if (emailVal) body.email = emailVal;
+      const phoneVal = el.shieldPhone?.value?.trim();
+      if (phoneVal) body.phone = phoneVal;
+      const ipVal = el.shieldIp?.value?.trim();
+      if (ipVal) body.ip = ipVal;
+      const usernameVal = el.shieldUsername?.value?.trim();
+      if (usernameVal) body.username = usernameVal;
+      const deviceVal = el.shieldDevice?.value?.trim();
+      if (deviceVal) body.device_fingerprint = deviceVal;
+      const contentVal = el.shieldContent?.value?.trim();
+      if (contentVal) body.content = contentVal;
+
+      if (!Object.keys(body).length) {
+        showToast("Enter at least one signal to analyze.");
+        return;
+      }
+
+      const result = await fetchJson("/ai-shield/analyze", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(body)
+      });
+
+      if (el.shieldRiskScore) el.shieldRiskScore.textContent = result.risk_score ?? "—";
+      if (el.shieldConfidence) el.shieldConfidence.textContent = result.confidence ?? "—";
+      if (el.shieldDecision) {
+        el.shieldDecision.textContent = result.decision ?? "—";
+        el.shieldDecision.className = "shield-stat-value shield-decision-" + (result.decision || "unknown");
+      }
+
+      if (el.shieldThreats) {
+        const categories = Array.isArray(result.threat_categories) ? result.threat_categories : [];
+        el.shieldThreats.innerHTML = categories.length
+          ? categories.map((c) => `<span class="shield-threat-tag">${escapeHtml(c)}</span>`).join("")
+          : '<span class="muted tiny">None identified</span>';
+      }
+
+      if (el.shieldReasons) {
+        const reasons = Array.isArray(result.reasons) ? result.reasons : [];
+        el.shieldReasons.innerHTML = reasons.length
+          ? reasons.map((r) => `<li>${escapeHtml(r)}</li>`).join("")
+          : '<li class="muted tiny">No reasons provided</li>';
+      }
+
+      if (el.shieldInvestigation) {
+        el.shieldInvestigation.textContent = JSON.stringify(result.investigation || {}, null, 2);
+      }
+
+      if (el.shieldFullResponse) {
+        el.shieldFullResponse.textContent = JSON.stringify(result, null, 2);
+      }
+
+      if (el.shieldResult) el.shieldResult.style.display = "";
+    } catch (error) {
+      showToast(error.message || "Shield analysis failed");
+    } finally {
+      setBusy(el.runShieldAnalyze, false);
+    }
+  });
+}
+
 async function init() {
   cfg = await fetchJson("/v1/config");
   renderConfig();
@@ -956,6 +1265,9 @@ async function init() {
   setupAuthActions();
   setupApiKeyActions();
   setupPlayground();
+  setupGenApiPlayground();
+  setupPaygPlayground();
+  setupShieldPlayground();
   await loadRemoteTextModels().catch((error) => {
     console.warn(error);
     renderModels();
