@@ -322,14 +322,18 @@ function renderModels() {
     } else if (model.label === "IMAGE") {
       model.pricing = "$0.02 per image";
     } else if (model.label === "Text") {
-      const raw = model.pricing
-      if (raw && raw !== "—" && raw !== "Pricing unavailable") {
-        const pricing = Object.fromEntries(
-          [...raw.matchAll(/(\w+)\s([\d.]+)/g)]
-            .map(([_, k, v]) => [k, +(v * 1_000_000).toFixed(2)])
-        );
-        if (pricing.prompt != null && pricing.completion != null) {
-          model.pricing = `In: $${pricing.prompt}/M · Out: $${pricing.completion}/M`;
+      if (currentModelsSource === "gen") {
+        model.pricing = "1x multiplier";
+      } else {
+        const raw = model.pricing
+        if (raw && raw !== "—" && raw !== "Pricing unavailable") {
+          const pricing = Object.fromEntries(
+            [...raw.matchAll(/(\w+)\s([\d.]+)/g)]
+              .map(([_, k, v]) => [k, +(v * 1_000_000).toFixed(2)])
+          );
+          if (pricing.prompt != null && pricing.completion != null) {
+            model.pricing = `In: $${pricing.prompt}/M · Out: $${pricing.completion}/M`;
+          }
         }
       }
     }
@@ -893,8 +897,10 @@ function setupTabs() {
   document.querySelectorAll(".playground-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       const next = tab.dataset.tab;
-      document.querySelectorAll(".playground-tab").forEach((t) => t.classList.toggle("active", t === tab));
-      document.querySelectorAll(".playground-panel").forEach((panel) => {
+      const card = tab.closest(".card");
+      if (!card) return;
+      card.querySelectorAll(".playground-tab").forEach((t) => t.classList.toggle("active", t === tab));
+      card.querySelectorAll(".playground-panel").forEach((panel) => {
         panel.classList.toggle("active", panel.dataset.panel === next);
       });
     });
