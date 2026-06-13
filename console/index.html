@@ -439,10 +439,26 @@
               <li><code>risk_score</code> — 0-100 overall risk</li>
               <li><code>confidence</code> — 0-1 confidence in the decision</li>
               <li><code>decision</code> — allow, challenge, rate_limit, review, or block</li>
+              <li><code>recommended_action</code> — Human-readable recommended action</li>
               <li><code>threat_categories</code> — Identified threat types</li>
               <li><code>reasons</code> — Human-readable explanations</li>
-              <li><code>evidence</code> — Detailed evidence items</li>
+              <li><code>duplicate_user_score</code> — Likelihood this is a duplicate account (0-100)</li>
+              <li><code>linked_accounts</code> — Number of accounts linked via shared entities</li>
+              <li><code>campaign_risk_score</code> — Coordinated campaign risk (0-100)</li>
+              <li><code>evidence</code> — Detailed evidence items with source, risk, weight, confidence</li>
               <li><code>investigation</code> — Tools used, evidence count, campaign info</li>
+              <li><code>config_applied</code> — The feature config used for this analysis</li>
+            </ul>
+            <h3>Feature Config</h3>
+            <p>Include a <code>config.features</code> object to enable or disable specific analysis modules. All features default to <code>true</code>. Use the toggles in the playground below to experiment.</p>
+            <ul>
+              <li><strong>Signal:</strong> heuristics</li>
+              <li><strong>Memory:</strong> historical_memory</li>
+              <li><strong>Graph:</strong> duplicate_detection, campaign_detection</li>
+              <li><strong>Intelligence:</strong> email_intelligence, ip_intelligence, phone_intelligence, username_intelligence, device_intelligence, behavior_intelligence, content_intelligence, prompt_intelligence</li>
+              <li><strong>Agent:</strong> identity_analysis, fraud_analysis, prompt_analysis, content_analysis, exfiltration_analysis</li>
+              <li><strong>Decision:</strong> llm_reasoning</li>
+              <li><strong>Storage:</strong> memory_update</li>
             </ul>
             <p class="muted tiny" style="margin-top:1rem;">📚 <a href="https://docs.inferenceport.ai/en/latest/api/shield.html" target="_blank" rel="noreferrer">Full Shield docs →</a></p>
           </div>
@@ -470,6 +486,78 @@
             <label>Content
               <textarea id="shield-content" rows="4" placeholder="Content to analyze for prompt injection, policy violations..."></textarea>
             </label>
+
+            <details class="shield-config-details">
+              <summary>Advanced Signals <span class="muted tiny">(geolocation, signup time, metadata)</span></summary>
+              <div class="shield-advanced-grid">
+                <label>Country
+                  <input id="shield-country" type="text" placeholder="US" />
+                </label>
+                <label>City
+                  <input id="shield-city" type="text" placeholder="San Francisco" />
+                </label>
+                <label>Latitude
+                  <input id="shield-lat" type="text" placeholder="37.7749" />
+                </label>
+                <label>Longitude
+                  <input id="shield-lon" type="text" placeholder="-122.4194" />
+                </label>
+                <label>Signup Time
+                  <input id="shield-signup-time" type="text" placeholder="2026-01-01T00:00:00Z" />
+                </label>
+                <label>Metadata (JSON)
+                  <textarea id="shield-metadata" rows="3" placeholder='{"user_agent": "Mozilla/5.0 ...", "session_id": "sess_abc123", "account_age_days": 30}'></textarea>
+                </label>
+              </div>
+            </details>
+
+            <details class="shield-config-details">
+              <summary>Feature Config <span class="muted tiny">(all enabled by default)</span></summary>
+              <p class="muted tiny" style="margin:0.5rem 0 0.75rem;">Uncheck any feature to skip that analysis step.</p>
+              <div class="shield-config-grid">
+                <div class="shield-config-group">
+                  <h4>Signal</h4>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-heuristics" checked /><span>heuristics</span></label>
+                </div>
+                <div class="shield-config-group">
+                  <h4>Memory</h4>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-historical_memory" checked /><span>historical_memory</span></label>
+                </div>
+                <div class="shield-config-group">
+                  <h4>Graph</h4>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-duplicate_detection" checked /><span>duplicate_detection</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-campaign_detection" checked /><span>campaign_detection</span></label>
+                </div>
+                <div class="shield-config-group">
+                  <h4>Intelligence</h4>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-email_intelligence" checked /><span>email_intelligence</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-ip_intelligence" checked /><span>ip_intelligence</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-phone_intelligence" checked /><span>phone_intelligence</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-username_intelligence" checked /><span>username_intelligence</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-device_intelligence" checked /><span>device_intelligence</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-behavior_intelligence" checked /><span>behavior_intelligence</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-content_intelligence" checked /><span>content_intelligence</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-prompt_intelligence" checked /><span>prompt_intelligence</span></label>
+                </div>
+                <div class="shield-config-group">
+                  <h4>Agent</h4>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-identity_analysis" checked /><span>identity_analysis</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-fraud_analysis" checked /><span>fraud_analysis</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-prompt_analysis" checked /><span>prompt_analysis</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-content_analysis" checked /><span>content_analysis</span></label>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-exfiltration_analysis" checked /><span>exfiltration_analysis</span></label>
+                </div>
+                <div class="shield-config-group">
+                  <h4>Decision</h4>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-llm_reasoning" checked /><span>llm_reasoning</span></label>
+                </div>
+                <div class="shield-config-group">
+                  <h4>Storage</h4>
+                  <label class="shield-toggle"><input type="checkbox" id="cfg-memory_update" checked /><span>memory_update</span></label>
+                </div>
+              </div>
+            </details>
+
             <button id="run-shield-analyze">Run Analysis</button>
           </div>
           <div id="shield-result" class="shield-result" style="display:none;">
@@ -487,6 +575,22 @@
                 <span class="shield-stat-label">Decision</span>
                 <span class="shield-stat-value" id="shield-decision">—</span>
               </div>
+              <div class="shield-stat">
+                <span class="shield-stat-label">Recommended Action</span>
+                <span class="shield-stat-value" id="shield-recommended-action">—</span>
+              </div>
+              <div class="shield-stat">
+                <span class="shield-stat-label">Duplicate Score</span>
+                <span class="shield-stat-value" id="shield-duplicate-score">—</span>
+              </div>
+              <div class="shield-stat">
+                <span class="shield-stat-label">Linked Accounts</span>
+                <span class="shield-stat-value" id="shield-linked-accounts">—</span>
+              </div>
+              <div class="shield-stat">
+                <span class="shield-stat-label">Campaign Risk</span>
+                <span class="shield-stat-value" id="shield-campaign-risk">—</span>
+              </div>
             </div>
             <h3>Threat Categories</h3>
             <div id="shield-threats" class="shield-threats"></div>
@@ -494,6 +598,10 @@
             <ul id="shield-reasons" class="shield-reasons"></ul>
             <h3>Investigation</h3>
             <pre id="shield-investigation" class="output"></pre>
+            <h3>Evidence</h3>
+            <pre id="shield-evidence" class="output"></pre>
+            <h3>Config Applied</h3>
+            <pre id="shield-config-applied" class="output"></pre>
             <h3>Full Response</h3>
             <pre id="shield-full-response" class="output"></pre>
           </div>

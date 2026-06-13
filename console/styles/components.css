@@ -535,7 +535,7 @@
 }
 .shield-result-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 .shield-stat {
@@ -597,3 +597,101 @@
   line-height: 1.4;
 }
 .shield-reasons li::before { content: '→  '; color: var(--accent-2); font-weight: 700; }
+
+/* ── SHIELD CONFIG DETAILS / TOGGLES ──────────────────── */
+.shield-config-details {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  margin-bottom: 0.5rem;
+}
+.shield-config-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.25rem 0;
+  color: var(--text);
+}
+.shield-config-details summary::marker { color: var(--accent); }
+.shield-config-details[open] { padding-bottom: 1rem; }
+
+.shield-config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+.shield-config-group h4 {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 0.4rem;
+}
+.shield-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+.shield-toggle input[type="checkbox"] {
+  appearance: none;
+  width: 2.2rem;
+  height: 1.2rem;
+  background: var(--border);
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.shield-toggle input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 0.85rem;
+  height: 0.85rem;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.shield-toggle input[type="checkbox"]:checked {
+  background: var(--accent);
+}
+.shield-toggle input[type="checkbox"]:checked::after {
+  transform: translateX(1rem);
+}
+
+/* ── SHIELD ADVANCED GRID ─────────────────────────────── */
+.shield-advanced-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+}
+.shield-advanced-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.shield-advanced-grid label:has(textarea) {
+  grid-column: 1 / -1;
+}
+.shield-advanced-grid input,
+.shield-advanced-grid textarea {
+  font-size: 0.85rem;
+  padding: 0.5rem 0.65rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--mono);
+}

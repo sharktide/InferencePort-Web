@@ -111,14 +111,26 @@ const el = {
   shieldUsername: document.getElementById("shield-username"),
   shieldDevice: document.getElementById("shield-device"),
   shieldContent: document.getElementById("shield-content"),
+  shieldCountry: document.getElementById("shield-country"),
+  shieldCity: document.getElementById("shield-city"),
+  shieldLat: document.getElementById("shield-lat"),
+  shieldLon: document.getElementById("shield-lon"),
+  shieldSignupTime: document.getElementById("shield-signup-time"),
+  shieldMetadata: document.getElementById("shield-metadata"),
   runShieldAnalyze: document.getElementById("run-shield-analyze"),
   shieldResult: document.getElementById("shield-result"),
   shieldRiskScore: document.getElementById("shield-risk-score"),
   shieldConfidence: document.getElementById("shield-confidence"),
   shieldDecision: document.getElementById("shield-decision"),
+  shieldRecommendedAction: document.getElementById("shield-recommended-action"),
+  shieldDuplicateScore: document.getElementById("shield-duplicate-score"),
+  shieldLinkedAccounts: document.getElementById("shield-linked-accounts"),
+  shieldCampaignRisk: document.getElementById("shield-campaign-risk"),
   shieldThreats: document.getElementById("shield-threats"),
   shieldReasons: document.getElementById("shield-reasons"),
   shieldInvestigation: document.getElementById("shield-investigation"),
+  shieldEvidence: document.getElementById("shield-evidence"),
+  shieldConfigApplied: document.getElementById("shield-config-applied"),
   shieldFullResponse: document.getElementById("shield-full-response"),
   // subscription card
   subscriptionContent: document.getElementById("subscription-content"),
@@ -1401,6 +1413,22 @@ function setupPaygPlayground() {
   });
 }
 
+function readShieldConfig() {
+  const features = {};
+  const ids = [
+    "heuristics", "historical_memory", "duplicate_detection", "campaign_detection",
+    "email_intelligence", "ip_intelligence", "phone_intelligence", "username_intelligence",
+    "device_intelligence", "behavior_intelligence", "content_intelligence", "prompt_intelligence",
+    "identity_analysis", "fraud_analysis", "prompt_analysis", "content_analysis",
+    "exfiltration_analysis", "llm_reasoning", "memory_update"
+  ];
+  for (const id of ids) {
+    const el_ = document.getElementById("cfg-" + id);
+    if (el_) features[id] = el_.checked;
+  }
+  return features;
+}
+
 function setupShieldPlayground() {
   el.runShieldAnalyze?.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
@@ -1421,6 +1449,34 @@ function setupShieldPlayground() {
       const contentVal = el.shieldContent?.value?.trim();
       if (contentVal) body.content = contentVal;
 
+      const countryVal = el.shieldCountry?.value?.trim();
+      const cityVal = el.shieldCity?.value?.trim();
+      const latVal = el.shieldLat?.value?.trim();
+      const lonVal = el.shieldLon?.value?.trim();
+      if (countryVal || cityVal || latVal || lonVal) {
+        body.geolocation = {};
+        if (countryVal) body.geolocation.country = countryVal;
+        if (cityVal) body.geolocation.city = cityVal;
+        if (latVal) body.geolocation.lat = parseFloat(latVal);
+        if (lonVal) body.geolocation.lon = parseFloat(lonVal);
+      }
+
+      const signupTimeVal = el.shieldSignupTime?.value?.trim();
+      if (signupTimeVal) body.signup_time = signupTimeVal;
+
+      const metadataVal = el.shieldMetadata?.value?.trim();
+      if (metadataVal) {
+        try { body.metadata = JSON.parse(metadataVal); }
+        catch { showToast("Invalid metadata JSON"); return; }
+      }
+
+      const features = readShieldConfig();
+      const disabledFeatures = Object.keys(features).filter((k) => !features[k]);
+      if (disabledFeatures.length > 0) {
+        body.config = { features: {} };
+        for (const k of disabledFeatures) body.config.features[k] = false;
+      }
+
       if (!Object.keys(body).length) {
         showToast("Enter at least one signal to analyze.");
         return;
@@ -1438,6 +1494,13 @@ function setupShieldPlayground() {
         el.shieldDecision.textContent = result.decision ?? "—";
         el.shieldDecision.className = "shield-stat-value shield-decision-" + (result.decision || "unknown");
       }
+      if (el.shieldRecommendedAction) {
+        el.shieldRecommendedAction.textContent = result.recommended_action ?? "—";
+        el.shieldRecommendedAction.className = "shield-stat-value shield-decision-" + (result.recommended_action || "unknown");
+      }
+      if (el.shieldDuplicateScore) el.shieldDuplicateScore.textContent = result.duplicate_user_score ?? "—";
+      if (el.shieldLinkedAccounts) el.shieldLinkedAccounts.textContent = result.linked_accounts ?? "—";
+      if (el.shieldCampaignRisk) el.shieldCampaignRisk.textContent = result.campaign_risk_score ?? "—";
 
       if (el.shieldThreats) {
         const categories = Array.isArray(result.threat_categories) ? result.threat_categories : [];
@@ -1455,6 +1518,14 @@ function setupShieldPlayground() {
 
       if (el.shieldInvestigation) {
         el.shieldInvestigation.textContent = JSON.stringify(result.investigation || {}, null, 2);
+      }
+
+      if (el.shieldEvidence) {
+        el.shieldEvidence.textContent = JSON.stringify(result.evidence || [], null, 2);
+      }
+
+      if (el.shieldConfigApplied) {
+        el.shieldConfigApplied.textContent = JSON.stringify(result.config_applied || {}, null, 2);
       }
 
       if (el.shieldFullResponse) {
