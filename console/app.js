@@ -189,6 +189,7 @@ const PROTECTED_CARDS = [
 let currentRawApiKey = "";
 let currentApiKeyName = "";
 let remoteTextModels = [];
+let genApiModels = [];
 let currentTextModelId = "";
 let currentModelsSource = "p2g";
 
@@ -289,13 +290,15 @@ function renderModels() {
   if (!el.modelsGrid) return;
 
   const cards = [];
+  const displayModels = currentModelsSource === "p2g" ? getTextModels() : genApiModels;
 
-  getTextModels().forEach((model) => {
+  displayModels.forEach((model) => {
+    if (!model.name && !model.id) return;
     cards.push({
       label: "Text",
-      name: model.name,
+      name: model.name || model.id || "Unnamed model",
       slug: formatModelSlug(model),
-      pricing: formatModelPricing(model),
+      pricing: model.pricing ? formatModelPricing(model) : "—",
       source: "text"
     });
   });
@@ -320,13 +323,15 @@ function renderModels() {
       model.pricing = "$0.02 per image";
     } else if (model.label === "Text") {
       const raw = model.pricing
-
-      const pricing = Object.fromEntries(
-        [...raw.matchAll(/(\w+)\s([\d.]+)/g)]
-          .map(([_, k, v]) => [k, +(v * 1_000_000).toFixed(2)])
-      );
-
-      model.pricing = `In: $${pricing.prompt}/M · Out: $${pricing.completion}/M`;
+      if (raw && raw !== "—" && raw !== "Pricing unavailable") {
+        const pricing = Object.fromEntries(
+          [...raw.matchAll(/(\w+)\s([\d.]+)/g)]
+            .map(([_, k, v]) => [k, +(v * 1_000_000).toFixed(2)])
+        );
+        if (pricing.prompt != null && pricing.completion != null) {
+          model.pricing = `In: $${pricing.prompt}/M · Out: $${pricing.completion}/M`;
+        }
+      }
     }
     card.className = "model-card";
     card.innerHTML = `
@@ -594,13 +599,12 @@ async function loadModelsForCurrentSource() {
 }
 
 async function loadRemoteGenModels() {
-  const response = await fetch("https://sharktide-lightning.hf.space/models");
+  const response = await fetch("https://sharktide-lightning.hf.space/gen/models");
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data.detail || data.error || `HTTP ${response.status}`);
   }
-  const items = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
-  remoteTextModels = items.filter((model) => isTextModel(model) && (model.is_ready !== false));
+  genApiModels = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
   renderModels();
 }
 
