@@ -168,8 +168,7 @@
           One stack for <span class="accent">hosting, chat, and billing.</span>
         </h1>
         <p class="hero-subtitle">
-          Use the hosted Lightning server for cloud generation, the subscription API for day-to-day chatting, the P2G API when you need stable, credit-metered production integrations, and AI Shield for fraud detection and abuse prevention.
-        </p>
+          Use the the subscription (Gen) API for day-to-day chatting, the P2G API for production integrations, AI Shield for fraud detection, and InferencePort AI Server to self-host local AI models with secure team access.</p>
         <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
           <a href="https://inference.js.org/console" class="btn btn-primary">Open Console</a>
           <a href="https://inferenceport-ai.readthedocs.io" class="btn btn-outline-light">Read Docs</a>
@@ -184,24 +183,10 @@
           The services behind the <span class="accent">InferencePort AI</span> stack.
         </h2>
         <p class="section-sub mb-4">
-          Each part of the platform has a specific job: AI Shield handles fraud detection and abuse prevention, the generation API powers the default chat experience, the P2G API handles metered production workloads, and the console ties billing together.
+          Each part of the platform has a specific job: AI Shield handles fraud detection and abuse prevention, the generation API powers the default chat experience, the P2G API handles metered production workloads, InferencePort AI Server enables secure frictionless self-hosting of local models, and the console ties billing together.
         </p>
 
         <div class="row g-3">
-          <div class="col-md-6 col-lg-3">
-            <div class="solution-card featured">
-              <div class="solution-kicker">Fraud Detection</div>
-              <div class="solution-title">AI Shield</div>
-              <div class="solution-body">
-                Real-time abuse and fraud detection for sign-ups, logins, and API traffic. Analyzes email, phone, IP, username, and device signals in a single call.
-              </div>
-              <ul class="solution-list">
-                <li>Risk score with confidence level</li>
-                <li>Duplicate and linked-account detection</li>
-                <li>Threat intelligence and recommended actions</li>
-              </ul>
-            </div>
-          </div>
           <div class="col-md-6 col-lg-3">
             <div class="solution-card">
               <div class="solution-kicker">Generation API</div>
@@ -231,6 +216,21 @@
             </div>
           </div>
           <div class="col-md-6 col-lg-3">
+            <div class="solution-card featured">
+              <div class="solution-kicker">Tool Marketplace</div>
+              <div class="solution-title">InferencePort AI Tool Registry</div>
+              <div class="solution-body">
+                A registry of tools that anyone can upload to that can be used in the app and explored on the website.
+              </div>
+              <ul class="solution-list">
+                <li>Create custom tools in minutes</li>
+                <li>Upload tools to the registry</li>
+                <li>Download and run tools for any case</li>
+                <li>100% free forever</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
             <div class="solution-card">
               <div class="solution-kicker">Chat Services</div>
               <div class="solution-title">Local + cloud chat</div>
@@ -241,6 +241,36 @@
                 <li>Local chat for private work</li>
                 <li>Cloud chat for hosted access</li>
                 <li>Optional sync and media storage</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-6">
+            <div class="solution-card featured">
+              <div class="solution-kicker">Self Hosting</div>
+              <div class="solution-title">InferencePort AI Server</div>
+              <div class="solution-body">
+                A zero-setup AI server that can be hosted directly from the app. Run your own local LLMs and marketplace models while securely sharing access with your team, customers, or organization.
+              </div>
+              <ul class="solution-list">
+                <li>Host local models in minutes</li>
+                <li>Invite users by email</li>
+                <li>Authentication via InferencePort AI accounts</li>
+                <li>Create custom API keys for access control</li>
+                <li>100 free token verifications daily</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-6">
+            <div class="solution-card featured">
+              <div class="solution-kicker">Fraud Detection</div>
+              <div class="solution-title">AI Shield</div>
+              <div class="solution-body">
+                Real-time abuse and fraud detection for sign-ups, logins, and API traffic. Analyzes email, phone, IP, username, and device signals in a single call.
+              </div>
+              <ul class="solution-list">
+                <li>Risk score with confidence level</li>
+                <li>Duplicate and linked-account detection</li>
+                <li>Threat intelligence and recommended actions</li>
               </ul>
             </div>
           </div>
@@ -280,6 +310,13 @@
                 <td>Use the console to view billing, buy packs, create API keys, and review usage in one place.</td>
               </tr>
               <tr>
+                <td>Self-hosting local models or private AI infrastructure</td>
+                <td class="best">InferencePort AI Server</td>
+                <td>
+                  Deploy and manage your own AI server directly from the app. Share access with teams or users through InferencePort AI account authentication or custom API keys.
+                </td>
+              </tr>
+              <tr>
                 <td>Fraud detection, abuse prevention, or risk scoring</td>
                 <td class="best">AI Shield</td>
                 <td>Analyze sign-ups and API traffic for suspicious patterns, duplicate accounts, and high-risk behavior in real time.</td>
@@ -300,7 +337,7 @@
           The subscription generation API is bundled with plan quotas, while P2G is charged against credits in your wallet. The console always shows the live pricing and usage values.
         </p>
         <div class="row g-3">
-          <div class="col-md-4">
+          <div class="col-md-4 col-lg-3">
             <div class="pricing-card popular">
               <div class="solution-kicker">Generation (Subscription)</div>
               <div class="solution-title">Best for regular chatting</div>
@@ -315,7 +352,7 @@
               </ul>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 col-lg-3">
             <div class="pricing-card">
               <div class="solution-kicker">P2G (Credits)</div>
               <div class="solution-title">Best for production APIs</div>
@@ -330,7 +367,7 @@
               </ul>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4 col-lg-3">
             <div class="pricing-card">
               <div class="solution-kicker">AI Shield</div>
               <div class="solution-title">Best for fraud prevention</div>
@@ -342,6 +379,23 @@
                 <li>2–500 analyses per day by plan</li>
                 <li>Email, phone, IP, username, and device signals</li>
                 <li>Risk score, confidence, and recommended actions</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3">
+            <div class="pricing-card">
+              <div class="solution-kicker">InferencePort AI Server</div>
+              <div class="solution-title">Best for self-hosting</div>
+              <div class="plan-price">Free to start</div>
+              <div class="plan-note">
+                Every server starts with 100 free token verifications per day. Invite teammates and users securely through InferencePort AI accounts or custom API keys. Additional verification capacity is available on request.
+              </div>
+              <ul class="solution-list mt-3">
+                <li>100 free token verifications daily</li>
+                <li>Email-based team access</li>
+                <li>Custom API key management</li>
+                <li>Run local and marketplace models</li>
+                <li>Contact server@inferenceport.ai for higher limits</li>
               </ul>
             </div>
           </div>
@@ -368,9 +422,9 @@
           <div class="col-md-4">
             <div class="solution-card">
               <div class="solution-kicker">Step 2</div>
-              <div class="solution-title">Choose the API that matches your workload</div>
+              <div class="solution-title">Choose cloud or self-hosted AI</div>
               <div class="solution-body">
-                Use the subscription Generation API for day-to-day chatting and the P2G API for stable production services.
+                Use the Generation API and P2G API for hosted workloads, or launch an InferencePort AI Server directly from the app to run your own local models.
               </div>
             </div>
           </div>
