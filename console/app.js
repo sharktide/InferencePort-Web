@@ -160,7 +160,8 @@ const el = {
   genUsageChat: document.getElementById("gen-usage-chat"),
   genUsageImages: document.getElementById("gen-usage-images"),
   genUsageVideos: document.getElementById("gen-usage-videos"),
-  genUsageAudio: document.getElementById("gen-usage-audio")
+  genUsageAudio: document.getElementById("gen-usage-audio"),
+  genUsageShield: document.getElementById("gen-usage-shield")
 };
 
 function applyTheme(theme) {
@@ -733,6 +734,7 @@ async function refreshGenUsage() {
     el.genUsageImages.textContent = fmtUsage(usage.imagesDaily);
     el.genUsageVideos.textContent = fmtUsage(usage.videosDaily);
     el.genUsageAudio.textContent = fmtUsage(usage.audioWeekly);
+    el.genUsageShield.textContent = fmtUsage(usage.aiShieldDaily);
 
     el.genUsageContent.style.display = "grid";
     el.genUsageLocked.style.display = "none";
