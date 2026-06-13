@@ -130,6 +130,17 @@ const el = {
   subDetail: document.getElementById("sub-detail"),
   // models source toggle
   modelsSourceTabs: Array.from(document.querySelectorAll("[data-models-source]")),
+  // playground api source label
+  playgroundApiLabel: document.getElementById("playground-api-label"),
+  // gen video/audio
+  genVideoPrompt: document.getElementById("gen-video-prompt"),
+  genVideoDuration: document.getElementById("gen-video-duration"),
+  runGenVideo: document.getElementById("run-gen-video"),
+  genVideoOutput: document.getElementById("gen-video-output"),
+  genAudioPrompt: document.getElementById("gen-audio-prompt"),
+  genAudioDuration: document.getElementById("gen-audio-duration"),
+  runGenAudio: document.getElementById("run-gen-audio"),
+  genAudioOutput: document.getElementById("gen-audio-output"),
   // gen usage
   genUsageCard: document.getElementById("gen-usage-card"),
   genUsageContent: document.getElementById("gen-usage-content"),
@@ -566,6 +577,9 @@ function setupModelsSourceToggle() {
       if (source === currentModelsSource) return;
       el.modelsSourceTabs.forEach((t) => t.classList.toggle("active", t === tab));
       currentModelsSource = source;
+      if (el.playgroundApiLabel) {
+        el.playgroundApiLabel.textContent = source === "p2g" ? "P2G API" : "Gen API";
+      }
       void loadModelsForCurrentSource();
     });
   });
@@ -1029,7 +1043,8 @@ function setupPlayground() {
     el.textOutput.textContent = "Generating…";
     try {
       const selectedModel = el.textModelSelect?.value || currentTextModelId || undefined;
-      const result = await fetchJson("/v1/chat/completions", {
+      const path = currentModelsSource === "p2g" ? "/v1/chat/completions" : "/gen/chat/completions";
+      const result = await fetchJson(path, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({
@@ -1052,7 +1067,8 @@ function setupPlayground() {
     setBusy(el.runImage, true);
     el.imageOutput.textContent = "Generating…";
     try {
-      const result = await fetchJson("/v1/images/generations", {
+      const path = currentModelsSource === "p2g" ? "/v1/images/generations" : "/gen/images/generations";
+      const result = await fetchJson(path, {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({ prompt: el.imagePrompt.value || "A colorful neon city." })
@@ -1068,12 +1084,18 @@ function setupPlayground() {
     }
   });
 
+  function playgroundVideoFetch() {
+    return currentModelsSource === "p2g"
+      ? `${apiBase()}/v1/videos/generations`
+      : `${apiBase()}/gen/videos/generations`;
+  }
+
   el.runVideo.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
     setBusy(el.runVideo, true);
     el.videoOutput.textContent = "Generating…";
     try {
-      const response = await fetch(`${apiBase()}/v1/videos/generations`, {
+      const response = await fetch(playgroundVideoFetch(), {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({
@@ -1096,12 +1118,18 @@ function setupPlayground() {
     }
   });
 
+  function playgroundAudioFetch() {
+    return currentModelsSource === "p2g"
+      ? `${apiBase()}/v1/audio/generations`
+      : `${apiBase()}/gen/audio/generations`;
+  }
+
   el.runAudio.addEventListener("click", async () => {
     if (!session) return showToast("Sign in required");
     setBusy(el.runAudio, true);
     el.audioOutput.textContent = "Generating…";
     try {
-      const response = await fetch(`${apiBase()}/v1/audio/generations`, {
+      const response = await fetch(playgroundAudioFetch(), {
         method: "POST",
         headers: authHeaders(),
         body: JSON.stringify({
@@ -1202,6 +1230,62 @@ function setupGenApiPlayground() {
       el.genImageOutput.textContent = error.message;
     } finally {
       setBusy(el.runGenImage, false);
+    }
+  });
+
+  el.runGenVideo?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runGenVideo, true);
+    el.genVideoOutput.textContent = "Generating…";
+    try {
+      const response = await fetch(`${apiBase()}/gen/videos/generations`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          prompt: el.genVideoPrompt.value || "A drifting cloudscape at sunset.",
+          duration: Number(el.genVideoDuration.value || 5)
+        })
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.detail || payload.error || "Video generation failed");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      el.genVideoOutput.innerHTML = `<video controls src="${url}"></video>`;
+      await refreshAccount();
+    } catch (error) {
+      el.genVideoOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runGenVideo, false);
+    }
+  });
+
+  el.runGenAudio?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    setBusy(el.runGenAudio, true);
+    el.genAudioOutput.textContent = "Generating…";
+    try {
+      const response = await fetch(`${apiBase()}/gen/audio/generations`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          prompt: el.genAudioPrompt.value || "Energetic electronic beat",
+          duration_seconds: Number(el.genAudioDuration.value || 10)
+        })
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.detail || payload.error || "Audio generation failed");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      el.genAudioOutput.innerHTML = `<audio controls src="${url}"></audio>`;
+      await refreshAccount();
+    } catch (error) {
+      el.genAudioOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runGenAudio, false);
     }
   });
 }

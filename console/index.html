@@ -159,7 +159,7 @@
 
         <section class="card wide" id="playground-card" style="display:none;">
           <h2>Live Playground</h2>
-          <p class="muted tiny" style="margin-bottom:1.25rem;">Every successful generation consumes credits.</p>
+          <p class="muted tiny" style="margin-bottom:1.25rem;">Test generation using <span id="playground-api-label">P2G API</span>. Every successful generation consumes credits.</p>
 
           <div class="tabs">
             <button class="playground-tab active" data-tab="text">Text</button>
@@ -294,6 +294,8 @@
           <div class="tabs">
             <button class="playground-tab active" data-tab="gen-text">Text</button>
             <button class="playground-tab" data-tab="gen-image">Image</button>
+            <button class="playground-tab" data-tab="gen-video">Video</button>
+            <button class="playground-tab" data-tab="gen-audio">Audio</button>
           </div>
           <div class="playground-panel active" data-panel="gen-text">
             <label>Model
@@ -307,6 +309,22 @@
             <textarea id="gen-image-prompt" rows="4" placeholder="Describe an image..."></textarea>
             <button id="run-gen-image">Generate image</button>
             <div id="gen-image-output" class="media-output"></div>
+          </div>
+          <div class="playground-panel" data-panel="gen-video">
+            <textarea id="gen-video-prompt" rows="4" placeholder="Describe a video..."></textarea>
+            <label>Duration (seconds)
+              <input id="gen-video-duration" type="number" min="1" max="10" value="5" />
+            </label>
+            <button id="run-gen-video">Generate video</button>
+            <div id="gen-video-output" class="media-output"></div>
+          </div>
+          <div class="playground-panel" data-panel="gen-audio">
+            <textarea id="gen-audio-prompt" rows="4" placeholder="Describe audio / music / sfx..."></textarea>
+            <label>Charge duration estimate (seconds)
+              <input id="gen-audio-duration" type="number" min="1" max="90" value="10" />
+            </label>
+            <button id="run-gen-audio">Generate audio</button>
+            <div id="gen-audio-output" class="media-output"></div>
           </div>
         </section>
       </div>
