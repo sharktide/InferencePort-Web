@@ -168,7 +168,7 @@
           One stack for <span class="accent">hosting, chat, and billing.</span>
         </h1>
         <p class="hero-subtitle">
-          Use the hosted Lightning server for cloud generation, the subscription API for day-to-day chatting, and the P2G API when you need stable, credit-metered production integrations.
+          Use the hosted Lightning server for cloud generation, the subscription API for day-to-day chatting, the P2G API when you need stable, credit-metered production integrations, and AI Shield for fraud detection and abuse prevention.
         </p>
         <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
           <a href="https://inference.js.org/console" class="btn btn-primary">Open Console</a>
@@ -184,21 +184,21 @@
           The services behind the <span class="accent">InferencePort AI</span> stack.
         </h2>
         <p class="section-sub mb-4">
-          Each part of the platform has a specific job: hosting serves the backend, the generation API powers the default chat experience, the P2G API handles metered production workloads, and the console ties billing together.
+          Each part of the platform has a specific job: AI Shield handles fraud detection and abuse prevention, the generation API powers the default chat experience, the P2G API handles metered production workloads, and the console ties billing together.
         </p>
 
         <div class="row g-3">
           <div class="col-md-6 col-lg-3">
             <div class="solution-card featured">
-              <div class="solution-kicker">Server Hosting</div>
-              <div class="solution-title">Lightning backend</div>
+              <div class="solution-kicker">Fraud Detection</div>
+              <div class="solution-title">AI Shield</div>
               <div class="solution-body">
-                Hosted on <code>sharktide-lightning.hf.space</code>. It serves the public API, wallet logic, subscription resolution, and the Stripe reconciliation flow.
+                Real-time abuse and fraud detection for sign-ups, logins, and API traffic. Analyzes email, phone, IP, username, and device signals in a single call.
               </div>
               <ul class="solution-list">
-                <li>Public config and model discovery</li>
-                <li>Subscription and usage endpoints</li>
-                <li>Stripe webhook and reconciliation support</li>
+                <li>Risk score with confidence level</li>
+                <li>Duplicate and linked-account detection</li>
+                <li>Threat intelligence and recommended actions</li>
               </ul>
             </div>
           </div>
@@ -279,6 +279,11 @@
                 <td class="best">Console Dashboard</td>
                 <td>Use the console to view billing, buy packs, create API keys, and review usage in one place.</td>
               </tr>
+              <tr>
+                <td>Fraud detection, abuse prevention, or risk scoring</td>
+                <td class="best">AI Shield</td>
+                <td>Analyze sign-ups and API traffic for suspicious patterns, duplicate accounts, and high-risk behavior in real time.</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -295,7 +300,7 @@
           The subscription generation API is bundled with plan quotas, while P2G is charged against credits in your wallet. The console always shows the live pricing and usage values.
         </p>
         <div class="row g-3">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <div class="pricing-card popular">
               <div class="solution-kicker">Generation (Subscription)</div>
               <div class="solution-title">Best for regular chatting</div>
@@ -310,7 +315,7 @@
               </ul>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <div class="pricing-card">
               <div class="solution-kicker">P2G (Credits)</div>
               <div class="solution-title">Best for production APIs</div>
@@ -322,6 +327,21 @@
                 <li>Separate wallet and ledger</li>
                 <li>Recharge by purchasing credit packs</li>
                 <li>Recommended for enterprise and production use</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="pricing-card">
+              <div class="solution-kicker">AI Shield</div>
+              <div class="solution-title">Best for fraud prevention</div>
+              <div class="plan-price">Daily limits by plan</div>
+              <div class="plan-note">
+                Per-plan daily quotas for abuse detection. Contact us to increase your AI Shield limit for high-volume production use cases.
+              </div>
+              <ul class="solution-list mt-3">
+                <li>2–500 analyses per day by plan</li>
+                <li>Email, phone, IP, username, and device signals</li>
+                <li>Risk score, confidence, and recommended actions</li>
               </ul>
             </div>
           </div>
