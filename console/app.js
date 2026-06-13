@@ -119,7 +119,25 @@ const el = {
   shieldThreats: document.getElementById("shield-threats"),
   shieldReasons: document.getElementById("shield-reasons"),
   shieldInvestigation: document.getElementById("shield-investigation"),
-  shieldFullResponse: document.getElementById("shield-full-response")
+  shieldFullResponse: document.getElementById("shield-full-response"),
+  // subscription card
+  subscriptionContent: document.getElementById("subscription-content"),
+  subscriptionLocked: document.getElementById("subscription-locked"),
+  subscriptionCard: document.getElementById("subscription-card"),
+  subPlanName: document.getElementById("sub-plan-name"),
+  subPlanKey: document.getElementById("sub-plan-key"),
+  subSignedUp: document.getElementById("sub-signed-up"),
+  subDetail: document.getElementById("sub-detail"),
+  // models source toggle
+  modelsSourceTabs: Array.from(document.querySelectorAll("[data-models-source]")),
+  // gen usage
+  genUsageCard: document.getElementById("gen-usage-card"),
+  genUsageContent: document.getElementById("gen-usage-content"),
+  genUsageLocked: document.getElementById("gen-usage-locked"),
+  genUsageChat: document.getElementById("gen-usage-chat"),
+  genUsageImages: document.getElementById("gen-usage-images"),
+  genUsageVideos: document.getElementById("gen-usage-videos"),
+  genUsageAudio: document.getElementById("gen-usage-audio")
 };
 
 function applyTheme(theme) {
@@ -152,13 +170,16 @@ const PROTECTED_CARDS = [
   "models-card", "playground-card", "ledger-card", "api-keys-card",
   "gen-api-playground-card",
   "payg-api-playground-card",
-  "shield-playground-card"
+  "shield-playground-card",
+  "subscription-card",
+  "gen-usage-card"
 ];
 
 let currentRawApiKey = "";
 let currentApiKeyName = "";
 let remoteTextModels = [];
 let currentTextModelId = "";
+let currentModelsSource = "p2g";
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (match) => ({
@@ -538,6 +559,37 @@ async function loadRemoteTextModels() {
   renderModels();
 }
 
+function setupModelsSourceToggle() {
+  el.modelsSourceTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const source = tab.dataset.modelsSource;
+      if (source === currentModelsSource) return;
+      el.modelsSourceTabs.forEach((t) => t.classList.toggle("active", t === tab));
+      currentModelsSource = source;
+      void loadModelsForCurrentSource();
+    });
+  });
+}
+
+async function loadModelsForCurrentSource() {
+  if (currentModelsSource === "p2g") {
+    await loadRemoteTextModels();
+  } else {
+    await loadRemoteGenModels();
+  }
+}
+
+async function loadRemoteGenModels() {
+  const response = await fetch("https://sharktide-lightning.hf.space/models");
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(data.detail || data.error || `HTTP ${response.status}`);
+  }
+  const items = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
+  remoteTextModels = items.filter((model) => isTextModel(model) && (model.is_ready !== false));
+  renderModels();
+}
+
 function renderConfig() {
   document.title = `${cfg.dashboard.appName} Developer Console`;
   el.appName.textContent = `${cfg.dashboard.appName} Developer Console`;
@@ -600,6 +652,63 @@ async function refreshAccount() {
 
   const ledger = await fetchJson("/v1/credits/ledger?limit=30", { headers: authHeaders() });
   renderLedger(ledger.entries || []);
+
+  await refreshSubscription().catch((e) => console.warn(e));
+  await refreshGenUsage().catch((e) => console.warn(e));
+}
+
+async function refreshSubscription() {
+  if (!session) return;
+  try {
+    const data = await fetchJson("/subscription", { headers: authHeaders() });
+    el.subPlanName.textContent = data.plan_name || "Free";
+    el.subPlanKey.textContent = data.plan_key || "—";
+    el.subSignedUp.textContent = data.signed_up ? formatDateTime(data.signed_up) : "—";
+
+    if (Array.isArray(data.subscription) && data.subscription.length) {
+      el.subDetail.innerHTML = data.subscription.map((sub) =>
+        `<div class="ledger-row" style="grid-template-columns:1fr 1fr 1fr;">
+          <div><strong>Status</strong><div class="muted tiny">${escapeHtml(sub.status || "—")}</div></div>
+          <div><strong>Period</strong><div class="muted tiny">${escapeHtml(formatDateTime(sub.current_period_start))} — ${escapeHtml(formatDateTime(sub.current_period_end))}</div></div>
+          <div><strong>Plan</strong><div class="muted tiny">${escapeHtml(sub.plan_id || "—")}</div></div>
+        </div>`
+      ).join("");
+    } else {
+      el.subDetail.innerHTML = '<p class="muted tiny">No active subscription. You are on the Free plan.</p>';
+    }
+
+    el.subscriptionContent.style.display = "";
+    el.subscriptionLocked.style.display = "none";
+  } catch (error) {
+    el.subscriptionContent.style.display = "none";
+    el.subscriptionLocked.style.display = "flex";
+    el.subscriptionLocked.textContent = `Could not load subscription: ${error.message}`;
+  }
+}
+
+async function refreshGenUsage() {
+  if (!session) return;
+  try {
+    const data = await fetchJson("/usage", { headers: authHeaders() });
+    const usage = data.usage || {};
+
+    function fmtUsage(u) {
+      if (!u) return "—";
+      return `${u.used} / ${u.limit} (${u.remaining} remaining)`;
+    }
+
+    el.genUsageChat.textContent = fmtUsage(usage.cloudChatDaily);
+    el.genUsageImages.textContent = fmtUsage(usage.imagesDaily);
+    el.genUsageVideos.textContent = fmtUsage(usage.videosDaily);
+    el.genUsageAudio.textContent = fmtUsage(usage.audioWeekly);
+
+    el.genUsageContent.style.display = "grid";
+    el.genUsageLocked.style.display = "none";
+  } catch (error) {
+    el.genUsageContent.style.display = "none";
+    el.genUsageLocked.style.display = "flex";
+    el.genUsageLocked.textContent = `Could not load usage: ${error.message}`;
+  }
 }
 
 function renderLedger(entries) {
@@ -683,6 +792,10 @@ function renderAuthState() {
 
     el.walletContent.style.display = "";
     el.walletLocked.style.display = "none";
+    el.subscriptionContent.style.display = "";
+    el.subscriptionLocked.style.display = "none";
+    el.genUsageContent.style.display = "grid";
+    el.genUsageLocked.style.display = "none";
     if (el.apiKeyCard) el.apiKeyCard.style.display = "";
   } else {
     el.signedOutView.style.display = "";
@@ -697,12 +810,24 @@ function renderAuthState() {
 
     el.walletContent.style.display = "none";
     el.walletLocked.style.display = "";
+    el.subscriptionContent.style.display = "none";
+    el.subscriptionLocked.style.display = "";
+    el.genUsageContent.style.display = "none";
+    el.genUsageLocked.style.display = "";
     if (el.apiKeyCard) el.apiKeyCard.style.display = "none";
     hideApiKeyReveal();
 
     el.creditsRemaining.textContent = "—";
     el.creditsTotal.textContent = "—";
     el.creditsUsed.textContent = "—";
+    el.subPlanName.textContent = "—";
+    el.subPlanKey.textContent = "—";
+    el.subSignedUp.textContent = "—";
+    el.subDetail.innerHTML = "";
+    el.genUsageChat.textContent = "—";
+    el.genUsageImages.textContent = "—";
+    el.genUsageVideos.textContent = "—";
+    el.genUsageAudio.textContent = "—";
     el.ledgerTable.textContent = "";
     if (el.apiKeyList) {
       el.apiKeyList.textContent = "";
@@ -1258,6 +1383,7 @@ async function init() {
   renderConfig();
   setupConsoleNav();
   setupTabs();
+  setupModelsSourceToggle();
   setConsolePanel("account");
   // Protected cards start hidden (set in HTML); ensure consistent state
   setProtectedCardsVisible(false);

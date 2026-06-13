@@ -86,7 +86,7 @@
 
           <!-- WALLET CARD -->
           <section class="card" id="wallet-card">
-            <h2>Credits</h2>
+            <h2>P2G Credits (Pay-2-Go)</h2>
             <div id="wallet-content" style="display:none;">
               <div class="stat-grid">
                 <article>
@@ -102,9 +102,32 @@
                   <strong id="credits-used">—</strong>
                 </article>
               </div>
-              <p class="muted tiny" style="margin-top:1rem;">Credit balances enforced server-side. Low balance returns HTTP 402.</p>
+              <p class="muted tiny" style="margin-top:1rem;">P2G credit balances enforced server-side. Low balance returns HTTP 402.</p>
             </div>
             <div id="wallet-locked" class="locked-overlay">Sign in to view your credit balance</div>
+          </section>
+
+          <!-- SUBSCRIPTION CARD -->
+          <section class="card wide" id="subscription-card" style="display:none;">
+            <h2>Subscription (Generation API)</h2>
+            <div id="subscription-content" style="display:none;">
+              <div class="stat-grid" style="margin-bottom:1rem;">
+                <article>
+                  <span>Plan</span>
+                  <strong id="sub-plan-name">—</strong>
+                </article>
+                <article>
+                  <span>Plan Key</span>
+                  <strong id="sub-plan-key">—</strong>
+                </article>
+                <article>
+                  <span>Signed Up</span>
+                  <strong id="sub-signed-up">—</strong>
+                </article>
+              </div>
+              <div id="sub-detail"></div>
+            </div>
+            <div id="subscription-locked" class="locked-overlay">Sign in to view your subscription info</div>
           </section>
         </div>
 
@@ -127,6 +150,10 @@
         <div id="models-panel-locked" class="locked-overlay panel-lock">Sign in to view available models and run the playground.</div>
         <section class="card wide" id="models-card" style="display:none;">
           <h2>Models</h2>
+          <div class="tabs" id="models-source-tabs" style="margin-bottom:1rem;">
+            <button class="playground-tab active" data-models-source="p2g">P2G API</button>
+            <button class="playground-tab" data-models-source="gen">Gen API</button>
+          </div>
           <div id="models-grid" class="models-grid"></div>
         </section>
 
@@ -210,9 +237,32 @@
 
       <div class="console-panel" data-console-panel="usage">
         <div id="usage-panel-locked" class="locked-overlay panel-lock">Sign in to view recent usage and purchases.</div>
+        <!-- GEN USAGE CARD (hidden until signed in) -->
+        <section class="card wide" id="gen-usage-card" style="display:none;">
+          <h2>Generation API Usage (Plan Limits)</h2>
+          <div id="gen-usage-content" class="stat-grid" style="grid-template-columns:repeat(2,1fr);display:none;">
+            <article>
+              <span>Chat (Daily)</span>
+              <strong id="gen-usage-chat">—</strong>
+            </article>
+            <article>
+              <span>Images (Daily)</span>
+              <strong id="gen-usage-images">—</strong>
+            </article>
+            <article>
+              <span>Videos (Daily)</span>
+              <strong id="gen-usage-videos">—</strong>
+            </article>
+            <article>
+              <span>Audio (Weekly)</span>
+              <strong id="gen-usage-audio">—</strong>
+            </article>
+          </div>
+          <div id="gen-usage-locked" class="locked-overlay">Sign in to view your plan usage.</div>
+        </section>
         <!-- LEDGER CARD (hidden until signed in) -->
         <section class="card wide" id="ledger-card" style="display:none;">
-          <h2>Recent Usage &amp; Purchases</h2>
+          <h2>P2G Ledger (Recent Usage &amp; Purchases)</h2>
           <div id="ledger-table" class="ledger"></div>
         </section>
       </div>
