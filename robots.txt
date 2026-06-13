@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /authcallback.html
+Disallow: /reset.html
+Disallow: /googlec1c18fb443d3acae.html
+Disallow: /openapp.html
+Disallow: /vercel.json
+Disallow: /README.md
+Disallow: /package.json
+Disallow: /.gitignore
+Disallow: /.editorconfig
+Disallow: /.prettierrc.json
+Disallow: /CNAME
+Disallow: /LICENSE
+Sitemap: https://inferenceport.ai/sitemap.xml
