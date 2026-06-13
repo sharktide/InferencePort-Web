@@ -12,51 +12,9 @@
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
 			rel="stylesheet"
 		/>
-		<link rel="stylesheet" href="styles/main.css" />
+		<link rel="stylesheet" href="styles/shared.css" />
+		<script src="components/ip-navbar.js"></script>
 		<style>
-			:root {
-				--brand: #4f7cff;
-				--brand-dim: rgba(79, 124, 255, 0.12);
-				--brand-border: rgba(79, 124, 255, 0.28);
-				--surface: #0f1525;
-				--muted: #8b93a7;
-				--gold: #fbbf24;
-			}
-			body {
-				background: #080d1a;
-				font-family: "Inter", sans-serif;
-				color: #d6daea;
-			}
-			.navbar {
-				background: rgba(8, 13, 26, 0.92) !important;
-				backdrop-filter: blur(12px);
-				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-			}
-			.navbar-brand {
-				font-weight: 800;
-				font-size: 1.1rem;
-				letter-spacing: -0.02em;
-				color: #fff !important;
-			}
-			.navbar-brand span {
-				color: var(--brand);
-			}
-			.nav-link {
-				color: var(--muted) !important;
-				font-size: 0.88rem;
-			}
-			.nav-link:hover,
-			.nav-link.active {
-				color: #fff !important;
-			}
-			.nav-pill {
-				background: var(--brand) !important;
-				color: #fff !important;
-				border-radius: 7px !important;
-				padding: 6px 16px !important;
-				font-weight: 600 !important;
-			}
-
 			.hero-section {
 				padding: 110px 0 72px;
 				text-align: center;
@@ -127,26 +85,6 @@
 				font-size: 0.85rem;
 				color: #d6daea;
 				margin-top: 3px;
-			}
-
-			.section-tag {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.68rem;
-				font-weight: 500;
-				letter-spacing: 0.12em;
-				text-transform: uppercase;
-				color: var(--brand);
-				margin-bottom: 10px;
-			}
-			.section-title {
-				font-size: clamp(1.5rem, 3vw, 2.2rem);
-				font-weight: 800;
-				letter-spacing: -0.03em;
-				line-height: 1.15;
-				color: #fff;
-			}
-			.section-title .accent {
-				color: var(--gold);
 			}
 
 			.model-block {
@@ -272,122 +210,10 @@
 				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 			}
 
-			.btn-brand {
-				background: var(--brand);
-				color: #fff;
-				border: none;
-				border-radius: 9px;
-				padding: 11px 26px;
-				font-weight: 600;
-				font-size: 0.9rem;
-				box-shadow: 0 0 24px rgba(79, 124, 255, 0.28);
-				transition:
-					transform 0.2s,
-					opacity 0.2s;
-			}
-			.btn-brand:hover {
-				transform: translateY(-2px);
-				opacity: 0.9;
-				color: #fff;
-			}
-			.btn-ghost {
-				background: rgba(255, 255, 255, 0.05);
-				color: #d6daea;
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				border-radius: 9px;
-				padding: 10px 22px;
-				font-size: 0.9rem;
-				transition: background 0.2s;
-			}
-			.btn-ghost:hover {
-				background: rgba(255, 255, 255, 0.09);
-				color: #fff;
-			}
-
-			footer {
-				border-top: 1px solid rgba(255, 255, 255, 0.07);
-				font-size: 0.81rem;
-				color: var(--muted);
-			}
-			footer a {
-				color: var(--muted);
-				text-decoration: none;
-			}
-			footer a:hover {
-				color: #fff;
-			}
-		
-			.nav-pill-chat {
-				background: rgba(251,191,36,0.15) !important;
-				color: #fbbf24 !important;
-				border: 1px solid rgba(251,191,36,0.35) !important;
-				border-radius: 7px !important;
-				padding: 6px 16px !important;
-				font-weight: 600 !important;
-			}
-			.nav-pill-chat:hover {
-				background: rgba(251,191,36,0.25) !important;
-				color: #fde68a !important;
-			}
 		</style>
 	</head>
 	<body>
-		<nav class="navbar navbar-expand-lg sticky-top">
-			<div class="container">
-				<a class="navbar-brand" href="index.html"
-					>InferencePort<span>AI</span></a
-				>
-				<button
-					class="navbar-toggler border-0"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#nav"
-				>
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="nav">
-					<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
-						<li class="nav-item">
-							<a class="nav-link" href="index.html">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="marketplace.html"
-								>Marketplace</a
-							>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link active" href="lightning.html"
-								>Lightning</a
-							>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="solutions.html">Solutions</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="install.html">Install</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="pricing.html">Pricing</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="security.html"
-								>Security</a
-							>
-						</li>
-											<li class="nav-item ms-1">
-						<a class="nav-link nav-pill-chat" href="chat/">Chat Now</a>
-					</li>
-						<li class="nav-item ms-2">
-							<a
-								class="nav-link nav-pill"
-								href="install.html#install"
-								>Get Started</a
-							>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
+		<ip-navbar active="lightning" show-solutions></ip-navbar>
 
 		<section class="hero-section">
 			<div class="container">
