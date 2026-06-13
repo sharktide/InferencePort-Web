@@ -33,7 +33,10 @@ class IpNavbar extends HTMLElement {
 			</ul>
 		</div>
 	</div>
-</nav>`;
+</nav>
+<script data-goatcounter="https://ipai.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+`;
 	}
 }
 
