@@ -317,23 +317,21 @@ function renderModels() {
   el.modelsGrid.innerHTML = "";
   cards.forEach((model) => {
     const card = document.createElement("article");
-    if (model.label === "VIDEO" || model.label === "AUDIO") {
+    if (currentModelsSource === "gen") {
+      model.pricing = "1x multiplier";
+    } else if (model.label === "VIDEO" || model.label === "AUDIO") {
       model.pricing = "$0.01 per second";
     } else if (model.label === "IMAGE") {
       model.pricing = "$0.02 per image";
     } else if (model.label === "Text") {
-      if (currentModelsSource === "gen") {
-        model.pricing = "1x multiplier";
-      } else {
-        const raw = model.pricing
-        if (raw && raw !== "—" && raw !== "Pricing unavailable") {
-          const pricing = Object.fromEntries(
-            [...raw.matchAll(/(\w+)\s([\d.]+)/g)]
-              .map(([_, k, v]) => [k, +(v * 1_000_000).toFixed(2)])
-          );
-          if (pricing.prompt != null && pricing.completion != null) {
-            model.pricing = `In: $${pricing.prompt}/M · Out: $${pricing.completion}/M`;
-          }
+      const raw = model.pricing
+      if (raw && raw !== "—" && raw !== "Pricing unavailable") {
+        const pricing = Object.fromEntries(
+          [...raw.matchAll(/(\w+)\s([\d.]+)/g)]
+            .map(([_, k, v]) => [k, +(v * 1_000_000).toFixed(2)])
+        );
+        if (pricing.prompt != null && pricing.completion != null) {
+          model.pricing = `In: $${pricing.prompt}/M · Out: $${pricing.completion}/M`;
         }
       }
     }

@@ -1,0 +1,123 @@
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(74,144,255,0.15);
+}
+
+/* ── INPUTS & FORMS ─────────────────────────────────── */
+.stack { display: grid; gap: 0.65rem; }
+.row   { display: flex; gap: 0.65rem; align-items: center; }
+.small-row { justify-content: space-between; }
+
+input, select, textarea {
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26,107,255,0.1);
+}
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.7; }
+
+label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+button {
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  padding: 0.72rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  line-height: 1;
+}
+
+/* primary */
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab) {
+  background: var(--accent);
+  color: #fff;
+}
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):hover {
+  background: #0055e0;
+  box-shadow: 0 4px 16px rgba(26,107,255,0.3);
+  transform: translateY(-1px);
+}
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ghost */
+button.ghost {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+button.ghost:hover {
+  border-color: #c8c0b0;
+  background: #ece9e2;
+}
+
+/* text */
+button.text-btn {
+  background: transparent;
+  color: var(--muted);
+  padding: 0.35rem 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+button.text-btn:hover { color: var(--accent); }
+button.danger { color: var(--danger) !important; }
+
+/* ── LOCKED PLACEHOLDER ──────────────────────────────── */
+.locked-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 100px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  background: var(--surface-2);
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+.locked-overlay::before {
+  content: '🔒';
+  font-size: 1.3rem;
+  opacity: 0.5;
+}

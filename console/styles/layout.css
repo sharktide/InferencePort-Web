@@ -1,0 +1,215 @@
+[data-theme="dark"] .topbar {
+  background: rgba(17,17,19,0.88);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] button.ghost {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] button.ghost:hover {
+  background: #2a2a32;
+  border-color: #444;
+}
+
+[data-theme="dark"] .console-nav {
+  background: #151518;
+  border-right-color: var(--border);
+}
+
+/* ── TOPBAR ─────────────────────────────────────────── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 64px;
+  background: rgba(248,246,240,0.82);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand { display: flex; align-items: center; gap: 0.9rem; }
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.brand h1 {
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.brand p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.brand-emphasis {
+  font-weight: 600;
+}
+
+.top-actions { display: flex; align-items: center; gap: 0.6rem; }
+
+#theme-toggle {
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.45rem 0.6rem;
+}
+
+.top-actions a {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+.top-actions a:hover { background: var(--surface-2); color: var(--text); }
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+main.console-shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: calc(100vh - 64px);
+}
+
+.console-nav {
+  position: sticky;
+  top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.25rem 0.75rem;
+  background: #faf8f4;
+  border-right: 1px solid var(--border);
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.console-nav-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 0.4rem 0.9rem 0.6rem;
+}
+
+.console-nav-tab {
+  width: 100%;
+  justify-content: flex-start;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid transparent;
+  padding: 0.8rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: normal;
+  text-align: left;
+}
+
+.console-nav-tab:hover:not(.active) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.console-nav-tab.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.sidebar-user-tag {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.sidebar-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sidebar-user-email {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.console-content {
+  min-width: 0;
+  display: grid;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.console-panel {
+  display: none;
+  gap: 1.5rem;
+}
+
+.console-panel.active {
+  display: grid;
+}
+
+.panel-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.panel-grid-account {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+}
+.card.wide { grid-column: span 12; }
+
+#auth-card { grid-column: span 5; }
+#wallet-card { grid-column: span 7; }
+
+/* ── SIGN-OUT BUTTON ─────────────────────────────────── */
+#logout-btn {
+  font-size: 0.82rem;
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--muted);
+  font-weight: 500;
+}
+#logout-btn:hover { border-color: var(--danger); color: var(--danger); }

@@ -1,0 +1,66 @@
+@media (max-width: 960px) {
+  main.console-shell {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .console-nav {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .console-nav-label {
+    display: none;
+  }
+
+  .sidebar-user-tag {
+    display: none !important;
+  }
+
+  .console-nav-tab {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .console-content {
+    padding: 1rem;
+  }
+
+  .card, .card.wide, #auth-card, #wallet-card {
+    grid-column: span 12;
+  }
+
+  .api-key-shell { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .ledger-header, .ledger-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px) {
+  .shield-result-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .brand-emphasis {
+    display: none !important;
+  }
+
+  .topbar {
+    padding: 0 1rem;
+  }
+
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+  }
+}
