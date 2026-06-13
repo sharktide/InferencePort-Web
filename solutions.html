@@ -155,8 +155,31 @@
         font-size: 0.8rem;
         color: var(--muted);
       }
+      .solution-card {
+        background: var(--surface);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 14px;
+        padding: 24px;
+        height: 100%;
+        transition: border-color .2s, transform .2s, box-shadow .2s;
+      }
 
-    </style>
+      .solution-card:hover {
+        transform: translateY(-3px);
+      }
+      .solution-gen { border: 1px solid #4f7cff; }
+      .solution-p2g { border: 1px solid #10b981; }
+      .solution-registry { border: 1px solid #fbbf24; }
+      .solution-chat { border: 1px solid #06b6d4; }
+      .solution-server { border: 1px solid #a855f7; }
+      .solution-shield { border: 1px solid #ef4444; }
+      .solution-gen:hover { border-color: #4f7cff; }
+      .solution-p2g:hover { border-color: #10b981; }
+      .solution-registry:hover { border-color: #fbbf24; }
+      .solution-chat:hover { border-color: #06b6d4; }
+      .solution-server:hover { border-color: #a855f7; }
+      .solution-shield:hover { border-color: #ef4444; }
+      </style>
   </head>
   <body>
     <ip-navbar active="solutions" show-solutions></ip-navbar>
@@ -188,7 +211,7 @@
 
         <div class="row g-3">
           <div class="col-md-6 col-lg-3">
-            <div class="solution-card">
+            <div class="solution-card solution-gen">
               <div class="solution-kicker">Generation API</div>
               <div class="solution-title">Subscription chat</div>
               <div class="solution-body">
@@ -202,7 +225,7 @@
             </div>
           </div>
           <div class="col-md-6 col-lg-3">
-            <div class="solution-card">
+            <div class="solution-card solution-p2g">
               <div class="solution-kicker">P2G API</div>
               <div class="solution-title">Credit-billed production API</div>
               <div class="solution-body">
@@ -216,7 +239,7 @@
             </div>
           </div>
           <div class="col-md-6 col-lg-3">
-            <div class="solution-card featured">
+            <div class="solution-card solution-registry">
               <div class="solution-kicker">Tool Marketplace</div>
               <div class="solution-title">InferencePort AI Tool Registry</div>
               <div class="solution-body">
@@ -226,12 +249,11 @@
                 <li>Create custom tools in minutes</li>
                 <li>Upload tools to the registry</li>
                 <li>Download and run tools for any case</li>
-                <li>100% free forever</li>
               </ul>
             </div>
           </div>
           <div class="col-md-6 col-lg-3">
-            <div class="solution-card">
+            <div class="solution-card solution-chat">
               <div class="solution-kicker">Chat Services</div>
               <div class="solution-title">Local + cloud chat</div>
               <div class="solution-body">
@@ -245,7 +267,7 @@
             </div>
           </div>
           <div class="col-md-6 col-lg-6">
-            <div class="solution-card featured">
+            <div class="solution-card solution-server">
               <div class="solution-kicker">Self Hosting</div>
               <div class="solution-title">InferencePort AI Server</div>
               <div class="solution-body">
@@ -261,7 +283,7 @@
             </div>
           </div>
           <div class="col-md-6 col-lg-6">
-            <div class="solution-card featured">
+            <div class="solution-card solution-shield">
               <div class="solution-kicker">Fraud Detection</div>
               <div class="solution-title">AI Shield</div>
               <div class="solution-body">
