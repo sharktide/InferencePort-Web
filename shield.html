@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>AI Shield — The Trust Layer for Modern Apps | InferencePort</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href="styles/shared.css" />
+		<script src="components/ip-navbar.js"></script>
+		<style>
+			/* ── Hero ── */
+			.hero-section {
+				padding: 110px 0 72px;
+				text-align: center;
+				background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(239, 68, 68, 0.12) 0%, transparent 60%);
+			}
+			.hero-eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 7px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.7rem;
+				font-weight: 500;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: #ef4444;
+				background: rgba(239, 68, 68, 0.1);
+				border: 1px solid rgba(239, 68, 68, 0.25);
+				border-radius: 50px;
+				padding: 5px 14px;
+				margin-bottom: 22px;
+			}
+			.hero-eyebrow .pulse-red {
+				width: 7px; height: 7px;
+				background: #ef4444;
+				border-radius: 50%;
+				animation: pulseRed 2s ease infinite;
+			}
+			@keyframes pulseRed {
+				0%, 100% { opacity: 1; transform: scale(1); }
+				50% { opacity: 0.4; transform: scale(0.8); }
+			}
+			.hero-title {
+				font-size: clamp(2rem, 5vw, 3.6rem);
+				font-weight: 800;
+				letter-spacing: -0.04em;
+				line-height: 1.1;
+				color: #fff;
+			}
+			.hero-title .accent { color: var(--brand); }
+			.hero-subtitle {
+				font-size: 1rem;
+				color: var(--muted);
+				max-width: 560px;
+				margin: 16px auto 0;
+				line-height: 1.65;
+			}
+			.stat-num {
+				font-size: 1.9rem;
+				font-weight: 800;
+				color: #fff;
+				letter-spacing: -0.04em;
+			}
+			.stat-label { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+
+			/* ── Cards ── */
+			.ip-card {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 14px;
+				padding: 22px;
+				height: 100%;
+				transition: border-color 0.2s, transform 0.2s;
+			}
+			.ip-card:hover { border-color: var(--brand-border); transform: translateY(-3px); }
+			.ip-card.featured {
+				border-color: var(--brand-border);
+				background: linear-gradient(135deg, rgba(79, 124, 255, 0.07), rgba(79, 124, 255, 0.02));
+			}
+			.ip-card.red-featured {
+				border-color: rgba(239, 68, 68, 0.3);
+				background: linear-gradient(135deg, rgba(239, 68, 68, 0.07), rgba(239, 68, 68, 0.02));
+			}
+			.ip-card.green-featured {
+				border-color: rgba(16, 185, 129, 0.3);
+				background: linear-gradient(135deg, rgba(16, 185, 129, 0.07), rgba(16, 185, 129, 0.02));
+			}
+			.ip-card.purple-featured {
+				border-color: rgba(124, 58, 237, 0.3);
+				background: linear-gradient(135deg, rgba(124, 58, 237, 0.07), rgba(124, 58, 237, 0.02));
+			}
+			.ip-card.amber-featured {
+				border-color: rgba(245, 158, 11, 0.3);
+				background: linear-gradient(135deg, rgba(245, 158, 11, 0.07), rgba(245, 158, 11, 0.02));
+			}
+			.feat-icon { font-size: 1.4rem; margin-bottom: 10px; }
+			.feat-title { font-weight: 700; font-size: 0.95rem; color: #fff; margin-bottom: 6px; }
+			.feat-body { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+
+			/* ── Endpoint callout ── */
+			.endpoint-card {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 16px;
+				overflow: hidden;
+				position: relative;
+			}
+			.endpoint-card::before {
+				content: "";
+				position: absolute;
+				top: 0; left: 0; right: 0;
+				height: 3px;
+				background: linear-gradient(90deg, #ef4444, #f59e0b, var(--brand));
+			}
+			.endpoint-bar {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				padding: 12px 18px;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			}
+			.endpoint-method {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				font-weight: 700;
+				color: #10b981;
+				background: rgba(16, 185, 129, 0.1);
+				border: 1px solid rgba(16, 185, 129, 0.25);
+				border-radius: 5px;
+				padding: 3px 8px;
+				letter-spacing: 0.05em;
+			}
+			.endpoint-path {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.85rem;
+				color: #d6daea;
+				font-weight: 600;
+			}
+			.endpoint-body {
+				padding: 18px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.78rem;
+				line-height: 1.7;
+				color: #b0b8cc;
+				overflow-x: auto;
+			}
+			.endpoint-body .kw { color: #7c3aed; }
+			.endpoint-body .str { color: #10b981; }
+			.endpoint-body .num { color: #f59e0b; }
+			.endpoint-body .prop { color: var(--brand); }
+			.endpoint-body .cm { color: #5a6a8a; }
+
+			/* ── You Choose chips ── */
+			.choose-grid {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: center;
+				margin: 18px 0;
+			}
+			.choose-chip {
+				display: inline-flex;
+				align-items: center;
+				gap: 7px;
+				background: var(--surface);
+				border: 1.5px solid rgba(255, 255, 255, 0.07);
+				border-radius: 10px;
+				padding: 12px 18px;
+				font-size: 0.84rem;
+				font-weight: 600;
+				color: #d6daea;
+				transition: border-color 0.2s, transform 0.2s, background 0.2s;
+				cursor: default;
+			}
+			.choose-chip:hover {
+				border-color: var(--brand-border);
+				transform: translateY(-2px);
+				background: rgba(79, 124, 255, 0.04);
+			}
+			.choose-chip .chip-dot {
+				width: 8px; height: 8px;
+				border-radius: 50%;
+				flex-shrink: 0;
+			}
+			.dot-blue { background: #4f7cff; }
+			.dot-green { background: #10b981; }
+			.dot-amber { background: #f59e0b; }
+			.dot-purple { background: #7c3aed; }
+			.dot-cyan { background: #06b6d4; }
+			.dot-red { background: #ef4444; }
+			.dot-pink { background: #ec4899; }
+			.dot-teal { background: #14b8a6; }
+
+			/* ── Module showcase ── */
+			.module-card {
+				background: var(--surface);
+				border: 1px solid rgba(255,255,255,0.07);
+				border-radius: 14px;
+				overflow: hidden;
+			}
+			.module-header {
+				padding: 16px 20px;
+				border-bottom: 1px solid rgba(255,255,255,0.05);
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.module-icon {
+				font-size: 1.2rem;
+				width: 36px; height: 36px;
+				border-radius: 8px;
+				display: flex; align-items: center; justify-content: center;
+				flex-shrink: 0;
+			}
+			.module-icon.mi-red { background: rgba(239,68,68,0.12); }
+			.module-icon.mi-blue { background: rgba(79,124,255,0.12); }
+			.module-icon.mi-green { background: rgba(16,185,129,0.12); }
+			.module-icon.mi-purple { background: rgba(124,58,237,0.12); }
+			.module-icon.mi-amber { background: rgba(245,158,11,0.12); }
+			.module-name { font-weight: 700; font-size: 0.92rem; color: #fff; }
+			.module-body { padding: 18px 20px; }
+			.module-section-label {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				font-weight: 600;
+				color: var(--brand);
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				margin-bottom: 6px;
+				margin-top: 12px;
+			}
+			.module-section-label:first-child { margin-top: 0; }
+			.module-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.module-list li {
+				font-size: 0.78rem;
+				color: #b0b8cc;
+				padding: 3px 0;
+				display: flex;
+				align-items: center;
+				gap: 6px;
+			}
+			.module-list li::before {
+				content: "◆";
+				font-size: 0.4rem;
+				color: var(--brand);
+				flex-shrink: 0;
+			}
+
+			/* ── Pipeline ── */
+			.pipeline-row {
+				display: flex;
+				gap: 6px;
+				align-items: stretch;
+				overflow-x: auto;
+				padding-bottom: 4px;
+				margin: 18px 0;
+			}
+			.pipeline-step {
+				flex: 1 1 110px;
+				min-width: 110px;
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 12px;
+				padding: 16px 12px;
+				text-align: center;
+				transition: border-color 0.2s, transform 0.2s;
+			}
+			.pipeline-step:hover {
+				border-color: var(--brand-border);
+				transform: translateY(-3px);
+			}
+			.pipeline-step .step-num {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				font-weight: 600;
+				color: var(--brand);
+				background: var(--brand-dim);
+				border: 1px solid var(--brand-border);
+				border-radius: 999px;
+				width: 24px;
+				height: 24px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				margin-bottom: 8px;
+			}
+			.pipeline-step .step-label {
+				font-size: 0.75rem;
+				font-weight: 700;
+				color: #fff;
+				margin-bottom: 4px;
+			}
+			.pipeline-step .step-desc {
+				font-size: 0.66rem;
+				color: var(--muted);
+				line-height: 1.4;
+			}
+			.pipeline-arrow {
+				display: flex;
+				align-items: center;
+				color: rgba(255,255,255,0.12);
+				font-size: 1rem;
+				flex-shrink: 0;
+			}
+
+			/* ── Feature toggle grid ── */
+			.toggles-demo {
+				background: var(--surface);
+				border: 1px solid rgba(255,255,255,0.07);
+				border-radius: 14px;
+				padding: 22px;
+			}
+			.toggles-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+				gap: 6px;
+			}
+			.toggle-item {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				padding: 7px 12px;
+				border-radius: 8px;
+				font-size: 0.78rem;
+				color: #b0b8cc;
+				transition: background 0.15s;
+			}
+			.toggle-item:hover { background: rgba(255,255,255,0.03); }
+			.toggle-dot {
+				width: 8px; height: 8px;
+				border-radius: 50%;
+				flex-shrink: 0;
+			}
+			.toggle-dot.on { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+
+			/* ── Decision badges ── */
+			.decision-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.72rem;
+				font-weight: 600;
+				padding: 8px 16px;
+				border-radius: 999px;
+				margin: 4px;
+			}
+			.decision-badge.allow { background: rgba(15, 118, 110, 0.12); color: #5eead4; border: 1px solid rgba(15, 118, 110, 0.28); }
+			.decision-badge.challenge { background: rgba(180, 83, 9, 0.12); color: #fcd34d; border: 1px solid rgba(180, 83, 9, 0.28); }
+			.decision-badge.rate_limit { background: rgba(124, 58, 237, 0.12); color: #c4b5fd; border: 1px solid rgba(124, 58, 237, 0.28); }
+			.decision-badge.review { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.28); }
+			.decision-badge.block { background: rgba(239, 68, 68, 0.1); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.22); }
+
+			/* ── Response card ── */
+			.response-card {
+				background: var(--surface);
+				border: 1px solid rgba(255,255,255,0.07);
+				border-radius: 14px;
+				overflow: hidden;
+			}
+			.response-header {
+				padding: 12px 18px;
+				border-bottom: 1px solid rgba(255,255,255,0.05);
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.response-header .rh-dot { width: 8px; height: 8px; border-radius: 50%; }
+			.response-header .rh-label {
+				font-size: 0.72rem;
+				font-weight: 600;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+			}
+			.response-body {
+				padding: 16px 18px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.75rem;
+				line-height: 1.7;
+				color: #b0b8cc;
+				overflow-x: auto;
+			}
+			.response-body .key { color: var(--brand); }
+			.response-body .val-str { color: #10b981; }
+			.response-body .val-num { color: #f59e0b; }
+
+			/* ── Problem list ── */
+			.problem-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+				gap: 8px;
+				margin: 14px 0;
+			}
+			.problem-chip {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				background: var(--surface);
+				border: 1px solid rgba(239,68,68,0.15);
+				border-radius: 10px;
+				padding: 10px 14px;
+				font-size: 0.8rem;
+				color: #d6daea;
+			}
+			.problem-chip .pc-x {
+				color: #ef4444;
+				font-weight: 700;
+				font-size: 0.75rem;
+				flex-shrink: 0;
+			}
+
+			/* ── CTA ── */
+			.cta-box {
+				text-align: center;
+				padding: 52px 24px;
+				background: radial-gradient(ellipse 55% 50% at 50% 50%, rgba(79, 124, 255, 0.1), transparent 60%);
+				border: 1px solid rgba(255,255,255,0.07);
+				border-radius: 16px;
+			}
+			.cta-box h2 {
+				font-size: clamp(1.4rem, 3vw, 2rem);
+				font-weight: 800;
+				letter-spacing: -0.03em;
+				color: #fff;
+				margin-bottom: 10px;
+			}
+			.cta-box p {
+				color: var(--muted);
+				font-size: 0.93rem;
+				max-width: 440px;
+				margin: 0 auto 24px;
+				line-height: 1.6;
+			}
+
+			/* ── Vision / text sections ── */
+			.vision-text {
+				font-size: 0.92rem;
+				color: #b0b8cc;
+				line-height: 1.75;
+				max-width: 720px;
+			}
+			.vision-text strong { color: #d6daea; }
+			.vision-text code {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.82rem;
+				background: rgba(255,255,255,0.05);
+				padding: 2px 6px;
+				border-radius: 4px;
+			}
+
+			/* ── Compare box ── */
+			.compare-box {
+				background: var(--surface);
+				border: 1px solid rgba(255, 255, 255, 0.07);
+				border-radius: 16px;
+				overflow: hidden;
+				position: relative;
+			}
+			.compare-box::before {
+				content: "";
+				position: absolute;
+				top: 0; left: 0; right: 0;
+				height: 3px;
+				background: linear-gradient(90deg, var(--brand), #7c3aed, #06b6d4);
+			}
+			.compare-list { list-style: none; padding: 0; margin: 0; }
+			.compare-list li {
+				display: flex;
+				align-items: center;
+				gap: 9px;
+				padding: 10px 0;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+				font-size: 0.84rem;
+				color: #b0b8cc;
+			}
+			.compare-list li:last-child { border-bottom: none; }
+
+			/* ── Roadmap ── */
+			.roadmap-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+				gap: 10px;
+				margin: 14px 0;
+			}
+			.roadmap-card {
+				background: var(--surface);
+				border: 1px solid rgba(255,255,255,0.07);
+				border-radius: 10px;
+				padding: 14px;
+				text-align: center;
+				transition: border-color 0.2s, transform 0.2s;
+			}
+			.roadmap-card:hover { border-color: var(--brand-border); transform: translateY(-2px); }
+			.roadmap-month {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.62rem;
+				font-weight: 600;
+				color: var(--brand);
+				background: var(--brand-dim);
+				border: 1px solid var(--brand-border);
+				border-radius: 999px;
+				padding: 2px 10px;
+				display: inline-block;
+				margin-bottom: 8px;
+			}
+			.roadmap-label {
+				font-size: 0.78rem;
+				font-weight: 600;
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<ip-navbar active="shield"></ip-navbar>
+
+		<!-- ═══════════════════════════════════════════════════
+		     HERO
+		     ═══════════════════════════════════════════════════ -->
+		<section class="hero-section">
+			<div class="container">
+				<div class="hero-eyebrow">
+					<span class="pulse-red"></span> AI abuse prevention — live
+				</div>
+				<h1 class="hero-title">
+					The Trust Layer<br /><span class="accent">for Modern Apps.</span>
+				</h1>
+				<p class="hero-subtitle">
+					One API. Every signal. Real-time decisions with full
+					reasoning. Shield protects your app from bots, fraud, prompt
+					attacks, account farming, and data exfiltration — all from a
+					single endpoint.
+				</p>
+				<div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+					<a href="console/" class="btn btn-brand">Open Console</a>
+					<a href="#vision" class="btn btn-ghost">Read the Vision →</a>
+				</div>
+				<div class="mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.07)">
+					<div class="row justify-content-center g-4">
+						<div class="col-auto text-center">
+							<div class="stat-num">1</div>
+							<div class="stat-label">endpoint to learn</div>
+						</div>
+						<div class="col-auto text-center">
+							<div class="stat-num">19</div>
+							<div class="stat-label">analysis features</div>
+						</div>
+						<div class="col-auto text-center">
+							<div class="stat-num">5</div>
+							<div class="stat-label">possible decisions</div>
+						</div>
+						<div class="col-auto text-center">
+							<div class="stat-num">&lt;1s</div>
+							<div class="stat-label">response time</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     VISION
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5" id="vision">
+			<div class="container">
+				<div class="row align-items-center g-5">
+					<div class="col-lg-6">
+						<div class="section-tag">Our Vision</div>
+						<h2 class="section-title mb-3">
+							Send everything.<br /><span class="accent">Get a decision.</span>
+						</h2>
+						<div class="vision-text">
+							<p>
+								InferencePort AI Shield is a <strong>developer-first trust,
+								fraud, and AI security platform</strong> that protects
+								applications from bots, abuse, fraud, prompt attacks, account
+								farming, and data exfiltration attempts through a single API
+								integration.
+							</p>
+							<p>
+								Instead of deploying multiple security products, complex rules
+								engines, fraud detection systems, and AI guardrails, developers
+								can send all available signals to Shield and receive a
+								<strong>real-time risk assessment, detailed reasoning, and
+								recommended actions</strong>.
+							</p>
+							<p style="margin-bottom:0;">
+								<strong>Core philosophy:</strong> Send us everything you know.
+								Get back a decision, confidence score, and explanation.
+							</p>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<div class="d-flex flex-column gap-3">
+							<div class="ip-card featured">
+								<div class="feat-icon">🎯</div>
+								<div class="feat-title">Mission</div>
+								<div class="feat-body">Become the trust layer for modern applications and AI systems. Whenever a company needs to answer "Can this user be trusted?" — they ask Shield.</div>
+							</div>
+							<div class="ip-card">
+								<div class="feat-icon">⚡</div>
+								<div class="feat-title">Developer Experience</div>
+								<div class="feat-body">Integration in under 15 minutes. Single endpoint. Simple API. Immediate value. No rules, no tuning, no thresholds.</div>
+							</div>
+							<div class="ip-card">
+								<div class="feat-icon">🧠</div>
+								<div class="feat-title">AI-Powered Reasoning</div>
+								<div class="feat-body">Traditional systems evaluate signals independently. Shield evaluates context — combining weak signals into strong confidence.</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     THE PROBLEM
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">The Problem</div>
+					<h2 class="section-title">Your app is <span class="accent">under attack.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Modern applications face an ever-growing list of threats.
+						Existing solutions are fragmented, rigid, and expensive.
+					</p>
+				</div>
+				<div class="problem-grid">
+					<div class="problem-chip"><span class="pc-x">✕</span> Automated bot signups</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Multi-account abuse</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Free trial farming</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Referral abuse</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Fake users</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Spam campaigns</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Account takeovers</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> API abuse</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Fraudulent activity</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Prompt injection attacks</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Jailbreak attempts</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> Data extraction attempts</div>
+					<div class="problem-chip"><span class="pc-x">✕</span> AI agent abuse</div>
+				</div>
+				<p class="vision-text mx-auto mt-4" style="text-align:center;">
+					Existing solutions are often <strong>difficult to integrate</strong>,
+					<strong>rule-based</strong>, <strong>require constant tuning</strong>,
+					<strong>limited to a single use case</strong>, <strong>poor at combining
+					multiple weak signals</strong>, and <strong>expensive and
+					enterprise-focused</strong>. Developers need a simple solution that
+					works immediately.
+				</p>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     THE SOLUTION
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">The Solution</div>
+					<h2 class="section-title">One platform. <span class="accent">Every protection.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Shield combines fraud detection, abuse prevention, trust
+						scoring, and AI security into a single platform.
+					</p>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🛡️</div>
+							<div class="feat-title">Bot Protection</div>
+							<div class="feat-body">Detect automated signups, scraping, and abuse before they reach your application.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🔍</div>
+							<div class="feat-title">Fraud Detection</div>
+							<div class="feat-body">Identify fake accounts, trial farming, referral abuse, and payment fraud.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🧠</div>
+							<div class="feat-title">AI Security</div>
+							<div class="feat-body">Block prompt injection, jailbreaks, data extraction, and AI agent manipulation.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🕸️</div>
+							<div class="feat-title">Abuse Graph</div>
+							<div class="feat-body">Map relationships between accounts to uncover networks and coordinated campaigns.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">📊</div>
+							<div class="feat-title">Trust Scoring</div>
+							<div class="feat-body">Get a risk score, confidence level, and actionable decision for every request.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">📝</div>
+							<div class="feat-title">Human Explanations</div>
+							<div class="feat-body">Every decision comes with plain-English reasoning — not just a number.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     ONE ENDPOINT
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5" id="endpoint">
+			<div class="container">
+				<div class="row align-items-center g-5">
+					<div class="col-lg-5">
+						<div class="section-tag">One Endpoint</div>
+						<h2 class="section-title mb-3">
+							One call.<br /><span class="accent">Every check.</span>
+						</h2>
+						<p class="section-sub mb-4">
+							No multiple APIs. No complex orchestration. One
+							<code style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">POST</code>
+							endpoint runs the entire pipeline — heuristics, intelligence, agent
+							analysis, relationship graphs, LLM reasoning, and memory lookups.
+						</p>
+						<p class="section-sub">
+							Send what you have. Skip what you don't. Shield fills in the rest.
+						</p>
+					</div>
+					<div class="col-lg-7">
+						<div class="endpoint-card">
+							<div class="endpoint-bar">
+								<span class="endpoint-method">POST</span>
+								<span class="endpoint-path">/ai-shield/analyze</span>
+							</div>
+							<div class="endpoint-body">
+<span class="cm">// Send any combination of signals — that's all you need.</span><br />
+{<br />
+&nbsp;&nbsp;<span class="prop">"email"</span>: <span class="str">"user@example.com"</span>,<br />
+&nbsp;&nbsp;<span class="prop">"phone"</span>: <span class="str">"+123456789"</span>,<br />
+&nbsp;&nbsp;<span class="prop">"username"</span>: <span class="str">"john12345"</span>,<br />
+&nbsp;&nbsp;<span class="prop">"ip"</span>: <span class="str">"1.2.3.4"</span>,<br />
+&nbsp;&nbsp;<span class="prop">"device_fingerprint"</span>: <span class="str">"abc..."</span>,<br />
+&nbsp;&nbsp;<span class="prop">"content"</span>: <span class="str">"..."</span>,<br />
+&nbsp;&nbsp;<span class="prop">"metadata"</span>: {}<br />
+}
+							</div>
+						</div>
+						<div class="response-card mt-3">
+							<div class="response-header">
+								<span class="rh-dot" style="background:#ef4444;"></span>
+								<span class="rh-dot" style="background:#f59e0b;"></span>
+								<span class="rh-dot" style="background:#10b981;"></span>
+								<span class="rh-label" style="margin-left:8px;">Block example — high risk</span>
+							</div>
+							<div class="response-body">
+{<br />
+&nbsp;&nbsp;<span class="key">"risk_score"</span>: <span class="val-num">91</span>,<br />
+&nbsp;&nbsp;<span class="key">"confidence"</span>: <span class="val-num">0.97</span>,<br />
+&nbsp;&nbsp;<span class="key">"decision"</span>: <span class="val-str">"block"</span>,<br />
+&nbsp;&nbsp;<span class="key">"reasons"</span>: [<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"Device associated with previous abuse"</span>,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"High-risk signup velocity"</span>,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"Disposable email indicators detected"</span>,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"Content resembles known spam patterns"</span><br />
+&nbsp;&nbsp;],<br />
+&nbsp;&nbsp;<span class="key">"recommended_action"</span>: <span class="val-str">"block"</span><br />
+}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     YOU CHOOSE WHAT TO SEND
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Your Rules</div>
+					<h2 class="section-title">You choose <span class="accent">what to send.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						No required fields. No rigid schemas. Feed Shield whatever
+						signals your application has — it adapts to your data.
+					</p>
+				</div>
+				<div class="choose-grid">
+					<div class="choose-chip"><span class="chip-dot dot-blue"></span> email</div>
+					<div class="choose-chip"><span class="chip-dot dot-green"></span> IP address</div>
+					<div class="choose-chip"><span class="chip-dot dot-amber"></span> phone number</div>
+					<div class="choose-chip"><span class="chip-dot dot-purple"></span> username</div>
+					<div class="choose-chip"><span class="chip-dot dot-cyan"></span> device fingerprint</div>
+					<div class="choose-chip"><span class="chip-dot dot-red"></span> text content</div>
+					<div class="choose-chip"><span class="chip-dot dot-pink"></span> geolocation</div>
+					<div class="choose-chip"><span class="chip-dot dot-teal"></span> signup time</div>
+					<div class="choose-chip"><span class="chip-dot dot-blue"></span> user agent</div>
+					<div class="choose-chip"><span class="chip-dot dot-green"></span> session id</div>
+					<div class="choose-chip"><span class="chip-dot dot-amber"></span> account age</div>
+					<div class="choose-chip"><span class="chip-dot dot-purple"></span> referrer</div>
+				</div>
+				<div class="row g-3 mt-4">
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">📧</div>
+							<div class="feat-title">Email Signals</div>
+							<div class="feat-body">Domain reputation, disposable email detection, risk scoring. Send an email, get a verdict.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🌐</div>
+							<div class="feat-title">IP Signals</div>
+							<div class="feat-body">Proxy/VPN detection, geolocation, known abuse databases. Send an IP, get a verdict.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">💬</div>
+							<div class="feat-title">Content Signals</div>
+							<div class="feat-body">Prompt injection detection, policy violations, data leakage. Send text, get a verdict.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     PRODUCT MODULES
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Product Modules</div>
+					<h2 class="section-title">Five shields. <span class="accent">One platform.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Each module targets a specific threat category. Together they
+						cover the full attack surface of modern applications.
+					</p>
+				</div>
+
+				<!-- Shield Signup -->
+				<div class="module-card mb-4">
+					<div class="module-header">
+						<div class="module-icon mi-red">🛡️</div>
+						<div class="module-name">Shield Signup</div>
+					</div>
+					<div class="module-body">
+						<p class="feat-body" style="margin-bottom:12px;">Protect account creation flows. Detect bots, fake accounts, multi-account users, trial farming, referral abuse, and automated registrations.</p>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="module-section-label">Detects</div>
+								<ul class="module-list">
+									<li>Bots</li>
+									<li>Fake accounts</li>
+									<li>Multi-account users</li>
+									<li>Trial farming</li>
+									<li>Referral abuse</li>
+									<li>Automated registrations</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Signals Used</div>
+								<ul class="module-list">
+									<li>Email quality</li>
+									<li>Username analysis</li>
+									<li>Phone reputation</li>
+									<li>IP intelligence</li>
+									<li>Device fingerprints</li>
+									<li>Behavioral patterns</li>
+									<li>Signup velocity</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Output</div>
+								<ul class="module-list">
+									<li>Allow</li>
+									<li>Challenge</li>
+									<li>Review</li>
+									<li>Block</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Shield Identity (Dupe Detection) -->
+				<div class="module-card mb-4">
+					<div class="module-header">
+						<div class="module-icon mi-blue">🔗</div>
+						<div class="module-name">Shield Identity</div>
+					</div>
+					<div class="module-body">
+						<p class="feat-body" style="margin-bottom:12px;">
+							Detect account relationships, duplicate users, and ban evasion.
+							Shield Identity maps the connections between accounts using
+							shared devices, IPs, fingerprints, and behavioral patterns —
+							building a relationship graph that uncovers coordinated abuse
+							and ban evasion.
+						</p>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="module-section-label">Identifies</div>
+								<ul class="module-list">
+									<li>Repeat users</li>
+									<li>Alternate accounts</li>
+									<li>Referral abuse networks</li>
+									<li>Ban evasion</li>
+									<li>Account farming operations</li>
+									<li>Duplicate registrations</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Signals Used</div>
+								<ul class="module-list">
+									<li>Device overlap</li>
+									<li>Browser fingerprints</li>
+									<li>Network intelligence</li>
+									<li>Behavioral similarity</li>
+									<li>Historical relationships</li>
+									<li>IP correlation</li>
+									<li>Phone number overlap</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Output</div>
+								<ul class="module-list">
+									<li>User linkage score (0–100)</li>
+									<li>Number of linked accounts</li>
+									<li>Confidence level</li>
+									<li>Risk assessment</li>
+									<li>Evidence list</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Shield Content -->
+				<div class="module-card mb-4">
+					<div class="module-header">
+						<div class="module-icon mi-green">💬</div>
+						<div class="module-name">Shield Content</div>
+					</div>
+					<div class="module-body">
+						<p class="feat-body" style="margin-bottom:12px;">Analyze user-generated content for spam, scams, automated content, promotional abuse, and malicious messages.</p>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="module-section-label">Detects</div>
+								<ul class="module-list">
+									<li>Spam</li>
+									<li>Scams</li>
+									<li>Automated content</li>
+									<li>Promotional abuse</li>
+									<li>Malicious messages</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Signals Used</div>
+								<ul class="module-list">
+									<li>Text content</li>
+									<li>Historical activity</li>
+									<li>User reputation</li>
+									<li>Posting patterns</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Output</div>
+								<ul class="module-list">
+									<li>Risk classification</li>
+									<li>Severity level</li>
+									<li>Moderation recommendation</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Shield Prompt -->
+				<div class="module-card mb-4">
+					<div class="module-header">
+						<div class="module-icon mi-purple">🧠</div>
+						<div class="module-name">Shield Prompt</div>
+					</div>
+					<div class="module-body">
+						<p class="feat-body" style="margin-bottom:12px;">Protect AI products from prompt attacks. Detect injection, jailbreaks, system prompt extraction, tool abuse, and agent manipulation.</p>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="module-section-label">Detects</div>
+								<ul class="module-list">
+									<li>Prompt injection</li>
+									<li>Jailbreak attempts</li>
+									<li>System prompt extraction</li>
+									<li>Tool abuse</li>
+									<li>Agent manipulation</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Analyzes</div>
+								<ul class="module-list">
+									<li>User prompts</li>
+									<li>Tool requests</li>
+									<li>Agent interactions</li>
+									<li>Conversation context</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Output</div>
+								<ul class="module-list">
+									<li>Threat classification</li>
+									<li>Risk score</li>
+									<li>Recommended response</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Shield Data -->
+				<div class="module-card">
+					<div class="module-header">
+						<div class="module-icon mi-amber">🔐</div>
+						<div class="module-name">Shield Data</div>
+					</div>
+					<div class="module-body">
+						<p class="feat-body" style="margin-bottom:12px;">Protect against data exfiltration. Detect sensitive data extraction, bulk scraping, credential harvesting, and system information extraction.</p>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="module-section-label">Detects</div>
+								<ul class="module-list">
+									<li>Sensitive data extraction</li>
+									<li>Bulk content scraping</li>
+									<li>Credential harvesting</li>
+									<li>Prompt leakage attempts</li>
+									<li>System information extraction</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Analyzes</div>
+								<ul class="module-list">
+									<li>Requests</li>
+									<li>Responses</li>
+									<li>Context windows</li>
+									<li>Access patterns</li>
+								</ul>
+							</div>
+							<div class="col-md-4">
+								<div class="module-section-label">Output</div>
+								<ul class="module-list">
+									<li>Exfiltration risk score</li>
+									<li>Threat indicators</li>
+									<li>Mitigation recommendations</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     HOW IT WORKS — 4-LAYER ARCHITECTURE
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Architecture</div>
+					<h2 class="section-title">4 layers. <span class="accent">8 pipeline stages.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Every request flows through four architectural layers,
+						passing through eight analysis stages. Each contributes evidence.
+					</p>
+				</div>
+
+				<div class="row g-4">
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">📥</div>
+							<div class="feat-title">Layer 1: Signal Collection</div>
+							<div class="feat-body">Accept any available information — email, username, phone, IP, device fingerprint, session metadata, request content, historical data, custom fields. Flexible schema handles structured JSON or plain text. Shield normalizes everything.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">🔍</div>
+							<div class="feat-title">Layer 2: Intelligence Engines</div>
+							<div class="feat-body">Email Intelligence detects disposable providers and suspicious domains. IP Intelligence finds VPNs, datacenter IPs, and abuse networks. Device Intelligence spots reuse and automation. Phone Intelligence flags VOIP and temporary numbers. Behavioral Intelligence catches velocity anomalies.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">🧠</div>
+							<div class="feat-title">Layer 3: AI Reasoning Engine</div>
+							<div class="feat-body">Specialized AI models analyze all signals simultaneously. Traditional systems evaluate signals independently — Shield evaluates context. Email alone = low risk. Phone alone = low risk. IP alone = low risk. Combined pattern = high confidence abuse. The AI reasons across all available evidence.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">⚖️</div>
+							<div class="feat-title">Layer 4: Decision Engine</div>
+							<div class="feat-body">Produces the final risk score, confidence score, decision, detailed explanation, and recommended action. Supports allow, challenge, rate limit, review, and block. Every decision is auditable with full evidence trail.</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="pipeline-row mt-4">
+					<div class="pipeline-step">
+						<div class="step-num">1</div>
+						<div class="step-label">Signals</div>
+						<div class="step-desc">Collect whatever you send</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">2</div>
+						<div class="step-label">Heuristics</div>
+						<div class="step-desc">Fast pattern matching</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">3</div>
+						<div class="step-label">Intelligence</div>
+						<div class="step-desc">IP, email, device, phone</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">4</div>
+						<div class="step-label">Agents</div>
+						<div class="step-desc">Fraud, identity, prompt, content</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">5</div>
+						<div class="step-label">Graph</div>
+						<div class="step-desc">Duplicates & campaigns</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">6</div>
+						<div class="step-label">Memory</div>
+						<div class="step-desc">Prior abuse history</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">7</div>
+						<div class="step-label">LLM Reasoning</div>
+						<div class="step-desc">Synthesize all evidence</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">8</div>
+						<div class="step-label">Decision</div>
+						<div class="step-desc">allow · challenge · block</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     ALL 19 FEATURES
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Feature Flags</div>
+					<h2 class="section-title">19 features. <span class="accent">All on by default.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Every analysis module is enabled out of the box. Disable what
+						you don't need for faster responses and lower cost. You control
+						the pipeline.
+					</p>
+				</div>
+				<div class="toggles-demo">
+					<div class="toggles-grid">
+						<div class="toggle-item"><span class="toggle-dot on"></span> heuristics</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> historical_memory</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> duplicate_detection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> campaign_detection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> email_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> ip_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> phone_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> username_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> device_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> behavior_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> content_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> identity_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> fraud_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> content_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> exfiltration_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> llm_reasoning</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> memory_update</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     5 DECISIONS
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Verdicts</div>
+					<h2 class="section-title">5 decisions. <span class="accent">Zero ambiguity.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Shield doesn't hand you a number and walk away. It tells you
+						exactly what to do next.
+					</p>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-4">
+						<div class="ip-card h-100" style="border-left: 3px solid #10b981;">
+							<div class="d-flex align-items-center gap-2 mb-2">
+								<span class="decision-badge allow" style="margin:0;">allow</span>
+							</div>
+							<div class="feat-body">Request is safe. Proceed without any intervention. Zero friction for legitimate users.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100" style="border-left: 3px solid #f59e0b;">
+							<div class="d-flex align-items-center gap-2 mb-2">
+								<span class="decision-badge challenge" style="margin:0;">challenge</span>
+							</div>
+							<div class="feat-body">Suspicious activity. Present a CAPTCHA, send a verification email, or require 2FA.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100" style="border-left: 3px solid #7c3aed;">
+							<div class="d-flex align-items-center gap-2 mb-2">
+								<span class="decision-badge rate_limit" style="margin:0;">rate_limit</span>
+							</div>
+							<div class="feat-body">Exceeds safe thresholds. Throttle requests, add cooldowns, or cap usage.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card h-100" style="border-left: 3px solid #fbbf24;">
+							<div class="d-flex align-items-center gap-2 mb-2">
+								<span class="decision-badge review" style="margin:0;">review</span>
+							</div>
+							<div class="feat-body">Needs a human look. Flag for manual inspection before allowing or blocking.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card h-100" style="border-left: 3px solid #ef4444;">
+							<div class="d-flex align-items-center gap-2 mb-2">
+								<span class="decision-badge block" style="margin:0;">block</span>
+							</div>
+							<div class="feat-body">Malicious. Deny entirely. Block the IP, ban the account, kill the session.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     WHY SHIELD WINS
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="compare-box p-4 p-md-5">
+					<div class="section-tag">Advantage</div>
+					<h2 class="section-title mb-4">
+						Why AI Shield <span class="accent">wins.</span>
+					</h2>
+					<div class="row g-4">
+						<div class="col-md-5">
+							<div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;color:var(--muted);">
+								<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:6px;"></span>Traditional Solutions
+							</div>
+							<ul class="compare-list">
+								<li>✦ Multiple products for different threats</li>
+								<li>✦ Rule-based, require constant tuning</li>
+								<li>✦ Limited to a single use case</li>
+								<li>✦ Poor at combining weak signals</li>
+								<li>✦ Expensive and enterprise-focused</li>
+								<li>✦ Cryptic risk scores with no reasoning</li>
+							</ul>
+						</div>
+						<div class="col-md-2 d-none d-md-flex align-items-center justify-content-center">
+							<span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted)">vs</span>
+						</div>
+						<div class="col-md-5">
+							<div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;color:var(--brand);">
+								<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:6px;"></span>InferencePort AI Shield
+							</div>
+							<ul class="compare-list">
+								<li>✦ Unified platform — one endpoint</li>
+								<li>✦ Zero configuration, works immediately</li>
+								<li>✦ Covers all threat categories</li>
+								<li>✦ AI reasons across all signals together</li>
+								<li>✦ Developer-friendly, flat pricing</li>
+								<li>✦ Human-readable explanations</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     SHARED ABUSE GRAPH
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="row align-items-center g-5">
+					<div class="col-lg-6">
+						<div class="section-tag">Network Effect</div>
+						<h2 class="section-title mb-3">
+							Shared <span class="accent">Abuse Graph.</span>
+						</h2>
+						<div class="vision-text">
+							<p>
+								Shield builds a <strong>privacy-safe abuse intelligence
+								network</strong>. When one customer identifies bot farms,
+								fraud rings, spam campaigns, or abuse networks — other
+								customers benefit immediately.
+							</p>
+							<p>
+								This creates <strong>network effects</strong> that continuously
+								improve detection quality for everyone. The more customers
+								use Shield, the smarter it gets.
+							</p>
+							<p style="margin-bottom:0;">
+								Long-term moat. Compounding intelligence. Your fraud today
+								becomes everyone's protection tomorrow.
+							</p>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<div class="d-flex flex-column gap-3">
+							<div class="ip-card green-featured">
+								<div class="feat-icon">🌐</div>
+								<div class="feat-title">Cross-Customer Intelligence</div>
+								<div class="feat-body">Abuse patterns detected in one account protect all accounts. Bot farms, fraud rings, and spam campaigns are identified network-wide.</div>
+							</div>
+							<div class="ip-card green-featured">
+								<div class="feat-icon">📈</div>
+								<div class="feat-title">Compounding Detection</div>
+								<div class="feat-body">Every analysis makes the graph stronger. Detection quality improves automatically as the network grows.</div>
+							</div>
+							<div class="ip-card green-featured">
+								<div class="feat-icon">🔒</div>
+								<div class="feat-title">Privacy-Safe</div>
+								<div class="feat-body">Intelligence is shared, not data. Entity fingerprints are anonymized. Customer data remains customer-owned.</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     PRIVACY & COMPLIANCE
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Enterprise Ready</div>
+					<h2 class="section-title">Privacy & <span class="accent">Compliance.</span></h2>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-3">
+						<div class="ip-card h-100 text-center">
+							<div class="feat-icon">🔐</div>
+							<div class="feat-title">Zero-Retention Mode</div>
+							<div class="feat-body">Request data is never stored unless you opt in.</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="ip-card h-100 text-center">
+							<div class="feat-icon">🚫</div>
+							<div class="feat-title">No Training on Data</div>
+							<div class="feat-body">Customer data is never used to train models.</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="ip-card h-100 text-center">
+							<div class="feat-icon">🔒</div>
+							<div class="feat-title">Encrypted</div>
+							<div class="feat-body">Encryption in transit and at rest. Always.</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="ip-card h-100 text-center">
+							<div class="feat-icon">📋</div>
+							<div class="feat-title">Audit Logging</div>
+							<div class="feat-body">Full audit trail for every analysis request.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100 text-center">
+							<div class="feat-icon">🇪🇺</div>
+							<div class="feat-title">GDPR Support</div>
+							<div class="feat-body">Full GDPR compliance with data subject rights.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100 text-center">
+							<div class="feat-icon">🏢</div>
+							<div class="feat-title">Private Deployment</div>
+							<div class="feat-body">Cloud, dedicated infrastructure, private VPC, or on-premise.</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="ip-card h-100 text-center">
+							<div class="feat-icon">📊</div>
+							<div class="feat-title">SOC 2 Roadmap</div>
+							<div class="feat-body">Enterprise compliance certification in progress.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     IDEAL CUSTOMERS
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Who It's For</div>
+					<h2 class="section-title">Built for <span class="accent">every stage.</span></h2>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-3">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🚀</div>
+							<div class="feat-title">AI Startups</div>
+							<div class="feat-body">Prompt injection, abuse, free-tier farming, API misuse. Protect your AI product from day one.</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="ip-card h-100">
+							<div class="feat-icon">💼</div>
+							<div class="feat-title">SaaS Platforms</div>
+							<div class="feat-body">Fake accounts, trial abuse, referral fraud. Keep your platform clean as you scale.</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🏪</div>
+							<div class="feat-title">Marketplaces</div>
+							<div class="feat-body">Fake listings, fake reviews, spam sellers. Trust every transaction.</div>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🏦</div>
+							<div class="feat-title">Fintech</div>
+							<div class="feat-body">Fraud, synthetic identities, account creation abuse. Enterprise-grade protection.</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     PRICING
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Pricing</div>
+					<h2 class="section-title">Scale <span class="accent">when you're ready.</span></h2>
+					<p class="section-sub mx-auto mt-2">Plan-based daily limits. Upgrade as your needs grow.</p>
+				</div>
+				<div class="compare-box p-4 p-md-5">
+					<div class="row g-4 text-center">
+						<div class="col-md-2">
+							<div class="stat-num" style="font-size:1.4rem;">2</div>
+							<div class="stat-label">Free / day</div>
+						</div>
+						<div class="col-md-2">
+							<div class="stat-num" style="font-size:1.4rem;">10</div>
+							<div class="stat-label">Light / day</div>
+						</div>
+						<div class="col-md-2">
+							<div class="stat-num" style="font-size:1.4rem;">50</div>
+							<div class="stat-label">Core / day</div>
+						</div>
+						<div class="col-md-3">
+							<div class="stat-num" style="font-size:1.4rem;">200</div>
+							<div class="stat-label">Creator / day</div>
+						</div>
+						<div class="col-md-3">
+							<div class="stat-num" style="font-size:1.4rem;">500</div>
+							<div class="stat-label">Professional / day</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Future</div>
+					<h2 class="section-title">The <span class="accent">long-term vision.</span></h2>
+				</div>
+				<div class="vision-text mx-auto" style="text-align:center;">
+					<p>
+						InferencePort AI Shield becomes the <strong>default trust
+						infrastructure</strong> for modern software. Applications, APIs,
+						AI agents, marketplaces, SaaS platforms, and fintech products
+						send user and request data to Shield before making important
+						decisions.
+					</p>
+					<p>
+						Shield answers the five questions every application needs:
+					</p>
+					<p>
+						<strong>Can this user be trusted?</strong><br />
+						<strong>Is this account fraudulent?</strong><br />
+						<strong>Is this request safe?</strong><br />
+						<strong>Is this interaction malicious?</strong><br />
+						<strong>Is sensitive information at risk?</strong>
+					</p>
+					<p style="margin-bottom:0;">
+						InferencePort AI Shield becomes the <strong>security and trust
+						layer</strong> powering the next generation of internet and AI
+						applications.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     CTA
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5">
+			<div class="container">
+				<div class="cta-box">
+					<h2>Start protecting your app today.</h2>
+					<p>Sign in to the console, send a test request, and see Shield in action — no code changes required.</p>
+					<div class="d-flex justify-content-center gap-3 flex-wrap">
+						<a href="console/" class="btn btn-brand btn-lg">Open Console</a>
+						<a href="shield.html#endpoint" class="btn btn-ghost">See the API →</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ── Footer ── -->
+		<footer class="py-4">
+			<div class="container">
+				<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+					<span>© 2026 InferencePort AI — Rihaan Meher</span>
+					<div class="d-flex gap-3 flex-wrap">
+						<a href="marketplace.html">Marketplace</a>
+						<a href="lightning.html">Lightning</a>
+						<a href="solutions.html">Solutions</a>
+						<a href="install.html">Install</a>
+						<a href="pricing.html">Pricing</a>
+						<a href="shield.html">Shield</a>
+						<a href="security.html">Security</a>
+						<a href="https://inferenceport-ai.readthedocs.io" target="_blank">Docs</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>

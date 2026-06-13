@@ -8,6 +8,7 @@ class IpNavbar extends HTMLElement {
 			{ id: "lightning", label: "Lightning", href: "lightning.html" },
 		];
 		items.push({ id: "solutions", label: "Solutions", href: "solutions.html" });
+		items.push({ id: "shield", label: "Shield", href: "shield.html" });
 		items.push(
 			{ id: "install", label: "Install", href: "install.html" },
 			{ id: "pricing", label: "Pricing", href: "pricing.html" },
