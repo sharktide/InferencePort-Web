@@ -17,6 +17,8 @@ const el = {
   signupBtn: document.getElementById("signup-btn"),
   googleBtn: document.getElementById("google-btn"),
   githubBtn: document.getElementById("github-btn"),
+  microsoftBtn: document.getElementById("microsoft-btn"),
+  huggingfaceBtn: document.getElementById("huggingface-btn"),
   forgotBtn: document.getElementById("forgot-btn"),
   deleteBtn: document.getElementById("delete-btn"),
   logoutBtn: document.getElementById("logout-btn"),
@@ -954,6 +956,14 @@ function setupAuthActions() {
 
   el.githubBtn.addEventListener("click", async () => {
     await supabase.auth.signInWithOAuth({ provider: "github", options: { redirectTo: window.location.href } });
+  });
+
+  el.microsoftBtn.addEventListener("click", async () => {
+    await supabase.auth.signInWithOAuth({ provider: "azure", options: { redirectTo: window.location.href } });
+  });
+
+  el.huggingfaceBtn.addEventListener("click", async () => {
+    await supabase.auth.signInWithOAuth({ provider: "custom:huggingface", options: { redirectTo: window.location.href } });
   });
 
   el.forgotBtn.addEventListener("click", async () => {
