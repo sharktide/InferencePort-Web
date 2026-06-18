@@ -65,6 +65,11 @@ const el = {
   audioPrompt: document.getElementById("audio-prompt"),
   audioDuration: document.getElementById("audio-duration"),
   audioOutput: document.getElementById("audio-output"),
+  // 3d playground (shared)
+  run3d: document.getElementById("run-3d"),
+  threePrompt: document.getElementById("3d-prompt"),
+  threeImageUrl: document.getElementById("3d-image-url"),
+  threeOutput: document.getElementById("3d-output"),
   modelsPanelLocked: document.getElementById("models-panel-locked"),
   apiKeyPanelLocked: document.getElementById("api-key-panel-locked"),
   usagePanelLocked: document.getElementById("usage-panel-locked"),
@@ -104,6 +109,11 @@ const el = {
   paygAudioDuration: document.getElementById("payg-audio-duration"),
   paygAudioOutput: document.getElementById("payg-audio-output"),
   runPaygAudio: document.getElementById("run-payg-audio"),
+  // payg 3d
+  paygThreePrompt: document.getElementById("payg-3d-prompt"),
+  paygThreeImageUrl: document.getElementById("payg-3d-image-url"),
+  paygThreeOutput: document.getElementById("payg-3d-output"),
+  runPaygThree: document.getElementById("run-payg-3d"),
   // shield panel
   shieldPlaygroundLocked: document.getElementById("shield-playground-locked"),
   shieldPlaygroundCard: document.getElementById("shield-playground-card"),
@@ -339,6 +349,8 @@ function renderModels() {
       model.pricing = "$0.01 per second";
     } else if (model.label === "IMAGE") {
       model.pricing = "$0.02 per image";
+    } else if (model.label === "3D") {
+      model.pricing = "$0.07 per model";
     } else if (model.label === "Text") {
       const raw = model.pricing
       if (raw && raw !== "—" && raw !== "Pricing unavailable") {
@@ -1185,6 +1197,49 @@ function setupPlayground() {
       setBusy(el.runAudio, false);
     }
   });
+
+  el.run3d?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    if (currentModelsSource === "gen") {
+      el.threeOutput.textContent = "3D generation is only available via the P2G API. Switch to P2G mode.";
+      return;
+    }
+    const imageUrl = el.threeImageUrl?.value?.trim();
+    if (!imageUrl) {
+      el.threeOutput.textContent = "An image URL or base64 data URI is required for 3D generation.";
+      return;
+    }
+    setBusy(el.run3d, true);
+    el.threeOutput.textContent = "Generating 3D model…";
+    try {
+      const result = await fetchJson("/v1/3d/generations", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          prompt: el.threePrompt.value || "A detailed 3D scan",
+          image_urls: [imageUrl]
+        })
+      });
+      const item = result?.data?.[0];
+      if (!item) throw new Error("No 3D model returned");
+      let html = "";
+      if (item.orbit_video_url) {
+        html += `<video controls src="${item.orbit_video_url}"></video>`;
+      }
+      if (item.model_ply_url) {
+        html += `<p class="muted tiny"><a href="${item.model_ply_url}" target="_blank" rel="noreferrer">Download PLY model</a></p>`;
+      }
+      if (result?.usage) {
+        html += `<p class="muted tiny">Credits charged: ${result.usage.payg_credits_charged}</p>`;
+      }
+      el.threeOutput.innerHTML = html || `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+      await refreshAccount();
+    } catch (error) {
+      el.threeOutput.textContent = error.message;
+    } finally {
+      setBusy(el.run3d, false);
+    }
+  });
 }
 
 function renderGenTextModelSelect() {
@@ -1423,6 +1478,45 @@ function setupPaygPlayground() {
       el.paygAudioOutput.textContent = error.message;
     } finally {
       setBusy(el.runPaygAudio, false);
+    }
+  });
+
+  el.runPaygThree?.addEventListener("click", async () => {
+    if (!session) return showToast("Sign in required");
+    const imageUrl = el.paygThreeImageUrl?.value?.trim();
+    if (!imageUrl) {
+      el.paygThreeOutput.textContent = "An image URL or base64 data URI is required for 3D generation.";
+      return;
+    }
+    setBusy(el.runPaygThree, true);
+    el.paygThreeOutput.textContent = "Generating 3D model…";
+    try {
+      const result = await fetchJson("/v1/3d/generations", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify({
+          prompt: el.paygThreePrompt.value || "A detailed 3D scan",
+          image_urls: [imageUrl]
+        })
+      });
+      const item = result?.data?.[0];
+      if (!item) throw new Error("No 3D model returned");
+      let html = "";
+      if (item.orbit_video_url) {
+        html += `<video controls src="${item.orbit_video_url}"></video>`;
+      }
+      if (item.model_ply_url) {
+        html += `<p class="muted tiny"><a href="${item.model_ply_url}" target="_blank" rel="noreferrer">Download PLY model</a></p>`;
+      }
+      if (result?.usage) {
+        html += `<p class="muted tiny">Credits charged: ${result.usage.payg_credits_charged}</p>`;
+      }
+      el.paygThreeOutput.innerHTML = html || `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+      await refreshAccount();
+    } catch (error) {
+      el.paygThreeOutput.textContent = error.message;
+    } finally {
+      setBusy(el.runPaygThree, false);
     }
   });
 }

@@ -174,6 +174,7 @@
             <button class="playground-tab" data-tab="image">Image</button>
             <button class="playground-tab" data-tab="video">Video</button>
             <button class="playground-tab" data-tab="audio">Audio</button>
+            <button class="playground-tab" data-tab="3d">3D</button>
           </div>
 
           <div class="playground-panel active" data-panel="text">
@@ -207,6 +208,14 @@
             </label>
             <button id="run-audio">Generate audio</button>
             <div id="audio-output" class="media-output"></div>
+          </div>
+
+          <div class="playground-panel" data-panel="3d">
+            <textarea id="3d-prompt" rows="4" placeholder="Describe the 3D model..."></textarea>
+            <input id="3d-image-url" type="text" placeholder="Image URL or base64 data URI (required for image-to-3d)" />
+            <p class="muted tiny">3D generation is only available via the P2G API. It requires an input image and produces an orbit video + PLY model.</p>
+            <button id="run-3d">Generate 3D model</button>
+            <div id="3d-output" class="media-output"></div>
           </div>
         </section>
       </div>
@@ -296,6 +305,7 @@
               <li><code>POST /gen/images/generations</code> — Image generation</li>
               <li><code>POST /gen/videos/generations</code> — Video generation</li>
               <li><code>POST /gen/audio/generations</code> — Audio/music generation</li>
+              <li><code>POST /gen/3d/generations</code> — 3D generation <span class="muted tiny">(P2G API only)</span></li>
               <li><code>GET /gen/models</code> — Available model listing</li>
             </ul>
             <h3>Authentication</h3>
@@ -359,6 +369,7 @@
               <li><code>POST /v1/images/generations</code> — Image generation</li>
               <li><code>POST /v1/videos/generations</code> — Video generation</li>
               <li><code>POST /v1/audio/generations</code> — Audio/music generation</li>
+              <li><code>POST /v1/3d/generations</code> — 3D generation (image-to-3d)</li>
               <li><code>GET /v1/models</code> — Available models</li>
               <li><code>GET /v1/me</code> — Account &amp; wallet info</li>
               <li><code>GET /v1/credits/ledger</code> — Credit transaction history</li>
@@ -379,6 +390,7 @@
             <button class="playground-tab" data-tab="payg-image">Image</button>
             <button class="playground-tab" data-tab="payg-video">Video</button>
             <button class="playground-tab" data-tab="payg-audio">Audio</button>
+            <button class="playground-tab" data-tab="payg-3d">3D</button>
           </div>
           <div class="playground-panel active" data-panel="payg-text">
             <label>Model
@@ -408,6 +420,13 @@
             </label>
             <button id="run-payg-audio">Generate audio</button>
             <div id="payg-audio-output" class="media-output"></div>
+          </div>
+          <div class="playground-panel" data-panel="payg-3d">
+            <textarea id="payg-3d-prompt" rows="4" placeholder="Describe the 3D model..."></textarea>
+            <input id="payg-3d-image-url" type="text" placeholder="Image URL or base64 data URI (required for image-to-3d)" />
+            <p class="muted tiny">3D generation requires an input image and produces an orbit video + PLY model. Cost: 0.07 credits per model.</p>
+            <button id="run-payg-3d">Generate 3D model</button>
+            <div id="payg-3d-output" class="media-output"></div>
           </div>
         </section>
       </div>
