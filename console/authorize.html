@@ -390,7 +390,7 @@
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
+    async function init() {
     const SCOPE_MAP = {
       "p2g:deduct": {
         icon: "billing",
@@ -695,6 +695,7 @@
         }
       });
     }
+  }
   </script>
 </body>
 </html>
