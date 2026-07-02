@@ -56,7 +56,7 @@
     },
     {
       "source": "/authcallback/oauth/consent",
-      "destination": "https://console.inferenceport.ai/authorize.html"
+      "destination": "/console/authorize.html"
     }
   ],
   "routes": [
