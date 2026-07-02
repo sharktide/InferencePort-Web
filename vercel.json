@@ -35,6 +35,10 @@
       "source": "/oauth/authorize",
       "destination": "https://dpixehhdbtzsbckfektd.supabase.co/auth/v1/oauth/authorize",
       "permanent": false
+    },
+    {
+      "source": "/authcallback/oauth/consent",
+      "destination": "/console/authorize.html"
     }
   ],
   "rewrites": [
@@ -53,10 +57,6 @@
     {
       "source": "/authcallback",
       "destination": "authcallback.html"
-    },
-    {
-      "source": "/authcallback/oauth/consent",
-      "destination": "/console/authorize.html"
     }
   ],
   "routes": [
