@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authorize Application — InferencePort AI</title>
+  <link rel="stylesheet" href="./styles/base.css" />
+  <link rel="stylesheet" href="./styles/typography.css" />
+  <link rel="stylesheet" href="./styles/layout.css" />
+  <link rel="stylesheet" href="./styles/forms.css" />
+  <link rel="stylesheet" href="./styles/components.css" />
+  <link rel="stylesheet" href="./styles/responsive.css" />
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .authorize-shell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .authorize-card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .authorize-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .authorize-header img {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 0.75rem;
+    }
+
+    .authorize-header h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .authorize-header p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .app-identity {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 1rem 1.1rem;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
+    }
+
+    .app-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .app-info {
+      min-width: 0;
+    }
+
+    .app-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .app-domain {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    .scope-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .scope-section h2 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.65rem;
+    }
+
+    .scope-list {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .scope-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      padding: 0.75rem 0.9rem;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .scope-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .scope-icon.billing {
+      background: rgba(245, 158, 11, 0.12);
+      color: #b45309;
+    }
+
+    .scope-icon.identity {
+      background: rgba(26, 107, 255, 0.10);
+      color: var(--accent);
+    }
+
+    .scope-icon.profile {
+      background: rgba(20, 184, 166, 0.10);
+      color: #0f766e;
+    }
+
+    .scope-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .scope-name {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .scope-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .warning-box {
+      padding: 0.85rem 1rem;
+      background: rgba(245, 158, 11, 0.06);
+      border: 1.5px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      font-size: 0.82rem;
+      color: #92700a;
+      line-height: 1.5;
+    }
+
+    [data-theme="dark"] .warning-box {
+      color: #f5c400;
+      background: rgba(245, 158, 11, 0.08);
+      border-color: rgba(245, 158, 11, 0.2);
+    }
+
+    .warning-box strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-weight: 700;
+    }
+
+    .authorize-actions {
+      display: flex;
+      gap: 0.65rem;
+    }
+
+    .authorize-actions button {
+      flex: 1;
+      padding: 0.8rem 1rem;
+    }
+
+    .btn-deny {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-deny:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: rgba(224, 49, 80, 0.04);
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.85rem;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .user-chip-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-chip-email {
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .error-state {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .error-state h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-state p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .footer-text {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .footer-text a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
+      <div>
+        <h1><span class="brand-emphasis">InferencePort AI</span> Developer Console</h1>
+        <p>OAuth Authorization</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a href="https://inferenceport.ai" target="_blank" rel="noreferrer">Home</a>
+      <button id="theme-toggle" class="ghost" type="button" aria-label="Toggle dark mode">
+        <span class="theme-icon-light">&#9788;</span>
+        <span class="theme-icon-dark" style="display:none;">&#9790;</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="authorize-shell">
+    <!-- Error state (shown when params are invalid) -->
+    <div id="error-view" class="authorize-card" style="display:none;">
+      <div class="error-state">
+        <h2>Authorization Error</h2>
+        <p id="error-message">Invalid request parameters.</p>
+        <a href="https://inferenceport.ai" class="btn-link" style="display:inline-block;padding:0.7rem 1.25rem;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;">Return Home</a>
+      </div>
+    </div>
+
+    <!-- Login view (shown when not authenticated) -->
+    <div id="login-view" class="authorize-card" style="display:none;">
+      <div class="authorize-header">
+        <img src="./assets/logo.png" alt="InferencePort AI" />
+        <h1>Sign in to InferencePort AI</h1>
+        <p>You need to sign in before authorizing this application.</p>
+      </div>
+
+      <form id="email-auth-form" class="stack">
+        <input id="email-input" type="email" placeholder="Email" required />
+        <input id="password-input" type="password" placeholder="Password" required />
+        <div class="row">
+          <button type="submit" id="login-btn" style="flex:1;">Sign in</button>
+          <button type="button" id="signup-btn" class="ghost" style="flex:1;">Sign up</button>
+        </div>
+      </form>
+
+      <div class="stack" style="margin-top:0.65rem;">
+        <button id="google-btn" class="ghost">Continue with Google</button>
+        <button id="github-btn" class="ghost">Continue with GitHub</button>
+        <button id="microsoft-btn" class="ghost">Continue with Microsoft</button>
+        <button id="huggingface-btn" class="ghost">Continue with HuggingFace</button>
+      </div>
+
+      <button id="forgot-btn" class="text-btn" type="button" style="margin-top:0.5rem;">Forgot password?</button>
+    </div>
+
+    <!-- Consent view (shown when authenticated) -->
+    <div id="consent-view" class="authorize-card" style="display:none;">
+      <div class="authorize-header">
+        <img src="./assets/logo.png" alt="InferencePort AI" />
+        <h1>Authorize Application</h1>
+        <p>A third-party application is requesting access to your account.</p>
+      </div>
+
+      <div class="user-chip">
+        <div class="user-chip-avatar" id="user-avatar">?</div>
+        <span class="user-chip-email" id="user-email"></span>
+      </div>
+
+      <div class="app-identity">
+        <div class="app-icon" id="app-icon">?</div>
+        <div class="app-info">
+          <div class="app-name" id="app-name">Third-Party App</div>
+          <div class="app-domain" id="app-domain"></div>
+        </div>
+      </div>
+
+      <div class="scope-section">
+        <h2>This application will be able to:</h2>
+        <div class="scope-list" id="scope-list"></div>
+      </div>
+
+      <div class="warning-box">
+        <strong>Warning</strong>
+        Only grant access to applications you trust. You can revoke access at any time from your account settings.
+      </div>
+
+      <div class="authorize-actions">
+        <button type="button" class="btn-deny" id="deny-btn">Deny</button>
+        <button type="button" id="allow-btn">Allow Access</button>
+      </div>
+
+      <p class="footer-text">
+        By clicking Allow, you authorize this application to access your data as described above.
+        <br />You can revoke access at any time from the <a href="index.html">Developer Console</a>.
+      </p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    const SCOPE_MAP = {
+      "p2g:deduct": {
+        icon: "billing",
+        symbol: "&#x1f4b3;",
+        name: "Deduct from P2G balance",
+        description: "Charge credits from your Pay-2-Go balance for API usage"
+      },
+      "email": {
+        icon: "identity",
+        symbol: "&#x2709;",
+        name: "Read your email",
+        description: "View your account email address"
+      },
+      "openid": {
+        icon: "identity",
+        symbol: "&#x1f511;",
+        name: "OpenID",
+        description: "Verify your identity via OpenID Connect"
+      },
+      "profile": {
+        icon: "profile",
+        symbol: "&#x1f464;",
+        name: "Profile",
+        description: "View your basic profile information"
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const clientId = params.get("client_id");
+    const redirectUri = params.get("redirect_uri");
+    const scope = params.get("scope") || "openid profile email p2g:deduct";
+    const state = params.get("state") || "";
+    const responseType = params.get("response_type") || "code";
+
+    const errorView = document.getElementById("error-view");
+    const loginView = document.getElementById("login-view");
+    const consentView = document.getElementById("consent-view");
+    const errorMessage = document.getElementById("error-message");
+    const scopeList = document.getElementById("scope-list");
+    const appIconEl = document.getElementById("app-icon");
+    const appNameEl = document.getElementById("app-name");
+    const appDomainEl = document.getElementById("app-domain");
+    const userEmailEl = document.getElementById("user-email");
+    const userAvatarEl = document.getElementById("user-avatar");
+    const allowBtn = document.getElementById("allow-btn");
+    const denyBtn = document.getElementById("deny-btn");
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      const light = document.querySelector(".theme-icon-light");
+      const dark = document.querySelector(".theme-icon-dark");
+      if (light && dark) {
+        light.style.display = theme === "dark" ? "none" : "";
+        dark.style.display = theme === "dark" ? "" : "none";
+      }
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem("console-theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      applyTheme(saved || (prefersDark ? "dark" : "light"));
+    }
+
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      const next = current === "dark" ? "light" : "dark";
+      localStorage.setItem("console-theme", next);
+      applyTheme(next);
+    });
+
+    initTheme();
+
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorView.style.display = "";
+      loginView.style.display = "none";
+      consentView.style.display = "none";
+    }
+
+    function showLogin() {
+      errorView.style.display = "none";
+      loginView.style.display = "";
+      consentView.style.display = "none";
+    }
+
+    function showConsent(user) {
+      errorView.style.display = "none";
+      loginView.style.display = "none";
+      consentView.style.display = "";
+
+      const email = user.email || "";
+      userEmailEl.textContent = email;
+      userAvatarEl.textContent = email ? email[0].toUpperCase() : "?";
+
+      if (clientId) {
+        const shortId = clientId.length > 12 ? clientId.slice(0, 8) : clientId;
+        appIconEl.textContent = shortId[0].toUpperCase();
+        appNameEl.textContent = clientId;
+      }
+
+      if (redirectUri) {
+        try {
+          const url = new URL(redirectUri);
+          appDomainEl.textContent = url.hostname;
+        } catch {
+          appDomainEl.textContent = redirectUri;
+        }
+      }
+
+      const requestedScopes = scope.split(/\s+/).filter(Boolean);
+      scopeList.innerHTML = "";
+
+      requestedScopes.forEach((s) => {
+        const info = SCOPE_MAP[s];
+        if (info) {
+          const item = document.createElement("div");
+          item.className = "scope-item";
+          item.innerHTML = `
+            <div class="scope-icon ${info.icon}">${info.symbol}</div>
+            <div class="scope-text">
+              <span class="scope-name">${info.name}</span>
+              <span class="scope-desc">${info.description}</span>
+            </div>
+          `;
+          scopeList.appendChild(item);
+        } else {
+          const item = document.createElement("div");
+          item.className = "scope-item";
+          item.innerHTML = `
+            <div class="scope-icon identity">&#x2753;</div>
+            <div class="scope-text">
+              <span class="scope-name">${s}</span>
+              <span class="scope-desc">Additional permission</span>
+            </div>
+          `;
+          scopeList.appendChild(item);
+        }
+      });
+    }
+
+    function buildRedirect(error, code) {
+      if (!redirectUri) return null;
+      const url = new URL(redirectUri);
+      if (state) url.searchParams.set("state", state);
+      if (error) {
+        url.searchParams.set("error", error);
+      } else if (code) {
+        url.searchParams.set("code", code);
+      }
+      return url.toString();
+    }
+
+    function generateCode() {
+      const array = new Uint8Array(32);
+      crypto.getRandomValues(array);
+      return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    if (!clientId || !redirectUri) {
+      showError("Missing required parameters: client_id and redirect_uri are required.");
+    } else if (responseType !== "code") {
+      showError("Unsupported response_type. Only 'code' is supported.");
+    } else {
+      let supabase = null;
+      let session = null;
+
+      try {
+        const configRes = await fetch("https://sharktide-lightning.hf.space/v1/config");
+        const config = await configRes.json();
+        const url = config.supabase?.url;
+        const key = config.supabase?.publishableKey;
+
+        if (!url || !key) {
+          showError("Authentication service is unavailable. Please try again later.");
+          throw new Error("Supabase config missing");
+        }
+
+        supabase = createClient(url, key, { auth: { persistSession: true } });
+        const { data } = await supabase.auth.getSession();
+        session = data.session;
+
+        if (session?.user) {
+          showConsent(session.user);
+        } else {
+          showLogin();
+        }
+
+        supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+          session = nextSession;
+          if (session?.user) {
+            showConsent(session.user);
+          } else {
+            showLogin();
+          }
+        });
+      } catch (e) {
+        if (!errorView.style.display || errorView.style.display === "none") {
+          showError("Failed to initialize authentication. Please try again later.");
+        }
+        return;
+      }
+
+      const emailAuthForm = document.getElementById("email-auth-form");
+      const emailInput = document.getElementById("email-input");
+      const passwordInput = document.getElementById("password-input");
+      const signupBtn = document.getElementById("signup-btn");
+      const googleBtn = document.getElementById("google-btn");
+      const githubBtn = document.getElementById("github-btn");
+      const microsoftBtn = document.getElementById("microsoft-btn");
+      const huggingfaceBtn = document.getElementById("huggingface-btn");
+      const forgotBtn = document.getElementById("forgot-btn");
+
+      function showToast(msg) {
+        alert(msg);
+      }
+
+      emailAuthForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: emailInput.value,
+            password: passwordInput.value
+          });
+          if (error) throw error;
+        } catch (err) {
+          showToast(err.message || "Sign in failed");
+        }
+      });
+
+      signupBtn.addEventListener("click", async () => {
+        try {
+          const { error } = await supabase.auth.signUp({
+            email: emailInput.value,
+            password: passwordInput.value
+          });
+          if (error) throw error;
+          showToast("Sign-up complete. Check your email for confirmation if required.");
+        } catch (err) {
+          showToast(err.message || "Sign up failed");
+        }
+      });
+
+      googleBtn.addEventListener("click", async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: { redirectTo: window.location.href }
+        });
+      });
+
+      githubBtn.addEventListener("click", async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: "github",
+          options: { redirectTo: window.location.href }
+        });
+      });
+
+      microsoftBtn.addEventListener("click", async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: "azure",
+          options: { redirectTo: window.location.href }
+        });
+      });
+
+      huggingfaceBtn.addEventListener("click", async () => {
+        await supabase.auth.signInWithOAuth({
+          provider: "custom:huggingface",
+          options: { redirectTo: window.location.href }
+        });
+      });
+
+      forgotBtn.addEventListener("click", async () => {
+        const email = emailInput.value?.trim();
+        if (!email) {
+          showToast("Enter your email first.");
+          return;
+        }
+        try {
+          const { error } = await supabase.auth.resetPasswordForEmail(email);
+          if (error) throw error;
+          showToast("Password reset email sent.");
+        } catch (err) {
+          showToast(err.message || "Failed to send password reset");
+        }
+      });
+
+      allowBtn.addEventListener("click", () => {
+        const code = generateCode();
+        const redirect = buildRedirect(null, code);
+        if (redirect) {
+          window.location.href = redirect;
+        } else {
+          showToast("Authorization complete. You may close this window.");
+        }
+      });
+
+      denyBtn.addEventListener("click", () => {
+        const redirect = buildRedirect("access_denied");
+        if (redirect) {
+          window.location.href = redirect;
+        } else {
+          showToast("Authorization denied. You may close this window.");
+        }
+      });
+    }
+  </script>
+</body>
+</html>
