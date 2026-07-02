@@ -35,6 +35,11 @@
       "source": "/oauth/authorize",
       "destination": "https://dpixehhdbtzsbckfektd.supabase.co/auth/v1/oauth/authorize",
       "permanent": false
+    },
+    {
+      "source": "/authcallback/oauth/consent",
+      "destination": "/authcallback/oauth/consent.html",
+      "permanent": false
     }
   ],
   "rewrites": [
