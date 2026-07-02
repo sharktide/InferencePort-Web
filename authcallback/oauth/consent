@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Authorize Application — InferencePort AI</title>
-  <link rel="stylesheet" href="./styles/base.css" />
-  <link rel="stylesheet" href="./styles/typography.css" />
-  <link rel="stylesheet" href="./styles/layout.css" />
-  <link rel="stylesheet" href="./styles/forms.css" />
-  <link rel="stylesheet" href="./styles/components.css" />
-  <link rel="stylesheet" href="./styles/responsive.css" />
+  <link rel="stylesheet" href="/../console/styles/base.css" />
+  <link rel="stylesheet" href="/../console/styles/typography.css" />
+  <link rel="stylesheet" href="/../console/styles/layout.css" />
+  <link rel="stylesheet" href="/../console/styles/forms.css" />
+  <link rel="stylesheet" href="/../console/styles/components.css" />
+  <link rel="stylesheet" href="/../console/styles/responsive.css" />
   <style>
     body {
       display: flex;
@@ -329,7 +329,7 @@
 <body>
   <header class="topbar">
     <div class="brand">
-      <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
+      <img src="/../console/assets/logo.png" alt="InferencePort AI" class="brand-logo" />
       <div>
         <h1><span class="brand-emphasis">InferencePort AI</span> Developer Console</h1>
         <p>OAuth Authorization</p>
@@ -365,7 +365,7 @@
     <!-- Login view (shown when not authenticated) -->
     <div id="login-view" class="authorize-card" style="display:none;">
       <div class="authorize-header">
-        <img src="./assets/logo.png" alt="InferencePort AI" />
+        <img src="/../console/assets/logo.png" alt="InferencePort AI" />
         <h1>Sign in to InferencePort AI</h1>
         <p>You need to sign in before authorizing this application.</p>
       </div>
@@ -391,7 +391,7 @@
     <!-- Consent view (shown when authenticated and authorization details are loaded) -->
     <div id="consent-view" class="authorize-card" style="display:none;">
       <div class="authorize-header">
-        <img src="./assets/logo.png" alt="InferencePort AI" />
+        <img src="/../console/assets/logo.png" alt="InferencePort AI" />
         <h1>Authorize Application</h1>
         <p>A third-party application is requesting access to your account.</p>
       </div>
@@ -426,7 +426,7 @@
 
       <p class="footer-text">
         By clicking Allow, you authorize this application to access your data as described above.
-        <br />You can revoke access at any time from the <a href="index.html">Developer Console</a>.
+        <br />You can revoke access at any time from the <a href="/../console/index.html">Developer Console</a>.
       </p>
     </div>
   </main>
