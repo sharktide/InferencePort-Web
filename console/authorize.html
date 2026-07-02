@@ -84,6 +84,13 @@
       font-weight: 700;
       color: #fff;
       flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .app-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .app-info {
@@ -209,6 +216,11 @@
       padding: 0.8rem 1rem;
     }
 
+    .authorize-actions button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .btn-deny {
       background: var(--surface-2);
       color: var(--text);
@@ -288,6 +300,30 @@
     .footer-text a:hover {
       text-decoration: underline;
     }
+
+    .loading-view {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -309,7 +345,15 @@
   </header>
 
   <main class="authorize-shell">
-    <!-- Error state (shown when params are invalid) -->
+    <!-- Loading state (shown only briefly while we figure out which view to render) -->
+    <div id="loading-view" class="authorize-card">
+      <div class="loading-view">
+        <span class="spinner"></span>
+        <span>Loading authorization request…</span>
+      </div>
+    </div>
+
+    <!-- Error state (shown when the request is invalid or something fails) -->
     <div id="error-view" class="authorize-card" style="display:none;">
       <div class="error-state">
         <h2>Authorization Error</h2>
@@ -327,8 +371,8 @@
       </div>
 
       <form id="email-auth-form" class="stack">
-        <input id="email-input" type="email" placeholder="Email" required />
-        <input id="password-input" type="password" placeholder="Password" required />
+        <input id="email-input" type="email" placeholder="Email" autocomplete="email" required />
+        <input id="password-input" type="password" placeholder="Password" autocomplete="current-password" required />
         <div class="row">
           <button type="submit" id="login-btn" style="flex:1;">Sign in</button>
           <button type="button" id="signup-btn" class="ghost" style="flex:1;">Sign up</button>
@@ -336,16 +380,15 @@
       </form>
 
       <div class="stack" style="margin-top:0.65rem;">
-        <button id="google-btn" class="ghost">Continue with Google</button>
-        <button id="github-btn" class="ghost">Continue with GitHub</button>
-        <button id="microsoft-btn" class="ghost">Continue with Microsoft</button>
-        <button id="huggingface-btn" class="ghost">Continue with HuggingFace</button>
+        <button id="google-btn" class="ghost" type="button">Continue with Google</button>
+        <button id="github-btn" class="ghost" type="button">Continue with GitHub</button>
+        <button id="microsoft-btn" class="ghost" type="button">Continue with Microsoft</button>
       </div>
 
       <button id="forgot-btn" class="text-btn" type="button" style="margin-top:0.5rem;">Forgot password?</button>
     </div>
 
-    <!-- Consent view (shown when authenticated) -->
+    <!-- Consent view (shown when authenticated and authorization details are loaded) -->
     <div id="consent-view" class="authorize-card" style="display:none;">
       <div class="authorize-header">
         <img src="./assets/logo.png" alt="InferencePort AI" />
@@ -390,7 +433,7 @@
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-    async function init() {
+
     const SCOPE_MAP = {
       "p2g:deduct": {
         icon: "billing",
@@ -418,13 +461,7 @@
       }
     };
 
-    const params = new URLSearchParams(window.location.search);
-    const clientId = params.get("client_id");
-    const redirectUri = params.get("redirect_uri");
-    const scope = params.get("scope") || "openid profile email p2g:deduct";
-    const state = params.get("state") || "";
-    const responseType = params.get("response_type") || "code";
-
+    const loadingView = document.getElementById("loading-view");
     const errorView = document.getElementById("error-view");
     const loginView = document.getElementById("login-view");
     const consentView = document.getElementById("consent-view");
@@ -463,51 +500,67 @@
 
     initTheme();
 
+    // ---- View state machine. Exactly one of these four is ever visible. ----
+    function showLoading() {
+      loadingView.style.display = "";
+      errorView.style.display = "none";
+      loginView.style.display = "none";
+      consentView.style.display = "none";
+    }
+
     function showError(message) {
-      errorMessage.textContent = message;
+      errorMessage.textContent = message || "Something went wrong with this authorization request.";
+      loadingView.style.display = "none";
       errorView.style.display = "";
       loginView.style.display = "none";
       consentView.style.display = "none";
     }
 
     function showLogin() {
+      loadingView.style.display = "none";
       errorView.style.display = "none";
       loginView.style.display = "";
       consentView.style.display = "none";
     }
 
-    function showConsent(user) {
+    function showConsent({ user, details }) {
+      loadingView.style.display = "none";
       errorView.style.display = "none";
       loginView.style.display = "none";
       consentView.style.display = "";
 
-      const email = user.email || "";
+      const email = user?.email || "";
       userEmailEl.textContent = email;
       userAvatarEl.textContent = email ? email[0].toUpperCase() : "?";
 
-      if (clientId) {
-        const shortId = clientId.length > 12 ? clientId.slice(0, 8) : clientId;
-        appIconEl.textContent = shortId[0].toUpperCase();
-        appNameEl.textContent = clientId;
+      const client = details?.client || {};
+      appNameEl.textContent = client.name || "Third-party application";
+
+      if (client.icon) {
+        appIconEl.innerHTML = `<img src="${client.icon}" alt="" />`;
+      } else {
+        const initial = (client.name || "?").trim()[0]?.toUpperCase() || "?";
+        appIconEl.textContent = initial;
       }
 
-      if (redirectUri) {
+      let domain = client.domain || "";
+      if (!domain && details?.redirect_url) {
         try {
-          const url = new URL(redirectUri);
-          appDomainEl.textContent = url.hostname;
+          domain = new URL(details.redirect_url).hostname;
         } catch {
-          appDomainEl.textContent = redirectUri;
+          domain = details.redirect_url;
         }
       }
+      appDomainEl.textContent = domain;
 
-      const requestedScopes = scope.split(/\s+/).filter(Boolean);
+      const requestedScopes = (details?.scope || "").split(/\s+/).filter(Boolean);
       scopeList.innerHTML = "";
 
       requestedScopes.forEach((s) => {
         const info = SCOPE_MAP[s];
+        const item = document.createElement("div");
+        item.className = "scope-item";
         if (info) {
-          const item = document.createElement("div");
-          item.className = "scope-item";
           item.innerHTML = `
             <div class="scope-icon ${info.icon}">${info.symbol}</div>
             <div class="scope-text">
@@ -515,10 +568,7 @@
               <span class="scope-desc">${info.description}</span>
             </div>
           `;
-          scopeList.appendChild(item);
         } else {
-          const item = document.createElement("div");
-          item.className = "scope-item";
           item.innerHTML = `
             <div class="scope-icon identity">&#x2753;</div>
             <div class="scope-text">
@@ -526,73 +576,122 @@
               <span class="scope-desc">Additional permission</span>
             </div>
           `;
-          scopeList.appendChild(item);
         }
+        scopeList.appendChild(item);
       });
     }
 
-    function buildRedirect(error, code) {
-      if (!redirectUri) return null;
-      const url = new URL(redirectUri);
-      if (state) url.searchParams.set("state", state);
-      if (error) {
-        url.searchParams.set("error", error);
-      } else if (code) {
-        url.searchParams.set("code", code);
-      }
-      return url.toString();
+    function showToast(msg) {
+      alert(msg);
     }
 
-    function generateCode() {
-      const array = new Uint8Array(32);
-      crypto.getRandomValues(array);
-      return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
+    function setButtonsBusy(busy) {
+      allowBtn.disabled = busy;
+      denyBtn.disabled = busy;
     }
 
-    if (!clientId || !redirectUri) {
-      showError("Missing required parameters: client_id and redirect_uri are required.");
-    } else if (responseType !== "code") {
-      showError("Unsupported response_type. Only 'code' is supported.");
-    } else {
-      let supabase = null;
-      let session = null;
+    async function main() {
+      showLoading();
 
-      try {
-        const configRes = await fetch("https://sharktide-lightning.hf.space/v1/config");
-        const config = await configRes.json();
-        const url = config.supabase?.url;
-        const key = config.supabase?.publishableKey;
+      // 1. Validate the only supported query parameter.
+      const params = new URLSearchParams(window.location.search);
+      const authorizationId = params.get("authorization_id");
 
-        if (!url || !key) {
-          showError("Authentication service is unavailable. Please try again later.");
-          throw new Error("Supabase config missing");
-        }
-
-        supabase = createClient(url, key, { auth: { persistSession: true } });
-        const { data } = await supabase.auth.getSession();
-        session = data.session;
-
-        if (session?.user) {
-          showConsent(session.user);
-        } else {
-          showLogin();
-        }
-
-        supabase.auth.onAuthStateChange(async (_event, nextSession) => {
-          session = nextSession;
-          if (session?.user) {
-            showConsent(session.user);
-          } else {
-            showLogin();
-          }
-        });
-      } catch (e) {
-        if (!errorView.style.display || errorView.style.display === "none") {
-          showError("Failed to initialize authentication. Please try again later.");
-        }
+      if (!authorizationId) {
+        showError("Missing required parameter: authorization_id.");
         return;
       }
 
+      // 2. Initialize the Supabase client from remote config.
+      let supabase;
+      try {
+        const configRes = await fetch("https://sharktide-lightning.hf.space/v1/config");
+        if (!configRes.ok) throw new Error("Config request failed");
+        const config = await configRes.json();
+        const url = config?.supabase?.url;
+        const key = config?.supabase?.publishableKey;
+        if (!url || !key) throw new Error("Supabase config missing");
+        supabase = createClient(url, key, { auth: { persistSession: true } });
+      } catch (e) {
+        showError("Authentication service is unavailable. Please try again later.");
+        return;
+      }
+
+      // Helper: attempt to load authorization details + user, show consent, wire buttons.
+      async function loadConsent() {
+        let claims;
+        try {
+          const { data, error } = await supabase.auth.getClaims();
+          if (error) throw error;
+          claims = data?.claims;
+        } catch {
+          claims = null;
+        }
+
+        if (!claims) {
+          showLogin();
+          return;
+        }
+
+        try {
+          const { data: details, error } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
+          if (error) throw error;
+          if (!details) throw new Error("No authorization details returned");
+
+          const { data: userData } = await supabase.auth.getUser();
+          showConsent({ user: userData?.user || { email: claims.email }, details });
+        } catch (e) {
+          showError(e?.message || "This authorization request is invalid or has expired.");
+          return;
+        }
+
+        setButtonsBusy(false);
+
+        allowBtn.onclick = async () => {
+          setButtonsBusy(true);
+          try {
+            const { data, error } = await supabase.auth.oauth.approveAuthorization(authorizationId);
+            if (error) throw error;
+            if (!data?.redirect_url) throw new Error("No redirect URL returned");
+            window.location.href = data.redirect_url;
+          } catch (e) {
+            setButtonsBusy(false);
+            showToast(e?.message || "Failed to approve authorization.");
+          }
+        };
+
+        denyBtn.onclick = async () => {
+          setButtonsBusy(true);
+          try {
+            const { data, error } = await supabase.auth.oauth.denyAuthorization(authorizationId);
+            if (error) throw error;
+            if (!data?.redirect_url) throw new Error("No redirect URL returned");
+            window.location.href = data.redirect_url;
+          } catch (e) {
+            setButtonsBusy(false);
+            showToast(e?.message || "Failed to deny authorization.");
+          }
+        };
+      }
+
+      try {
+        await loadConsent();
+      } catch (e) {
+        showError("Failed to load authorization request. Please try again later.");
+        return;
+      }
+
+      // React to sign-in/sign-out while this page is open.
+      supabase.auth.onAuthStateChange(async () => {
+        try {
+          await loadConsent();
+        } catch {
+          showError("Failed to load authorization request. Please try again later.");
+        }
+      });
+
+      // 3. Wire up the login view. authorization_id is preserved automatically
+      //    since it's already part of window.location.href used as redirectTo.
       const emailAuthForm = document.getElementById("email-auth-form");
       const emailInput = document.getElementById("email-input");
       const passwordInput = document.getElementById("password-input");
@@ -600,12 +699,7 @@
       const googleBtn = document.getElementById("google-btn");
       const githubBtn = document.getElementById("github-btn");
       const microsoftBtn = document.getElementById("microsoft-btn");
-      const huggingfaceBtn = document.getElementById("huggingface-btn");
       const forgotBtn = document.getElementById("forgot-btn");
-
-      function showToast(msg) {
-        alert(msg);
-      }
 
       emailAuthForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -616,7 +710,7 @@
           });
           if (error) throw error;
         } catch (err) {
-          showToast(err.message || "Sign in failed");
+          showToast(err?.message || "Sign in failed");
         }
       });
 
@@ -629,36 +723,44 @@
           if (error) throw error;
           showToast("Sign-up complete. Check your email for confirmation if required.");
         } catch (err) {
-          showToast(err.message || "Sign up failed");
+          showToast(err?.message || "Sign up failed");
         }
       });
 
       googleBtn.addEventListener("click", async () => {
-        await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: { redirectTo: window.location.href }
-        });
+        try {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: { redirectTo: window.location.href }
+          });
+          if (error) throw error;
+        } catch (err) {
+          showToast(err?.message || "Google sign-in failed");
+        }
       });
 
       githubBtn.addEventListener("click", async () => {
-        await supabase.auth.signInWithOAuth({
-          provider: "github",
-          options: { redirectTo: window.location.href }
-        });
+        try {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider: "github",
+            options: { redirectTo: window.location.href }
+          });
+          if (error) throw error;
+        } catch (err) {
+          showToast(err?.message || "GitHub sign-in failed");
+        }
       });
 
       microsoftBtn.addEventListener("click", async () => {
-        await supabase.auth.signInWithOAuth({
-          provider: "azure",
-          options: { redirectTo: window.location.href }
-        });
-      });
-
-      huggingfaceBtn.addEventListener("click", async () => {
-        await supabase.auth.signInWithOAuth({
-          provider: "custom:huggingface",
-          options: { redirectTo: window.location.href }
-        });
+        try {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider: "azure",
+            options: { redirectTo: window.location.href }
+          });
+          if (error) throw error;
+        } catch (err) {
+          showToast(err?.message || "Microsoft sign-in failed");
+        }
       });
 
       forgotBtn.addEventListener("click", async () => {
@@ -672,31 +774,15 @@
           if (error) throw error;
           showToast("Password reset email sent.");
         } catch (err) {
-          showToast(err.message || "Failed to send password reset");
-        }
-      });
-
-      allowBtn.addEventListener("click", () => {
-        const code = generateCode();
-        const redirect = buildRedirect(null, code);
-        if (redirect) {
-          window.location.href = redirect;
-        } else {
-          showToast("Authorization complete. You may close this window.");
-        }
-      });
-
-      denyBtn.addEventListener("click", () => {
-        const redirect = buildRedirect("access_denied");
-        if (redirect) {
-          window.location.href = redirect;
-        } else {
-          showToast("Authorization denied. You may close this window.");
+          showToast(err?.message || "Failed to send password reset");
         }
       });
     }
-  }
-  init();
+
+    // Final safety net: whatever happens, never leave every view hidden.
+    main().catch(() => {
+      showError("Something went wrong loading this authorization request.");
+    });
   </script>
 </body>
 </html>
