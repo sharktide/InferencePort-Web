@@ -30,6 +30,11 @@
       "source": "/console/:path*",
       "destination": "https://console.inferenceport.ai/:path*",
       "permanent": true
+    },
+    {
+      "source": "/oauth/authorize",
+      "destination": "https://dpixehhdbtzsbckfektd.supabase.co/auth/v1/oauth/authorize",
+      "permanent": false
     }
   ],
   "rewrites": [
@@ -44,6 +49,14 @@
     {
       "source": "/MISC/(.*)",
       "destination": "https://raw.githubusercontent.com/sharktide/inferenceport-ai/refs/heads/main/MISC/$1"
+    },
+    {
+      "source": "/authcallback",
+      "destination": "authcallback.html"
+    },
+    {
+      "source": "/authcallback/oauth/authorize",
+      "destination": "console/authorize.html"
     }
   ],
   "routes": [
