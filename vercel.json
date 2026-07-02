@@ -55,7 +55,7 @@
       "destination": "authcallback.html"
     },
     {
-      "source": "/authcallback/oauth/authorize",
+      "source": "/authcallback/oauth/consent",
       "destination": "https://console.inferenceport.ai/authorize.html"
     }
   ],
