@@ -681,7 +681,6 @@
           }
 
           const authUser = session.user;
-          if (authError) throw authError;
           if (!authUser) {
             showLogin();
             return;
