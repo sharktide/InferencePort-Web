@@ -616,7 +616,34 @@
         showError("Authentication service is unavailable. Please try again later.");
         return;
       }
+      async function waitForSession(supabase, timeout = 5000) {
+        // First check immediately.
+        let {
+          data: { session }
+        } = await supabase.auth.getSession();
 
+        if (session) return session;
+
+        return new Promise((resolve) => {
+          const timer = setTimeout(() => {
+            subscription.subscription.unsubscribe();
+            resolve(null);
+          }, timeout);
+
+          const { data: subscription } =
+            supabase.auth.onAuthStateChange((event, session) => {
+              if (
+                event === "INITIAL_SESSION" ||
+                event === "SIGNED_IN" ||
+                session
+              ) {
+                clearTimeout(timer);
+                subscription.subscription.unsubscribe();
+                resolve(session);
+              }
+            });
+        });
+      }
       // Helper: attempt to load authorization details + user, show consent, wire buttons.
       async function loadConsent() {
         let claims;
@@ -675,6 +702,7 @@
       }
 
       try {
+        await waitForSession(supabase);
         await loadConsent();
       } catch (e) {
         showError("Failed to load authorization request. Please try again later.");
