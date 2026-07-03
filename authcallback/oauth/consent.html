@@ -663,9 +663,8 @@
       // Helper: attempt to load authorization details + user, show consent, wire buttons.
       async function loadConsent() {
         try {
-          //const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-          //if (authError) throw authError;
-          let authUser = true;
+          const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+          if (authError) throw authError;
           if (!authUser) {
             showLogin();
             return;
@@ -675,7 +674,7 @@
           if (error) throw error;
           if (!details) throw new Error("No authorization details returned");
 
-          showConsent({ user: none, details });
+          showConsent({ user: authUser, details });
         } catch (e) {
           showError(e?.message || "This authorization request is invalid or has expired.");
           return;
