@@ -670,9 +670,22 @@
             return;
           }
 
-          const { data: details, error } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
-          if (error) throw error;
-          if (!details) throw new Error("No authorization details returned");
+          const { data: details, error } =
+            await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
+
+          if (error) {
+            throw error;
+          }
+
+          if (!details) {
+            throw new Error("No authorization details returned");
+          }
+
+          // User has already granted consent
+          if ("redirect_url" in details && !("authorization_id" in details)) {
+            window.location.href = details.redirect_url;
+            return;
+          }
 
           showConsent({ user: authUser, details });
         } catch (e) {
