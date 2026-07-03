@@ -392,8 +392,8 @@
     <div id="consent-view" class="authorize-card" style="display:none;">
       <div class="authorize-header">
         <img src="/../console/assets/logo.png" alt="InferencePort AI" />
-        <h1>Authorize Application</h1>
-        <p>A third-party application is requesting access to your account.</p>
+        <h1 id="consent-title">Authorize Application</h1>
+        <p>This application wants to access your account.</p>
       </div>
 
       <div class="user-chip">
@@ -409,6 +409,11 @@
         </div>
       </div>
 
+      <div class="redirect-uri-display" style="display:none; margin-bottom:1.25rem;">
+        <span style="font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); display:block; margin-bottom:0.35rem;">Redirect URI</span>
+        <span id="redirect-uri" style="font-family:var(--mono); font-size:0.78rem; color:var(--text); word-break:break-all;"></span>
+      </div>
+
       <div class="scope-section">
         <h2>This application will be able to:</h2>
         <div class="scope-list" id="scope-list"></div>
@@ -421,11 +426,11 @@
 
       <div class="authorize-actions">
         <button type="button" class="btn-deny" id="deny-btn">Deny</button>
-        <button type="button" id="allow-btn">Allow Access</button>
+        <button type="button" id="allow-btn">Approve</button>
       </div>
 
       <p class="footer-text">
-        By clicking Allow, you authorize this application to access your data as described above.
+        By clicking Approve, you authorize this application to access your data as described above.
         <br />You can revoke access at any time from the <a href="/../console/index.html">Developer Console</a>.
       </p>
     </div>
@@ -474,6 +479,8 @@
     const userAvatarEl = document.getElementById("user-avatar");
     const allowBtn = document.getElementById("allow-btn");
     const denyBtn = document.getElementById("deny-btn");
+    const consentTitle = document.getElementById("consent-title");
+    const redirectUriEl = document.getElementById("redirect-uri");
 
     function applyTheme(theme) {
       document.documentElement.setAttribute("data-theme", theme);
@@ -552,6 +559,15 @@
         }
       }
       appDomainEl.textContent = domain;
+
+      consentTitle.textContent = `Authorize ${client.name || "Application"}`;
+
+      if (details?.redirect_url) {
+        redirectUriEl.textContent = details.redirect_url;
+        redirectUriEl.closest(".redirect-uri-display").style.display = "";
+      } else {
+        redirectUriEl.closest(".redirect-uri-display").style.display = "none";
+      }
 
       const requestedScopes = (details?.scope || "").split(/\s+/).filter(Boolean);
       scopeList.innerHTML = "";
@@ -646,27 +662,19 @@
       }
       // Helper: attempt to load authorization details + user, show consent, wire buttons.
       async function loadConsent() {
-        let claims;
         try {
-          const { data, error } = await supabase.auth.getClaims();
-          if (error) throw error;
-          claims = data?.claims;
-        } catch {
-          claims = null;
-        }
+          const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+          if (authError) throw authError;
+          if (!authUser) {
+            showLogin();
+            return;
+          }
 
-        if (!claims) {
-          showLogin();
-          return;
-        }
-
-        try {
           const { data: details, error } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
           if (error) throw error;
           if (!details) throw new Error("No authorization details returned");
 
-          const { data: userData } = await supabase.auth.getUser();
-          showConsent({ user: userData?.user || { email: claims.email }, details });
+          showConsent({ user: authUser, details });
         } catch (e) {
           showError(e?.message || "This authorization request is invalid or has expired.");
           return;
