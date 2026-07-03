@@ -383,6 +383,7 @@
         <button id="google-btn" class="ghost" type="button">Continue with Google</button>
         <button id="github-btn" class="ghost" type="button">Continue with GitHub</button>
         <button id="microsoft-btn" class="ghost" type="button">Continue with Microsoft</button>
+        <button id="huggingface-btn" class="ghost" type="button">Continue with Hugging Face</button>
       </div>
 
       <button id="forgot-btn" class="text-btn" type="button" style="margin-top:0.5rem;">Forgot password?</button>
@@ -769,7 +770,7 @@
       const githubBtn = document.getElementById("github-btn");
       const microsoftBtn = document.getElementById("microsoft-btn");
       const forgotBtn = document.getElementById("forgot-btn");
-
+      const huggingfaceBtn = document.getElementById("huggingface-btn");
       emailAuthForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         try {
@@ -829,6 +830,18 @@
           if (error) throw error;
         } catch (err) {
           showToast(err?.message || "Microsoft sign-in failed");
+        }
+      });
+
+      huggingfaceBtn.addEventListener("click", async () => {
+        try {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider: "custom:huggingface",
+            options: { redirectTo: window.location.href }
+          });
+          if (error) throw error;
+        } catch (err) {
+          showToast(err?.message || "Hugging Face sign-in failed");
         }
       });
 
