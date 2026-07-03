@@ -665,7 +665,7 @@
         try {
           //const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
           //if (authError) throw authError;
-          authUser = true;
+          let authUser = true;
           if (!authUser) {
             showLogin();
             return;
