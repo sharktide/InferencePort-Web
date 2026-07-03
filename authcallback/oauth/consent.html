@@ -660,15 +660,19 @@
             });
         });
       }
+      let consentLoaded = false;
+
       // Helper: attempt to load authorization details + user, show consent, wire buttons.
       async function loadConsent() {
         try {
+          if (consentLoaded) return;
           const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
           if (authError) throw authError;
           if (!authUser) {
             showLogin();
             return;
           }
+          consentLoaded = true;
 
           const { data: details, error } =
             await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
@@ -731,14 +735,17 @@
       }
 
       // React to sign-in/sign-out while this page is open.
-      supabase.auth.onAuthStateChange(async () => {
-        try {
-          await loadConsent();
-        } catch {
-          showError("Failed to load authorization request. Please try again later.");
-        }
-      });
+      let authListenerInitialized = false;
 
+      if (!authListenerInitialized) {
+        authListenerInitialized = true;
+
+        supabase.auth.onAuthStateChange((event) => {
+          if (event === "SIGNED_IN") {
+            loadConsent();
+          }
+        });
+      }
       // 3. Wire up the login view. authorization_id is preserved automatically
       //    since it's already part of window.location.href used as redirectTo.
       const emailAuthForm = document.getElementById("email-auth-form");
