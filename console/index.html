@@ -49,6 +49,8 @@
       <button type="button" class="console-nav-tab" data-console-tab="gen-api">Generation (Subscription)</button>
       <button type="button" class="console-nav-tab" data-console-tab="payg-api">P2G API</button>
       <button type="button" class="console-nav-tab" data-console-tab="shield">Shield</button>
+      <button type="button" class="console-nav-tab" data-console-tab="authorized-apps">Authorized Applications</button>
+
       <div class="sidebar-user-tag" id="sidebar-user-tag" style="display:none;">
         <div class="sidebar-user-avatar" id="sidebar-user-avatar">?</div>
         <span class="sidebar-user-email" id="sidebar-user-email"></span>
@@ -636,9 +638,61 @@
           </div>
         </section>
       </div>
+
+      <!-- AUTHORIZED APPLICATIONS PANEL -->
+      <div class="console-panel" data-console-panel="authorized-apps">
+        <div id="authorized-apps-panel-locked" class="locked-overlay panel-lock" style="display:none;">Sign in to view applications you've authorized.</div>
+
+        <section class="card wide" id="authorized-apps-card" style="display:none;">
+          <h2>Authorized Applications</h2>
+
+          <div class="oauth-warning">
+            <span class="oauth-warning-icon" aria-hidden="true">⚠️</span>
+            <p>Applications with access to your account can act according to the permissions you've granted. Revoke access for apps you no longer trust.</p>
+          </div>
+
+          <div class="oauth-toolbar">
+            <input id="oauth-search" type="search" placeholder="Search authorized applications..." aria-label="Search authorized applications" />
+          </div>
+
+          <div id="oauth-grants-loading" class="oauth-state-block" style="display:none;">
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="muted tiny">Loading authorized applications…</p>
+          </div>
+
+          <div id="oauth-grants-empty" class="oauth-state-block" style="display:none;">
+            <div class="oauth-empty-icon" aria-hidden="true">🔗</div>
+            <p>You haven't authorized any applications yet.</p>
+            <p class="muted tiny">When you sign in to a third-party app using your account, it will show up here.</p>
+          </div>
+
+          <div id="oauth-grants-error" class="card oauth-error-card" style="display:none;">
+            <h3 style="margin-top:0;">Couldn't load authorized applications</h3>
+            <p id="oauth-grants-error-message" class="muted tiny">Something went wrong.</p>
+            <button id="oauth-grants-retry-btn" type="button" class="ghost">Try again</button>
+          </div>
+
+          <div id="oauth-grants-list" class="oauth-grants-list"></div>
+        </section>
+      </div>
     </section>
   </main>
 
+  <!-- REVOKE CONFIRMATION MODAL -->
+  <div id="oauth-revoke-modal" class="oauth-modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="oauth-revoke-modal-title">
+    <div class="oauth-modal card">
+      <h3 id="oauth-revoke-modal-title" style="margin-top:0;">Revoke access?</h3>
+      <p class="muted tiny" id="oauth-revoke-modal-body">
+        Revoking access will immediately invalidate this application's authorization. It will no longer be able to act on your behalf, and it may lose access to any data or features it was granted.
+      </p>
+      <div class="row" style="justify-content:flex-end; margin-top:1.5rem;">
+        <button id="oauth-revoke-cancel-btn" type="button" class="ghost">Cancel</button>
+        <button id="oauth-revoke-confirm-btn" type="button" class="danger-btn">Revoke Access</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="app.js"></script>
 </body>
+
 </html>

@@ -144,6 +144,20 @@ const el = {
   shieldEvidence: document.getElementById("shield-evidence"),
   shieldConfigApplied: document.getElementById("shield-config-applied"),
   shieldFullResponse: document.getElementById("shield-full-response"),
+  // authorized applications panel
+  authorizedAppsPanelLocked: document.getElementById("authorized-apps-panel-locked"),
+  authorizedAppsCard: document.getElementById("authorized-apps-card"),
+  oauthSearch: document.getElementById("oauth-search"),
+  oauthGrantsLoading: document.getElementById("oauth-grants-loading"),
+  oauthGrantsEmpty: document.getElementById("oauth-grants-empty"),
+  oauthGrantsError: document.getElementById("oauth-grants-error"),
+  oauthGrantsErrorMessage: document.getElementById("oauth-grants-error-message"),
+  oauthGrantsRetryBtn: document.getElementById("oauth-grants-retry-btn"),
+  oauthGrantsList: document.getElementById("oauth-grants-list"),
+  oauthRevokeModal: document.getElementById("oauth-revoke-modal"),
+  oauthRevokeCancelBtn: document.getElementById("oauth-revoke-cancel-btn"),
+  oauthRevokeConfirmBtn: document.getElementById("oauth-revoke-confirm-btn"),
+
   // subscription card
   subscriptionContent: document.getElementById("subscription-content"),
   subscriptionLocked: document.getElementById("subscription-locked"),
@@ -209,7 +223,8 @@ const PROTECTED_CARDS = [
   "payg-api-playground-card",
   "shield-playground-card",
   "subscription-card",
-  "gen-usage-card"
+  "gen-usage-card",
+  "authorized-apps-card"
 ];
 
 let currentRawApiKey = "";
@@ -806,6 +821,7 @@ function setPanelLockedState(locked) {
   if (el.genPanelLocked) el.genPanelLocked.style.display = locked ? "" : "none";
   if (el.paygPanelLocked) el.paygPanelLocked.style.display = locked ? "" : "none";
   if (el.shieldPlaygroundLocked) el.shieldPlaygroundLocked.style.display = locked ? "" : "none";
+  if (el.authorizedAppsPanelLocked) el.authorizedAppsPanelLocked.style.display = locked ? "" : "none";
 }
 
 function setConsolePanel(nextPanel) {
@@ -882,6 +898,7 @@ function renderAuthState() {
     if (el.apiKeyList) {
       el.apiKeyList.textContent = "";
     }
+    if (el.oauthGrantsList) el.oauthGrantsList.innerHTML = "";
   }
 }
 
@@ -901,6 +918,7 @@ async function initSupabase() {
   if (session) {
     await refreshAccount().catch((e) => showToast(e.message));
     await refreshApiKeys().catch((e) => showToast(e.message));
+    await loadOAuthGrants().catch((e) => console.warn(e));
   }
 
   supabase.auth.onAuthStateChange(async (_event, nextSession) => {
@@ -909,6 +927,10 @@ async function initSupabase() {
     if (session) {
       await refreshAccount().catch((e) => showToast(e.message));
       await refreshApiKeys().catch((e) => showToast(e.message));
+      await loadOAuthGrants().catch((e) => console.warn(e));
+    } else {
+      oauthGrants = [];
+      renderOAuthGrants();
     }
   });
 }
@@ -1649,6 +1671,224 @@ function setupShieldPlayground() {
   });
 }
 
+/* ── AUTHORIZED APPLICATIONS (OAuth Grants) ───────────── */
+let oauthGrants = [];
+let oauthGrantsLoaded = false;
+let oauthSearchTerm = "";
+let pendingRevokeGrant = null;
+
+const OAUTH_SCOPE_LABELS = {
+  openid: "OpenID",
+  profile: "Profile",
+  email: "Email address",
+  offline_access: "Offline access",
+  "p2g:deduct": "Deduct P2G credits",
+  "p2g:read": "Read P2G usage",
+  "p2g:write": "Manage P2G account"
+};
+
+function humanizeScope(scope) {
+  if (OAUTH_SCOPE_LABELS[scope]) return OAUTH_SCOPE_LABELS[scope];
+  return scope;
+}
+
+function initialsFromName(name) {
+  const trimmed = String(name || "").trim();
+  if (!trimmed) return "?";
+  return trimmed[0].toUpperCase();
+}
+
+function oauthGrantSortValue(grant) {
+  const value = grant.authorized_at || grant.created_at || grant.updated_at;
+  const parsed = value ? new Date(value).getTime() : 0;
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function setOAuthState(state, message) {
+  // state: "loading" | "empty" | "error" | "ready"
+  if (el.oauthGrantsLoading) el.oauthGrantsLoading.style.display = state === "loading" ? "flex" : "none";
+  if (el.oauthGrantsEmpty) el.oauthGrantsEmpty.style.display = state === "empty" ? "flex" : "none";
+  if (el.oauthGrantsError) el.oauthGrantsError.style.display = state === "error" ? "block" : "none";
+  if (el.oauthGrantsList) el.oauthGrantsList.style.display = state === "ready" ? "grid" : "none";
+  if (state === "error" && el.oauthGrantsErrorMessage) {
+    el.oauthGrantsErrorMessage.textContent = message || "Something went wrong. Please try again.";
+  }
+}
+
+async function loadOAuthGrants() {
+  if (!session || !supabase) return;
+  oauthGrantsLoaded = false;
+  setOAuthState("loading");
+  try {
+    const { data, error } = await supabase.auth.oauth.getUserGrants();
+    if (error) throw error;
+    oauthGrants = Array.isArray(data) ? data : (Array.isArray(data?.grants) ? data.grants : []);
+    oauthGrantsLoaded = true;
+    renderOAuthGrants();
+  } catch (error) {
+    oauthGrantsLoaded = false;
+    setOAuthState("error", error?.message || "Could not load authorized applications.");
+  }
+}
+
+function renderOAuthGrants() {
+  if (!el.oauthGrantsList) return;
+
+  if (!oauthGrantsLoaded) {
+    el.oauthGrantsList.innerHTML = "";
+    return;
+  }
+
+  const term = oauthSearchTerm.trim().toLowerCase();
+  const filtered = oauthGrants
+    .filter((grant) => {
+      if (!term) return true;
+      const name = (grant.app_name || grant.client_name || grant.name || "").toLowerCase();
+      return name.includes(term);
+    })
+    .slice()
+    .sort((a, b) => oauthGrantSortValue(b) - oauthGrantSortValue(a));
+
+  if (!oauthGrants.length) {
+    setOAuthState("empty");
+    el.oauthGrantsList.innerHTML = "";
+    return;
+  }
+
+  if (!filtered.length) {
+    setOAuthState("ready");
+    el.oauthGrantsList.innerHTML = `<p class="muted tiny">No applications match "${escapeHtml(oauthSearchTerm)}".</p>`;
+    return;
+  }
+
+  setOAuthState("ready");
+  el.oauthGrantsList.innerHTML = "";
+
+  filtered.forEach((grant) => {
+    const name = grant.app_name || grant.client_name || grant.name || "Unnamed application";
+    const domain = grant.app_domain || grant.website || grant.homepage_url || "";
+    const iconUrl = grant.app_icon || grant.logo_uri || grant.icon_url || "";
+    const authorizedAt = grant.authorized_at || grant.created_at || "";
+    const scopes = Array.isArray(grant.scopes)
+      ? grant.scopes
+      : (typeof grant.scope === "string" ? grant.scope.split(/\s+/).filter(Boolean) : []);
+    const clientId = grant.client_id || grant.oauth_client_id || "—";
+    const grantId = grant.id || grant.grant_id || "—";
+
+    const card = document.createElement("article");
+    card.className = "oauth-grant-card";
+    card.dataset.grantId = grantId;
+
+    card.innerHTML = `
+      <div class="oauth-grant-head">
+        ${iconUrl
+          ? `<img class="oauth-grant-icon" src="${escapeHtml(iconUrl)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'oauth-grant-icon',textContent:'${escapeHtml(initialsFromName(name))}'}))" />`
+          : `<div class="oauth-grant-icon">${escapeHtml(initialsFromName(name))}</div>`
+        }
+        <div class="oauth-grant-info">
+          <div class="oauth-grant-name">${escapeHtml(name)}</div>
+          ${domain ? `<div class="oauth-grant-domain">${escapeHtml(domain)}</div>` : ""}
+          <div class="oauth-grant-date">Authorized ${escapeHtml(formatDateTime(authorizedAt))}</div>
+        </div>
+      </div>
+
+      <div class="oauth-scope-list">
+        ${scopes.length
+          ? scopes.map((s) => `<span class="oauth-scope-chip">${escapeHtml(humanizeScope(s))}</span>`).join("")
+          : `<span class="muted tiny">No scopes reported</span>`
+        }
+      </div>
+
+      <div class="oauth-grant-footer">
+        <details class="oauth-advanced-details">
+          <summary>Advanced Details</summary>
+          <div class="oauth-advanced-body">
+            <div class="oauth-advanced-row"><span>Client ID</span><span>${escapeHtml(clientId)}</span></div>
+            <div class="oauth-advanced-row"><span>Grant ID</span><span>${escapeHtml(grantId)}</span></div>
+          </div>
+        </details>
+        <button type="button" class="danger-btn oauth-revoke-btn">Revoke Access</button>
+      </div>
+    `;
+
+    card.querySelector(".oauth-revoke-btn")?.addEventListener("click", () => {
+      openRevokeModal({ id: grantId, name });
+    });
+
+    el.oauthGrantsList.appendChild(card);
+  });
+}
+
+function openRevokeModal(grant) {
+  pendingRevokeGrant = grant;
+  if (el.oauthRevokeModal) {
+    el.oauthRevokeModal.style.display = "flex";
+  }
+}
+
+function closeRevokeModal() {
+  pendingRevokeGrant = null;
+  if (el.oauthRevokeModal) el.oauthRevokeModal.style.display = "none";
+}
+
+async function confirmRevokeGrant() {
+  if (!pendingRevokeGrant || !supabase) {
+    closeRevokeModal();
+    return;
+  }
+  const grant = pendingRevokeGrant;
+  setBusy(el.oauthRevokeConfirmBtn, true);
+  try {
+    const { error } = await supabase.auth.oauth.revokeGrant(grant.id);
+    if (error) throw error;
+
+    oauthGrants = oauthGrants.filter((g) => (g.id || g.grant_id) !== grant.id);
+    closeRevokeModal();
+
+    const card = el.oauthGrantsList?.querySelector(`[data-grant-id="${CSS.escape(String(grant.id))}"]`);
+    if (card) {
+      card.classList.add("removing");
+      setTimeout(() => {
+        renderOAuthGrants();
+      }, 200);
+    } else {
+      renderOAuthGrants();
+    }
+  } catch (error) {
+    closeRevokeModal();
+    showToast(error?.message || "Could not revoke access. Please try again.");
+  } finally {
+    setBusy(el.oauthRevokeConfirmBtn, false);
+  }
+}
+
+function setupOAuthGrantsPanel() {
+  el.oauthSearch?.addEventListener("input", () => {
+    oauthSearchTerm = el.oauthSearch.value || "";
+    renderOAuthGrants();
+  });
+
+  el.oauthGrantsRetryBtn?.addEventListener("click", () => {
+    loadOAuthGrants();
+  });
+
+  el.oauthRevokeCancelBtn?.addEventListener("click", closeRevokeModal);
+  el.oauthRevokeModal?.addEventListener("click", (event) => {
+    if (event.target === el.oauthRevokeModal) closeRevokeModal();
+  });
+  el.oauthRevokeConfirmBtn?.addEventListener("click", confirmRevokeGrant);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && el.oauthRevokeModal?.style.display === "flex") {
+      closeRevokeModal();
+    }
+  });
+
+  document.querySelector('[data-console-tab="authorized-apps"]')?.addEventListener("click", () => {
+    if (session) loadOAuthGrants().catch((e) => console.warn(e));
+  });
+}
+
 async function init() {
   cfg = await fetchJson("/v1/config");
   renderConfig();
@@ -1665,6 +1905,7 @@ async function init() {
   setupGenApiPlayground();
   setupPaygPlayground();
   setupShieldPlayground();
+  setupOAuthGrantsPanel();
   await loadRemoteTextModels().catch((error) => {
     console.warn(error);
     renderModels();
