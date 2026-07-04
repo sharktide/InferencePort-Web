@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.110.0";
 
 let cfg = null;
 let supabase = null;
@@ -1671,20 +1671,64 @@ function setupShieldPlayground() {
   });
 }
 
-/* ── AUTHORIZED APPLICATIONS (OAuth Grants) ───────────── */
+/* ── AUTHORIZED APPLICATIONS (OAuth Grants) ───────────────────────────
+ *
+ * Uses Supabase's native OAuth 2.1 Server user-grants API:
+ *   supabase.auth.oauth.getUserGrants()   -> [{ id, client_id, client_name, scopes, created_at, updated_at }]
+ *   supabase.auth.oauth.revokeGrant(clientId)   <-- takes the CLIENT ID, not the grant id
+ *
+ * This API requires:
+ *   1. The OAuth 2.1 Server to be enabled for the project (Authentication > OAuth Server), and
+ *   2. @supabase/supabase-js >= ~2.90 (the auth.oauth.* namespace is a recent addition).
+ *
+ * If supabase.auth.oauth.getUserGrants is not a function (older SDK, or a self-hosted/proxied
+ * Supabase instance that hasn't picked up the new client), we fall back to calling Postgres
+ * functions over supabase.rpc(). The `auth` schema (where grants actually live) is not exposed
+ * over PostgREST, so this fallback only works if you've created SECURITY DEFINER functions like:
+ *
+ *   create or replace function public.get_oauth_user_grants()
+ *   returns setof json
+ *   language sql
+ *   security definer
+ *   set search_path = auth, public
+ *   as $$
+ *     select json_build_object(
+ *       'id', id,
+ *       'client_id', client_id,
+ *       'client_name', client_name,
+ *       'scopes', scopes,
+ *       'created_at', created_at,
+ *       'updated_at', updated_at
+ *     )
+ *     from auth.oauth_grants  -- adjust table name to match your Auth server's schema
+ *     where user_id = auth.uid();
+ *   $$;
+ *
+ *   create or replace function public.revoke_oauth_grant(p_client_id uuid)
+ *   returns void
+ *   language sql
+ *   security definer
+ *   set search_path = auth, public
+ *   as $$
+ *     delete from auth.oauth_grants
+ *     where user_id = auth.uid() and client_id = p_client_id;
+ *   $$;
+ *
+ * Grant execute on both functions to `authenticated` only. Adjust table/column names to whatever
+ * your Supabase Auth version actually uses internally — check your project's `auth` schema in the
+ * Table Editor (with the "Show system schemas" toggle) to confirm real names before relying on this.
+ * ────────────────────────────────────────────────────────────────── */
 let oauthGrants = [];
 let oauthGrantsLoaded = false;
 let oauthSearchTerm = "";
 let pendingRevokeGrant = null;
+let oauthUsingRpcFallback = false;
 
 const OAUTH_SCOPE_LABELS = {
   openid: "OpenID",
   profile: "Profile",
   email: "Email address",
-  offline_access: "Offline access",
-  "p2g:deduct": "Deduct P2G credits",
-  "p2g:read": "Read P2G usage",
-  "p2g:write": "Manage P2G account"
+  phone: "Phone number"
 };
 
 function humanizeScope(scope) {
@@ -1699,7 +1743,7 @@ function initialsFromName(name) {
 }
 
 function oauthGrantSortValue(grant) {
-  const value = grant.authorized_at || grant.created_at || grant.updated_at;
+  const value = grant.created_at || grant.updated_at;
   const parsed = value ? new Date(value).getTime() : 0;
   return Number.isNaN(parsed) ? 0 : parsed;
 }
@@ -1715,19 +1759,42 @@ function setOAuthState(state, message) {
   }
 }
 
+async function fetchOAuthGrantsViaRpc() {
+  const { data, error } = await supabase.rpc("get_oauth_user_grants");
+  if (error) throw error;
+  return Array.isArray(data) ? data : [];
+}
+
+async function revokeOAuthGrantViaRpc(clientId) {
+  const { error } = await supabase.rpc("revoke_oauth_grant", { p_client_id: clientId });
+  if (error) throw error;
+}
+
 async function loadOAuthGrants() {
   if (!session || !supabase) return;
   oauthGrantsLoaded = false;
   setOAuthState("loading");
   try {
-    const { data, error } = await supabase.auth.oauth.getUserGrants();
-    if (error) throw error;
-    oauthGrants = Array.isArray(data) ? data : (Array.isArray(data?.grants) ? data.grants : []);
+    if (supabase.auth?.oauth?.getUserGrants) {
+      oauthUsingRpcFallback = false;
+      const { data, error } = await supabase.auth.oauth.getUserGrants();
+      if (error) throw error;
+      oauthGrants = Array.isArray(data) ? data : [];
+    } else {
+      // supabase-js on this page doesn't expose auth.oauth.getUserGrants (older version, or
+      // the OAuth 2.1 Server client isn't bundled). Fall back to a Postgres RPC — see the
+      // SQL functions documented above this block.
+      oauthUsingRpcFallback = true;
+      oauthGrants = await fetchOAuthGrantsViaRpc();
+    }
     oauthGrantsLoaded = true;
     renderOAuthGrants();
   } catch (error) {
     oauthGrantsLoaded = false;
-    setOAuthState("error", error?.message || "Could not load authorized applications.");
+    const hint = !supabase.auth?.oauth?.getUserGrants
+      ? " (supabase.auth.oauth.getUserGrants isn't available — see code comments for the RPC fallback setup, or update @supabase/supabase-js.)"
+      : "";
+    setOAuthState("error", (error?.message || "Could not load authorized applications.") + hint);
   }
 }
 
@@ -1743,7 +1810,7 @@ function renderOAuthGrants() {
   const filtered = oauthGrants
     .filter((grant) => {
       if (!term) return true;
-      const name = (grant.app_name || grant.client_name || grant.name || "").toLowerCase();
+      const name = (grant.client_name || "").toLowerCase();
       return name.includes(term);
     })
     .slice()
@@ -1765,19 +1832,19 @@ function renderOAuthGrants() {
   el.oauthGrantsList.innerHTML = "";
 
   filtered.forEach((grant) => {
-    const name = grant.app_name || grant.client_name || grant.name || "Unnamed application";
+    const name = grant.client_name || "Unnamed application";
+    // Domain/icon aren't part of Supabase's documented grant payload today, but we render them
+    // if a future SDK/server version includes them under these (or similar) keys.
     const domain = grant.app_domain || grant.website || grant.homepage_url || "";
     const iconUrl = grant.app_icon || grant.logo_uri || grant.icon_url || "";
-    const authorizedAt = grant.authorized_at || grant.created_at || "";
-    const scopes = Array.isArray(grant.scopes)
-      ? grant.scopes
-      : (typeof grant.scope === "string" ? grant.scope.split(/\s+/).filter(Boolean) : []);
-    const clientId = grant.client_id || grant.oauth_client_id || "—";
-    const grantId = grant.id || grant.grant_id || "—";
+    const authorizedAt = grant.created_at || "";
+    const scopes = Array.isArray(grant.scopes) ? grant.scopes : [];
+    const clientId = grant.client_id || "—";
+    const grantId = grant.id || "—";
 
     const card = document.createElement("article");
     card.className = "oauth-grant-card";
-    card.dataset.grantId = grantId;
+    card.dataset.clientId = clientId;
 
     card.innerHTML = `
       <div class="oauth-grant-head">
@@ -1812,7 +1879,7 @@ function renderOAuthGrants() {
     `;
 
     card.querySelector(".oauth-revoke-btn")?.addEventListener("click", () => {
-      openRevokeModal({ id: grantId, name });
+      openRevokeModal({ clientId, name });
     });
 
     el.oauthGrantsList.appendChild(card);
@@ -1839,13 +1906,17 @@ async function confirmRevokeGrant() {
   const grant = pendingRevokeGrant;
   setBusy(el.oauthRevokeConfirmBtn, true);
   try {
-    const { error } = await supabase.auth.oauth.revokeGrant(grant.id);
-    if (error) throw error;
+    if (!oauthUsingRpcFallback && supabase.auth?.oauth?.revokeGrant) {
+      const { error } = await supabase.auth.oauth.revokeGrant(grant.clientId);
+      if (error) throw error;
+    } else {
+      await revokeOAuthGrantViaRpc(grant.clientId);
+    }
 
-    oauthGrants = oauthGrants.filter((g) => (g.id || g.grant_id) !== grant.id);
+    oauthGrants = oauthGrants.filter((g) => g.client_id !== grant.clientId);
     closeRevokeModal();
 
-    const card = el.oauthGrantsList?.querySelector(`[data-grant-id="${CSS.escape(String(grant.id))}"]`);
+    const card = el.oauthGrantsList?.querySelector(`[data-client-id="${CSS.escape(String(grant.clientId))}"]`);
     if (card) {
       card.classList.add("removing");
       setTimeout(() => {
