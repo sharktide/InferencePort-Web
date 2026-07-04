@@ -388,7 +388,34 @@
 
       <button id="forgot-btn" class="text-btn" type="button" style="margin-top:0.5rem;">Forgot password?</button>
     </div>
+    <div id="account-view" class="authorize-card" style="display:none;">
+      <div class="authorize-header">
+        <img src="/../console/assets/logo.png" alt="InferencePort AI" />
+        <h1>Continue as</h1>
+        <p>Select the account you want to use for this authorization.</p>
+      </div>
 
+      <div class="user-chip">
+        <div class="user-chip-avatar" id="chooser-avatar">?</div>
+        <span class="user-chip-email" id="chooser-email"></span>
+      </div>
+
+      <div class="authorize-actions">
+        <button id="continue-account-btn">
+          Continue
+        </button>
+
+        <button
+          id="switch-account-btn"
+          class="btn-deny">
+          Switch account
+        </button>
+      </div>
+
+      <p class="footer-text">
+        Switching accounts signs you out and lets you sign in with another account.
+      </p>
+    </div>
     <!-- Consent view (shown when authenticated and authorization details are loaded) -->
     <div id="consent-view" class="authorize-card" style="display:none;">
       <div class="authorize-header">
@@ -482,7 +509,22 @@
     const denyBtn = document.getElementById("deny-btn");
     const consentTitle = document.getElementById("consent-title");
     const redirectUriEl = document.getElementById("redirect-uri");
+    const accountView = document.getElementById("account-view");
+    const chooserEmail = document.getElementById("chooser-email");
+    const chooserAvatar = document.getElementById("chooser-avatar");
+    const continueAccountBtn = document.getElementById("continue-account-btn");
+    const switchAccountBtn = document.getElementById("switch-account-btn");
+    function showAccountChooser(user) {
+      loadingView.style.display = "none";
+      errorView.style.display = "none";
+      loginView.style.display = "none";
+      consentView.style.display = "none";
+      accountView.style.display = "";
 
+      chooserEmail.textContent = user.email || "";
+      chooserAvatar.textContent =
+        (user.email?.[0] || "?").toUpperCase();
+    }
     function applyTheme(theme) {
       document.documentElement.setAttribute("data-theme", theme);
       const light = document.querySelector(".theme-icon-light");
@@ -514,6 +556,7 @@
       errorView.style.display = "none";
       loginView.style.display = "none";
       consentView.style.display = "none";
+      accountView.style.display = "none";
     }
 
     function showError(message) {
@@ -522,6 +565,7 @@
       errorView.style.display = "";
       loginView.style.display = "none";
       consentView.style.display = "none";
+      accountView.style.display = "none";
     }
 
     function showLogin() {
@@ -529,6 +573,7 @@
       errorView.style.display = "none";
       loginView.style.display = "";
       consentView.style.display = "none";
+      accountView.style.display = "none";
     }
 
     function showConsent({ user, details }) {
@@ -686,33 +731,50 @@
             showLogin();
             return;
           }
-          consentLoaded = true;
 
-          const { data: details, error } =
-            await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
+          showAccountChooser(authUser);
+          continueAccountBtn.onclick = async () => {
+              showLoading();
 
-          if (error) {
-            throw error;
-          }
+              try {
+                  consentLoaded = true;
 
-          if (!details) {
-            throw new Error("No authorization details returned");
-          }
+                  const { data: details, error } =
+                      await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
 
-          // User has already granted consent
-          if ("redirect_url" in details && !("authorization_id" in details)) {
-            window.location.href = details.redirect_url;
-            return;
-          }
+                  if (error) throw error;
 
-          showConsent({ user: authUser, details });
+                  if (!details)
+                      throw new Error("No authorization details returned");
+
+                  if (
+                      "redirect_url" in details &&
+                      !("authorization_id" in details)
+                  ) {
+                      window.location.href = details.redirect_url;
+                      return;
+                  }
+
+                  showConsent({ user: authUser, details });
+              } catch (e) {
+                  consentLoaded = false;
+                  showError(
+                      e?.message ||
+                      "This authorization request is invalid or has expired."
+                  );
+              }
+          };
         } catch (e) {
           showError(e?.message || "This authorization request is invalid or has expired.");
           return;
         }
 
         setButtonsBusy(false);
-
+        switchAccountBtn.onclick = async () => {
+          await supabase.auth.signOut();
+          consentLoaded = false;
+          showLogin();
+        };
         allowBtn.onclick = async () => {
           setButtonsBusy(true);
           try {
