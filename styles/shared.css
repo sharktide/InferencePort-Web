@@ -54,7 +54,79 @@ ip-navbar { display: block; }
 	background: rgba(251,191,36,0.25) !important;
 	color: #fde68a !important;
 }
+.nav-pill-download {
+	background: var(--brand) !important;
+	color: #fff !important;
+	border: 1px solid var(--brand) !important;
+	border-radius: 7px !important;
+	padding: 6px 16px !important;
+	font-weight: 600 !important;
+	font-size: 0.85rem;
+}
+.nav-pill-download:hover {
+	background: #6b94ff !important;
+	color: #fff !important;
+}
+.nav-pill-console {
+	background: rgba(139, 92, 246, 0.15) !important;
+	color: #a78bfa !important;
+	border: 1px solid rgba(139, 92, 246, 0.35) !important;
+	border-radius: 7px !important;
+	padding: 6px 16px !important;
+	font-weight: 600 !important;
+	font-size: 0.85rem;
+}
+.nav-pill-console:hover {
+	background: rgba(139, 92, 246, 0.25) !important;
+	color: #c4b5fd !important;
+}
 
+/* ── Hero CTA buttons ── */
+.btn-hero-download {
+	background: var(--brand);
+	color: #fff;
+	border: none;
+	border-radius: 9px;
+	padding: 13px 28px;
+	font-weight: 700;
+	font-size: 0.95rem;
+	box-shadow: 0 0 28px rgba(79, 124, 255, 0.35);
+	transition: transform 0.2s, opacity 0.2s;
+}
+.btn-hero-download:hover { transform: translateY(-2px); opacity: 0.9; color: #fff; }
+.btn-hero-chat {
+	background: rgba(251,191,36,0.12);
+	color: #fbbf24;
+	border: 1px solid rgba(251,191,36,0.35);
+	border-radius: 9px;
+	padding: 13px 28px;
+	font-weight: 700;
+	font-size: 0.95rem;
+	transition: background 0.2s, transform 0.2s;
+}
+.btn-hero-chat:hover { background: rgba(251,191,36,0.22); transform: translateY(-2px); color: #fde68a; }
+.btn-hero-console {
+	background: rgba(139,92,246,0.12);
+	color: #a78bfa;
+	border: 1px solid rgba(139,92,246,0.35);
+	border-radius: 9px;
+	padding: 13px 28px;
+	font-weight: 700;
+	font-size: 0.95rem;
+	transition: background 0.2s, transform 0.2s;
+}
+.btn-hero-console:hover { background: rgba(139,92,246,0.22); transform: translateY(-2px); color: #c4b5fd; }
+.btn-hero-solutions {
+	background: rgba(255, 255, 255, 0.05);
+	color: #d6daea;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 9px;
+	padding: 12px 28px;
+	font-weight: 700;
+	font-size: 0.95rem;
+	transition: background 0.2s, transform 0.2s;
+}
+.btn-hero-solutions:hover { background: rgba(255, 255, 255, 0.09); transform: translateY(-2px); color: #fff; }
 /* ── Footer ── */
 footer {
 	border-top: 1px solid rgba(255, 255, 255, 0.07);
@@ -114,4 +186,27 @@ footer a:hover { color: #fff; }
 	font-size: 0.93rem;
 	max-width: 400px;
 	line-height: 1.65;
+}
+
+/* ── Mobile overrides ── */
+@media (max-width: 576px) {
+	.hero-cta-group {
+		flex-direction: column !important;
+		align-items: center !important;
+		gap: 10px !important;
+		padding: 0 10px;
+	}
+	.hero-cta-group .btn {
+		width: 100%;
+		max-width: 320px;
+		padding: 10px 20px !important;
+		font-size: 0.85rem !important;
+		text-align: center;
+	}
+	.nav-pill-download,
+	.nav-pill-chat,
+	.nav-pill-console {
+		padding: 5px 12px !important;
+		font-size: 0.78rem !important;
+	}
 }

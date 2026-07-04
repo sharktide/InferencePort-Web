@@ -29,8 +29,9 @@ class IpNavbar extends HTMLElement {
 		<div class="collapse navbar-collapse" id="ip-nav">
 			<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
 				${navItems}
-				<li class="nav-item ms-1"><a class="nav-link nav-pill-chat" href="chat/">Chat Now</a></li>
-				<li class="nav-item ms-2"><a class="nav-link nav-pill" href="install.html#install">Get Started</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-download" href="install.html#install">⬇ Download App</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-chat" href="chat/">⚡ Chat Now</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-console" href="/console">{ } P2G/Developer Console</a></li>
 			</ul>
 		</div>
 	</div>
