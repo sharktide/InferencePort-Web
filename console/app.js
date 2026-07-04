@@ -1775,13 +1775,13 @@ async function loadOAuthGrants() {
   oauthGrantsLoaded = false;
   setOAuthState("loading");
   try {
-    if (supabase.auth?.oauth?.getUserGrants) {
+    if (supabase.auth?.oauth?.listGrants) {
       oauthUsingRpcFallback = false;
-      const { data, error } = await supabase.auth.oauth.getUserGrants();
+      const { data, error } = await supabase.auth.oauth.listGrants();
       if (error) throw error;
       oauthGrants = Array.isArray(data) ? data : [];
     } else {
-      // supabase-js on this page doesn't expose auth.oauth.getUserGrants (older version, or
+      // supabase-js on this page doesn't expose auth.oauth.listGrants (older version, or
       // the OAuth 2.1 Server client isn't bundled). Fall back to a Postgres RPC — see the
       // SQL functions documented above this block.
       oauthUsingRpcFallback = true;
@@ -1791,8 +1791,8 @@ async function loadOAuthGrants() {
     renderOAuthGrants();
   } catch (error) {
     oauthGrantsLoaded = false;
-    const hint = !supabase.auth?.oauth?.getUserGrants
-      ? " (supabase.auth.oauth.getUserGrants isn't available — see code comments for the RPC fallback setup, or update @supabase/supabase-js.)"
+    const hint = !supabase.auth?.oauth?.listGrants
+      ? " (supabase.auth.oauth.listGrants isn't available — see code comments for the RPC fallback setup, or update @supabase/supabase-js.)"
       : "";
     setOAuthState("error", (error?.message || "Could not load authorized applications.") + hint);
   }
