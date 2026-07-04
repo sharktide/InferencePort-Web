@@ -1738,7 +1738,7 @@ const OAUTH_SCOPE_LABELS = {
   email: "Email address",
   phone: "Phone number",
   "p2g:deduct": "P2G balance deduction",
-  "gen:subscription": "Gen API subscription"
+  "gen:subscription": "Gen (Subscription) API Deduction",
 };
 
 function humanizeScope(scope) {
