@@ -1674,17 +1674,25 @@ function setupShieldPlayground() {
 /* ── AUTHORIZED APPLICATIONS (OAuth Grants) ───────────────────────────
  *
  * Uses Supabase's native OAuth 2.1 Server user-grants API:
- *   supabase.auth.oauth.getUserGrants()   -> [{ id, client_id, client_name, scopes, created_at, updated_at }]
- *   supabase.auth.oauth.revokeGrant(clientId)   <-- takes the CLIENT ID, not the grant id
+ *   supabase.auth.oauth.listGrants()      -> list of the current user's authorized OAuth clients
+ *   supabase.auth.oauth.revokeGrant(...)  -> revoke one
  *
- * This API requires:
- *   1. The OAuth 2.1 Server to be enabled for the project (Authentication > OAuth Server), and
- *   2. @supabase/supabase-js >= ~2.90 (the auth.oauth.* namespace is a recent addition).
+ * NOTE ON SHAPES: Supabase's own docs are inconsistent about the exact response/parameter
+ * shape for these methods (the guide pages, and the JS reference pages, don't agree, and both
+ * have changed while this API was in beta). Rather than hard-coding one shape and breaking again
+ * on the next SDK point release, normalizeGrant() below accepts several plausible response shapes,
+ * and revokeCurrentGrant() tries a few call signatures for revokeGrant() until one succeeds.
+ * If your installed @supabase/supabase-js has a different exact shape, you mainly need to extend
+ * the alias lists in normalizeGrant() / the attempts list in revokeCurrentGrant() — the rest of the
+ * UI (search, sort, render, revoke modal) doesn't need to change.
  *
- * If supabase.auth.oauth.getUserGrants is not a function (older SDK, or a self-hosted/proxied
- * Supabase instance that hasn't picked up the new client), we fall back to calling Postgres
- * functions over supabase.rpc(). The `auth` schema (where grants actually live) is not exposed
- * over PostgREST, so this fallback only works if you've created SECURITY DEFINER functions like:
+ * This API also requires the OAuth 2.1 Server to be enabled for the project
+ * (Authentication > OAuth Server in the dashboard).
+ *
+ * If supabase.auth.oauth.listGrants is not a function at all (old SDK / no OAuth client bundled),
+ * we fall back to Postgres RPC functions. The `auth` schema (where grants actually live) is not
+ * exposed over PostgREST, so this fallback only works if you've created SECURITY DEFINER functions
+ * like:
  *
  *   create or replace function public.get_oauth_user_grants()
  *   returns setof json
@@ -1714,9 +1722,9 @@ function setupShieldPlayground() {
  *     where user_id = auth.uid() and client_id = p_client_id;
  *   $$;
  *
- * Grant execute on both functions to `authenticated` only. Adjust table/column names to whatever
- * your Supabase Auth version actually uses internally — check your project's `auth` schema in the
- * Table Editor (with the "Show system schemas" toggle) to confirm real names before relying on this.
+ * Grant execute on both functions to `authenticated` only. Check your project's real `auth` schema
+ * (Table Editor, with "Show system schemas" on) to confirm actual table/column names before relying
+ * on this fallback.
  * ────────────────────────────────────────────────────────────────── */
 let oauthGrants = [];
 let oauthGrantsLoaded = false;
@@ -1742,9 +1750,43 @@ function initialsFromName(name) {
   return trimmed[0].toUpperCase();
 }
 
+// Accepts whatever shape listGrants()/RPC returns and normalizes it to:
+// { grantId, clientId, name, domain, iconUrl, scopes: string[], createdAt }
+function normalizeGrant(raw) {
+  if (!raw || typeof raw !== "object") return null;
+
+  const client = raw.client || raw.oauth_client || {};
+
+  const grantId = raw.id || raw.grant_id || raw.grantId || null;
+  const clientId =
+    raw.client_id || raw.clientId || raw.oauth_client_id || client.id || client.client_id || null;
+  const name =
+    raw.client_name || raw.clientName || raw.app_name || client.name || client.client_name || "Unnamed application";
+  const domain = raw.app_domain || raw.website || raw.homepage_url || client.homepage_url || client.website || "";
+  const iconUrl = raw.app_icon || raw.logo_uri || raw.icon_url || client.logo_uri || client.icon_url || "";
+
+  let scopes = raw.scopes || raw.granted_scopes || client.scopes;
+  if (typeof scopes === "string") scopes = scopes.split(/\s+/).filter(Boolean);
+  if (!Array.isArray(scopes)) scopes = [];
+
+  const createdAt = raw.created_at || raw.createdAt || raw.authorized_at || raw.granted_at || "";
+
+  if (!clientId && !grantId) return null;
+
+  return { grantId, clientId, name, domain, iconUrl, scopes, createdAt };
+}
+
+// listGrants() has been observed/documented as returning a bare array, or an object with
+// a `grants`/`data` array inside it. Handle all of them.
+function extractGrantsArray(data) {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.grants)) return data.grants;
+  if (Array.isArray(data?.data)) return data.data;
+  return [];
+}
+
 function oauthGrantSortValue(grant) {
-  const value = grant.created_at || grant.updated_at;
-  const parsed = value ? new Date(value).getTime() : 0;
+  const parsed = grant.createdAt ? new Date(grant.createdAt).getTime() : 0;
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
@@ -1762,12 +1804,44 @@ function setOAuthState(state, message) {
 async function fetchOAuthGrantsViaRpc() {
   const { data, error } = await supabase.rpc("get_oauth_user_grants");
   if (error) throw error;
-  return Array.isArray(data) ? data : [];
+  return extractGrantsArray(data);
 }
 
 async function revokeOAuthGrantViaRpc(clientId) {
   const { error } = await supabase.rpc("revoke_oauth_grant", { p_client_id: clientId });
   if (error) throw error;
+}
+
+// Tries several call signatures against supabase.auth.oauth.revokeGrant, since Supabase's own
+// docs disagree on whether it takes a bare client ID string or an options object (and if so,
+// which key). Stops at the first attempt that doesn't error.
+async function revokeGrantViaSdk(grant) {
+  const attempts = [
+    () => supabase.auth.oauth.revokeGrant({ clientId: grant.clientId }),
+    () => supabase.auth.oauth.revokeGrant({ client_id: grant.clientId }),
+    () => supabase.auth.oauth.revokeGrant(grant.clientId),
+    () => supabase.auth.oauth.revokeGrant({ grantId: grant.grantId }),
+    () => supabase.auth.oauth.revokeGrant({ grant_id: grant.grantId })
+  ].filter((attempt, idx) => {
+    // Skip attempts that need an id we don't actually have.
+    if (idx <= 2) return !!grant.clientId;
+    return !!grant.grantId;
+  });
+
+  let lastError = null;
+  for (const attempt of attempts) {
+    try {
+      const result = await attempt();
+      if (result?.error) {
+        lastError = result.error;
+        continue;
+      }
+      return;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError || new Error("Could not revoke access with the available client/grant ID.");
 }
 
 async function loadOAuthGrants() {
@@ -1779,13 +1853,13 @@ async function loadOAuthGrants() {
       oauthUsingRpcFallback = false;
       const { data, error } = await supabase.auth.oauth.listGrants();
       if (error) throw error;
-      oauthGrants = Array.isArray(data) ? data : [];
+      oauthGrants = extractGrantsArray(data).map(normalizeGrant).filter(Boolean);
     } else {
       // supabase-js on this page doesn't expose auth.oauth.listGrants (older version, or
       // the OAuth 2.1 Server client isn't bundled). Fall back to a Postgres RPC — see the
       // SQL functions documented above this block.
       oauthUsingRpcFallback = true;
-      oauthGrants = await fetchOAuthGrantsViaRpc();
+      oauthGrants = (await fetchOAuthGrantsViaRpc()).map(normalizeGrant).filter(Boolean);
     }
     oauthGrantsLoaded = true;
     renderOAuthGrants();
@@ -1808,11 +1882,7 @@ function renderOAuthGrants() {
 
   const term = oauthSearchTerm.trim().toLowerCase();
   const filtered = oauthGrants
-    .filter((grant) => {
-      if (!term) return true;
-      const name = (grant.client_name || "").toLowerCase();
-      return name.includes(term);
-    })
+    .filter((grant) => !term || grant.name.toLowerCase().includes(term))
     .slice()
     .sort((a, b) => oauthGrantSortValue(b) - oauthGrantSortValue(a));
 
@@ -1832,36 +1902,27 @@ function renderOAuthGrants() {
   el.oauthGrantsList.innerHTML = "";
 
   filtered.forEach((grant) => {
-    const name = grant.client_name || "Unnamed application";
-    // Domain/icon aren't part of Supabase's documented grant payload today, but we render them
-    // if a future SDK/server version includes them under these (or similar) keys.
-    const domain = grant.app_domain || grant.website || grant.homepage_url || "";
-    const iconUrl = grant.app_icon || grant.logo_uri || grant.icon_url || "";
-    const authorizedAt = grant.created_at || "";
-    const scopes = Array.isArray(grant.scopes) ? grant.scopes : [];
-    const clientId = grant.client_id || "—";
-    const grantId = grant.id || "—";
-
     const card = document.createElement("article");
     card.className = "oauth-grant-card";
-    card.dataset.clientId = clientId;
+    card.dataset.clientId = grant.clientId || "";
+    card.dataset.grantId = grant.grantId || "";
 
     card.innerHTML = `
       <div class="oauth-grant-head">
-        ${iconUrl
-          ? `<img class="oauth-grant-icon" src="${escapeHtml(iconUrl)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'oauth-grant-icon',textContent:'${escapeHtml(initialsFromName(name))}'}))" />`
-          : `<div class="oauth-grant-icon">${escapeHtml(initialsFromName(name))}</div>`
+        ${grant.iconUrl
+          ? `<img class="oauth-grant-icon" src="${escapeHtml(grant.iconUrl)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'oauth-grant-icon',textContent:'${escapeHtml(initialsFromName(grant.name))}'}))" />`
+          : `<div class="oauth-grant-icon">${escapeHtml(initialsFromName(grant.name))}</div>`
         }
         <div class="oauth-grant-info">
-          <div class="oauth-grant-name">${escapeHtml(name)}</div>
-          ${domain ? `<div class="oauth-grant-domain">${escapeHtml(domain)}</div>` : ""}
-          <div class="oauth-grant-date">Authorized ${escapeHtml(formatDateTime(authorizedAt))}</div>
+          <div class="oauth-grant-name">${escapeHtml(grant.name)}</div>
+          ${grant.domain ? `<div class="oauth-grant-domain">${escapeHtml(grant.domain)}</div>` : ""}
+          <div class="oauth-grant-date">Authorized ${escapeHtml(formatDateTime(grant.createdAt))}</div>
         </div>
       </div>
 
       <div class="oauth-scope-list">
-        ${scopes.length
-          ? scopes.map((s) => `<span class="oauth-scope-chip">${escapeHtml(humanizeScope(s))}</span>`).join("")
+        ${grant.scopes.length
+          ? grant.scopes.map((s) => `<span class="oauth-scope-chip">${escapeHtml(humanizeScope(s))}</span>`).join("")
           : `<span class="muted tiny">No scopes reported</span>`
         }
       </div>
@@ -1870,8 +1931,8 @@ function renderOAuthGrants() {
         <details class="oauth-advanced-details">
           <summary>Advanced Details</summary>
           <div class="oauth-advanced-body">
-            <div class="oauth-advanced-row"><span>Client ID</span><span>${escapeHtml(clientId)}</span></div>
-            <div class="oauth-advanced-row"><span>Grant ID</span><span>${escapeHtml(grantId)}</span></div>
+            <div class="oauth-advanced-row"><span>Client ID</span><span>${escapeHtml(grant.clientId || "—")}</span></div>
+            <div class="oauth-advanced-row"><span>Grant ID</span><span>${escapeHtml(grant.grantId || "—")}</span></div>
           </div>
         </details>
         <button type="button" class="danger-btn oauth-revoke-btn">Revoke Access</button>
@@ -1879,7 +1940,7 @@ function renderOAuthGrants() {
     `;
 
     card.querySelector(".oauth-revoke-btn")?.addEventListener("click", () => {
-      openRevokeModal({ clientId, name });
+      openRevokeModal(grant);
     });
 
     el.oauthGrantsList.appendChild(card);
@@ -1907,16 +1968,21 @@ async function confirmRevokeGrant() {
   setBusy(el.oauthRevokeConfirmBtn, true);
   try {
     if (!oauthUsingRpcFallback && supabase.auth?.oauth?.revokeGrant) {
-      const { error } = await supabase.auth.oauth.revokeGrant(grant.clientId);
-      if (error) throw error;
+      await revokeGrantViaSdk(grant);
     } else {
+      if (!grant.clientId) throw new Error("Missing client ID for this grant.");
       await revokeOAuthGrantViaRpc(grant.clientId);
     }
 
-    oauthGrants = oauthGrants.filter((g) => g.client_id !== grant.clientId);
+    oauthGrants = oauthGrants.filter(
+      (g) => !((grant.clientId && g.clientId === grant.clientId) || (grant.grantId && g.grantId === grant.grantId))
+    );
     closeRevokeModal();
 
-    const card = el.oauthGrantsList?.querySelector(`[data-client-id="${CSS.escape(String(grant.clientId))}"]`);
+    const selector = grant.clientId
+      ? `[data-client-id="${CSS.escape(String(grant.clientId))}"]`
+      : `[data-grant-id="${CSS.escape(String(grant.grantId))}"]`;
+    const card = el.oauthGrantsList?.querySelector(selector);
     if (card) {
       card.classList.add("removing");
       setTimeout(() => {
