@@ -140,10 +140,22 @@
     /* ------------------------------- */
     /* 📱 MOBILE NAVBAR OPTIMIZATION  */
     /* ------------------------------- */
-    @media (max-width: 640px) {
+    .brand-mobile { display: none; }
 
-      /* Hide InferencePort AI wordmark on mobile */
+    @media (max-width: 640px) {
       .brand-emphasis {
+        display: none !important;
+      }
+
+      .brand-desktop {
+        display: none !important;
+      }
+
+      .brand-mobile {
+        display: inline !important;
+      }
+
+      .brand p {
         display: none !important;
       }
 
@@ -162,8 +174,8 @@
     <div class="brand">
       <img src="./assets/logo.png" alt="InferencePort AI" class="brand-logo" />
       <div>
-        <h1 id="app-name"><span class="brand-emphasis">InferencePort AI</span> Developer Console</h1>
-        <p><span class="brand-emphasis">InferencePort AI</span> Pay-2-Go API dashboard</p>
+        <h1 id="app-name"><span class="brand-emphasis">InferencePort AI</span> <span class="brand-desktop">Developer Console</span><span class="brand-mobile">Console</span></h1>
+        <p class="brand-desktop"><span class="brand-emphasis">InferencePort AI</span> Pay-2-Go API dashboard</p>
       </div>
     </div>
     <div class="top-actions">

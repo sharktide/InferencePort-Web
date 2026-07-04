@@ -79,6 +79,9 @@ const el = {
   sidebarUserTag: document.getElementById("sidebar-user-tag"),
   sidebarUserAvatar: document.getElementById("sidebar-user-avatar"),
   sidebarUserEmail: document.getElementById("sidebar-user-email"),
+  mobileNavToggle: document.getElementById("mobile-nav-toggle"),
+  mobileNavBackdrop: document.getElementById("mobile-nav-backdrop"),
+  consoleNav: document.querySelector(".console-nav"),
   // gen-api panel
   genPanelLocked: document.getElementById("gen-api-panel-locked"),
   genDocsCard: document.getElementById("gen-api-docs-card"),
@@ -939,7 +942,37 @@ function setupConsoleNav() {
   el.consoleNavTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       setConsolePanel(tab.dataset.consoleTab);
+      closeMobileNav();
     });
+  });
+}
+
+function closeMobileNav() {
+  el.consoleNav?.classList.remove("mobile-open");
+  el.mobileNavToggle?.classList.remove("open");
+  el.mobileNavBackdrop?.classList.remove("visible");
+  document.body.style.overflow = "";
+}
+
+function setupMobileNav() {
+  if (!el.mobileNavToggle || !el.consoleNav) return;
+
+  el.mobileNavToggle.addEventListener("click", () => {
+    const isOpen = el.consoleNav.classList.contains("mobile-open");
+    if (isOpen) {
+      closeMobileNav();
+    } else {
+      el.consoleNav.classList.add("mobile-open");
+      el.mobileNavToggle.classList.add("open");
+      el.mobileNavBackdrop.classList.add("visible");
+      document.body.style.overflow = "hidden";
+    }
+  });
+
+  el.mobileNavBackdrop?.addEventListener("click", closeMobileNav);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMobileNav();
   });
 }
 
@@ -2036,6 +2069,7 @@ async function init() {
   cfg = await fetchJson("/v1/config");
   renderConfig();
   setupConsoleNav();
+  setupMobileNav();
   setupTabs();
   setupModelsSourceToggle();
   setConsolePanel("account");
