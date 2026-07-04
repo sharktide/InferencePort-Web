@@ -1736,7 +1736,9 @@ const OAUTH_SCOPE_LABELS = {
   openid: "OpenID",
   profile: "Profile",
   email: "Email address",
-  phone: "Phone number"
+  phone: "Phone number",
+  "p2g:deduct": "P2G balance deduction",
+  "gen:subscription": "Gen API subscription"
 };
 
 function humanizeScope(scope) {
@@ -1925,6 +1927,10 @@ function renderOAuthGrants() {
           ? grant.scopes.map((s) => `<span class="oauth-scope-chip">${escapeHtml(humanizeScope(s))}</span>`).join("")
           : `<span class="muted tiny">No scopes reported</span>`
         }
+        ${["p2g:deduct", "gen:subscription"]
+          .filter((s) => !grant.scopes.includes(s))
+          .map((s) => `<span class="oauth-scope-chip">${escapeHtml(humanizeScope(s))}</span>`)
+          .join("")}
       </div>
 
       <div class="oauth-grant-footer">

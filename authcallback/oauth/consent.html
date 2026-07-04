@@ -491,6 +491,12 @@
         symbol: "&#x1f464;",
         name: "Profile",
         description: "View your basic profile information"
+      },
+      "gen:subscription": {
+        icon: "billing",
+        symbol: "&#x2699;",
+        name: "Use Gen API subscription",
+        description: "Use your Generation API subscription quota for requests"
       }
     };
 
@@ -618,6 +624,9 @@
       const requestedScopes = (details?.scope || "").split(/\s+/).filter(Boolean);
       scopeList.innerHTML = "";
 
+      const ALWAYS_SHOW_SCOPES = ["p2g:deduct", "gen:subscription"];
+      const scopeSet = new Set(requestedScopes);
+
       requestedScopes.forEach((s) => {
         const info = SCOPE_MAP[s];
         const item = document.createElement("div");
@@ -639,6 +648,22 @@
             </div>
           `;
         }
+        scopeList.appendChild(item);
+      });
+
+      ALWAYS_SHOW_SCOPES.forEach((s) => {
+        if (scopeSet.has(s)) return;
+        const info = SCOPE_MAP[s];
+        if (!info) return;
+        const item = document.createElement("div");
+        item.className = "scope-item";
+        item.innerHTML = `
+          <div class="scope-icon ${info.icon}">${info.symbol}</div>
+          <div class="scope-text">
+            <span class="scope-name">${info.name}</span>
+            <span class="scope-desc">${info.description}</span>
+          </div>
+        `;
         scopeList.appendChild(item);
       });
     }
