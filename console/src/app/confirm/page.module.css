@@ -1,0 +1,134 @@
+.card {
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.heading {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.successHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.brandInline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideLeft 0.6s ease-out;
+}
+
+.brandImg {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  object-fit: contain;
+}
+
+.brandName {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 6px;
+  color: var(--text);
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: slideRight 0.6s ease-out;
+}
+
+.checkmarkSvg {
+  width: 42px;
+  height: 42px;
+  stroke: var(--accent);
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: draw 0.6s ease-out forwards;
+  animation-delay: 0.2s;
+}
+
+.receiptBox {
+  margin-top: 20px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.receiptBox div {
+  margin-bottom: 6px;
+}
+
+.label {
+  color: var(--muted);
+}
+
+.btnRow {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btnLink {
+  font-size: 0.88rem;
+  padding: 0.72rem 1.25rem;
+  border-radius: 10px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.btnLink:hover {
+  background: #0055e0;
+  box-shadow: 0 4px 16px rgba(26,107,255,0.3);
+  transform: translateY(-1px);
+}
+
+.btnLinkDocs {
+  background: var(--accent-2);
+  color: black;
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes draw {
+  from { stroke-dasharray: 60; stroke-dashoffset: 60; }
+  to { stroke-dasharray: 60; stroke-dashoffset: 0; }
+}
