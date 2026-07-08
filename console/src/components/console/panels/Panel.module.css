@@ -64,6 +64,67 @@
 .mediaOutput { display: contents; }
 .mediaOutputMedia { max-width: 100%; border-radius: 10px; border: 1.5px solid var(--border); display: block; }
 
+.threeOutput { display: grid; gap: 1rem; margin-top: 0.5rem; }
+.threeViewerWrap { border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); }
+.threeMediaRow { display: grid; gap: 0.4rem; }
+.threeDownloadRow { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+.threeDownloadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.threeDownloadBtn:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+.threeJobStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.threeStatusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.threeStatusPending {
+  background: var(--accent-2);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.threeStatusDone { background: #10b981; }
+.threeStatusFailed { background: var(--danger); }
+.threeError {
+  padding: 0.65rem 1rem;
+  background: rgba(224, 49, 80, 0.08);
+  border: 1px solid rgba(224, 49, 80, 0.25);
+  border-radius: 10px;
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 .modelsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
 .modelCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: grid; gap: 0.8rem; transition: border-color 0.15s, transform 0.15s; }
 .modelCard:hover { border-color: #c8c0b0; transform: translateY(-1px); }
