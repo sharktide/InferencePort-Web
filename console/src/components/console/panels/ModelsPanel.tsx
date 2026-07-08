@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import "@google/model-viewer/dist/model-viewer";
 import styles from "./Panel.module.css";
 
 interface Props { config: any; session: any; apiBase: string; }
@@ -70,6 +69,10 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   }, [source, apiBase]);
 
   useEffect(() => { loadModels(); }, [loadModels]);
+
+  useEffect(() => {
+    import("@google/model-viewer/dist/model-viewer");
+  }, []);
 
   useEffect(() => {
     return () => { if (pollRef.current) clearTimeout(pollRef.current); };
