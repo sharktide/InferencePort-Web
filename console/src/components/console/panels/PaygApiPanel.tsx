@@ -38,6 +38,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
   const [audioDur, setAudioDur] = useState(10);
   const [audioOutput, setAudioOutput] = useState("");
   const [threeModel, setThreeModel] = useState("tripoSR");
+  const [threeResolution, setThreeResolution] = useState<"low" | "medium" | "high">("low");
   const [threePrompt, setThreePrompt] = useState("");
   const [threeUrl, setThreeUrl] = useState("");
   const [threeStatus, setThreeStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
@@ -104,6 +105,9 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
       };
       if (threeModel === "asset-harvester" && threePrompt) {
         body.prompt = threePrompt;
+      }
+      if (threeModel === "trellis2") {
+        body.resolution = threeResolution;
       }
 
       const r = await fj("/v1/3d/generations", {
@@ -201,7 +205,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
           <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
           <h3>3D Generation</h3>
           <p>3D generation uses an asynchronous job model. Submitting a request returns a <code>job_id</code> immediately (HTTP 202); you then poll <code>GET /v1/3d/jobs/{'{'}job_id{'}'}</code> until the job reaches <code>completed</code> or <code>failed</code> status. Credits are charged at submission time and refunded automatically if the job fails.</p>
-          <p>Supported models: <code>tripoSR</code> ($0.02), <code>asset-harvester</code> ($0.07), <code>trellis2</code> ($0.24&ndash;$0.35).</p>
+          <p>Supported models: <code>tripoSR</code> ($0.02), <code>asset-harvester</code> ($0.07), <code>sv3d</code> ($0.02), <code>trellis2</code> ($0.24&ndash;$0.35 with resolution options).</p>
           <h3>Pricing</h3>
           <p>Credits are consumed per request. View your <strong>Account</strong> tab for current credit balance and purchase packs. See the <strong>Models</strong> tab for per-model pricing.</p>
           <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}><a href="https://docs.inferenceport.ai/en/latest/api/p2g-api.html" target="_blank" rel="noreferrer">Full P2G API docs &rarr;</a></p>
@@ -216,14 +220,28 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
         {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} /><label>Duration (seconds)<input type="number" min={1} max={10} value={videoDur} onChange={(e) => setVideoDur(Number(e.target.value))} /></label><button onClick={runVideo} disabled={busy.video}>{busy.video ? "Generating\u2026" : "Generate video"}</button>{videoOutput?.startsWith("blob:") ? <video controls src={videoOutput} className={styles.mediaOutputMedia} /> : <div className={styles.output}>{videoOutput}</div>}</div>}
         {tab === "audio" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe audio / music / sfx..." value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} /><label>Charge duration estimate (seconds)<input type="number" min={1} max={90} value={audioDur} onChange={(e) => setAudioDur(Number(e.target.value))} /></label><button onClick={runAudio} disabled={busy.audio}>{busy.audio ? "Generating\u2026" : "Generate audio"}</button>{audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}</div>}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value)}>
+          <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
             <option value="tripoSR">TripoSR ($0.02)</option>
             <option value="asset-harvester">Asset Harvester ($0.07)</option>
+            <option value="sv3d">SF3D ($0.02)</option>
             <option value="trellis2">Trellis 2 ($0.24&ndash;$0.35)</option>
           </select></label>
-          <textarea rows={4} placeholder="Describe the 3D model..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />
+          {threeModel === "trellis2" && (
+            <label>Resolution<select value={threeResolution} onChange={(e) => setThreeResolution(e.target.value as any)}>
+              <option value="low">Low ($0.24)</option>
+              <option value="medium">Medium ($0.29)</option>
+              <option value="high">High ($0.35)</option>
+            </select></label>
+          )}
+          {threeModel === "asset-harvester" && <textarea rows={4} placeholder="Describe the 3D model (required for Asset Harvester)..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />}
           <input type="text" placeholder="Image URL or base64 data URI (required)" value={threeUrl} onChange={(e) => setThreeUrl(e.target.value)} />
-          <p className={`${styles.muted} ${styles.tiny}`}>3D generation uses async job polling. Requires an input image. Most jobs complete within 1&ndash;5 minutes.</p>
+          <p className={`${styles.muted} ${styles.tiny}`}>
+            {threeModel === "asset-harvester" && "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt."}
+            {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
+            {threeModel === "sv3d" && "SF3D produces a GLB model from a single image."}
+            {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
+            {" "}Async job polling &mdash; most jobs complete within 1&ndash;5 minutes.
+          </p>
           <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? (threeStatus === "submitting" ? "Submitting\u2026" : "Generating\u2026") : "Generate 3D model"}</button>
 
           {threeStatusText && threeStatus !== "idle" && (

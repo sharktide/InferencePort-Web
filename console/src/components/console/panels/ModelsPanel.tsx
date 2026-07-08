@@ -30,6 +30,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [audioDur, setAudioDur] = useState(10);
   const [audioOutput, setAudioOutput] = useState("");
   const [threeModel, setThreeModel] = useState("tripoSR");
+  const [threeResolution, setThreeResolution] = useState<"low" | "medium" | "high">("low");
   const [threePrompt, setThreePrompt] = useState("");
   const [threeUrl, setThreeUrl] = useState("");
   const [threeStatus, setThreeStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
@@ -112,6 +113,9 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
       };
       if (threeModel === "asset-harvester" && threePrompt) {
         body.prompt = threePrompt;
+      }
+      if (threeModel === "trellis2") {
+        body.resolution = threeResolution;
       }
 
       const r = await fj("/v1/3d/generations", {
@@ -256,14 +260,28 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}
         </div>}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value)}>
+          <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
             <option value="tripoSR">TripoSR ($0.02)</option>
             <option value="asset-harvester">Asset Harvester ($0.07)</option>
-            <option value="trellis2">Trellis 2 ($0.24\u2013$0.35)</option>
+            <option value="sv3d">SF3D ($0.02)</option>
+            <option value="trellis2">Trellis 2 ($0.24&ndash;$0.35)</option>
           </select></label>
-          <textarea rows={4} placeholder="Describe the 3D model..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />
+          {threeModel === "trellis2" && (
+            <label>Resolution<select value={threeResolution} onChange={(e) => setThreeResolution(e.target.value as any)}>
+              <option value="low">Low ($0.24)</option>
+              <option value="medium">Medium ($0.29)</option>
+              <option value="high">High ($0.35)</option>
+            </select></label>
+          )}
+          {threeModel === "asset-harvester" && <textarea rows={4} placeholder="Describe the 3D model (required for Asset Harvester)..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />}
           <input type="text" placeholder="Image URL or base64 data URI (required)" value={threeUrl} onChange={(e) => setThreeUrl(e.target.value)} />
-          <p className={`${styles.muted} ${styles.tiny}`}>3D generation uses async job polling. Requires an input image. Most jobs complete within 1\u20135 minutes.</p>
+          <p className={`${styles.muted} ${styles.tiny}`}>
+            {threeModel === "asset-harvester" && "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt."}
+            {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
+            {threeModel === "sv3d" && "SF3D produces a GLB model from a single image."}
+            {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
+            {" "}Async job polling &mdash; most jobs complete within 1&ndash;5 minutes.
+          </p>
           <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? (threeStatus === "submitting" ? "Submitting\u2026" : "Generating\u2026") : "Generate 3D model"}</button>
 
           {threeStatusText && threeStatus !== "idle" && (
