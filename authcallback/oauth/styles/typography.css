@@ -1,0 +1,34 @@
+a { color: var(--accent); text-decoration: none; }
+
+/* ── TYPOGRAPHY ─────────────────────────────────────── */
+h2 {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+h2::before {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 3px;
+  background: var(--accent-2);
+  border-radius: 2px;
+}
+
+h3 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 1.8rem 0 0.8rem;
+}
+
+.muted { color: var(--muted); }
+.tiny  { font-size: 0.8rem; }

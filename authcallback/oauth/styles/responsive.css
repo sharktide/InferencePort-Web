@@ -1,0 +1,137 @@
+/* ── SHARED MOBILE UTILITIES ───────────────────────── */
+.mobile-only { display: none; }
+.brand-mobile { display: none; }
+
+.mobile-nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 199;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.mobile-nav-backdrop.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ── HAMBURGER BUTTON ──────────────────────────────── */
+#mobile-nav-toggle {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.hamburger-line {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+#mobile-nav-toggle.open .hamburger-line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+#mobile-nav-toggle.open .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+#mobile-nav-toggle.open .hamburger-line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* ── BREAKPOINT: ≤ 960px ──────────────────────────── */
+@media (max-width: 960px) {
+  .mobile-only { display: flex; }
+
+  main.console-shell {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  /* Convert sidebar into a slide-in drawer */
+  .console-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    width: 260px;
+    height: 100vh;
+    height: 100dvh;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: 1px solid var(--border);
+    border-bottom: none;
+    padding-top: 1.25rem;
+    background: var(--surface, #faf8f4);
+  }
+
+  .console-nav.mobile-open {
+    transform: translateX(0);
+  }
+
+  .console-nav-label {
+    display: block;
+  }
+
+  .sidebar-user-tag {
+    display: flex !important;
+  }
+
+  .console-nav-tab {
+    width: 100%;
+    flex: none;
+    white-space: normal;
+  }
+
+  .console-content {
+    padding: 1rem;
+  }
+
+  .card, .card.wide, #auth-card, #wallet-card {
+    grid-column: span 12;
+  }
+
+  .api-key-shell { grid-template-columns: 1fr; }
+}
+
+/* ── BREAKPOINT: ≤ 680px ──────────────────────────── */
+@media (max-width: 680px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .ledger-header, .ledger-row { grid-template-columns: 1fr; }
+  .shield-result-grid { grid-template-columns: 1fr; }
+}
+
+/* ── BREAKPOINT: ≤ 640px ──────────────────────────── */
+@media (max-width: 640px) {
+  .brand-emphasis {
+    display: none !important;
+  }
+
+  .brand-desktop {
+    display: none !important;
+  }
+
+  .brand-mobile {
+    display: inline !important;
+  }
+
+  .brand p {
+    display: none !important;
+  }
+
+  .topbar {
+    padding: 0 1rem;
+  }
+
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+  }
+}
