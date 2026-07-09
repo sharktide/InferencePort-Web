@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attending — Roleplay Chat</title>
+<style>
+  :root{
+    --bg:#0e1613;
+    --panel:#141f1b;
+    --panel-2:#182620;
+    --line:#25352f;
+    --text:#e8efe9;
+    --muted:#8fa89b;
+    --accent:#3fb98a;
+    --accent-dim:#2a7a5c;
+    --warn:#e0a83e;
+    --danger:#e0503f;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --serif: "Source Serif 4", Georgia, serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 800px at 80% -10%, #14251f 0%, var(--bg) 55%);
+    color:var(--text);
+    font-family: var(--mono);
+    font-size:14px;
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+  }
+  ::selection{background:var(--accent-dim);color:#fff;}
+
+  /* ---------- Sidebar ---------- */
+  #sidebar{
+    width:260px;
+    flex-shrink:0;
+    background:var(--panel);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    padding:16px;
+    gap:14px;
+  }
+  .brand{
+    font-family:var(--serif);
+    font-size:19px;
+    letter-spacing:.3px;
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;}
+  .brand small{color:var(--muted);font-family:var(--mono);font-size:11px;}
+
+  #newChatBtn{
+    background:var(--accent-dim);
+    color:#eafff4;
+    border:1px solid var(--accent);
+    padding:9px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.2px;
+  }
+  #newChatBtn:hover{background:var(--accent);}
+
+  #chatList{
+    flex:1;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    margin-top:4px;
+  }
+  .chat-item{
+    padding:9px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    color:var(--muted);
+    border:1px solid transparent;
+    font-size:12.5px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:6px;
+  }
+  .chat-item:hover{background:var(--panel-2);}
+  .chat-item.active{background:var(--panel-2);color:var(--text);border-color:var(--line);}
+  .chat-item .del{opacity:0;color:var(--danger);font-size:11px;}
+  .chat-item:hover .del{opacity:.7;}
+  .chat-item .del:hover{opacity:1;}
+
+  .side-footer{
+    border-top:1px solid var(--line);
+    padding-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .side-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--muted);
+    padding:8px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-family:var(--mono);
+    font-size:11.5px;
+    text-align:left;
+  }
+  .side-btn:hover{border-color:var(--accent-dim);color:var(--text);}
+
+  /* ---------- Main ---------- */
+  #main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+  }
+  #topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 20px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, var(--panel), transparent);
+  }
+  #topbar .title{
+    font-family:var(--serif);
+    font-size:16px;
+    color:var(--text);
+  }
+  #topbar .sub{color:var(--muted);font-size:11.5px;margin-top:2px;}
+  select#modelPicker{
+    background:var(--panel-2);
+    color:var(--text);
+    border:1px solid var(--line);
+    padding:7px 10px;
+    border-radius:6px;
+    font-family:var(--mono);
+    font-size:12px;
+    min-width:220px;
+  }
+
+  #messages{
+    flex:1;
+    overflow-y:auto;
+    padding:24px 20px 10px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .msg{
+    max-width:720px;
+    padding:11px 14px;
+    border-radius:10px;
+    line-height:1.55;
+    white-space:pre-wrap;
+    font-size:13.5px;
+  }
+  .msg.user{
+    align-self:flex-end;
+    background:var(--accent-dim);
+    color:#eafff4;
+    border-bottom-right-radius:2px;
+  }
+  .msg.assistant{
+    align-self:flex-start;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-bottom-left-radius:2px;
+  }
+  .msg.system-note{
+    align-self:center;
+    background:transparent;
+    color:var(--muted);
+    font-size:11.5px;
+    border:1px dashed var(--line);
+  }
+  .msg .role-tag{
+    display:block;
+    font-size:10px;
+    color:var(--muted);
+    margin-bottom:4px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+  }
+
+  #composer{
+    border-top:1px solid var(--line);
+    padding:14px 20px 18px;
+    display:flex;
+    gap:10px;
+    background:var(--panel);
+  }
+  #composer textarea{
+    flex:1;
+    resize:none;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:8px;
+    font-family:var(--mono);
+    font-size:13px;
+    height:46px;
+    line-height:1.4;
+  }
+  #composer textarea:focus{outline:none;border-color:var(--accent-dim);}
+  #sendBtn{
+    background:var(--accent);
+    border:none;
+    color:#06120c;
+    font-weight:600;
+    padding:0 20px;
+    border-radius:8px;
+    cursor:pointer;
+    font-family:var(--mono);
+  }
+  #sendBtn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed;}
+
+  /* ---------- Notifications ---------- */
+  #notifications{
+    position:fixed;
+    top:16px;
+    right:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:999;
+  }
+  .toast{
+    min-width:260px;
+    max-width:340px;
+    padding:14px 16px;
+    border-radius:8px;
+    font-size:12.5px;
+    line-height:1.5;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+    animation:slidein .25s ease;
+    border-left:4px solid var(--accent);
+  }
+  @keyframes slidein{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  .toast.nurse{background:#2a2410;border-color:var(--warn);color:#ffe9b8;}
+  .toast.sos{background:#2c1512;border-color:var(--danger);color:#ffd6cf;}
+  .toast .t-title{font-weight:700;letter-spacing:.4px;text-transform:uppercase;font-size:11px;margin-bottom:4px;}
+  .toast .t-close{float:right;cursor:pointer;opacity:.6;}
+  .toast .t-close:hover{opacity:1;}
+
+  /* ---------- Modal ---------- */
+  #modalOverlay{
+    position:fixed;inset:0;
+    background:rgba(5,10,8,.75);
+    backdrop-filter: blur(2px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+  }
+  .hidden{display:none !important;}
+  .modal{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    width:560px;
+    max-width:92vw;
+    max-height:86vh;
+    overflow-y:auto;
+    padding:26px 28px 22px;
+  }
+  .modal h2{
+    font-family:var(--serif);
+    font-size:20px;
+    margin:0 0 4px;
+  }
+  .modal .step-label{color:var(--accent);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+  .modal p.hint{color:var(--muted);font-size:12.5px;margin-top:2px;margin-bottom:14px;line-height:1.5;}
+  .modal textarea, .modal input[type=text]{
+    width:100%;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text);
+    padding:11px 12px;
+    border-radius:8px;
+    font-family:var(--mono);
+    font-size:13px;
+  }
+  .modal textarea{height:150px;resize:vertical;}
+  .modal-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+  }
+  .modal-actions .skip{background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:12px;cursor:pointer;text-decoration:underline;}
+  .modal-actions .next{
+    background:var(--accent);
+    border:none;color:#06120c;font-weight:600;
+    padding:10px 22px;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:13px;
+  }
+  .persona-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .persona-chip{
+    border:1px solid var(--line);
+    background:var(--panel-2);
+    color:var(--muted);
+    padding:6px 11px;
+    border-radius:20px;
+    font-size:11.5px;
+    cursor:pointer;
+  }
+  .persona-chip:hover{border-color:var(--accent-dim);color:var(--text);}
+
+  .badge{
+    display:inline-block;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-size:10px;
+    padding:2px 7px;
+    border-radius:20px;
+    margin-left:6px;
+  }
+  #memoryBtn{position:relative;}
+  #memPanel{
+    position:fixed;
+    right:16px;
+    top:60px;
+    width:300px;
+    max-height:60vh;
+    overflow-y:auto;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    z-index:900;
+    font-size:12px;
+    line-height:1.6;
+    box-shadow:0 12px 32px rgba(0,0,0,.5);
+  }
+  #memPanel h3{margin:0 0 8px;font-family:var(--serif);font-size:14px;}
+  #memPanel .mem-item{border-bottom:1px dashed var(--line);padding:6px 0;color:var(--muted);}
+  #memPanel .mem-item:last-child{border-bottom:none;}
+
+  ::-webkit-scrollbar{width:9px;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px;}
+</style>
+</head>
+<body>
+
+<div id="notifications"></div>
+
+<!-- ===================== ONBOARDING MODAL ===================== -->
+<div id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <!-- content injected by JS -->
+  </div>
+</div>
+
+<!-- ===================== SIDEBAR ===================== -->
+<div id="sidebar">
+  <div class="brand"><span class="dot"></span>Attending<small>roleplay demo</small></div>
+  <button id="newChatBtn">+ New chat</button>
+  <div id="chatList"></div>
+  <div class="side-footer">
+    <button class="side-btn" id="editBackgroundBtn">Edit patient background</button>
+    <button class="side-btn" id="editPersonaBtn">Edit doctor personality</button>
+    <button class="side-btn" id="viewMemBtn">View session memory</button>
+  </div>
+</div>
+
+<!-- ===================== MAIN ===================== -->
+<div id="main">
+  <div id="topbar">
+    <div>
+      <div class="title">Session <span id="chatTitleTag"></span></div>
+      <div class="sub">Simulated clinical roleplay — not real medical advice</div>
+    </div>
+    <select id="modelPicker"><option>Loading models…</option></select>
+  </div>
+
+  <div id="messages"></div>
+
+  <div id="composer">
+    <textarea id="composerInput" placeholder="Type as the patient…"></textarea>
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<div id="memPanel" class="hidden"></div>
+
+<script>
+const API_BASE = "https://api.inferenceport.ai";
+
+// ---------------- Ephemeral in-memory state (not persisted) ----------------
+const state = {
+  patientBackground: "",
+  personality: "",
+  model: "",
+  models: [],
+  chats: [],        // { id, title, messages: [{role, content}], memory: [] }
+  activeChatId: null,
+};
+
+let idCounter = 1;
+function uid(){ return "c" + (idCounter++); }
+
+// ---------------- Notifications ----------------
+function showToast(kind, title, body){
+  const el = document.createElement("div");
+  el.className = "toast " + kind;
+  el.innerHTML = `<span class="t-close">&times;</span><div class="t-title">${title}</div><div>${escapeHtml(body||"")}</div>`;
+  el.querySelector(".t-close").onclick = () => el.remove();
+  document.getElementById("notifications").appendChild(el);
+  setTimeout(()=> el.remove(), kind === "sos" ? 15000 : 9000);
+}
+
+function escapeHtml(s){
+  const d = document.createElement("div");
+  d.innerText = s;
+  return d.innerHTML;
+}
+
+// ---------------- Onboarding flow ----------------
+const modalBox = document.getElementById("modalBox");
+const modalOverlay = document.getElementById("modalOverlay");
+
+function renderBackgroundStep(){
+  modalBox.innerHTML = `
+    <div class="step-label">Step 1 of 3</div>
+    <h2>Patient background</h2>
+    <p class="hint">Paste the patient's history, chart notes, medications, recent labs — anything relevant. This is given to the doctor persona as ground-truth context before the conversation begins.</p>
+    <textarea id="bgInput" placeholder="e.g. 54F, history of T2DM and hypertension, recently started on lisinopril...">${escapeHtml(state.patientBackground)}</textarea>
+    <div class="modal-actions">
+      <button class="skip" id="bgSkip">Skip for now</button>
+      <button class="next" id="bgNext">Continue →</button>
+    </div>
+  `;
+  document.getElementById("bgSkip").onclick = () => { state.patientBackground=""; renderPersonaStep(); };
+  document.getElementById("bgNext").onclick = () => {
+    state.patientBackground = document.getElementById("bgInput").value.trim();
+    renderPersonaStep();
+  };
+}
+
+const PERSONA_PRESETS = [
+  "Warm and reassuring, explains things simply",
+  "Brisk, efficient, no-nonsense",
+  "Very thorough, asks lots of follow-up questions",
+  "Dry sense of humor, puts patients at ease",
+  "Cautious and conservative, always double-checks"
+];
+
+function renderPersonaStep(){
+  modalBox.innerHTML = `
+    <div class="step-label">Step 2 of 3</div>
+    <h2>Doctor personality</h2>
+    <p class="hint">Describe the bedside manner and personality the doctor should roleplay. Pick a preset or write your own.</p>
+    <div class="persona-grid" id="personaChips"></div>
+    <textarea id="personaInput" placeholder="Describe the doctor's personality and communication style...">${escapeHtml(state.personality)}</textarea>
+    <div class="modal-actions">
+      <button class="skip" id="personaSkip">Skip for now</button>
+      <button class="next" id="personaNext">Continue →</button>
+    </div>
+  `;
+  const chipWrap = document.getElementById("personaChips");
+  PERSONA_PRESETS.forEach(p=>{
+    const chip = document.createElement("div");
+    chip.className = "persona-chip";
+    chip.innerText = p;
+    chip.onclick = () => { document.getElementById("personaInput").value = p; };
+    chipWrap.appendChild(chip);
+  });
+  document.getElementById("personaSkip").onclick = () => { state.personality=""; renderModelStep(); };
+  document.getElementById("personaNext").onclick = () => {
+    state.personality = document.getElementById("personaInput").value.trim();
+    renderModelStep();
+  };
+}
+
+async function renderModelStep(){
+  modalBox.innerHTML = `
+    <div class="step-label">Step 3 of 3</div>
+    <h2>Choose a model</h2>
+    <p class="hint">Fetching available models from api.inferenceport.ai…</p>
+    <select id="modalModelPicker" style="width:100%"><option>Loading…</option></select>
+    <div class="modal-actions">
+      <button class="skip" id="modelSkip">Cancel</button>
+      <button class="next" id="modelNext">Start chatting →</button>
+    </div>
+  `;
+  await loadModels();
+  const sel = document.getElementById("modalModelPicker");
+  populateModelSelect(sel);
+  document.getElementById("modelSkip").onclick = () => { closeModal(); };
+  document.getElementById("modelNext").onclick = () => {
+    state.model = sel.value;
+    document.getElementById("modelPicker").value = state.model;
+    closeModal();
+    if(state.chats.length === 0){ createNewChat(); }
+  };
+}
+
+function closeModal(){
+  modalOverlay.classList.add("hidden");
+}
+function openModalFresh(){
+  modalOverlay.classList.remove("hidden");
+  renderBackgroundStep();
+}
+
+// ---------------- Model loading ----------------
+async function loadModels(){
+  try{
+    const res = await fetch(`${API_BASE}/gen/models`);
+    const data = await res.json();
+    // Be liberal about the shape of the response
+    let list = Array.isArray(data) ? data : (data.models || data.data || []);
+    state.models = list.map(m => typeof m === "string" ? m : (m.id || m.name || JSON.stringify(m)));
+    if(state.models.length === 0) throw new Error("empty");
+  }catch(e){
+    console.warn("Model fetch failed, using fallback list", e);
+    state.models = ["default-model"];
+  }
+  if(!state.model) state.model = state.models[0];
+  populateModelSelect(document.getElementById("modelPicker"));
+}
+
+function populateModelSelect(sel){
+  sel.innerHTML = "";
+  state.models.forEach(m=>{
+    const opt = document.createElement("option");
+    opt.value = m; opt.innerText = m;
+    if(m === state.model) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+document.getElementById("modelPicker").addEventListener("change", (e)=>{
+  state.model = e.target.value;
+});
+
+// ---------------- Chats ----------------
+function createNewChat(){
+  const chat = { id: uid(), title: "New chat", messages: [], memory: [] };
+  state.chats.unshift(chat);
+  state.activeChatId = chat.id;
+  renderChatList();
+  renderMessages();
+}
+
+function getActiveChat(){
+  return state.chats.find(c => c.id === state.activeChatId);
+}
+
+function renderChatList(){
+  const wrap = document.getElementById("chatList");
+  wrap.innerHTML = "";
+  state.chats.forEach(c=>{
+    const item = document.createElement("div");
+    item.className = "chat-item" + (c.id === state.activeChatId ? " active" : "");
+    item.innerHTML = `<span>${escapeHtml(c.title)}</span><span class="del">✕</span>`;
+    item.onclick = (e)=>{
+      if(e.target.classList.contains("del")){
+        state.chats = state.chats.filter(x=>x.id!==c.id);
+        if(state.activeChatId === c.id){
+          state.activeChatId = state.chats.length ? state.chats[0].id : null;
+        }
+        renderChatList(); renderMessages();
+        return;
+      }
+      state.activeChatId = c.id;
+      renderChatList(); renderMessages();
+    };
+    wrap.appendChild(item);
+  });
+}
+
+function renderMessages(){
+  const wrap = document.getElementById("messages");
+  const tag = document.getElementById("chatTitleTag");
+  const chat = getActiveChat();
+  wrap.innerHTML = "";
+  if(!chat){ tag.innerText = ""; return; }
+  tag.innerText = "— " + chat.title;
+  chat.messages.forEach(m=>{
+    if(m.role === "system") return; // never render raw system prompt
+    const div = document.createElement("div");
+    if(m.role === "note"){
+      div.className = "msg system-note";
+      div.innerText = m.content;
+    } else {
+      div.className = "msg " + (m.role === "user" ? "user" : "assistant");
+      div.innerHTML = `<span class="role-tag">${m.role === "user" ? "patient" : "doctor"}</span>${escapeHtml(m.content)}`;
+    }
+    wrap.appendChild(div);
+  });
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+// ---------------- System prompt construction ----------------
+function buildSystemPrompt(chat){
+  const memText = chat.memory.length
+    ? chat.memory.map((m,i)=>`${i+1}. ${m}`).join("\n")
+    : "(no memory recorded yet)";
+
+  return `You are roleplaying as an attending physician chatting with a patient. Stay in character at all times as a doctor, never break the roleplay frame or mention that you are an AI unless directly and explicitly asked.
+
+## TOOLS
+
+You have three tools available. Use them via tool calls, not by describing them in text.
+
+1. update_memory(note: string)
+   - Use this AGGRESSIVELY. Every single time you learn ANY new fact about the patient during the conversation (symptom, medication, allergy, life circumstance, emotional state, anything at all), immediately call update_memory to record a short note of it.
+   - Do this proactively and often — err heavily on the side of recording too much rather than too little. Do not wait until the end of the conversation.
+   - This is the only way information persists between turns, so be diligent.
+
+2. call_nurse(reason: string)
+   - Call this if ANYTHING the patient says seems out of line, concerning, or potentially problematic — even moderately so. This is a low bar: mild concerning symptoms, non-adherence to medication, signs of distress, anything that a nurse should be aware of.
+   - Calling this only sends a notification to staff. It does not end the conversation. Continue speaking with the patient normally afterward.
+
+3. call_sos(reason: string)
+   - Call this IMMEDIATELY if there is anything bad, dangerous, or even potentially life-threatening — chest pain, suicidal ideation, signs of stroke, severe allergic reaction, breathing difficulty, uncontrolled bleeding, or anything in that category, however uncertain.
+   - Bias strongly toward calling this if there is any doubt. False alarms are far preferable to missed emergencies.
+   - Calling this only sends a notification to staff. It does not end the conversation. Continue to calmly support the patient afterward.
+
+## PATIENT BACKGROUND (provided prior to this conversation)
+${state.patientBackground || "(none provided)"}
+
+## YOUR PERSONALITY
+${state.personality || "(no specific personality given — default to warm, professional, and clear)"}
+
+## SESSION MEMORY (facts you have recorded so far in this conversation)
+${memText}
+
+Stay consistent with all of the above. Speak naturally as the doctor in first person.`;
+}
+
+// ---------------- Tool schema ----------------
+const TOOLS = [
+  {
+    type: "function",
+    function: {
+      name: "update_memory",
+      description: "Record a new fact learned about the patient during this conversation. Call this often, any time new information surfaces.",
+      parameters: {
+        type: "object",
+        properties: { note: { type: "string", description: "A concise note of the fact learned." } },
+        required: ["note"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "call_nurse",
+      description: "Notify the nurse that something concerning or out of line has come up that they should be aware of. Does not end the conversation.",
+      parameters: {
+        type: "object",
+        properties: { reason: { type: "string", description: "Short reason the nurse is being notified." } },
+        required: ["reason"]
+      }
+    }
+  },
+  {
+    type: "function",
+    function: {
+      name: "call_sos",
+      description: "Trigger an emergency notification because something potentially life-threatening has come up. Does not end the conversation.",
+      parameters: {
+        type: "object",
+        properties: { reason: { type: "string", description: "Short reason for the emergency escalation." } },
+        required: ["reason"]
+      }
+    }
+  }
+];
+
+// ---------------- Tool handling ----------------
+function handleToolCall(chat, name, argsStr){
+  let args = {};
+  try{ args = JSON.parse(argsStr || "{}"); }catch(e){ args = {}; }
+
+  if(name === "update_memory"){
+    const note = args.note || "(empty note)";
+    chat.memory.push(note);
+    return "Memory updated.";
+  }
+  if(name === "call_nurse"){
+    showToast("nurse", "Nurse notified", args.reason || "The doctor flagged something for the nurse.");
+    return "Nurse has been notified.";
+  }
+  if(name === "call_sos"){
+    showToast("sos", "SOS — Emergency alert", args.reason || "The doctor triggered an emergency escalation.");
+    return "Emergency staff have been notified.";
+  }
+  return "Unknown tool.";
+}
+
+// ---------------- Sending messages ----------------
+const sendBtn = document.getElementById("sendBtn");
+const composerInput = document.getElementById("composerInput");
+
+sendBtn.addEventListener("click", sendMessage);
+composerInput.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter" && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+async function sendMessage(){
+  const chat = getActiveChat();
+  if(!chat) return;
+  const text = composerInput.value.trim();
+  if(!text) return;
+  composerInput.value = "";
+
+  chat.messages.push({ role: "user", content: text });
+  if(chat.messages.filter(m=>m.role==="user").length === 1){
+    chat.title = text.slice(0, 30) + (text.length > 30 ? "…" : "");
+  }
+  renderChatList();
+  renderMessages();
+
+  sendBtn.disabled = true;
+  await runCompletionLoop(chat);
+  sendBtn.disabled = false;
+}
+
+async function runCompletionLoop(chat){
+  // Rebuild the API message array fresh each turn: system prompt + full visible history
+  let guard = 0;
+  while(guard++ < 6){
+    const apiMessages = [
+      { role: "system", content: buildSystemPrompt(chat) },
+      ...chat.messages.filter(m => m.role === "user" || m.role === "assistant" || m.role === "tool").map(m=>{
+        if(m.role === "tool"){
+          return { role: "tool", tool_call_id: m.tool_call_id, content: m.content };
+        }
+        if(m.role === "assistant" && m.tool_calls){
+          return { role: "assistant", content: m.content || "", tool_calls: m.tool_calls };
+        }
+        return { role: m.role, content: m.content };
+      })
+    ];
+
+    let data;
+    try{
+      const res = await fetch(`${API_BASE}/gen/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: state.model,
+          messages: apiMessages,
+          tools: TOOLS
+        })
+      });
+      data = await res.json();
+    }catch(e){
+      chat.messages.push({ role: "note", content: "⚠ Request failed: " + e.message });
+      renderMessages();
+      return;
+    }
+
+    const choice = data.choices && data.choices[0];
+    const msg = choice && choice.message;
+    if(!msg){
+      chat.messages.push({ role: "note", content: "⚠ Unexpected response from model." });
+      renderMessages();
+      return;
+    }
+
+    const toolCalls = msg.tool_calls;
+    if(toolCalls && toolCalls.length){
+      chat.messages.push({ role: "assistant", content: msg.content || "", tool_calls: toolCalls });
+      renderMessages();
+      for(const tc of toolCalls){
+        const result = handleToolCall(chat, tc.function.name, tc.function.arguments);
+        chat.messages.push({ role: "tool", tool_call_id: tc.id, content: result });
+      }
+      renderMessages();
+      continue; // loop again so the model can respond after tool results
+    } else {
+      chat.messages.push({ role: "assistant", content: msg.content || "" });
+      renderMessages();
+      return;
+    }
+  }
+}
+
+// ---------------- Sidebar footer actions ----------------
+document.getElementById("editBackgroundBtn").onclick = () => {
+  modalOverlay.classList.remove("hidden");
+  renderBackgroundStep();
+  // override "continue" flow to just save & close for quick edits
+  const nextBtn = document.getElementById("bgNext");
+  nextBtn.innerText = "Save →";
+  nextBtn.onclick = () => {
+    state.patientBackground = document.getElementById("bgInput").value.trim();
+    closeModal();
+  };
+};
+document.getElementById("editPersonaBtn").onclick = () => {
+  modalOverlay.classList.remove("hidden");
+  renderPersonaStep();
+  const nextBtn = document.getElementById("personaNext");
+  nextBtn.innerText = "Save →";
+  nextBtn.onclick = () => {
+    state.personality = document.getElementById("personaInput").value.trim();
+    closeModal();
+  };
+};
+
+const memPanel = document.getElementById("memPanel");
+document.getElementById("viewMemBtn").onclick = () => {
+  const chat = getActiveChat();
+  if(!chat){ return; }
+  if(!memPanel.classList.contains("hidden")){
+    memPanel.classList.add("hidden");
+    return;
+  }
+  memPanel.innerHTML = `<h3>Session memory</h3>` + (
+    chat.memory.length
+      ? chat.memory.map(m=>`<div class="mem-item">${escapeHtml(m)}</div>`).join("")
+      : `<div class="mem-item">No memory recorded yet for this chat.</div>`
+  );
+  memPanel.classList.remove("hidden");
+};
+
+document.getElementById("newChatBtn").onclick = createNewChat;
+
+// ---------------- Init ----------------
+(async function init(){
+  await loadModels(); // pre-fetch in background so step 3 is fast
+  openModalFresh();
+})();
+</script>
+</body>
+</html>
