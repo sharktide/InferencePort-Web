@@ -1,9 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 
 interface Props { config: any; session: any; apiBase: string; }
+
+interface ThreeJobResult {
+  glbUrl?: string;
+  plyUrl?: string;
+  videoUrl?: string;
+  usage?: { payg_credits_charged: number; model_count: number };
+}
 
 export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [models, setModels] = useState<any[]>([]);
@@ -22,9 +29,15 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [audioPrompt, setAudioPrompt] = useState("");
   const [audioDur, setAudioDur] = useState(10);
   const [audioOutput, setAudioOutput] = useState("");
+  const [threeModel, setThreeModel] = useState("tripoSR");
+  const [threeResolution, setThreeResolution] = useState<"low" | "medium" | "high">("low");
   const [threePrompt, setThreePrompt] = useState("");
   const [threeUrl, setThreeUrl] = useState("");
-  const [threeOutput, setThreeOutput] = useState("");
+  const [threeStatus, setThreeStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
+  const [threeStatusText, setThreeStatusText] = useState("");
+  const [threeResult, setThreeResult] = useState<ThreeJobResult | null>(null);
+  const [threeError, setThreeError] = useState("");
+  const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
@@ -58,18 +71,124 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
 
   useEffect(() => { loadModels(); }, [loadModels]);
 
+  useEffect(() => {
+    import("@google/model-viewer/dist/model-viewer");
+  }, []);
+
+  useEffect(() => {
+    return () => { if (pollRef.current) clearTimeout(pollRef.current); };
+  }, []);
+
   const displayModels = source === "p2g" ? textModels() : genModels;
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
   const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`); return d; };
   const sb = (k: string, v: boolean) => setBusy((p) => ({ ...p, [k]: v }));
 
+  const decodeBase64 = (b64: string): string => {
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return URL.createObjectURL(new Blob([bytes]));
+  };
+
   const runText = async () => { if (!session) return alert("Sign in required"); sb("text", true); setTextOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/chat/completions" : "/gen/chat/completions"; setTextOutput(JSON.stringify(await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ stream: false, model: selectedModel || undefined, messages: [{ role: "user", content: textPrompt || "Hello" }] }) }), null, 2)); } catch (e: any) { setTextOutput(e.message); } sb("text", false); };
   const runImage = async () => { if (!session) return alert("Sign in required"); sb("image", true); setImageOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/images/generations" : "/gen/images/generations"; const r = await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: imagePrompt || "A colorful neon city." }) }); const b = r?.data?.[0]?.b64_json; if (!b) throw new Error("No image returned"); setImageOutput(`data:image/jpeg;base64,${b}`); } catch (e: any) { setImageOutput(e.message); } sb("image", false); };
   const runVideo = async () => { if (!session) return alert("Sign in required"); sb("video", true); setVideoOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/videos/generations" : "/gen/videos/generations"; const r = await fetch(`${apiBase}${path}`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: videoPrompt || "A drifting cloudscape.", duration: Number(videoDur) }) }); if (!r.ok) throw new Error("Video generation failed"); setVideoOutput(URL.createObjectURL(await r.blob())); } catch (e: any) { setVideoOutput(e.message); } sb("video", false); };
   const runAudio = async () => { if (!session) return alert("Sign in required"); sb("audio", true); setAudioOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/audio/generations" : "/gen/audio/generations"; const r = await fetch(`${apiBase}${path}`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: audioPrompt || "Energetic electronic beat", duration_seconds: Number(audioDur) }) }); if (!r.ok) throw new Error("Audio generation failed"); setAudioOutput(URL.createObjectURL(await r.blob())); } catch (e: any) { setAudioOutput(e.message); } sb("audio", false); };
-  const run3d = async () => { if (!session) return alert("Sign in required"); if (source === "gen") { setThreeOutput("3D generation is only available via the P2G API."); return; } if (!threeUrl?.trim()) { setThreeOutput("An image URL or base64 data URI is required."); return; } sb("3d", true); setThreeOutput("Generating 3D model\u2026"); try { const r = await fj("/v1/3d/generations", { method: "POST", headers: authH(), body: JSON.stringify({ prompt: threePrompt || "A detailed 3D scan", image_urls: [threeUrl] }) }); const item = r?.data?.[0]; if (!item) throw new Error("No 3D model returned"); let html = ""; if (item.orbit_video_url) html += `<video controls src="${item.orbit_video_url}"></video>`; if (item.model_ply_url) html += `<p><a href="${item.model_ply_url}" target="_blank">Download PLY model</a></p>`; setThreeOutput(html || JSON.stringify(r, null, 2)); } catch (e: any) { setThreeOutput(e.message); } sb("3d", false); };
 
-  const priceMap: Record<string, string> = { VIDEO: "$0.01 per second", AUDIO: "$0.01 per second", IMAGE: "$0.02 per image", "3D": "$0.07 per model" };
+  const run3d = async () => {
+    if (!session) return alert("Sign in required");
+    if (source === "gen") { setThreeError("3D generation is only available via the P2G API."); return; }
+    if (!threeUrl?.trim()) { setThreeError("An image URL or base64 data URI is required."); return; }
+    sb("3d", true);
+    setThreeStatus("submitting");
+    setThreeStatusText("Submitting 3D generation job\u2026");
+    setThreeResult(null);
+    setThreeError("");
+
+    try {
+      const body: Record<string, any> = {
+        model: threeModel,
+        image_urls: [threeUrl],
+      };
+      if (threeModel === "asset-harvester" && threePrompt) {
+        body.prompt = threePrompt;
+      }
+      if (threeModel === "trellis2") {
+        body.resolution = threeResolution;
+      }
+
+      const r = await fj("/v1/3d/generations", {
+        method: "POST",
+        headers: authH(),
+        body: JSON.stringify(body),
+      });
+
+      if (r.job_id) {
+        setThreeStatus("polling");
+        setThreeStatusText(`Job submitted (ID: ${r.job_id.slice(0, 8)}\u2026). Polling for result\u2026`);
+        await pollJob(r.job_id);
+      } else if (r.data) {
+        processResult(r);
+      } else {
+        throw new Error("Unexpected response from 3D generation endpoint");
+      }
+    } catch (e: any) {
+      setThreeStatus("failed");
+      setThreeError(e.message);
+      sb("3d", false);
+    }
+  };
+
+  const pollJob = async (jobId: string) => {
+    try {
+      const r = await fj(`/v1/3d/jobs/${jobId}`, { headers: authH() });
+
+      if (r.status === "completed") {
+        processResult(r);
+        return;
+      }
+
+      if (r.status === "failed") {
+        setThreeStatus("failed");
+        setThreeError(r.error || "3D generation job failed.");
+        sb("3d", false);
+        return;
+      }
+
+      setThreeStatusText(`Job ${r.status}\u2026 Polling in 5s`);
+      pollRef.current = setTimeout(() => pollJob(jobId), 5000);
+    } catch (e: any) {
+      setThreeStatus("failed");
+      setThreeError(e.message);
+      sb("3d", false);
+    }
+  };
+
+  const processResult = (r: any) => {
+    const result: ThreeJobResult = {};
+    const item = r?.data?.[0];
+
+    if (item?.model_glb_b64_bytes) {
+      result.glbUrl = decodeBase64(item.model_glb_b64_bytes);
+    }
+    if (item?.model_ply_b64_bytes) {
+      result.plyUrl = decodeBase64(item.model_ply_b64_bytes);
+    }
+    if (item?.orbit_video_b64_bytes) {
+      result.videoUrl = decodeBase64(item.orbit_video_b64_bytes);
+    }
+    if (r?.usage) {
+      result.usage = r.usage;
+    }
+
+    setThreeResult(result);
+    setThreeStatus("completed");
+    setThreeStatusText("3D generation complete!");
+    sb("3d", false);
+  };
+
+  const priceMap: Record<string, string> = { VIDEO: "$0.01 per second", AUDIO: "$0.01 per second", IMAGE: "$0.02 per image", "3D": "$0.02\u2013$0.35 per model" };
 
   if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to view available models and run the playground.</div></div>;
 
@@ -141,11 +260,72 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}
         </div>}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <textarea rows={4} placeholder="Describe the 3D model..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />
-          <input type="text" placeholder="Image URL or base64 data URI (required for image-to-3d)" value={threeUrl} onChange={(e) => setThreeUrl(e.target.value)} />
-          <p className={`${styles.muted} ${styles.tiny}`}>3D generation is only available via the P2G API. Requires an input image and produces an orbit video + PLY model.</p>
-          <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? "Generating\u2026" : "Generate 3D model"}</button>
-          <div dangerouslySetInnerHTML={{ __html: threeOutput }} className={styles.mediaOutput} />
+          <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
+            <option value="tripoSR">TripoSR ($0.02)</option>
+            <option value="asset-harvester">Asset Harvester ($0.07)</option>
+            <option value="sv3d">SF3D ($0.02)</option>
+            <option value="trellis2">Trellis 2 ($0.24&ndash;$0.35)</option>
+          </select></label>
+          {threeModel === "trellis2" && (
+            <label>Resolution<select value={threeResolution} onChange={(e) => setThreeResolution(e.target.value as any)}>
+              <option value="low">Low ($0.24)</option>
+              <option value="medium">Medium ($0.29)</option>
+              <option value="high">High ($0.35)</option>
+            </select></label>
+          )}
+          {threeModel === "asset-harvester" && <textarea rows={4} placeholder="Describe the 3D model (required for Asset Harvester)..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />}
+          <input type="text" placeholder="Image URL or base64 data URI (required)" value={threeUrl} onChange={(e) => setThreeUrl(e.target.value)} />
+          <p className={`${styles.muted} ${styles.tiny}`}>
+            {threeModel === "asset-harvester" && "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt."}
+            {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
+            {threeModel === "sv3d" && "SF3D produces a GLB model from a single image."}
+            {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
+            {" "}Async job polling &mdash; most jobs complete within 1&ndash;5 minutes.
+          </p>
+          <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? (threeStatus === "submitting" ? "Submitting\u2026" : "Generating\u2026") : "Generate 3D model"}</button>
+
+          {threeStatusText && threeStatus !== "idle" && (
+            <div className={styles.threeJobStatus}>
+              <div className={`${styles.threeStatusDot} ${threeStatus === "completed" ? styles.threeStatusDone : threeStatus === "failed" ? styles.threeStatusFailed : styles.threeStatusPending}`} />
+              <span>{threeStatusText}</span>
+            </div>
+          )}
+
+          {threeError && <div className={styles.threeError}>{threeError}</div>}
+
+          {threeResult && (
+            <div className={styles.threeOutput}>
+              {threeResult.glbUrl && (
+                <div className={styles.threeViewerWrap}>
+                  <model-viewer
+                    src={threeResult.glbUrl}
+                    alt="Generated 3D model"
+                    camera-controls
+                    auto-rotate
+                    shadow-intensity="1"
+                    style={{ width: "100%", height: "400px", background: "var(--surface-2)", borderRadius: "10px" }}
+                  />
+                </div>
+              )}
+              {threeResult.videoUrl && (
+                <div className={styles.threeMediaRow}>
+                  <span className={`${styles.muted} ${styles.tiny}`}>Orbit Preview</span>
+                  <video controls src={threeResult.videoUrl} className={styles.mediaOutputMedia} />
+                </div>
+              )}
+              <div className={styles.threeDownloadRow}>
+                {threeResult.glbUrl && (
+                  <a href={threeResult.glbUrl} download="model.glb" className={styles.threeDownloadBtn}>Download GLB</a>
+                )}
+                {threeResult.plyUrl && (
+                  <a href={threeResult.plyUrl} download="model.ply" className={styles.threeDownloadBtn}>Download PLY</a>
+                )}
+              </div>
+              {threeResult.usage && (
+                <p className={`${styles.muted} ${styles.tiny}`}>Credits charged: ${threeResult.usage.payg_credits_charged}</p>
+              )}
+            </div>
+          )}
         </div>}
       </section>
     </div>

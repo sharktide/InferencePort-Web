@@ -83,6 +83,33 @@
   color: var(--text);
 }
 
+.ghost {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ghost:hover {
+  border-color: #c8c0b0;
+  background: #ece9e2;
+}
+
+[data-theme="dark"] .ghost {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+[data-theme="dark"] .ghost:hover {
+  background: #2a2a32;
+  border-color: #444;
+}
+
 .mobileOnly {
   display: none;
 }
