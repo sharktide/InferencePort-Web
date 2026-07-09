@@ -1,5 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "bash build.sh",
+  "outputDirectory": "dist",
+  "installCommand": "echo 'Using root buildCommand instead'",
   "redirects": [
     {
       "source": "/chat",
@@ -15,21 +18,6 @@
       "source": "/chat/:path*",
       "destination": "https://sharktide-chat.hf.space/:path*",
       "permanent": false
-    },
-    {
-      "source": "/console",
-      "destination": "https://console.inferenceport.ai",
-      "permanent": true
-    },
-    {
-      "source": "/console/",
-      "destination": "https://console.inferenceport.ai",
-      "permanent": true
-    },
-    {
-      "source": "/console/:path*",
-      "destination": "https://console.inferenceport.ai/:path*",
-      "permanent": true
     },
     {
       "source": "/oauth/authorize",
@@ -53,6 +41,14 @@
     {
       "source": "/authcallback",
       "destination": "authcallback.html"
+    },
+    {
+      "source": "/console",
+      "destination": "/console/"
+    },
+    {
+      "source": "/console/:path*",
+      "destination": "/console/:path*"
     }
   ],
   "routes": [

@@ -1,0 +1,162 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 64px;
+  background: rgba(248,246,240,0.82);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+[data-theme="dark"] .topbar {
+  background: rgba(17,17,19,0.88);
+  border-bottom-color: var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.brandLogo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.brand h1 {
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.brand p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.brandEmphasis {
+  font-weight: 600;
+}
+
+.brandDesktop {
+  display: inline;
+}
+
+.brandMobile {
+  display: none;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.themeIcon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+.topActions a {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.topActions a:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.ghost {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ghost:hover {
+  border-color: #c8c0b0;
+  background: #ece9e2;
+}
+
+[data-theme="dark"] .ghost {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
+[data-theme="dark"] .ghost:hover {
+  background: #2a2a32;
+  border-color: #444;
+}
+
+.mobileOnly {
+  display: none;
+}
+
+.hamburgerLine {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+
+@media (max-width: 960px) {
+  .mobileOnly {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+  }
+
+  .brandEmphasis {
+    display: none !important;
+  }
+
+  .brandDesktop {
+    display: none !important;
+  }
+
+  .brandMobile {
+    display: inline !important;
+  }
+
+  .brand p {
+    display: none !important;
+  }
+
+  .topbar {
+    padding: 0 1rem;
+  }
+
+  .brandLogo {
+    width: 32px;
+    height: 32px;
+  }
+}
