@@ -14,7 +14,7 @@ rm -rf dist
 mkdir -p dist
 
 # Copy root static files
-for f in index.html pricing.html lightning.html marketplace.html solutions.html tools.html security.html shield.html install.html reset.html openapp.html authcallback.html robots.txt sitemap.xml CNAME LICENSE icon.png; do
+for f in index.html pricing.html lightning.html marketplace.html solutions.html seniorband.html tools.html security.html shield.html install.html reset.html openapp.html authcallback.html robots.txt sitemap.xml CNAME LICENSE icon.png; do
   [ -f "$f" ] && cp "$f" dist/
 done
 
