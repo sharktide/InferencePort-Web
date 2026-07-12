@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
+import ActivityPanel from "./ActivityPanel";
 
 interface Props { session: any; apiBase: string; }
 
@@ -34,6 +35,10 @@ export default function UsagePanel({ session, apiBase }: Props) {
             ))}
           </div>
         ) : <div className={styles.lockedOverlay}>Sign in to view your plan usage.</div>}
+      </section>
+      <section className={`${styles.card} ${styles.wide}`}>
+        <div className={styles.heading}>Activity</div>
+        <ActivityPanel session={session} apiBase={apiBase} />
       </section>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>P2G Ledger (Recent Usage & Purchases)</div>
