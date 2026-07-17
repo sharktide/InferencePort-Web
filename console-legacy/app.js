@@ -364,7 +364,8 @@ function renderModels() {
       name: model.name || model.id || "Unnamed model",
       slug: formatModelSlug(model) || "—",
       pricing: formatConfigModelPrice(model) || "Existing configuration",
-      source: "config"
+      source: "config",
+      modelType: model.type || ""
     });
   });
 
@@ -391,7 +392,7 @@ function renderModels() {
     card.innerHTML = `
       <div class="model-card-top">
         <strong>${escapeHtml(model.name)}</strong>
-        <span class="model-pill ${model.source === "text" ? "is-text" : "is-config"}">${escapeHtml(model.label)}</span>
+        <span class="model-pill ${model.source === "text" ? "is-text" : model.modelType === "image" ? "is-config-image" : model.modelType === "3D" ? "is-config-3d" : "is-config-video"}">${escapeHtml(model.label)}</span>
       </div>
       <div class="model-meta">
         <span class="model-key">Slug</span>

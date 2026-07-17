@@ -132,7 +132,9 @@
 .modelCardName { font-size: 0.95rem; font-weight: 600; display: block; line-height: 1.35; }
 .modelPill { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.32rem 0.55rem; border-radius: 999px; border: 1px solid transparent; flex-shrink: 0; }
 .isText { color: #0f766e; background: rgba(20,184,166,0.12); border-color: rgba(20,184,166,0.22); }
-.isConfig { color: #7c3aed; background: rgba(124,58,237,0.10); border-color: rgba(124,58,237,0.18); }
+.isConfigVideo, .isConfigAudio { color: #7c3aed; background: rgba(124,58,237,0.10); border-color: rgba(124,58,237,0.18); }
+.isConfigImage { color: #b45309; background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.22); }
+.isConfig3d { color: #1a6bff; background: rgba(26,107,255,0.10); border-color: rgba(26,107,255,0.22); }
 .modelMeta { display: flex; flex-direction: column; gap: 0.25rem; }
 .modelKey { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .modelValue { font-family: var(--mono); font-size: 0.74rem; color: var(--text); word-break: break-word; }

@@ -43,6 +43,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
   const modalities = (m: any) => { const arr = Array.isArray(m?.input_modalities) ? m.input_modalities : []; return arr.length ? arr.map((v: string) => v.toUpperCase()).join(" / ") : "Configured model"; };
+  const configPillClass = (m: any) => { const t = m?.type; if (t === "image") return styles.isConfigImage; if (t === "3D") return styles.isConfig3d; return styles.isConfigVideo; };
 
   const formatPricing = (m: any) => {
     const p = m?.pricing || {};
@@ -236,7 +237,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
               <div key={`cfg-${i}`} className={styles.modelCard}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <span className={`${styles.modelPill} ${styles.isConfig}`}>{String(m.type || modalities(m)).toUpperCase()}</span>
+                  <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(m.type || modalities(m)).toUpperCase()}</span>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}</span></div>

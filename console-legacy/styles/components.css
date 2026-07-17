@@ -353,10 +353,23 @@
   border-color: rgba(20, 184, 166, 0.22);
 }
 
-.model-pill.is-config {
+.model-pill.is-config-video,
+.model-pill.is-config-audio {
   color: #7c3aed;
   background: rgba(124, 58, 237, 0.10);
   border-color: rgba(124, 58, 237, 0.18);
+}
+
+.model-pill.is-config-image {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.10);
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+.model-pill.is-config-3d {
+  color: #1a6bff;
+  background: rgba(26, 107, 255, 0.10);
+  border-color: rgba(26, 107, 255, 0.22);
 }
 
 .model-meta {
