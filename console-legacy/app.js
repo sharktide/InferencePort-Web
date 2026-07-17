@@ -277,6 +277,16 @@ function formatModelPricing(model) {
   return parts.length ? parts.join(" · ") : "Pricing unavailable";
 }
 
+function formatConfigModelPrice(model) {
+  const p = model?.price;
+  if (p == null) return null;
+  const type = model.type;
+  if (type === "video" || type === "audio") return `$${p}/sec`;
+  if (type === "image") return `$${p}/gen`;
+  if (type === "3D") return `$${p}/model`;
+  return `$${p}`;
+}
+
 function formatModalities(model) {
   const modalities = Array.isArray(model?.input_modalities) ? model.input_modalities : [];
   if (!modalities.length) return "Configured model";
@@ -353,7 +363,7 @@ function renderModels() {
       label: String(model.type || formatModalities(model)).toUpperCase(),
       name: model.name || model.id || "Unnamed model",
       slug: formatModelSlug(model) || "—",
-      pricing: model.pricing ? formatModelPricing(model) : "Existing configuration",
+      pricing: formatConfigModelPrice(model) || "Existing configuration",
       source: "config"
     });
   });
@@ -363,12 +373,8 @@ function renderModels() {
     const card = document.createElement("article");
     if (currentModelsSource === "gen") {
       model.pricing = "1x multiplier";
-    } else if (model.label === "VIDEO" || model.label === "AUDIO") {
-      model.pricing = "$0.01 per second";
-    } else if (model.label === "IMAGE") {
-      model.pricing = "$0.02 per image";
-    } else if (model.label === "3D") {
-      model.pricing = "$0.07 per model";
+    } else if (model.source === "config") {
+      // Keep the pricing from formatConfigModelPrice
     } else if (model.label === "Text") {
       const raw = model.pricing
       if (raw && raw !== "—" && raw !== "Pricing unavailable") {

@@ -22,6 +22,24 @@ function slug(m: any) {
   return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
 }
 
+function formatModelPrice(m: any) {
+  const p = m?.price;
+  if (p == null) return null;
+  const type = m.type;
+  if (type === "video" || type === "audio") return `$${p}/sec`;
+  if (type === "image") return `$${p}/gen`;
+  if (type === "3D") return `$${p}/model`;
+  return `$${p}`;
+}
+
+function getImageModels(config: any) {
+  return (config?.models || []).filter((m: any) => m.type === "image");
+}
+
+function get3DModels(config: any) {
+  return (config?.models || []).filter((m: any) => m.type === "3D");
+}
+
 export default function PaygApiPanel({ session, config, apiBase }: Props) {
   const [textModels, setTextModels] = useState<any[]>([]);
   const [tab, setTab] = useState("text");
@@ -29,6 +47,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
   const [textModel, setTextModel] = useState("");
   const [textPrompt, setTextPrompt] = useState("");
   const [textOutput, setTextOutput] = useState("");
+  const [imageModel, setImageModel] = useState("");
   const [imagePrompt, setImagePrompt] = useState("");
   const [imageOutput, setImageOutput] = useState("");
   const [videoPrompt, setVideoPrompt] = useState("");
@@ -85,7 +104,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
   }, []);
 
   const runText = async () => { if (!session) return alert("Sign in required"); sb("text", true); setTextOutput("Generating\u2026"); try { setTextOutput(JSON.stringify(await fj("/v1/chat/completions", { method: "POST", headers: authH(), body: JSON.stringify({ stream: false, model: textModel || undefined, messages: [{ role: "user", content: textPrompt || "Hello" }] }) }), null, 2)); } catch (e: any) { setTextOutput(e.message); } sb("text", false); };
-  const runImage = async () => { if (!session) return alert("Sign in required"); sb("image", true); setImageOutput("Generating\u2026"); try { const r = await fj("/v1/images/generations", { method: "POST", headers: authH(), body: JSON.stringify({ prompt: imagePrompt || "A colorful neon city." }) }); const b = r?.data?.[0]?.b64_json; if (!b) throw new Error("No image returned"); setImageOutput(`data:image/jpeg;base64,${b}`); } catch (e: any) { setImageOutput(e.message); } sb("image", false); };
+  const runImage = async () => { if (!session) return alert("Sign in required"); sb("image", true); setImageOutput("Generating\u2026"); try { const r = await fj("/v1/images/generations", { method: "POST", headers: authH(), body: JSON.stringify({ prompt: imagePrompt || "A colorful neon city.", model: imageModel || undefined }) }); const b = r?.data?.[0]?.b64_json; if (!b) throw new Error("No image returned"); setImageOutput(`data:image/jpeg;base64,${b}`); } catch (e: any) { setImageOutput(e.message); } sb("image", false); };
   const runVideo = async () => { if (!session) return alert("Sign in required"); sb("video", true); setVideoOutput("Generating\u2026"); try { const r = await fetch(`${apiBase}/v1/videos/generations`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: videoPrompt || "A drifting cloudscape at sunset.", duration: Number(videoDur) }) }); if (!r.ok) { const p = await r.json().catch(() => ({})); throw new Error(p.detail || p.error || "Video generation failed"); } const blob = await r.blob(); setVideoOutput(URL.createObjectURL(blob)); } catch (e: any) { setVideoOutput(e.message); } sb("video", false); };
   const runAudio = async () => { if (!session) return alert("Sign in required"); sb("audio", true); setAudioOutput("Generating\u2026"); try { const r = await fetch(`${apiBase}/v1/audio/generations`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: audioPrompt || "Energetic electronic beat", duration_seconds: Number(audioDur) }) }); if (!r.ok) { const p = await r.json().catch(() => ({})); throw new Error(p.detail || p.error || "Audio generation failed"); } const blob = await r.blob(); setAudioOutput(URL.createObjectURL(blob)); } catch (e: any) { setAudioOutput(e.message); } sb("audio", false); };
 
@@ -216,15 +235,14 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test the Pay-2-Go API. Every successful generation consumes credits.</p>
         <div className={styles.tabs}>{(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}><label>Model<select value={textModel} onChange={(e) => setTextModel(e.target.value)}>{textModels.map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{m.name}</option>)}</select></label><textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} /><button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button><pre className={styles.output}>{textOutput}</pre></div>}
-        {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} /><button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>{imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}</div>}
+        {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}><label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}><option value="">Default</option>{getImageModels(config).map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}</select></label><textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} /><button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>{imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}</div>}
         {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} /><label>Duration (seconds)<input type="number" min={1} max={10} value={videoDur} onChange={(e) => setVideoDur(Number(e.target.value))} /></label><button onClick={runVideo} disabled={busy.video}>{busy.video ? "Generating\u2026" : "Generate video"}</button>{videoOutput?.startsWith("blob:") ? <video controls src={videoOutput} className={styles.mediaOutputMedia} /> : <div className={styles.output}>{videoOutput}</div>}</div>}
         {tab === "audio" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe audio / music / sfx..." value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} /><label>Charge duration estimate (seconds)<input type="number" min={1} max={90} value={audioDur} onChange={(e) => setAudioDur(Number(e.target.value))} /></label><button onClick={runAudio} disabled={busy.audio}>{busy.audio ? "Generating\u2026" : "Generate audio"}</button>{audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}</div>}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
-            <option value="tripoSR">TripoSR ($0.02)</option>
-            <option value="asset-harvester">Asset Harvester ($0.07)</option>
-            <option value="sv3d">SF3D ($0.02)</option>
-            <option value="trellis2">Trellis 2 ($0.24&ndash;$0.35)</option>
+            {get3DModels(config).map((m: any) => (
+              <option key={m.id} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
+            ))}
           </select></label>
           {threeModel === "trellis2" && (
             <label>Resolution<select value={threeResolution} onChange={(e) => setThreeResolution(e.target.value as any)}>
