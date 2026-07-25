@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,7 +20,7 @@
 				text-align: center;
 				background: radial-gradient(
 					ellipse 65% 35% at 50% 0%,
-					rgba(79, 124, 255, 0.15) 0%,
+					rgba(79, 124, 255, 0.04) 0%,
 					transparent 60%
 				);
 			}
@@ -29,7 +29,7 @@
 				font-weight: 800;
 				letter-spacing: -0.04em;
 				line-height: 1.1;
-				color: #fff;
+				color: var(--text);
 			}
 			.page-title .accent {
 				color: var(--brand);
@@ -44,7 +44,7 @@
 
 			.plan-card {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 14px;
 				padding: 26px 20px;
 				display: flex;
@@ -82,7 +82,7 @@
 			.plan-name {
 				font-weight: 800;
 				font-size: 0.93rem;
-				color: #fff;
+				color: var(--text);
 			}
 			.plan-desc {
 				font-size: 0.78rem;
@@ -92,7 +92,7 @@
 			.plan-price {
 				font-size: 2.2rem;
 				font-weight: 800;
-				color: #fff;
+				color: var(--text);
 				letter-spacing: -0.04em;
 				line-height: 1;
 				margin: 18px 0 2px;
@@ -108,7 +108,7 @@
 				margin-bottom: 16px;
 			}
 			.plan-hr {
-				border-color: rgba(255, 255, 255, 0.07);
+				border-color: var(--border);
 				margin: 14px 0;
 			}
 			.plan-section {
@@ -128,7 +128,7 @@
 				margin-bottom: 7px;
 			}
 			.plan-feature.hi {
-				color: #d6daea;
+				color: var(--text-body);
 			}
 			.btn-plan-primary {
 				background: var(--brand);
@@ -147,9 +147,9 @@
 				color: #fff;
 			}
 			.btn-plan-outline {
-				background: rgba(255, 255, 255, 0.05);
-				color: #d6daea;
-				border: 1px solid rgba(255, 255, 255, 0.1);
+				background: var(--bg-alt);
+				color: var(--text-body);
+				border: 1px solid var(--border);
 				border-radius: 8px;
 				padding: 10px;
 				font-size: 0.84rem;
@@ -158,13 +158,13 @@
 				transition: background 0.2s;
 			}
 			.btn-plan-outline:hover {
-				background: rgba(255, 255, 255, 0.09);
-				color: #fff;
+				background: var(--bg-alt);
+				color: var(--text);
 			}
 
 			.upgrade-box {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 14px;
 				padding: 28px 32px;
 				max-width: 560px;
@@ -185,25 +185,25 @@
 				text-transform: uppercase;
 				padding: 12px 14px;
 				text-align: left;
-				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+				border-bottom: 1px solid var(--border);
 			}
 			thead th:first-child {
-				color: #d6daea;
+				color: var(--text-body);
 			}
 			tbody td {
 				padding: 12px 14px;
 				font-size: 0.84rem;
 				color: var(--muted);
-				border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+				border-bottom: 1px solid var(--border-light);
 			}
 			tbody td:first-child {
-				color: #d6daea;
+				color: var(--text-body);
 			}
 			tbody tr:nth-child(even) td {
-				background: rgba(255, 255, 255, 0.015);
+				background: var(--bg-alt);
 			}
 			.yes {
-				color: #4ade80;
+				color: var(--success);
 			}
 
 		</style>
@@ -427,7 +427,7 @@
 		<section class="py-4">
 			<div class="container">
 				<div class="upgrade-box text-center">
-					<strong style="color: #fff">How to upgrade?</strong>
+					<strong style="color: var(--text)">How to upgrade?</strong>
 					<p
 						style="
 							color: var(--muted);
@@ -436,7 +436,7 @@
 						"
 					>
 						Open InferencePort and click
-						<strong style="color: #d6daea">Upgrade</strong> in the
+						<strong style="color: var(--text-body)">Upgrade</strong> in the
 						app to manage your subscription and get access to cloud
 						tiers instantly.
 					</p>
@@ -452,7 +452,7 @@
 						font-weight: 800;
 						font-size: 1.6rem;
 						letter-spacing: -0.03em;
-						color: #fff;
+						color: var(--text);
 						text-align: center;
 						margin-bottom: 32px;
 					"
@@ -550,25 +550,10 @@
 			</div>
 		</section>
 
-		<footer class="py-4">
-			<div class="container">
-				<div
-					class="d-flex flex-wrap justify-content-between align-items-center gap-3"
-				>
-					<span>© 2026 Rihaan Meher</span>
-					<div class="d-flex gap-3 flex-wrap">
-						<a href="index.html">Home</a
-						><a href="marketplace.html">Marketplace</a>
-						<a href="lightning.html">Lightning</a
-						><a href="install.html">Install</a>
-						<a href="security.html">Security</a>
-						<a href="privacy.html">Privacy</a>
-						<a href="terms.html">Terms</a>
-					</div>
-				</div>
-			</div>
-		</footer>
+		<ip-footer></ip-footer>
 
+		<script src="components/ip-footer.js"></script>
+		<script src="scripts/animations.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>

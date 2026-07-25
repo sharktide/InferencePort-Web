@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 
 <head>
 	<meta charset="UTF-8" />
@@ -30,20 +30,17 @@
 	<style>
 		/* Hero */
 		.hero-section {
-			background: radial-gradient(circle at 30% 40%,
-					rgba(109, 140, 255, 0.35),
-					rgba(79, 124, 255, 0.5),
-					rgba(15, 21, 37, 0.95));
+			background: linear-gradient(180deg, rgba(79, 124, 255, 0.04) 0%, transparent 100%);
 			padding: 80px 0;
 		}
 
 		.hero-title {
 			letter-spacing: -1px;
-			color: #abc6ee !important;
+			color: var(--text) !important;
 		}
 
 		.hero-text {
-			color: #c8d4e8;
+			color: var(--text-muted);
 			max-width: 520px;
 		}
 
@@ -69,7 +66,7 @@
 		.rec-title {
 			font-weight: 700;
 			font-size: 1.05rem;
-			color: #fff;
+			color: var(--text);
 			margin-bottom: 3px;
 		}
 
@@ -119,7 +116,7 @@
 
 		/* Tabs */
 		.nav-tabs {
-			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+			border-bottom: 1px solid var(--border);
 		}
 
 		.nav-tabs .nav-link {
@@ -134,30 +131,30 @@
 		}
 
 		.nav-tabs .nav-link:hover {
-			color: #d6daea !important;
+			color: var(--text-body) !important;
 		}
 
 		.nav-tabs .nav-link.active {
-			color: #fff !important;
+			color: var(--text) !important;
 			border-bottom-color: var(--brand) !important;
 		}
 
 		/* Download cards inside tabs */
 		.dl-card {
 			background: var(--surface);
-			border: 1px solid rgba(255, 255, 255, 0.07);
+			border: 1px solid var(--border);
 			border-radius: 12px;
 			margin-bottom: 14px;
 			overflow: hidden;
 		}
 
 		.dl-card-header {
-			background: rgba(255, 255, 255, 0.03);
-			border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+			background: var(--bg-alt);
+			border-bottom: 1px solid var(--border-light);
 			padding: 12px 18px;
 			font-weight: 600;
 			font-size: 0.88rem;
-			color: #fff;
+			color: var(--text);
 			display: flex;
 			align-items: center;
 			gap: 8px;
@@ -169,7 +166,7 @@
 
 		.list-group-item {
 			background: transparent !important;
-			border-color: rgba(255, 255, 255, 0.05) !important;
+			border-color: var(--border-light) !important;
 			padding: 11px 18px;
 			font-size: 0.84rem;
 			color: var(--muted);
@@ -192,7 +189,7 @@
 
 		.gpu-badge {
 			background: rgba(251, 191, 36, 0.12);
-			color: #fbbf24;
+			color: #92400e;
 			border: 1px solid rgba(251, 191, 36, 0.25);
 			font-family: "JetBrains Mono", monospace;
 			font-size: 0.6rem;
@@ -211,14 +208,14 @@
 		/* Community */
 		.community-section {
 			background: var(--surface);
-			border-top: 1px solid rgba(255, 255, 255, 0.07);
-			border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+			border-top: 1px solid var(--border);
+			border-bottom: 1px solid var(--border);
 		}
 
 		.btn-gh {
 			background: rgba(255, 255, 255, 0.05);
-			color: #d6daea;
-			border: 1px solid rgba(255, 255, 255, 0.1);
+			color: var(--text-body);
+			border: 1px solid var(--border);
 			border-radius: 8px;
 			padding: 9px 20px;
 			font-size: 0.88rem;
@@ -227,8 +224,8 @@
 		}
 
 		.btn-gh:hover {
-			background: rgba(255, 255, 255, 0.1);
-			color: #fff;
+			background: var(--bg-alt);
+			color: var(--text);
 		}
 
 		</style>
@@ -256,7 +253,7 @@
 						InferencePort makes it effortless to run, test, and share local AI
 						models and Hugging Face Spaces from a clean desktop interface.
 					</p>
-					<a href="#install" class="btn btn-light btn-lg mt-3 fw-semibold">Install Now</a>
+					<a href="#install" class="btn btn-brand btn-lg mt-3 fw-semibold">Install Now</a>
 				</div>
 				<div class="col-md-6 text-center mt-4 mt-md-0">
 					<img src="img/examples/cucumber.png" alt="App Screenshot" class="img-fluid rounded shadow-lg"
@@ -269,7 +266,7 @@
 	<!-- Download section -->
 	<section id="install" class="py-5">
 		<div class="container">
-			<h2 class="fw-bold text-center mb-4" style="color: #fff; letter-spacing: -0.02em">
+			<h2 class="fw-bold text-center mb-4" style="color: var(--text); letter-spacing: -0.02em">
 				Download &amp; Install
 			</h2>
 
@@ -306,7 +303,7 @@
 	<!-- Community -->
 	<section class="community-section py-5">
 		<div class="container text-center">
-			<h2 class="fw-bold mb-2" style="color: #fff; letter-spacing: -0.02em">
+			<h2 class="fw-bold mb-2" style="color: var(--text); letter-spacing: -0.02em">
 				Join the Community
 			</h2>
 			<p style="color: var(--muted); margin-bottom: 24px">
@@ -320,24 +317,10 @@
 		</div>
 	</section>
 
-	<footer class="py-4">
-		<div class="container">
-			<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-				<span>© 2026 Rihaan Meher |
-					<a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank">System Health</a></span>
-				<div class="d-flex gap-3 flex-wrap">
-					<a href="index.html">Home</a>
-					<a href="marketplace.html">Marketplace</a>
-					<a href="security.html">Security</a>
-					<a href="pricing.html">Pricing</a>
-					<a href="privacy.html">Privacy</a>
-					<a href="terms.html">Terms</a>
-					<a href="feedback.html">Feedback</a>
-				</div>
-			</div>
-		</div>
-	</footer>
+	<ip-footer></ip-footer>
 
+	<script src="components/ip-footer.js"></script>
+	<script src="scripts/animations.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
 		let manualArchOverride = null;

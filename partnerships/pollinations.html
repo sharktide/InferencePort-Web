@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,7 +14,7 @@
 		.hero-section {
 			padding: 0;
 			text-align: center;
-			background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(79,124,255,0.17) 0%, transparent 60%);
+			background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(79,124,255,0.04) 0%, transparent 60%);
 		}
 		.hero-banner { width: 100%; display: block; border-radius: 0; }
 		.hero-content { padding: 48px 0 72px; }
@@ -39,7 +39,7 @@
 			font-weight:800;
 			letter-spacing:-.04em;
 			line-height:1.1;
-			color:#fff;
+			color:var(--text);
 		}
 		.hero-title .accent { color:var(--brand); }
 		.hero-subtitle {
@@ -57,17 +57,17 @@
 			margin:0 auto;
 		}
 		.prose-section p { margin-bottom:1.25rem; }
-		.prose-section strong { color:#fff; }
+		.prose-section strong { color:var(--text); }
 		.prose-section h3 {
 			font-size:1.1rem;
 			font-weight:700;
-			color:#fff;
+			color:var(--text);
 			margin-top:2rem;
 			margin-bottom:.75rem;
 		}
 		.about-card {
 			background:var(--surface);
-			border:1px solid rgba(255,255,255,.07);
+			border:1px solid var(--border);
 			border-radius:14px;
 			padding:32px;
 			transition:border-color .2s,transform .2s;
@@ -77,7 +77,7 @@
 			transform:translateY(-3px);
 		}
 		.feat-icon { font-size:1.4rem; margin-bottom:10px; }
-		.feat-title { font-weight:700; font-size:.95rem; color:#fff; margin-bottom:6px; }
+		.feat-title { font-weight:700; font-size:.95rem; color:var(--text); margin-bottom:6px; }
 		.feat-body { font-size:.83rem; color:var(--muted); line-height:1.6; }
 		.cta-row {
 			display:flex;
@@ -93,7 +93,7 @@
 			color:var(--muted);
 		}
 		.cta-label strong {
-			color:#fff;
+			color:var(--text);
 			display:block;
 			font-size:1rem;
 			margin-bottom:4px;
@@ -191,27 +191,10 @@
 		</div>
 	</section>
 
-	<footer class="py-4">
-		<div class="container">
-			<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-				<span>© 2026 Rihaan Meher | <a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank">System Health</a></span>
-				<div class="d-flex gap-3 flex-wrap">
-					<a href="../marketplace.html">Marketplace</a>
-					<a href="../lightning.html">Lightning</a>
-					<a href="../solutions.html">Solutions</a>
-					<a href="../install.html">Install</a>
-					<a href="../pricing.html">Pricing</a>
-					<a href="../shield.html">Shield</a>
-					<a href="../security.html">Security</a>
-					<a href="https://inferenceport-ai.readthedocs.io" target="_blank">Docs</a>
-					<a href="../privacy.html">Privacy</a>
-					<a href="../terms.html">Terms</a>
-					<a href="../feedback.html">Feedback</a>
-				</div>
-			</div>
-		</div>
-	</footer>
+	<ip-footer></ip-footer>
 
+	<script src="../components/ip-footer.js"></script>
+	<script src="../scripts/animations.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

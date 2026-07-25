@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,7 +20,7 @@
 				text-align: center;
 				background: radial-gradient(
 					ellipse 60% 30% at 50% 0%,
-					rgba(79, 124, 255, 0.13) 0%,
+					rgba(79, 124, 255, 0.04) 0%,
 					transparent 60%
 				);
 			}
@@ -29,7 +29,7 @@
 				font-weight: 800;
 				letter-spacing: -0.04em;
 				line-height: 1.1;
-				color: #fff;
+				color: var(--text);
 			}
 			.page-title .accent {
 				color: var(--brand);
@@ -47,7 +47,7 @@
 				position: sticky;
 				top: 80px;
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 12px;
 				padding: 20px;
 			}
@@ -65,14 +65,14 @@
 				color: var(--muted);
 				text-decoration: none;
 				padding: 6px 0;
-				border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+				border-bottom: 1px solid var(--border-light);
 				transition: color 0.15s;
 			}
 			.toc-link:last-child {
 				border-bottom: none;
 			}
 			.toc-link:hover {
-				color: #fff;
+				color: var(--text);
 			}
 			.toc-link.sub {
 				padding-left: 12px;
@@ -86,7 +86,7 @@
 			.doc-section h2 {
 				font-size: 1.25rem;
 				font-weight: 800;
-				color: #fff;
+				color: var(--text);
 				letter-spacing: -0.02em;
 				margin-bottom: 4px;
 				padding-top: 8px;
@@ -94,19 +94,19 @@
 			.doc-section h3 {
 				font-size: 1rem;
 				font-weight: 700;
-				color: #fff;
+				color: var(--text);
 				margin-top: 20px;
 				margin-bottom: 6px;
 			}
 			.doc-section p {
 				font-size: 0.88rem;
-				color: #b0b8cc;
+				color: var(--text-body);
 				line-height: 1.75;
 				margin-bottom: 12px;
 			}
 			.doc-section ul {
 				font-size: 0.88rem;
-				color: #b0b8cc;
+				color: var(--text-body);
 				line-height: 1.75;
 				padding-left: 20px;
 				margin-bottom: 12px;
@@ -115,7 +115,7 @@
 				margin-bottom: 6px;
 			}
 			.doc-section strong {
-				color: #d6daea;
+				color: var(--text);
 			}
 			.doc-section a {
 				color: var(--brand);
@@ -125,15 +125,15 @@
 				text-decoration: underline;
 			}
 			.doc-section hr {
-				border-color: rgba(255, 255, 255, 0.07);
+				border-color: var(--border);
 				margin: 32px 0;
 			}
 			.doc-section .date-tag {
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.7rem;
 				color: var(--muted);
-				background: rgba(255, 255, 255, 0.04);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				background: var(--bg-alt);
+				border: 1px solid var(--border);
 				border-radius: 5px;
 				padding: 3px 9px;
 				display: inline-block;
@@ -151,17 +151,17 @@
 			.doc-alert.info {
 				background: rgba(79, 124, 255, 0.08);
 				border: 1px solid rgba(79, 124, 255, 0.22);
-				color: #93b4ff;
+				color: var(--brand);
 			}
 			.doc-alert.warn {
 				background: rgba(251, 191, 36, 0.07);
 				border: 1px solid rgba(251, 191, 36, 0.2);
-				color: #fcd34d;
+				color: #92400e;
 			}
 			.doc-alert.danger {
 				background: rgba(239, 68, 68, 0.07);
 				border: 1px solid rgba(239, 68, 68, 0.2);
-				color: #fca5a5;
+				color: var(--danger);
 			}
 			.doc-alert strong {
 				color: inherit;
@@ -170,7 +170,7 @@
 			/* Contact card */
 			.contact-card {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 12px;
 				padding: 18px 20px;
 				margin-bottom: 10px;
@@ -189,7 +189,7 @@
 			}
 			.contact-val {
 				font-size: 0.84rem;
-				color: #d6daea;
+				color: var(--text-body);
 			}
 			.contact-val a {
 				color: var(--brand);
@@ -929,7 +929,7 @@
 						<!-- Contact cards -->
 						<div id="contact-cards">
 							<div class="section-tag">Get in Touch</div>
-							<h2 style="font-size: 1.2rem; font-weight: 800; color: #fff; margin-bottom: 20px;">
+							<h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 20px;">
 								Contact
 							</h2>
 
@@ -1002,16 +1002,10 @@
 			</div>
 		</section>
 
-		<footer class="py-4 mt-5">
-			<div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
-				<span>© 2026 InferencePort AI — Rihaan Meher</span>
-				<div class="d-flex gap-3">
-					<a href="security.html">Privacy &amp; Terms</a>
-					<a href="https://github.com/sharktide/InferencePort-AI" target="_blank">GitHub</a>
-				</div>
-			</div>
-		</footer>
+		<ip-footer></ip-footer>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="components/ip-footer.js"></script>
+		<script src="scripts/animations.js"></script>
 	</body>
 </html>

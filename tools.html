@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,14 +8,16 @@
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
 		<script src="components/ip-navbar.js"></script>
+		<script src="components/ip-footer.js"></script>
+		<script src="scripts/animations.js"></script>
 		<style>
 			.hero { padding:72px 0 40px; text-align:center; }
-			.hero h1 { color:#fff; font-weight:800; letter-spacing:-.03em; }
+			.hero h1 { color:var(--text); font-weight:800; letter-spacing:-.03em; }
 			.hero p { color:var(--muted); max-width:680px; margin:12px auto 0; }
 			.search-shell { max-width:840px; margin:20px auto 0; display:grid; gap:10px; }
 			.search-row { display:grid; grid-template-columns:1fr auto; gap:10px; }
 			.input {
-				background:var(--surface); border:1px solid var(--border); color:#d6daea; border-radius:10px;
+				background:var(--surface); border:1px solid var(--border); color:var(--text-body); border-radius:10px;
 				padding:11px 14px; font-size:.9rem;
 			}
 			.input:focus { outline:none; border-color:rgba(79,124,255,.5); box-shadow:0 0 0 3px rgba(79,124,255,.16); }
@@ -25,9 +27,9 @@
 			}
 			.tools-grid { max-width:1100px; margin:24px auto 70px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
 			.tool-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; display:grid; gap:10px; }
-			.tool-name { font-weight:700; color:#fff; }
+			.tool-name { font-weight:700; color:var(--text); }
 			.tool-meta { font-size:.76rem; color:var(--muted); font-family:"JetBrains Mono",monospace; word-break:break-all; }
-			.tool-desc { font-size:.84rem; color:#c3cbdf; line-height:1.55; min-height:46px; }
+			.tool-desc { font-size:.84rem; color:var(--text-body); line-height:1.55; min-height:46px; }
 			.tool-actions { display:flex; gap:8px; }
 			.tool-btn {
 				flex:1; background:rgba(79,124,255,.1); border:1px solid rgba(79,124,255,.3);
@@ -56,6 +58,8 @@
 		</section>
 		<div id="empty" class="empty" style="display:none;">No matching tools found.</div>
 		<section id="tools-grid" class="tools-grid"></section>
+
+		<ip-footer></ip-footer>
 
 		<script>
 			const REGISTRY_URL = "https://sharktide-lightning.hf.space/tool-registry/tools";

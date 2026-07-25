@@ -23,15 +23,15 @@ class IpNavbar extends HTMLElement {
 <nav class="navbar navbar-expand-lg sticky-top">
 	<div class="container">
 		<a class="navbar-brand" href="index.html">InferencePort<span>AI</span></a>
-		<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#ip-nav">
+		<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#ip-nav" aria-controls="ip-nav" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="ip-nav">
 			<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
 				${navItems}
-				<li class="nav-item ms-1"><a class="nav-link nav-pill-download" href="install.html#install">⬇ Download App</a></li>
-				<li class="nav-item ms-1"><a class="nav-link nav-pill-chat" href="chat/">⚡ Chat Now</a></li>
-				<li class="nav-item ms-1"><a class="nav-link nav-pill-console" href="/console">{ } P2G/Developer Console</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-download" href="install.html#install">Download App</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-chat" href="chat/">Chat Now</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-console" href="/console">Console</a></li>
 			</ul>
 		</div>
 	</div>

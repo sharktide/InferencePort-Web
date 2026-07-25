@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,42 +17,15 @@
 		<style>
 			/* Hero */
 			.hero-section {
-				background:
-					linear-gradient(
-						135deg,
-						rgba(87, 112, 156, 0.6),
-						rgba(75, 85, 99, 0.6),
-						rgba(119, 120, 120, 0.5)
-					),
-					radial-gradient(
-						circle at 60% 40%,
-						rgba(79, 124, 255, 0.2),
-						transparent 60%
-					);
-				background-size: 400% 400%;
-				animation: gradientShift 15s ease infinite;
+				background: linear-gradient(180deg, rgba(79, 124, 255, 0.04) 0%, transparent 100%);
 				padding: 72px 0;
-			}
-
-			@keyframes gradientShift {
-				0% {
-					background-position: 0% 50%;
-				}
-
-				50% {
-					background-position: 100% 50%;
-				}
-
-				100% {
-					background-position: 0% 50%;
-				}
 			}
 
 			/* Search */
 			#search-models {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				color: #d6daea;
+				border: 1px solid var(--border);
+				color: var(--text-body);
 				border-radius: 9px;
 				padding: 11px 16px;
 				font-size: 0.9rem;
@@ -71,7 +44,7 @@
 			/* Model cards */
 			.model-card {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 14px;
 				padding: 24px;
 				transition:
@@ -98,14 +71,14 @@
 			.model-name {
 				font-size: 1.25rem;
 				font-weight: 700;
-				color: #fff;
+				color: var(--text);
 				margin-bottom: 8px;
 				letter-spacing: -0.02em;
 			}
 
 			.model-description {
 				font-size: 0.86rem;
-				color: #8b93a7;
+				color: var(--text-muted);
 				margin-bottom: 14px;
 				line-height: 1.6;
 				white-space: pre-wrap;
@@ -132,7 +105,7 @@
 			}
 
 			.meta-text strong {
-				color: #d6daea;
+				color: var(--text);
 			}
 
 			.more-link {
@@ -148,7 +121,7 @@
 
 			.download-btn {
 				margin-top: 18px;
-				background: rgba(79, 124, 255, 0.1);
+				background: var(--brand-dim);
 				border: 1px solid var(--brand-border);
 				color: var(--brand);
 				padding: 10px;
@@ -161,45 +134,44 @@
 			}
 
 			.download-btn:hover {
-				background: rgba(79, 124, 255, 0.22);
+				background: rgba(79, 124, 255, 0.15);
 				color: var(--brand);
 			}
 
 			/* Modal */
 			.modal-content {
-				background: #0f1525;
-				border: 1px solid rgba(255, 255, 255, 0.1);
+				background: #ffffff;
+				border: 1px solid var(--border);
 				border-radius: 14px;
 			}
 
 			.modal-header {
-				border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+				border-bottom: 1px solid var(--border);
 				padding: 18px 22px;
 			}
 
 			.modal-title {
-				color: #fff;
+				color: var(--text);
 				font-weight: 700;
 			}
 
 			.modal-body {
 				padding: 22px;
-				color: #b0b8cc;
+				color: var(--text-body);
 				font-size: 0.88rem;
 				line-height: 1.7;
 			}
 
 			.modal-body strong {
-				color: #d6daea;
+				color: var(--text);
 			}
 
 			.btn-close {
-				filter: invert(1) brightness(0.7);
 			}
 
 			.badge.bg-secondary {
-				background: rgba(255, 255, 255, 0.1) !important;
-				color: #d6daea;
+				background: var(--bg-alt) !important;
+				color: var(--text-body);
 				font-weight: 400;
 			}
 
@@ -242,7 +214,7 @@
 				<p
 					class="lead mt-3"
 					style="
-						color: #c8d4e8;
+						color: var(--text-muted);
 						max-width: 520px;
 						margin: 12px auto 0;
 					"
@@ -258,7 +230,7 @@
 			<div class="container">
 				<h2
 					class="fw-bold text-center mb-4"
-					style="color: #fff; letter-spacing: -0.02em"
+					style="color: var(--text); letter-spacing: -0.02em"
 				>
 					Available Models
 				</h2>
@@ -327,33 +299,11 @@
 			</div>
 		</div>
 
-		<footer class="py-4">
-			<div class="container">
-				<div
-					class="d-flex flex-wrap justify-content-between align-items-center gap-3"
-				>
-					<span
-						>© 2026 Rihaan Meher |
-						<a
-							href="https://stats.uptimerobot.com/N1MpjMQC4U"
-							target="_blank"
-							>System Health</a
-						></span
-					>
-					<div class="d-flex gap-3 flex-wrap">
-						<a href="index.html">Home</a>
-						<a href="install.html">Install</a>
-						<a href="security.html">Security</a>
-						<a href="pricing.html">Pricing</a>
-						<a href="privacy.html">Privacy</a>
-						<a href="terms.html">Terms</a>
-						<a href="feedback.html">Feedback</a>
-					</div>
-				</div>
-			</div>
-		</footer>
+		<ip-footer></ip-footer>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="components/ip-footer.js"></script>
+		<script src="scripts/animations.js"></script>
 		<script>
 			let availableModels = [];
 

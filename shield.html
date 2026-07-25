@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,12 +8,14 @@
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
 		<script src="components/ip-navbar.js"></script>
+		<script src="components/ip-footer.js"></script>
+		<script src="scripts/animations.js"></script>
 		<style>
 			/* ── Hero ── */
 			.hero-section {
 				padding: 110px 0 72px;
 				text-align: center;
-				background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(239, 68, 68, 0.12) 0%, transparent 60%);
+				background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(239, 68, 68, 0.04) 0%, transparent 60%);
 			}
 			.hero-eyebrow {
 				display: inline-flex;
@@ -46,7 +48,7 @@
 				font-weight: 800;
 				letter-spacing: -0.04em;
 				line-height: 1.1;
-				color: #fff;
+				color: var(--text);
 			}
 			.hero-title .accent { color: var(--brand); }
 			.hero-subtitle {
@@ -59,7 +61,7 @@
 			.stat-num {
 				font-size: 1.9rem;
 				font-weight: 800;
-				color: #fff;
+				color: var(--text);
 				letter-spacing: -0.04em;
 			}
 			.stat-label { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
@@ -67,7 +69,7 @@
 			/* ── Cards ── */
 			.ip-card {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 14px;
 				padding: 22px;
 				height: 100%;
@@ -95,13 +97,13 @@
 				background: linear-gradient(135deg, rgba(245, 158, 11, 0.07), rgba(245, 158, 11, 0.02));
 			}
 			.feat-icon { font-size: 1.4rem; margin-bottom: 10px; }
-			.feat-title { font-weight: 700; font-size: 0.95rem; color: #fff; margin-bottom: 6px; }
+			.feat-title { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 6px; }
 			.feat-body { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
 
 			/* ── Endpoint callout ── */
 			.endpoint-card {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 16px;
 				overflow: hidden;
 				position: relative;
@@ -118,7 +120,7 @@
 				align-items: center;
 				gap: 8px;
 				padding: 12px 18px;
-				border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+				border-bottom: 1px solid var(--border-light);
 			}
 			.endpoint-method {
 				font-family: "JetBrains Mono", monospace;
@@ -134,7 +136,7 @@
 			.endpoint-path {
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.85rem;
-				color: #d6daea;
+				color: var(--text-body);
 				font-weight: 600;
 			}
 			.endpoint-body {
@@ -142,7 +144,7 @@
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.78rem;
 				line-height: 1.7;
-				color: #b0b8cc;
+				color: var(--text-body);
 				overflow-x: auto;
 			}
 			.endpoint-body .kw { color: #7c3aed; }
@@ -164,19 +166,19 @@
 				align-items: center;
 				gap: 7px;
 				background: var(--surface);
-				border: 1.5px solid rgba(255, 255, 255, 0.07);
+				border: 1.5px solid var(--border);
 				border-radius: 10px;
 				padding: 12px 18px;
 				font-size: 0.84rem;
 				font-weight: 600;
-				color: #d6daea;
+				color: var(--text-body);
 				transition: border-color 0.2s, transform 0.2s, background 0.2s;
 				cursor: default;
 			}
 			.choose-chip:hover {
 				border-color: var(--brand-border);
 				transform: translateY(-2px);
-				background: rgba(79, 124, 255, 0.04);
+				background: var(--brand-dim);
 			}
 			.choose-chip .chip-dot {
 				width: 8px; height: 8px;
@@ -195,13 +197,13 @@
 			/* ── Module showcase ── */
 			.module-card {
 				background: var(--surface);
-				border: 1px solid rgba(255,255,255,0.07);
+				border: 1px solid var(--border);
 				border-radius: 14px;
 				overflow: hidden;
 			}
 			.module-header {
 				padding: 16px 20px;
-				border-bottom: 1px solid rgba(255,255,255,0.05);
+				border-bottom: 1px solid var(--border-light);
 				display: flex;
 				align-items: center;
 				gap: 10px;
@@ -218,7 +220,7 @@
 			.module-icon.mi-green { background: rgba(16,185,129,0.12); }
 			.module-icon.mi-purple { background: rgba(124,58,237,0.12); }
 			.module-icon.mi-amber { background: rgba(245,158,11,0.12); }
-			.module-name { font-weight: 700; font-size: 0.92rem; color: #fff; }
+			.module-name { font-weight: 700; font-size: 0.92rem; color: var(--text); }
 			.module-body { padding: 18px 20px; }
 			.module-section-label {
 				font-family: "JetBrains Mono", monospace;
@@ -238,7 +240,7 @@
 			}
 			.module-list li {
 				font-size: 0.78rem;
-				color: #b0b8cc;
+				color: var(--text-body);
 				padding: 3px 0;
 				display: flex;
 				align-items: center;
@@ -264,7 +266,7 @@
 				flex: 1 1 110px;
 				min-width: 110px;
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 12px;
 				padding: 16px 12px;
 				text-align: center;
@@ -292,7 +294,7 @@
 			.pipeline-step .step-label {
 				font-size: 0.75rem;
 				font-weight: 700;
-				color: #fff;
+				color: var(--text);
 				margin-bottom: 4px;
 			}
 			.pipeline-step .step-desc {
@@ -303,7 +305,7 @@
 			.pipeline-arrow {
 				display: flex;
 				align-items: center;
-				color: rgba(255,255,255,0.12);
+				color: var(--text-muted);
 				font-size: 1rem;
 				flex-shrink: 0;
 			}
@@ -311,7 +313,7 @@
 			/* ── Feature toggle grid ── */
 			.toggles-demo {
 				background: var(--surface);
-				border: 1px solid rgba(255,255,255,0.07);
+				border: 1px solid var(--border);
 				border-radius: 14px;
 				padding: 22px;
 			}
@@ -327,10 +329,10 @@
 				padding: 7px 12px;
 				border-radius: 8px;
 				font-size: 0.78rem;
-				color: #b0b8cc;
+				color: var(--text-body);
 				transition: background 0.15s;
 			}
-			.toggle-item:hover { background: rgba(255,255,255,0.03); }
+			.toggle-item:hover { background: var(--bg-alt); }
 			.toggle-dot {
 				width: 8px; height: 8px;
 				border-radius: 50%;
@@ -359,13 +361,13 @@
 			/* ── Response card ── */
 			.response-card {
 				background: var(--surface);
-				border: 1px solid rgba(255,255,255,0.07);
+				border: 1px solid var(--border);
 				border-radius: 14px;
 				overflow: hidden;
 			}
 			.response-header {
 				padding: 12px 18px;
-				border-bottom: 1px solid rgba(255,255,255,0.05);
+				border-bottom: 1px solid var(--border-light);
 				display: flex;
 				align-items: center;
 				gap: 8px;
@@ -383,7 +385,7 @@
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.75rem;
 				line-height: 1.7;
-				color: #b0b8cc;
+				color: var(--text-body);
 				overflow-x: auto;
 			}
 			.response-body .key { color: var(--brand); }
@@ -406,7 +408,7 @@
 				border-radius: 10px;
 				padding: 10px 14px;
 				font-size: 0.8rem;
-				color: #d6daea;
+				color: var(--text-body);
 			}
 			.problem-chip .pc-x {
 				color: #ef4444;
@@ -420,14 +422,14 @@
 				text-align: center;
 				padding: 52px 24px;
 				background: radial-gradient(ellipse 55% 50% at 50% 50%, rgba(79, 124, 255, 0.1), transparent 60%);
-				border: 1px solid rgba(255,255,255,0.07);
+				border: 1px solid var(--border);
 				border-radius: 16px;
 			}
 			.cta-box h2 {
 				font-size: clamp(1.4rem, 3vw, 2rem);
 				font-weight: 800;
 				letter-spacing: -0.03em;
-				color: #fff;
+				color: var(--text);
 				margin-bottom: 10px;
 			}
 			.cta-box p {
@@ -441,15 +443,15 @@
 			/* ── Vision / text sections ── */
 			.vision-text {
 				font-size: 0.92rem;
-				color: #b0b8cc;
+				color: var(--text-body);
 				line-height: 1.75;
 				max-width: 720px;
 			}
-			.vision-text strong { color: #d6daea; }
+			.vision-text strong { color: var(--text-body); }
 			.vision-text code {
 				font-family: "JetBrains Mono", monospace;
 				font-size: 0.82rem;
-				background: rgba(255,255,255,0.05);
+				background: var(--bg-alt);
 				padding: 2px 6px;
 				border-radius: 4px;
 			}
@@ -457,7 +459,7 @@
 			/* ── Compare box ── */
 			.compare-box {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 16px;
 				overflow: hidden;
 				position: relative;
@@ -475,9 +477,9 @@
 				align-items: center;
 				gap: 9px;
 				padding: 10px 0;
-				border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+				border-bottom: 1px solid var(--border-light);
 				font-size: 0.84rem;
-				color: #b0b8cc;
+				color: var(--text-body);
 			}
 			.compare-list li:last-child { border-bottom: none; }
 
@@ -490,7 +492,7 @@
 			}
 			.roadmap-card {
 				background: var(--surface);
-				border: 1px solid rgba(255,255,255,0.07);
+				border: 1px solid var(--border);
 				border-radius: 10px;
 				padding: 14px;
 				text-align: center;
@@ -512,7 +514,7 @@
 			.roadmap-label {
 				font-size: 0.78rem;
 				font-weight: 600;
-				color: #fff;
+				color: var(--text);
 			}
 		</style>
 	</head>
@@ -540,7 +542,7 @@
 					<a href="console/" class="btn btn-brand">Open Console</a>
 					<a href="#vision" class="btn btn-ghost">Read the Vision →</a>
 				</div>
-				<div class="mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.07)">
+				<div class="mt-5 pt-4" style="border-top: 1px solid var(--border)">
 					<div class="row justify-content-center g-4">
 						<div class="col-auto text-center">
 							<div class="stat-num">1</div>
@@ -730,7 +732,7 @@
 						</h2>
 						<p class="section-sub mb-4">
 							No multiple APIs. No complex orchestration. One
-							<code style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">POST</code>
+							<code style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;background:var(--bg-alt);padding:2px 6px;border-radius:4px;">POST</code>
 							endpoint runs the entire pipeline — heuristics, intelligence, agent
 							analysis, relationship graphs, LLM reasoning, and memory lookups.
 						</p>
@@ -1547,23 +1549,7 @@
 		</section>
 
 		<!-- ── Footer ── -->
-		<footer class="py-4">
-			<div class="container">
-				<div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-					<span>© 2026 InferencePort AI — Rihaan Meher</span>
-					<div class="d-flex gap-3 flex-wrap">
-						<a href="marketplace.html">Marketplace</a>
-						<a href="lightning.html">Lightning</a>
-						<a href="solutions.html">Solutions</a>
-						<a href="install.html">Install</a>
-						<a href="pricing.html">Pricing</a>
-						<a href="shield.html">Shield</a>
-						<a href="security.html">Security</a>
-						<a href="https://inferenceport-ai.readthedocs.io" target="_blank">Docs</a>
-					</div>
-				</div>
-			</div>
-		</footer>
+		<ip-footer></ip-footer>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>

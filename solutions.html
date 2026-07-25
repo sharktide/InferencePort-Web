@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,11 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles/shared.css" />
 		<script src="components/ip-navbar.js"></script>
+    <script src="components/ip-footer.js"></script>
+    <script src="scripts/animations.js"></script>
     <style>
       .hero-section {
         padding: 110px 0 72px;
         text-align: center;
-        background: radial-gradient(ellipse 65% 40% at 50% 0%, rgba(79, 124, 255, 0.17) 0%, transparent 60%);
+        background: radial-gradient(ellipse 65% 40% at 50% 0%, rgba(79, 124, 255, 0.04) 0%, transparent 60%);
       }
       .hero-eyebrow {
         display: inline-flex;
@@ -35,7 +37,7 @@
         font-weight: 800;
         letter-spacing: -0.04em;
         line-height: 1.08;
-        color: #fff;
+        color: var(--text);
       }
       .hero-title .accent { color: var(--brand); }
       .hero-subtitle {
@@ -48,7 +50,7 @@
 
       .solution-card {
         background: var(--surface);
-        border: 1px solid rgba(255, 255, 255, 0.07);
+        border: 1px solid var(--border);
         border-radius: 14px;
         padding: 24px;
         height: 100%;
@@ -70,7 +72,7 @@
       .solution-title {
         font-size: 1.15rem;
         font-weight: 800;
-        color: #fff;
+        color: var(--text);
         margin-bottom: 10px;
       }
       .solution-body {
@@ -85,7 +87,7 @@
       }
       .solution-list li {
         font-size: 0.84rem;
-        color: #d6daea;
+        color: var(--text-body);
         margin-bottom: 8px;
       }
       .solution-list li::before {
@@ -96,7 +98,7 @@
 
       .compare-box {
         background: var(--surface);
-        border: 1px solid rgba(255, 255, 255, 0.07);
+        border: 1px solid var(--border);
         border-radius: 16px;
         overflow: hidden;
       }
@@ -113,7 +115,7 @@
       .compare-table th,
       .compare-table td {
         padding: 14px 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+        border-bottom: 1px solid var(--border-light);
         vertical-align: top;
       }
       .compare-table th {
@@ -125,7 +127,7 @@
       }
       .compare-table td {
         font-size: 0.86rem;
-        color: #d6daea;
+        color: var(--text-body);
       }
       .compare-table tr:last-child td { border-bottom: none; }
       .compare-table .best {
@@ -135,7 +137,7 @@
 
       .pricing-card {
         background: var(--surface);
-        border: 1px solid rgba(255,255,255,0.07);
+        border: 1px solid var(--border);
         border-radius: 14px;
         padding: 24px;
         height: 100%;
@@ -147,7 +149,7 @@
       .plan-price {
         font-size: 2rem;
         font-weight: 800;
-        color: #fff;
+        color: var(--text);
         letter-spacing: -0.04em;
         margin: 14px 0 2px;
       }
@@ -157,7 +159,7 @@
       }
       .solution-card {
         background: var(--surface);
-        border: 1px solid rgba(255,255,255,0.07);
+        border: 1px solid var(--border);
         border-radius: 14px;
         padding: 24px;
         height: 100%;
@@ -194,7 +196,7 @@
           Use the the subscription (Gen) API for day-to-day chatting, the P2G API for production integrations, AI Shield for fraud detection, and InferencePort AI Server to self-host local AI models with secure team access.</p>
         <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
           <a href="https://inference.js.org/console" class="btn btn-primary">Open Console</a>
-          <a href="https://inferenceport-ai.readthedocs.io" class="btn btn-outline-light">Read Docs</a>
+          <a href="https://inferenceport-ai.readthedocs.io" class="btn btn-ghost">Read Docs</a>
         </div>
       </div>
     </section>
@@ -463,18 +465,7 @@
       </div>
     </section>
 
-    <footer class="py-4">
-      <div class="container d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-        <div>InferencePort AI</div>
-        <div class="d-flex gap-3 flex-wrap">
-          <a href="index.html">Home</a>
-          <a href="lightning.html">Lightning</a>
-          <a href="pricing.html">Pricing</a>
-          <a href="https://inference.js.org/console">Console</a>
-          <a href="https://inferenceport-ai.readthedocs.io">Docs</a>
-        </div>
-      </div>
-    </footer>
+    <ip-footer></ip-footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
