@@ -22,7 +22,7 @@ class IpNavbar extends HTMLElement {
 		this.innerHTML = `
 <nav class="navbar navbar-expand-lg sticky-top">
 	<div class="container">
-		<a class="navbar-brand" href="index.html">InferencePort<span>AI</span></a>
+		<a class="navbar-brand" href="index.html">InferencePort <span>AI</span></a>
 		<button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#ip-nav" aria-controls="ip-nav" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
