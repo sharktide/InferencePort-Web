@@ -61,6 +61,16 @@
         }
       ],
       "dest": "/console/$1"
+    },
+    {
+      "src": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "inference.js.org"
+        }
+      ],
+      "dest": "/redirect.html"
     }
   ]
 }
