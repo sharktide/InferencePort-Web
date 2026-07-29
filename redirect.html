@@ -7,8 +7,6 @@
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
-		<script src="components/ip-navbar.js"></script>
-		<script src="components/ip-footer.js"></script>
 		<script src="scripts/animations.js"></script>
 		<style>
 			/* ── Hero ── */
@@ -668,7 +666,7 @@
 		<!-- ── Hero ── -->
 		<section class="hero-section">
 			<div class="container position-relative">
-                <img src="img/favicon.ico">
+                <img src="https://inferenceport.ai/img/favicon.ico">
 				<h1 class="hero-title reveal reveal-delay-1">
 					AI solutions, for everyone <br><span class="accent">and everything</span>
 				</h1>
@@ -677,116 +675,28 @@
 				</div>
 			</div>
 		</section>
-
-		<ip-footer></ip-footer>
-
+        <footer>
+            <div class="container">
+                <div class="footer-inner d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <span>&copy; 2026 InferencePort AI | <a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank" rel="noopener">System Health</a></span>
+                    <div class="footer-links">
+                        <a href="https://inferenceport.ai/marketplace.html">Marketplace</a>
+                        <a href="https://inferenceport.ai/lightning.html">Lightning</a>
+                        <a href="https://inferenceport.ai/solutions.html">Solutions</a>
+                        <a href="https://inferenceport.ai/install.html">Install</a>
+                        <a href="https://inferenceport.ai/pricing.html">Pricing</a>
+                        <a href="https://inferenceport.ai/shield.html">Shield</a>
+                        <a href="https://inferenceport.ai/security.html">Security</a>
+                        <a href="https://inferenceport.ai/https://inferenceport-ai.readthedocs.io" target="_blank" rel="noopener">Docs</a>
+                        <a href="https://inferenceport.ai/privacy.html">Privacy</a>
+                        <a href="https://inferenceport.ai/terms.html">Terms</a>
+                        <a href="https://inferenceport.ai/feedback.html">Feedback</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-		(function() {
-			const toggleState = { search: false, img: false, vid: false, audio: false };
-			let attachedImageB64 = null;
-			let attachedImageType = null;
-			let attachedImageName = null;
-
-			window.lrToggle = function(key) {
-				toggleState[key] = !toggleState[key];
-				const btn = document.getElementById('tog-' + key);
-				btn.classList.toggle('active', toggleState[key]);
-			};
-
-			window.lrImageAttached = function(input) {
-				const file = input.files[0];
-				if (!file) return;
-				attachedImageName = file.name;
-				attachedImageType = file.type || 'image/jpeg';
-				const reader = new FileReader();
-				reader.onload = function(e) {
-					attachedImageB64 = e.target.result.split(',')[1];
-					document.getElementById('lr-img-name').textContent = attachedImageName;
-					document.getElementById('lr-img-preview').style.display = 'inline-flex';
-					document.querySelector('.lr-upload-btn').classList.add('has-file');
-					document.getElementById('lr-upload-label').textContent = 'Attached';
-				};
-				reader.readAsDataURL(file);
-			};
-
-			window.lrClearImage = function() {
-				attachedImageB64 = null;
-				attachedImageType = null;
-				attachedImageName = null;
-				document.getElementById('lr-img-preview').style.display = 'none';
-				document.querySelector('.lr-upload-btn').classList.remove('has-file');
-				document.getElementById('lr-upload-label').textContent = 'Image';
-				document.getElementById('lr-img-upload').value = '';
-			};
-
-			window.lrAnalyze = async function() {
-				const promptText = document.getElementById("lr-prompt").value.trim();
-				if (!promptText && !attachedImageB64) return;
-
-				const btn    = document.getElementById("lr-analyze-btn");
-				const spin   = document.getElementById("lr-btn-spinner");
-				const btnTxt = document.getElementById("lr-btn-text");
-				const errEl  = document.getElementById("lr-error");
-				const resEl  = document.getElementById("lr-result");
-
-				btn.disabled = true;
-				spin.style.display = "block";
-				btnTxt.textContent = "Routing…";
-				errEl.style.display = "none";
-				resEl.style.display = "none";
-
-				let msgContent;
-				if (attachedImageB64) {
-					msgContent = [
-						{ type: "image_url", image_url: { url: `data:${attachedImageType};base64,${attachedImageB64}` } }
-					];
-					if (promptText) msgContent.push({ type: "text", text: promptText });
-				} else {
-					msgContent = promptText;
-				}
-
-				const tools = [];
-				if (toggleState.search) tools.push({ type: "function", function: { name: "web_search", description: "Search the web" } });
-				if (toggleState.img)    tools.push({ type: "function", function: { name: "image_generation", description: "Generate images" } });
-				if (toggleState.vid)    tools.push({ type: "function", function: { name: "video_generation", description: "Generate video" } });
-				if (toggleState.audio)  tools.push({ type: "function", function: { name: "audio_generation", description: "Generate audio" } });
-
-				const payload = {
-					prompt: [{ role: "user", content: msgContent }]
-				};
-				if (tools.length > 0) payload.tools = tools;
-
-				try {
-					const resp = await fetch("https://sharktide-lightning.hf.space/gen/prompt_analyze", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify(payload)
-					});
-					if (!resp.ok) throw new Error(`${resp.status}`);
-					const data = await resp.json();
-
-					const modelName = data;
-					const provider  = data.provider   || data.provider_name || "";
-
-					document.getElementById("lr-result-icon").textContent     = "\u26A1";
-					document.getElementById("lr-result-model").textContent    = modelName;
-					document.getElementById("lr-result-provider").textContent = provider ? `via ${provider}` : "";
-					resEl.style.display = "block";
-				} catch(e) {
-					errEl.textContent   = "Couldn't reach the routing API \u2014 please try again.";
-					errEl.style.display = "block";
-				} finally {
-					btn.disabled = false;
-					spin.style.display = "none";
-					btnTxt.textContent = "\u26A1 Analyze";
-				}
-			};
-
-			document.getElementById("lr-prompt").addEventListener("keydown", function(e) {
-				if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); lrAnalyze(); }
-			});
-		})();
+	
 		</script>
 	</body>
 </html>

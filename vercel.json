@@ -63,8 +63,8 @@
       "dest": "/console/$1"
     },
     {
-      "src": "/(.*)",
-      "has": [
+        "src": "/((?!.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|json|webp)).*)",
+        "has": [
         {
           "type": "host",
           "value": "inference.js.org"

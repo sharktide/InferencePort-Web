@@ -275,6 +275,269 @@
 			}
 			.btn-plan-outline:hover { background: var(--bg-alt); border-color: #d1d5db; color: var(--text); transform: translateY(-1px); }
 
+			/* ── Bento Grid ── */
+			.bento-grid {
+				display: grid;
+				grid-template-columns: 2fr 1fr;
+				grid-template-rows: auto auto;
+				gap: 16px;
+			}
+			.bento-app           { grid-column: 1 / 2; grid-row: 1 / 2; }
+			.bento-console       { grid-column: 2 / 3; grid-row: 1 / 2; }
+			.bento-lightning-full { grid-column: 1 / -1; grid-row: 2 / 3; }
+
+			.bento-card {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-xl);
+				overflow: hidden;
+				transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), transform 0.25s var(--ease);
+			}
+			.bento-card:hover {
+				border-color: var(--brand-border);
+				box-shadow: var(--shadow-md);
+				transform: translateY(-3px);
+			}
+			.bento-inner {
+				padding: 28px 28px 24px;
+				display: flex;
+				flex-direction: column;
+				height: 100%;
+			}
+			.bento-eyebrow {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				font-weight: 600;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				margin-bottom: 10px;
+			}
+			.bento-title {
+				font-size: 1.3rem;
+				font-weight: 800;
+				color: var(--text);
+				letter-spacing: -0.03em;
+				line-height: 1.2;
+				margin-bottom: 10px;
+			}
+			.bento-body {
+				font-size: 0.88rem;
+				color: var(--text-muted);
+				line-height: 1.6;
+				margin-bottom: 18px;
+			}
+
+			/* App card features */
+			.bento-features { display: flex; flex-direction: column; gap: 14px; }
+			.bento-feat {
+				display: flex;
+				align-items: flex-start;
+				gap: 12px;
+			}
+			.bento-feat-icon {
+				font-size: 1.3rem;
+				width: 38px;
+				height: 38px;
+				background: var(--bg-alt);
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				flex-shrink: 0;
+			}
+			.bento-feat-title { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+			.bento-feat-desc  { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
+
+			/* Console section blocks */
+			.bento-section-block {
+				background: var(--bg-alt);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				padding: 14px 16px;
+				margin-bottom: 12px;
+			}
+			.bento-section-block:last-of-type { margin-bottom: 0; }
+			.bento-section-badge {
+				display: inline-block;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.6rem;
+				font-weight: 600;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				padding: 2px 9px;
+				border-radius: 50px;
+				border: 1px solid;
+				margin-bottom: 6px;
+			}
+			.bento-section-name {
+				font-weight: 700;
+				font-size: 0.92rem;
+				color: var(--text);
+				margin-bottom: 6px;
+			}
+
+			/* Checklist */
+			.bento-checklist {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.bento-checklist li {
+				font-size: 0.78rem;
+				color: var(--text-body);
+				padding: 3px 0;
+			}
+
+			/* Lightning full-width card */
+			.bento-lightning-row {
+				flex-direction: row;
+				align-items: center;
+				gap: 40px;
+				padding: 28px 32px;
+			}
+			.bento-lightning-text { flex: 1; }
+			.bento-lightning-meta { flex-shrink: 0; min-width: 300px; }
+
+			/* Stats */
+			.bento-stat-row {
+				display: flex;
+				gap: 24px;
+				margin-bottom: 14px;
+			}
+			.bento-stat-num {
+				font-size: 1.4rem;
+				font-weight: 800;
+				color: var(--text);
+				letter-spacing: -0.04em;
+				line-height: 1;
+			}
+			.bento-stat-label {
+				font-size: 0.7rem;
+				color: var(--text-muted);
+				margin-top: 3px;
+			}
+
+			/* Model tags */
+			.bento-model-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px;
+			}
+			.bento-tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				font-weight: 500;
+				padding: 4px 10px;
+				border-radius: 6px;
+				border: 1px solid;
+			}
+
+			/* ── Timeline ── */
+			.timeline {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+				position: relative;
+				max-width: 800px;
+				margin: 0 auto;
+			}
+			.timeline-line {
+				position: absolute;
+				top: 22px;
+				left: 40px;
+				right: 40px;
+				height: 2px;
+				background: var(--border);
+			}
+			.timeline-step {
+				flex: 1;
+				text-align: center;
+				position: relative;
+				z-index: 1;
+			}
+			.timeline-dot {
+				width: 44px;
+				height: 44px;
+				border-radius: 50%;
+				background: var(--brand);
+				color: #fff;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.85rem;
+				font-weight: 700;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				margin: 0 auto 14px;
+				box-shadow: 0 0 0 5px var(--bg), 0 0 0 6px var(--brand-border);
+			}
+			.timeline-label {
+				font-weight: 700;
+				font-size: 0.95rem;
+				color: var(--text);
+				margin-bottom: 4px;
+			}
+			.timeline-desc {
+				font-size: 0.82rem;
+				color: var(--text-muted);
+				line-height: 1.5;
+				max-width: 200px;
+				margin: 0 auto;
+			}
+
+			/* ── Responsive ── */
+			@media (max-width: 991.98px) {
+				.bento-grid {
+					grid-template-columns: 1fr;
+					grid-template-rows: auto;
+				}
+				.bento-app,
+				.bento-console,
+				.bento-lightning-full {
+					grid-column: 1 / -1;
+					grid-row: auto;
+				}
+			}
+			@media (max-width: 767.98px) {
+				.bento-lightning-row {
+					flex-direction: column;
+					gap: 20px;
+				}
+				.bento-lightning-meta {
+					min-width: 0;
+					width: 100%;
+				}
+				.timeline {
+					flex-direction: column;
+					align-items: flex-start;
+					gap: 0;
+					padding-left: 30px;
+				}
+				.timeline-line {
+					top: 0;
+					bottom: 0;
+					left: 49px;
+					right: auto;
+					width: 2px;
+					height: auto;
+				}
+				.timeline-step {
+					text-align: left;
+					padding: 16px 0;
+					display: flex;
+					align-items: flex-start;
+					gap: 16px;
+				}
+				.timeline-dot {
+					margin: 0;
+					flex-shrink: 0;
+				}
+				.timeline-desc {
+					max-width: none;
+					margin: 0;
+				}
+			}
+
 			/* ── Lightning Section ── */
 			.lr-section { position: relative; overflow: hidden; }
 			.lr-section::before {
@@ -614,214 +877,142 @@
 		</section>
 
 		<!-- ═══════════════════════════════════════════════════
-		     LIGHTNING SMART ROUTING
+		     BENTO GRID — APP / CONSOLE / LIGHTNING
 		     ═══════════════════════════════════════════════════ -->
-		<div class="lr-divider"></div>
-		<section class="py-5 lr-section">
-			<div class="container">
-				<div class="row align-items-center mb-2">
-					<div class="col-lg-7">
-						<div class="lr-eyebrow reveal"><span class="lr-bolt">&#9889;</span> Lightning Smart Routing</div>
-						<h2 class="lr-title reveal reveal-delay-1">One prompt.<br><span class="accent-gold">Infinite intelligence behind it.</span></h2>
-						<p class="lr-sub reveal reveal-delay-2">
-							Lightning doesn't just run fast &mdash; it thinks smart. Each prompt is automatically routed to the best model for the task: OpenAI for reasoning, NVIDIA Nemotron for ultra-long contexts, Meta Llama for fast and efficient work, Qwen for multilingual &amp; coding, with Perplexity Sonar coming soon. All in milliseconds, all invisible to you.
-						</p>
-					</div>
-				</div>
-
-				<div class="row mt-4">
-					<div class="col-12">
-						<div class="lr-card reveal">
-							<div class="lr-card-inner">
-								<div class="lr-card-label">&#9889; Try the router &mdash; type any prompt</div>
-								<textarea
-									id="lr-prompt"
-									class="lr-prompt-input"
-									rows="3"
-									placeholder="e.g. Write a Python async HTTP server… or Search the web for today's AI news… or Translate this to Chinese…"
-								></textarea>
-
-								<div class="lr-toolbar">
-									<div class="lr-toolbar-toggles">
-										<button class="lr-toggle" id="tog-search" onclick="lrToggle('search')" title="Web Search">
-											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.4"/><line x1="9.7" y1="9.7" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-											Search
-										</button>
-										<button class="lr-toggle" id="tog-img" onclick="lrToggle('img')" title="Image Generation">
-											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6" r="1.2" fill="currentColor"/><path d="M1.5 11l3.5-3.5 2.5 2.5 2-2 3 3" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-											Image Gen
-										</button>
-										<button class="lr-toggle" id="tog-vid" onclick="lrToggle('vid')" title="Video Generation">
-											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="3" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M11 6.2l3-1.7v7l-3-1.7V6.2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
-											Video Gen
-										</button>
-										<button class="lr-toggle" id="tog-audio" onclick="lrToggle('audio')" title="Audio Generation">
-											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 8.5a5 5 0 0 0 10 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><line x1="8" y1="13.5" x2="8" y2="15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-											Audio Gen
-										</button>
-									</div>
-									<div class="lr-toolbar-actions">
-										<label class="lr-upload-btn" for="lr-img-upload" title="Attach image">
-											<input type="file" id="lr-img-upload" accept="image/*" style="display:none" onchange="lrImageAttached(this)">
-											<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v9M5 4l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-											<span id="lr-upload-label">Image</span>
-										</label>
-										<button class="lr-analyze-btn" id="lr-analyze-btn" onclick="lrAnalyze()">
-											<span id="lr-btn-spinner" class="lr-btn-spinner"></span>
-											<span id="lr-btn-text">&#9889; Analyze</span>
-										</button>
-									</div>
-								</div>
-
-								<div id="lr-img-preview" class="lr-img-preview" style="display:none;">
-									<svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;flex-shrink:0"><rect x=".5" y=".5" width="13" height="13" rx="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="4" cy="4.5" r="1" fill="currentColor"/><path d="M.5 9.5l3-3 2 2 2-2 3 3" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
-									<span id="lr-img-name">image.png</span>
-									<button onclick="lrClearImage()" class="lr-img-remove" title="Remove">
-										<svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="1.5" y1="1.5" x2="8.5" y2="8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="8.5" y1="1.5" x2="1.5" y2="8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-									</button>
-								</div>
-
-								<div id="lr-error" class="lr-error"></div>
-								<div id="lr-result" class="lr-result">
-									<div class="lr-result-row">
-										<div class="lr-result-icon" id="lr-result-icon">&#9889;</div>
-										<div>
-											<div class="lr-result-label">Lightning routed to</div>
-											<div class="lr-result-model" id="lr-result-model">&mdash;</div>
-											<div class="lr-result-provider" id="lr-result-provider"></div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ── Cloud Models ── -->
-		<div class="lr-divider"></div>
 		<section class="py-5">
 			<div class="container">
-				<div class="row align-items-center g-5">
-					<div class="col-lg-5">
-						<div class="section-tag reveal">Cloud Models</div>
-						<h2 class="section-title mb-3 reveal reveal-delay-1">
-							Frontier models,<br /><span class="accent">no setup required.</span>
-						</h2>
-						<p class="section-sub mb-4 reveal reveal-delay-2">
-							Access the world's most capable models through the cloud &mdash; no GPU, no configuration. Just open the app and start generating.
-						</p>
-						<div class="d-flex gap-2 flex-wrap reveal reveal-delay-3">
-							<a href="install.html" class="btn btn-brand">Try Cloud Models</a>
-							<a href="pricing.html" class="btn btn-ghost">See Pricing</a>
+				<div class="text-center mb-5">
+					<div class="section-tag reveal">The Full Stack</div>
+					<h2 class="section-title reveal reveal-delay-1">Two products. One AI backbone.</h2>
+					<p class="section-sub mx-auto mt-2 reveal reveal-delay-2">The InferencePort AI App for chat, hosting, and model management. The Developer Console for production APIs and fraud detection. Both powered by Lightning.</p>
+				</div>
+
+				<div class="bento-grid reveal">
+
+					<!-- ── InferencePort AI App (large) ── -->
+					<div class="bento-card bento-app">
+						<div class="bento-inner">
+							<div class="bento-eyebrow" style="color: var(--brand);">InferencePort AI App</div>
+							<h3 class="bento-title">Chat, host, and manage models.</h3>
+							<p class="bento-body">The desktop app for end users and teams. Cloud chat powered by the Generation API, self-hosted AI servers with team access, local Ollama models, and a built-in marketplace.</p>
+							<div class="bento-features">
+								<div class="bento-feat">
+									<div class="bento-feat-icon">&#128172;</div>
+									<div>
+										<div class="bento-feat-title">Generation API (Subscription)</div>
+										<div class="bento-feat-desc">Default chat path. Plan quotas, OpenAI-style endpoint, optimized for everyday chatting.</div>
+									</div>
+								</div>
+								<div class="bento-feat">
+									<div class="bento-feat-icon">&#127760;</div>
+									<div>
+										<div class="bento-feat-title">Self-Hosted AI Server</div>
+										<div class="bento-feat-desc">Run local LLMs, invite teams by email, authenticate via accounts or custom API keys.</div>
+									</div>
+								</div>
+								<div class="bento-feat">
+									<div class="bento-feat-icon">&#128230;</div>
+									<div>
+										<div class="bento-feat-title">Model Marketplace</div>
+										<div class="bento-feat-desc">Browse, download, and run community models and tools.</div>
+									</div>
+								</div>
+								<div class="bento-feat">
+									<div class="bento-feat-icon">&#128187;</div>
+									<div>
+										<div class="bento-feat-title">Local Models (Ollama)</div>
+										<div class="bento-feat-desc">100% on-device, fully offline, unlimited local chat.</div>
+									</div>
+								</div>
+							</div>
+							<div class="d-flex gap-2 mt-auto pt-3">
+								<a href="install.html" class="btn btn-brand">Download App</a>
+								<a href="solutions.html" class="btn btn-ghost">All Services</a>
+							</div>
 						</div>
 					</div>
-					<div class="col-lg-7">
-						<div class="d-flex flex-column gap-3">
-							<div class="model-row featured reveal">
-								<div class="model-icon icon-blue">&#9889;</div>
-								<div class="flex-grow-1">
-									<div class="model-name">Lightning Text v2</div>
-									<div class="model-desc">Up to 1,000 words/sec &middot; low-latency streaming</div>
-								</div>
-								<span class="tag tag-fast">FASTEST</span>
+
+					<!-- ── Developer Console (tall) ── -->
+					<div class="bento-card bento-console">
+						<div class="bento-inner">
+							<div class="bento-eyebrow" style="color: var(--purple);">{ } Developer Console</div>
+							<h3 class="bento-title">Production APIs &amp; security.</h3>
+							<p class="bento-body">The backend for developers. Credit-metered API for enterprise integrations, and real-time fraud detection for sign-ups and traffic.</p>
+
+							<!-- P2G -->
+							<div class="bento-section-block">
+								<div class="bento-section-badge" style="background: var(--success-dim); color: var(--success); border-color: var(--success-border);">P2G API</div>
+								<div class="bento-section-name">Credit-Billed Production</div>
+								<ul class="bento-checklist">
+									<li>&#10003; Wallet-based billing, separate ledger</li>
+									<li>&#10003; Enterprise &amp; production integrations</li>
+									<li>&#10003; Managed through the console</li>
+								</ul>
 							</div>
-							<div class="model-row reveal reveal-delay-1">
-								<div class="model-icon icon-cyan">&#127912;</div>
-								<div class="flex-grow-1">
-									<div class="model-name">Lightning Image Turbo</div>
-									<div class="model-desc">Ultra-realistic images &middot; sci-fi &amp; cinematic quality</div>
-								</div>
-								<span class="tag tag-cloud">CLOUD</span>
+
+							<!-- Shield -->
+							<div class="bento-section-block">
+								<div class="bento-section-badge" style="background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border);">AI Shield</div>
+								<div class="bento-section-name">Fraud Detection</div>
+								<ul class="bento-checklist">
+									<li>&#10003; Email, phone, IP, username, device signals</li>
+									<li>&#10003; Risk score + confidence level</li>
+									<li>&#10003; Duplicate &amp; linked-account detection</li>
+								</ul>
 							</div>
-							<div class="model-row reveal reveal-delay-2">
-								<div class="model-icon icon-purple">&#127916;</div>
-								<div class="flex-grow-1">
-									<div class="model-name">Cloud Video Generation</div>
-									<div class="model-desc">High-quality AI video generation on-demand</div>
-								</div>
-								<span class="tag tag-new">NEW</span>
+
+							<a href="/console" class="btn btn-ghost btn-sm mt-auto">Open Console &rarr;</a>
+						</div>
+					</div>
+
+					<!-- ── Lightning — full width bottom ── -->
+					<div class="bento-card bento-lightning-full">
+						<div class="bento-inner bento-lightning-row">
+							<div class="bento-lightning-text">
+								<div class="bento-eyebrow" style="color: #92400e;"><span class="lr-bolt">&#9889;</span> Lightning</div>
+								<h3 class="bento-title" style="font-size: 1.15rem;">The model behind the platform.</h3>
+								<p class="bento-body mb-0">Lightning is a model available over the API and the default model used by all InferencePort AI subscriptions. Up to 1,000 words/sec, with smart routing to the best provider for each task.</p>
 							</div>
-							<div class="model-row reveal reveal-delay-3">
-								<div class="model-icon icon-green">&#128187;</div>
-								<div class="flex-grow-1">
-									<div class="model-name">Local Models (Ollama)</div>
-									<div class="model-desc">100% on-device &middot; private &middot; offline capable</div>
+							<div class="bento-lightning-meta">
+								<div class="bento-stat-row">
+									<div class="bento-stat">
+										<div class="bento-stat-num" style="color: #92400e;">1,000</div>
+										<div class="bento-stat-label">words / sec</div>
+									</div>
+									<div class="bento-stat">
+										<div class="bento-stat-num" style="color: #92400e;">&#9889;</div>
+										<div class="bento-stat-label">Default model</div>
+									</div>
+									<div class="bento-stat">
+										<div class="bento-stat-num" style="color: #92400e;">API</div>
+										<div class="bento-stat-label">Available over</div>
+									</div>
 								</div>
-								<span class="tag tag-local">LOCAL</span>
+								<div class="bento-model-tags">
+									<span class="bento-tag" style="background: var(--brand-dim); color: var(--brand);">OpenAI</span>
+									<span class="bento-tag" style="background: var(--success-dim); color: var(--success);">Llama</span>
+									<span class="bento-tag" style="background: var(--cyan-dim); color: #0891b2;">Qwen</span>
+									<span class="bento-tag" style="background: var(--purple-dim); color: var(--purple);">Nemotron</span>
+								</div>
+								<a href="lightning.html" class="btn btn-ghost btn-sm mt-3">Try It &rarr;</a>
 							</div>
 						</div>
 					</div>
+
 				</div>
 			</div>
 		</section>
 
-		<!-- ── Features Grid ── -->
+		<!-- ═══════════════════════════════════════════════════
+		     CLOUD vs LOCAL
+		     ═══════════════════════════════════════════════════ -->
 		<section class="py-5" style="background: var(--bg-alt);">
 			<div class="container">
 				<div class="text-center mb-4">
-					<div class="section-tag reveal">Everything Included</div>
-					<h2 class="section-title reveal reveal-delay-1">Built for everyone.</h2>
+					<div class="section-tag reveal">Your Choice</div>
+					<h2 class="section-title reveal reveal-delay-1">Cloud or Local &mdash; <span class="accent">you decide.</span></h2>
 				</div>
-				<div class="row g-3">
-					<div class="col-md-8 reveal">
-						<div class="ip-card featured h-100">
-							<div class="feat-icon">&#9729;&#65039;</div>
-							<div class="feat-title">Cloud-First Architecture</div>
-							<p class="feat-body">
-								InferencePort's cloud tier connects you directly to frontier models &mdash; no local hardware needed. Get instant AI capabilities with zero setup: authenticate and start generating across text, image, video, and audio.
-							</p>
-						</div>
-					</div>
-					<div class="col-md-4 reveal reveal-delay-1">
-						<div class="ip-card h-100">
-							<div class="feat-icon">&#128272;</div>
-							<div class="feat-title">Privacy-First Local</div>
-							<p class="feat-body">
-								Prefer to keep data on-device? Run any Ollama-compatible model locally. Nothing leaves your machine.
-							</p>
-						</div>
-					</div>
-					<div class="col-md-4 reveal reveal-delay-1">
-						<div class="ip-card h-100">
-							<div class="feat-icon">&#9889;</div>
-							<div class="feat-title">Lightning Fast</div>
-							<p class="feat-body">
-								Cloud text generation up to 1,000 words/sec with optimized streaming pipelines.
-							</p>
-						</div>
-					</div>
-					<div class="col-md-4 reveal reveal-delay-2">
-						<div class="ip-card h-100">
-							<div class="feat-icon">&#127760;</div>
-							<div class="feat-title">Cross-Platform</div>
-							<p class="feat-body">
-								Windows, macOS, and Linux &mdash; one download, unified interface across all your machines.
-							</p>
-						</div>
-					</div>
-					<div class="col-md-4 reveal reveal-delay-3">
-						<div class="ip-card h-100">
-							<div class="feat-icon">&#129303;</div>
-							<div class="feat-title">HuggingFace Spaces</div>
-							<p class="feat-body">
-								Browse and preview thousands of community AI demos in the built-in spaces viewer.
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ── Cloud vs Local ── -->
-		<section class="py-5">
-			<div class="container">
 				<div class="compare-box p-4 p-md-5 reveal">
-					<div class="section-tag">Your Choice</div>
-					<h2 class="section-title mb-4">
-						Cloud or Local &mdash; <span class="accent">you decide.</span>
-					</h2>
 					<div class="row g-4">
 						<div class="col-md-5">
 							<div class="col-label"><span class="col-dot dot-cloud"></span>Cloud Models</div>
@@ -845,6 +1036,40 @@
 								<li>&#10022; Full Ollama model compatibility</li>
 								<li>&#10022; Remote server connection supported</li>
 							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ── Getting Started — horizontal timeline ── -->
+		<section class="py-5">
+			<div class="container">
+				<div class="text-center mb-5">
+					<div class="section-tag reveal">Getting Started</div>
+					<h2 class="section-title reveal reveal-delay-1">Ship in three steps.</h2>
+				</div>
+				<div class="timeline reveal">
+					<div class="timeline-line"></div>
+					<div class="timeline-step">
+						<div class="timeline-dot">1</div>
+						<div class="timeline-content">
+							<div class="timeline-label">Sign in</div>
+							<p class="timeline-desc">Open the console to view your wallet, plan, usage, and API keys.</p>
+						</div>
+					</div>
+					<div class="timeline-step">
+						<div class="timeline-dot">2</div>
+						<div class="timeline-content">
+							<div class="timeline-label">Choose your path</div>
+							<p class="timeline-desc">Cloud APIs for hosted workloads, or launch an AI Server for local models.</p>
+						</div>
+					</div>
+					<div class="timeline-step">
+						<div class="timeline-dot">3</div>
+						<div class="timeline-content">
+							<div class="timeline-label">Ship it</div>
+							<p class="timeline-desc">Chat traffic on subscriptions, production on credit-based P2G. Scale when ready.</p>
 						</div>
 					</div>
 				</div>

@@ -4,7 +4,7 @@ class IpFooter extends HTMLElement {
 <footer>
 	<div class="container">
 		<div class="footer-inner d-flex flex-wrap justify-content-between align-items-center gap-3">
-			<span>&copy; 2026 Rihaan Meher | <a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank" rel="noopener">System Health</a></span>
+			<span>&copy; 2026 InferencePort AI | <a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank" rel="noopener">System Health</a></span>
 			<div class="footer-links">
 				<a href="marketplace.html">Marketplace</a>
 				<a href="lightning.html">Lightning</a>
