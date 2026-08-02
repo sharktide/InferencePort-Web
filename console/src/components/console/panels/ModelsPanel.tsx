@@ -88,7 +88,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   useEffect(() => { loadModels(); }, [loadModels]);
 
   useEffect(() => {
-    //@ts-expect-error
+    //@ts-ignore
     import("@google/model-viewer/dist/model-viewer");
   }, []);
 
