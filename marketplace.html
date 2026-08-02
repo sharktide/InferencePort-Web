@@ -15,13 +15,11 @@
 		<link rel="stylesheet" href="styles/shared.css" />
 		<script src="components/ip-navbar.js"></script>
 		<style>
-			/* Hero */
 			.hero-section {
 				background: linear-gradient(180deg, rgba(79, 124, 255, 0.04) 0%, transparent 100%);
 				padding: 72px 0;
 			}
 
-			/* Search */
 			#search-models {
 				background: var(--surface);
 				border: 1px solid var(--border);
@@ -41,26 +39,124 @@
 				color: var(--muted);
 			}
 
-			/* Model cards */
-			.model-card {
+			.filter-tabs {
+				display: flex;
+				gap: 6px;
+				flex-wrap: wrap;
+				justify-content: center;
+				margin-bottom: 1.5rem;
+			}
+
+			.filter-tab {
 				background: var(--surface);
 				border: 1px solid var(--border);
-				border-radius: 14px;
-				padding: 24px;
-				transition:
-					transform 0.2s,
-					border-color 0.2s,
-					box-shadow 0.2s;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				height: 100%;
+				color: var(--muted);
+				padding: 7px 18px;
+				border-radius: 999px;
+				font-size: 0.82rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all 0.15s;
+				text-transform: uppercase;
+				letter-spacing: 0.03em;
+			}
+
+			.filter-tab:hover {
+				border-color: var(--brand-border);
+				color: var(--text);
+			}
+
+			.filter-tab.active {
+				background: var(--brand-dim);
+				border-color: var(--brand-border);
+				color: var(--brand);
+			}
+
+			.models-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+				gap: 1rem;
+			}
+
+			.model-card {
+				background: var(--surface);
+				border: 1.5px solid var(--border);
+				border-radius: 12px;
+				padding: 1.1rem 1.25rem;
+				display: grid;
+				gap: 0.8rem;
+				transition: border-color 0.15s, transform 0.15s;
 			}
 
 			.model-card:hover {
-				transform: translateY(-4px);
 				border-color: var(--brand-border);
-				box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+				transform: translateY(-2px);
+				box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+			}
+
+			.model-card-top {
+				display: flex;
+				justify-content: space-between;
+				align-items: start;
+				gap: 8px;
+			}
+
+			.model-card-name {
+				font-size: 0.95rem;
+				font-weight: 600;
+				color: var(--text);
+				letter-spacing: -0.01em;
+			}
+
+			.model-pill {
+				font-size: 0.68rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				padding: 0.32rem 0.55rem;
+				border-radius: 999px;
+				border: 1px solid transparent;
+				white-space: nowrap;
+				flex-shrink: 0;
+			}
+
+			.pill-text {
+				color: #0f766e;
+				background: rgba(20, 184, 166, 0.12);
+			}
+
+			.pill-image {
+				color: #b45309;
+				background: rgba(245, 158, 11, 0.10);
+			}
+
+			.pill-video, .pill-audio {
+				color: #7c3aed;
+				background: rgba(124, 58, 237, 0.10);
+			}
+
+			.pill-3d {
+				color: #1a6bff;
+				background: rgba(26, 107, 255, 0.10);
+			}
+
+			.model-meta {
+				display: flex;
+				flex-direction: column;
+				gap: 0.2rem;
+			}
+
+			.model-key {
+				font-size: 0.68rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				color: var(--muted);
+				letter-spacing: 0.04em;
+			}
+
+			.model-value {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.74rem;
+				color: var(--text);
 			}
 
 			.model-highlight {
@@ -68,137 +164,19 @@
 				box-shadow: 0 0 0 5px rgba(79, 124, 255, 0.15);
 			}
 
-			.model-name {
-				font-size: 1.25rem;
-				font-weight: 700;
-				color: var(--text);
-				margin-bottom: 8px;
-				letter-spacing: -0.02em;
-			}
-
-			.model-description {
-				font-size: 0.86rem;
-				color: var(--text-muted);
-				margin-bottom: 14px;
-				line-height: 1.6;
-				white-space: pre-wrap;
-			}
-
-			.size-badge {
-				background: rgba(79, 124, 255, 0.12);
-				color: var(--brand);
-				border: 1px solid var(--brand-border);
-				font-weight: 500;
-				padding: 3px 10px;
-				border-radius: 6px;
-				font-size: 0.78rem;
-				margin-right: 5px;
-				margin-bottom: 4px;
-				display: inline-block;
-				font-family: "JetBrains Mono", monospace;
-			}
-
-			.meta-text {
-				margin-top: 10px;
-				font-size: 0.83rem;
+			.no-results {
+				text-align: center;
 				color: var(--muted);
+				padding: 3rem 0;
+				font-size: 0.95rem;
 			}
 
-			.meta-text strong {
-				color: var(--text);
+			.section-count {
+				text-align: center;
+				color: var(--muted);
+				font-size: 0.85rem;
+				margin-bottom: 1.5rem;
 			}
-
-			.more-link {
-				color: var(--brand);
-				text-decoration: none;
-				font-size: 0.83rem;
-				font-weight: 500;
-			}
-
-			.more-link:hover {
-				text-decoration: underline;
-			}
-
-			.download-btn {
-				margin-top: 18px;
-				background: var(--brand-dim);
-				border: 1px solid var(--brand-border);
-				color: var(--brand);
-				padding: 10px;
-				border-radius: 9px;
-				font-weight: 500;
-				font-size: 0.86rem;
-				width: 100%;
-				transition: background 0.18s;
-				cursor: pointer;
-			}
-
-			.download-btn:hover {
-				background: rgba(79, 124, 255, 0.15);
-				color: var(--brand);
-			}
-
-			/* Modal */
-			.modal-content {
-				background: #ffffff;
-				border: 1px solid var(--border);
-				border-radius: 14px;
-			}
-
-			.modal-header {
-				border-bottom: 1px solid var(--border);
-				padding: 18px 22px;
-			}
-
-			.modal-title {
-				color: var(--text);
-				font-weight: 700;
-			}
-
-			.modal-body {
-				padding: 22px;
-				color: var(--text-body);
-				font-size: 0.88rem;
-				line-height: 1.7;
-			}
-
-			.modal-body strong {
-				color: var(--text);
-			}
-
-			.btn-close {
-			}
-
-			.badge.bg-secondary {
-				background: var(--bg-alt) !important;
-				color: var(--text-body);
-				font-weight: 400;
-			}
-
-			#modalDownloadBtn {
-				background: var(--brand);
-				border: none;
-				color: #fff;
-				border-radius: 7px;
-				padding: 7px 18px;
-				font-size: 0.84rem;
-				font-weight: 600;
-			}
-
-			#modalDownloadBtn:hover {
-				opacity: 0.85;
-			}
-
-			#modalModelLink {
-				color: var(--brand);
-				text-decoration: none;
-				font-size: 0.84rem;
-			}
-
-			#modalModelLink:hover {
-				text-decoration: underline;
-			}
-
 		</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -206,7 +184,6 @@
 	<body>
 		<ip-navbar active="marketplace"></ip-navbar>
 
-		<!-- Hero -->
 		<section class="hero-section text-white text-center">
 			<div class="container">
 				<h1 class="display-4 fw-bold" style="letter-spacing: -1px">
@@ -214,19 +191,13 @@
 				</h1>
 				<p
 					class="lead mt-3"
-					style="
-						color: var(--text-muted);
-						max-width: 520px;
-						margin: 12px auto 0;
-					"
+					style="color: var(--text-muted); max-width: 520px; margin: 12px auto 0;"
 				>
-					Browse and download AI models for InferencePort directly
-					from your browser.
+					Browse all available AI models across text, image, video, and 3D.
 				</p>
 			</div>
 		</section>
 
-		<!-- Models -->
 		<section class="py-5">
 			<div class="container">
 				<h2
@@ -235,6 +206,14 @@
 				>
 					Available Models
 				</h2>
+				<div class="filter-tabs" id="filter-tabs">
+					<button class="filter-tab active" data-filter="all">All</button>
+					<button class="filter-tab" data-filter="text">Text</button>
+					<button class="filter-tab" data-filter="image">Image</button>
+					<button class="filter-tab" data-filter="video">Video</button>
+					<button class="filter-tab" data-filter="audio">Audio</button>
+					<button class="filter-tab" data-filter="3d">3D</button>
+				</div>
 				<input
 					type="text"
 					id="search-models"
@@ -242,63 +221,15 @@
 					placeholder="Search models…"
 				/>
 				<div class="text-center my-4" id="loading-spinner">
-					<div
-						class="spinner-border"
-						style="color: var(--brand)"
-						role="status"
-					>
+					<div class="spinner-border" style="color: var(--brand)" role="status">
 						<span class="visually-hidden">Loading…</span>
 					</div>
 				</div>
-				<div class="row g-4" id="available-models"></div>
+				<div class="section-count" id="model-count"></div>
+				<div class="models-grid" id="available-models"></div>
+				<div class="no-results" id="no-results" style="display: none;">No models found.</div>
 			</div>
 		</section>
-
-		<!-- Modal -->
-		<div class="modal fade" id="modelModal" tabindex="-1">
-			<div class="modal-dialog modal-lg modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="modalModelName"></h5>
-						<button
-							type="button"
-							class="btn btn-primary btn-download"
-							id="modalDownloadBtn"
-						>
-							Download
-						</button>
-						<button
-							type="button"
-							class="btn-close ms-2"
-							data-bs-dismiss="modal"
-						></button>
-					</div>
-					<div class="modal-body">
-						<p
-							id="modalModelDesc"
-							style="white-space: pre-wrap"
-						></p>
-						<div class="mb-2">
-							<strong>Tags:</strong>
-							<span id="modalModelTags"></span>
-						</div>
-						<div class="mb-2">
-							<strong>Sizes:</strong>
-							<span id="modalModelSizes"></span>
-						</div>
-						<div class="mb-2">
-							<strong>Pulls:</strong>
-							<span id="modalModelPulls"></span>
-						</div>
-						<div class="mb-2">
-							<strong>Updated:</strong>
-							<span id="modalModelUpdated"></span>
-						</div>
-						<a id="modalModelLink" target="_blank"></a>
-					</div>
-				</div>
-			</div>
-		</div>
 
 		<ip-footer></ip-footer>
 
@@ -306,173 +237,185 @@
 		<script src="components/ip-footer.js"></script>
 		<script src="scripts/animations.js"></script>
 		<script>
-			let availableModels = [];
+			const API_BASE = "https://sharktide-lightning.hf.space";
+			let allModels = [];
+			let config = null;
+			let activeFilter = "all";
 
-			async function fetchAvailableModels() {
-				const spinner = document.getElementById("loading-spinner");
-				spinner.style.display = "block";
-				try {
-					const res = await fetch(
-						"https://sharktide-lightning.hf.space/models",
-					);
-					if (!res.ok) {
-						console.error("Failed to fetch models:", res.status);
-						return [];
-					}
-					return await res.json();
-				} catch (err) {
-					console.error("Error fetching models:", err);
-					return [];
-				} finally {
-					spinner.style.display = "none";
+			function isTextModel(m) {
+				const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
+				const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
+				return i.includes("text") && o.includes("text");
+			}
+
+			function slug(m) {
+				return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
+			}
+
+			function modelType(m) {
+				if (m.type) return m.type;
+				const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
+				const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
+				if (i.includes("text") && o.includes("text")) return "text";
+				if (o.includes("image")) return "image";
+				if (o.includes("video")) return "video";
+				if (o.includes("audio")) return "audio";
+				return "text";
+			}
+
+			function pillClass(type) {
+				switch (type) {
+					case "text": return "pill-text";
+					case "image": return "pill-image";
+					case "video": return "pill-video";
+					case "audio": return "pill-audio";
+					case "3D":
+					case "3d": return "pill-3d";
+					default: return "pill-text";
 				}
 			}
 
-			function cleanText(text) {
-				return text.replace(/^\s+/gm, "").trim();
+			function formatPricing(m) {
+				const p = m?.pricing || {};
+				if (p.prompt != null && p.completion != null) {
+					const perMillion = (v) => (v * 1000000).toFixed(2);
+					return `In: $${perMillion(p.prompt)}/M · Out: $${perMillion(p.completion)}/M`;
+				}
+				return null;
+			}
+
+			function formatModelPrice(m) {
+				const p = m?.price;
+				if (p == null) return null;
+				const type = m.type;
+				if (type === "video" || type === "audio") return `$${p}/sec`;
+				if (type === "image") return `$${p}/gen`;
+				if (type === "3D") return `$${p}/model`;
+				return `$${p}`;
+			}
+
+			function formatPrice(m) {
+				return formatModelPrice(m) || formatPricing(m) || "Pricing unavailable";
+			}
+
+			function modalities(m) {
+				const arr = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
+				return arr.length ? arr.map((v) => v.toUpperCase()).join(" / ") : "Configured model";
+			}
+
+			async function loadModels() {
+				const spinner = document.getElementById("loading-spinner");
+				spinner.style.display = "block";
+				try {
+					const [configRes, modelsRes] = await Promise.all([
+						fetch(`${API_BASE}/v1/config`),
+						fetch(`${API_BASE}/v1/models`)
+					]);
+
+					const cfg = await configRes.json().catch(() => ({}));
+					config = cfg;
+
+					const modelsData = await modelsRes.json().catch(() => ({}));
+					const remoteModels = Array.isArray(modelsData.data) ? modelsData.data : [];
+					const configModels = Array.isArray(cfg.models) ? cfg.models : [];
+
+					const textRemote = remoteModels.filter((m) => isTextModel(m) && m.is_ready !== false);
+					const all = [...textRemote, ...configModels];
+
+					const seen = new Set();
+					allModels = all.filter((m) => {
+						const k = slug(m) || m.name;
+						if (!k || seen.has(k)) return false;
+						seen.add(k);
+						return true;
+					});
+				} catch (err) {
+					console.error("Error loading models:", err);
+					allModels = [];
+				} finally {
+					spinner.style.display = "none";
+				}
 			}
 
 			function scrollToHashModel() {
 				const hash = window.location.hash;
 				if (!hash) return;
 				const modelName = decodeURIComponent(hash.substring(1));
-				const target = document.getElementById(
-					"model-" + encodeURIComponent(modelName),
-				);
+				const target = document.getElementById("model-" + encodeURIComponent(modelName));
 				if (target) {
 					setTimeout(() => {
-						target.scrollIntoView({
-							behavior: "smooth",
-							block: "center",
-						});
+						target.scrollIntoView({ behavior: "smooth", block: "center" });
 						target.classList.add("model-highlight");
 					}, 100);
 				}
 			}
 
-			function renderAvailableModels(filter = "") {
+			function renderModels(filter = "") {
 				const container = document.getElementById("available-models");
+				const countEl = document.getElementById("model-count");
+				const noResults = document.getElementById("no-results");
 				container.innerHTML = "";
 
-				availableModels
-					.filter((m) =>
-						m.name.toLowerCase().includes(filter.toLowerCase()),
-					)
-					.forEach((model) => {
-						const col = document.createElement("div");
-						col.className = "col-lg-4 col-md-6";
+				const filtered = allModels.filter((m) => {
+					const matchesSearch = !filter || (m.name || "").toLowerCase().includes(filter.toLowerCase()) || (m.id || "").toLowerCase().includes(filter.toLowerCase());
+					const type = modelType(m);
+					const matchesType = activeFilter === "all" || type === activeFilter || (activeFilter === "3d" && type === "3D");
+					return matchesSearch && matchesType;
+				});
 
-						const card = document.createElement("div");
-						card.className = "model-card";
-						card.id = "model-" + encodeURIComponent(model.name);
-
-						const top = document.createElement("div");
-
-						const nameEl = document.createElement("div");
-						nameEl.className = "model-name";
-						nameEl.textContent = model.name;
-
-						const descEl = document.createElement("div");
-						descEl.className = "model-description";
-						descEl.textContent = cleanText(model.description);
-
-						const sizesWrapper = document.createElement("div");
-						model.sizes.forEach((size) => {
-							const badge = document.createElement("span");
-							badge.className = "size-badge";
-							badge.textContent = size;
-							sizesWrapper.appendChild(badge);
-						});
-
-						const pullsEl = document.createElement("div");
-						pullsEl.className = "meta-text";
-						pullsEl.innerHTML = "<strong>Pulls:</strong> ";
-						const pullsVal = document.createElement("span");
-						pullsVal.textContent = model.pulls;
-						pullsEl.appendChild(pullsVal);
-
-						const updatedEl = document.createElement("div");
-						updatedEl.className = "meta-text";
-						updatedEl.innerHTML = "<strong>Updated:</strong> ";
-						const updatedVal = document.createElement("span");
-						updatedVal.textContent = model.updated;
-						updatedEl.appendChild(updatedVal);
-
-						const downloadBtn = document.createElement("button");
-						downloadBtn.className = "download-btn";
-						downloadBtn.textContent = "Get in App";
-						downloadBtn.onclick = () => {
-							window.location.href = `inferenceport-ai:///marketplace/ollama#${encodeURIComponent(model.name)}`;
-						};
-
-						top.appendChild(nameEl);
-						top.appendChild(descEl);
-						top.appendChild(sizesWrapper);
-						top.appendChild(pullsEl);
-						top.appendChild(updatedEl);
-
-						if (model.link) {
-							const linkWrapper = document.createElement("div");
-							linkWrapper.className = "mt-2";
-							const link = document.createElement("a");
-							link.className = "more-link";
-							link.target = "_blank";
-							link.rel = "noopener noreferrer";
-							link.href = `https://ollama.com${model.link}`;
-							link.textContent = "More details";
-							linkWrapper.appendChild(link);
-							top.appendChild(linkWrapper);
-						}
-
-						card.appendChild(top);
-						card.appendChild(downloadBtn);
-						col.appendChild(card);
-						container.appendChild(col);
-					});
-			}
-
-			function openModelModal(model) {
-				const bsModal = new bootstrap.Modal(
-					document.getElementById("modelModal"),
-				);
-				document.getElementById("modalModelName").textContent =
-					model.name;
-				document.getElementById("modalModelDesc").textContent =
-					model.description;
-				document.getElementById("modalModelTags").innerHTML = model.tags
-					.map(
-						(t) =>
-							`<span class="badge bg-secondary me-1">${t}</span>`,
-					)
-					.join(" ");
-				document.getElementById("modalModelSizes").textContent =
-					model.sizes.join(", ");
-				document.getElementById("modalModelPulls").textContent =
-					model.pulls;
-				document.getElementById("modalModelUpdated").textContent =
-					model.updated;
-				const linkEl = document.getElementById("modalModelLink");
-				if (model.link) {
-					linkEl.href = `https://ollama.com${model.link}`;
-					linkEl.textContent = "More details on Ollama.com";
+				if (filtered.length === 0) {
+					noResults.style.display = "block";
+					countEl.textContent = "";
 				} else {
-					linkEl.textContent = "";
+					noResults.style.display = "none";
+					countEl.textContent = `${filtered.length} model${filtered.length !== 1 ? "s" : ""} available`;
 				}
-				document.getElementById("modalDownloadBtn").onclick = () => {
-					window.location.href = `inferenceport-ai:///marketplace/ollama#${encodeURIComponent(model.name)}`;
-				};
-				bsModal.show();
+
+				filtered.forEach((m) => {
+					const type = modelType(m);
+					const displayName = m.name || m.id || "Unnamed model";
+					const displaySlug = slug(m) || "—";
+					const price = formatPrice(m);
+
+					const card = document.createElement("div");
+					card.className = "model-card";
+					card.id = "model-" + encodeURIComponent(displayName);
+
+					card.innerHTML = `
+						<div class="model-card-top">
+							<span class="model-card-name">${displayName}</span>
+							<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
+						</div>
+						<div class="model-meta">
+							<span class="model-key">Slug</span>
+							<span class="model-value">${displaySlug}</span>
+						</div>
+						<div class="model-meta">
+							<span class="model-key">Pricing</span>
+							<span class="model-value">${price}</span>
+						</div>
+					`;
+
+					container.appendChild(card);
+				});
 			}
 
-			document
-				.getElementById("search-models")
-				.addEventListener("input", (e) =>
-					renderAvailableModels(e.target.value),
-				);
+			document.getElementById("search-models").addEventListener("input", (e) => {
+				renderModels(e.target.value);
+			});
+
+			document.getElementById("filter-tabs").addEventListener("click", (e) => {
+				const tab = e.target.closest(".filter-tab");
+				if (!tab) return;
+				document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
+				tab.classList.add("active");
+				activeFilter = tab.dataset.filter;
+				renderModels(document.getElementById("search-models").value);
+			});
 
 			document.addEventListener("DOMContentLoaded", async () => {
-				availableModels = await fetchAvailableModels();
-				renderAvailableModels();
+				await loadModels();
+				renderModels();
 				scrollToHashModel();
 			});
 		</script>
