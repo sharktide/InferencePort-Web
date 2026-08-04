@@ -325,7 +325,7 @@
 					class="fw-bold text-center mb-4"
 					style="color: var(--text); letter-spacing: -0.02em"
 				>
-					P2G Cloud Models
+					P2G Cloud & Local Models
 				</h2>
 				<div class="filter-tabs" id="filter-tabs">
 					<button class="filter-tab active" data-filter="all">All</button>
@@ -525,7 +525,7 @@
 			function renderLocalCard(m) {
 				const card = document.createElement("div");
 				card.className = "model-card";
-				card.id = "local-" + m.name;
+				card.id = m.name;
 
 				const sizesHtml = (m.sizes || []).map(s => `<span class="size-chip">${escapeHtml(s)}</span>`).join("");
 				const tagsHtml = (m.tags || []).map(t => `<span class="model-pill ${tagPillClass(t)}">${escapeHtml(t)}</span>`).join(" ");
