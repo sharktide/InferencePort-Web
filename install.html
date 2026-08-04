@@ -213,7 +213,7 @@
 		}
 
 		.btn-gh {
-			background: rgba(255, 255, 255, 0.05);
+			background: var(--surface);
 			color: var(--text-body);
 			border: 1px solid var(--border);
 			border-radius: 8px;
@@ -490,7 +490,7 @@
 			}
 
 			document.getElementById("windows").innerHTML = `
-      <h5 class="fw-bold mb-3" style="color:#fff">Windows Downloads</h5>
+      <h5 class="fw-bold mb-3" style="color:var(--text)">Windows Downloads</h5>
       ${renderCards("Windows x64 (CPU)", winX64)}
       ${renderCards("Windows ARM64", winArm64)}
       ${renderCards("GPU Builds", [...winCuda, ...winRocm], true)}
@@ -500,7 +500,7 @@
       </div>`;
 
 			document.getElementById("mac").innerHTML = `
-      <h5 class="fw-bold mb-3" style="color:#fff">macOS Downloads</h5>
+      <h5 class="fw-bold mb-3" style="color:var(--text)">macOS Downloads</h5>
       ${renderCards("macOS Intel (x64)", macX64)}
       ${renderCards("macOS Apple Silicon (ARM64)", macArm64)}
       <div class="dl-card">
@@ -509,7 +509,7 @@
       </div>`;
 
 			document.getElementById("linux").innerHTML = `
-      <h5 class="fw-bold mb-3" style="color:#fff">Linux Downloads</h5>
+      <h5 class="fw-bold mb-3" style="color:var(--text)">Linux Downloads</h5>
       ${renderCards("Linux x64 (CPU)", linuxX64)}
       ${renderCards("Linux ARM64 (CPU)", linuxArm64)}
       ${renderCards("GPU Builds", [...linuxCuda, ...linuxRocm, ...jetpack5, ...jetpack6], true)}

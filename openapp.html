@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -18,27 +18,22 @@
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
 		<style>
 			.hero-section {
-				background: radial-gradient(
-					circle at 30% 40%,
-					rgba(109, 140, 255, 0.35),
-					rgba(79, 124, 255, 0.5),
-					rgba(15, 21, 37, 0.95)
-				);
+				background: linear-gradient(180deg, rgba(79, 124, 255, 0.04) 0%, transparent 100%);
 				padding: 80px 0;
 			}
 			.hero-title {
 				letter-spacing: -1px;
-				color: #abc6ee !important;
+				color: var(--text) !important;
 			}
 			.hero-text {
-				color: #c8d4e8;
+				color: var(--text-muted);
 				max-width: 520px;
 			}
 
 			/* Open card */
 			.open-card {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 16px;
 				padding: 48px 36px;
 				text-align: center;
@@ -63,13 +58,13 @@
 			.open-title {
 				font-size: 1.2rem;
 				font-weight: 700;
-				color: #fff;
+				color: var(--text);
 				margin-bottom: 8px;
 				letter-spacing: -0.02em;
 			}
 			.open-sub {
 				font-size: 0.88rem;
-				color: var(--muted);
+				color: var(--text-muted);
 				margin-bottom: 24px;
 			}
 

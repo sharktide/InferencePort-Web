@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,27 +19,22 @@
 		<script src="scripts/theme.js"></script>
 		<style>
 			.hero-section {
-				background: radial-gradient(
-					circle at 30% 40%,
-					rgba(109, 140, 255, 0.35),
-					rgba(79, 124, 255, 0.5),
-					rgba(15, 21, 37, 0.95)
-				);
+				background: linear-gradient(180deg, rgba(79, 124, 255, 0.04) 0%, transparent 100%);
 				padding: 80px 0;
 			}
 			.hero-title {
 				letter-spacing: -1px;
-				color: #abc6ee !important;
+				color: var(--text) !important;
 			}
 			.hero-text {
-				color: #c8d4e8;
+				color: var(--text-muted);
 				max-width: 520px;
 			}
 
 			/* Form card */
 			.form-card {
 				background: var(--surface);
-				border: 1px solid rgba(255, 255, 255, 0.07);
+				border: 1px solid var(--border);
 				border-radius: 16px;
 				padding: 40px 36px;
 				max-width: 460px;
@@ -59,7 +54,7 @@
 			.form-card h2 {
 				font-size: 1.35rem;
 				font-weight: 800;
-				color: #fff;
+				color: var(--text);
 				letter-spacing: -0.03em;
 				text-align: center;
 				margin-bottom: 28px;
@@ -67,26 +62,26 @@
 
 			.form-label {
 				font-size: 0.84rem;
-				color: #d6daea;
+				color: var(--text-body);
 				font-weight: 500;
 				margin-bottom: 6px;
 			}
 			.form-control {
-				background: #080d1a;
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				color: #d6daea;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				color: var(--text-body);
 				border-radius: 8px;
 				padding: 10px 14px;
 				font-size: 0.88rem;
 			}
 			.form-control:focus {
-				background: #080d1a;
-				color: #d6daea;
+				background: var(--surface);
+				color: var(--text-body);
 				border-color: var(--brand-border);
 				box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.15);
 			}
 			.form-control::placeholder {
-				color: var(--muted);
+				color: var(--text-muted);
 			}
 
 			.btn-submit {
