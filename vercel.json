@@ -23,6 +23,14 @@
       "source": "/oauth/authorize",
       "destination": "https://dpixehhdbtzsbckfektd.supabase.co/auth/v1/oauth/authorize",
       "permanent": false
+    },
+    {
+      "source": "/:path((?!index\\.html|redirect\\.html).*)",
+      "has": [
+        { "type": "host", "value": "inference.js.org" }
+      ],
+      "destination": "https://inferenceport.ai/:path",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -55,20 +63,14 @@
     {
       "src": "/(.*)",
       "has": [
-        {
-          "type": "host",
-          "value": "console.inferenceport.ai"
-        }
+        { "type": "host", "value": "console.inferenceport.ai" }
       ],
       "dest": "/console/$1"
     },
     {
-        "src": "/((?!.*\\.(css|js|png|jpg|jpeg|gif|svg|icon|json|webp)|.*auth/callback\\.html).*)",
-        "has": [
-        {
-          "type": "host",
-          "value": "inference.js.org"
-        }
+      "src": "^/(|index\\.html|redirect\\.html)$",
+      "has": [
+        { "type": "host", "value": "inference.js.org" }
       ],
       "dest": "/redirect.html"
     }
