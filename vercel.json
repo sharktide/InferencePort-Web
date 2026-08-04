@@ -63,7 +63,7 @@
       "dest": "/console/$1"
     },
     {
-        "src": "/((?!.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|json|webp)).*)",
+        "src": "/((?!.*\\.(css|js|png|jpg|jpeg|gif|svg|icon|json|webp)|.*auth/callback\\.html).*)"
         "has": [
         {
           "type": "host",
