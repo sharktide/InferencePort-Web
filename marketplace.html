@@ -177,6 +177,127 @@
 				font-size: 0.85rem;
 				margin-bottom: 1.5rem;
 			}
+
+			.pill-p2g {
+				color: #7c3aed;
+				background: rgba(124, 58, 237, 0.12);
+			}
+
+			.pill-local {
+				color: #0891b2;
+				background: rgba(8, 145, 178, 0.12);
+			}
+
+			.pill-embedding {
+				color: #6366f1;
+				background: rgba(99, 102, 241, 0.12);
+			}
+
+			.pill-thinking {
+				color: #a855f7;
+				background: rgba(168, 85, 247, 0.12);
+			}
+
+			.pill-tools {
+				color: #16a34a;
+				background: rgba(22, 163, 74, 0.12);
+			}
+
+			.pill-vision {
+				color: #eab308;
+				background: rgba(234, 179, 8, 0.12);
+			}
+
+			.model-sizes {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px;
+			}
+
+			.size-chip {
+				font-size: 0.62rem;
+				font-weight: 600;
+				padding: 0.15rem 0.4rem;
+				border-radius: 6px;
+				background: rgba(255, 255, 255, 0.06);
+				color: var(--muted);
+				border: 1px solid var(--border);
+			}
+
+			.model-stats {
+				display: flex;
+				gap: 1rem;
+				font-size: 0.7rem;
+				color: var(--muted);
+			}
+
+			.btn-card-action {
+				display: block;
+				width: 100%;
+				text-align: center;
+				padding: 0.55rem 1rem;
+				border-radius: 9px;
+				font-size: 0.8rem;
+				font-weight: 600;
+				cursor: pointer;
+				text-decoration: none;
+				transition: all 0.15s;
+				border: none;
+				margin-top: auto;
+			}
+
+			.btn-card-action:hover {
+				transform: translateY(-1px);
+			}
+
+			.btn-console {
+				background: rgba(79, 124, 255, 0.08);
+				color: var(--brand);
+				border: 1px solid rgba(79, 124, 255, 0.2);
+			}
+
+			.btn-console:hover {
+				background: rgba(79, 124, 255, 0.15);
+				box-shadow: 0 4px 12px rgba(79, 124, 255, 0.15);
+			}
+
+			.btn-open-app {
+				background: rgba(79, 124, 255, 0.08);
+				color: var(--brand);
+				border: 1px solid rgba(79, 124, 255, 0.2);
+			}
+
+			.btn-open-app:hover {
+				background: rgba(79, 124, 255, 0.15);
+				box-shadow: 0 4px 12px rgba(79, 124, 255, 0.15);
+			}
+
+			.btn-more-info {
+				background: rgba(79, 124, 255, 0.08);
+				color: var(--brand);
+				border: 1px solid rgba(79, 124, 255, 0.2);
+			}
+
+			.btn-more-info:hover {
+				background: rgba(79, 124, 255, 0.15);
+				box-shadow: 0 4px 12px rgba(79, 124, 255, 0.15);
+			}
+
+			@keyframes glow-pulse {
+				0%, 100% {
+					box-shadow: 0 0 8px rgba(79, 124, 255, 0.15);
+					border-color: rgba(79, 124, 255, 0.4);
+				}
+				50% {
+					box-shadow: 0 0 20px rgba(79, 124, 255, 0.35);
+					border-color: var(--brand);
+				}
+			}
+
+			.model-card.glow-animate {
+				animation: glow-pulse 1.5s ease-in-out 3;
+				outline: 2px solid var(--brand);
+			}
 		</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -204,7 +325,7 @@
 					class="fw-bold text-center mb-4"
 					style="color: var(--text); letter-spacing: -0.02em"
 				>
-					Available Models
+					P2G Cloud Models
 				</h2>
 				<div class="filter-tabs" id="filter-tabs">
 					<button class="filter-tab active" data-filter="all">All</button>
@@ -213,6 +334,7 @@
 					<button class="filter-tab" data-filter="video">Video</button>
 					<button class="filter-tab" data-filter="audio">Audio</button>
 					<button class="filter-tab" data-filter="3d">3D</button>
+					<button class="filter-tab" data-filter="local">Local</button>
 				</div>
 				<input
 					type="text"
@@ -238,7 +360,8 @@
 		<script src="scripts/animations.js"></script>
 		<script>
 			const API_BASE = "https://sharktide-lightning.hf.space";
-			let allModels = [];
+			let cloudModels = [];
+			let localModels = [];
 			let config = null;
 			let activeFilter = "all";
 
@@ -275,6 +398,16 @@
 				}
 			}
 
+			function tagPillClass(tag) {
+				switch (tag) {
+					case "embedding": return "pill-embedding";
+					case "thinking": return "pill-thinking";
+					case "tools": return "pill-tools";
+					case "vision": return "pill-vision";
+					default: return "pill-text";
+				}
+			}
+
 			function formatPricing(m) {
 				const p = m?.pricing || {};
 				if (p.prompt != null && p.completion != null) {
@@ -298,18 +431,20 @@
 				return formatModelPrice(m) || formatPricing(m) || "Pricing unavailable";
 			}
 
-			function modalities(m) {
-				const arr = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
-				return arr.length ? arr.map((v) => v.toUpperCase()).join(" / ") : "Configured model";
+			function escapeHtml(str) {
+				const d = document.createElement("div");
+				d.textContent = str;
+				return d.innerHTML;
 			}
 
 			async function loadModels() {
 				const spinner = document.getElementById("loading-spinner");
 				spinner.style.display = "block";
 				try {
-					const [configRes, modelsRes] = await Promise.all([
+					const [configRes, modelsRes, localRes] = await Promise.all([
 						fetch(`${API_BASE}/v1/config`),
-						fetch(`${API_BASE}/v1/models`)
+						fetch(`${API_BASE}/v1/models`),
+						fetch(`${API_BASE}/models`)
 					]);
 
 					const cfg = await configRes.json().catch(() => ({}));
@@ -323,15 +458,19 @@
 					const all = [...textRemote, ...configModels];
 
 					const seen = new Set();
-					allModels = all.filter((m) => {
+					cloudModels = all.filter((m) => {
 						const k = slug(m) || m.name;
 						if (!k || seen.has(k)) return false;
 						seen.add(k);
 						return true;
 					});
+
+					const localData = await localRes.json().catch(() => []);
+					localModels = Array.isArray(localData) ? localData : [];
 				} catch (err) {
 					console.error("Error loading models:", err);
-					allModels = [];
+					cloudModels = [];
+					localModels = [];
 				} finally {
 					spinner.style.display = "none";
 				}
@@ -340,68 +479,121 @@
 			function scrollToHashModel() {
 				const hash = window.location.hash;
 				if (!hash) return;
-				const modelName = decodeURIComponent(hash.substring(1));
-				const target = document.getElementById("model-" + encodeURIComponent(modelName));
+				const modelId = hash.substring(1);
+				const target = document.getElementById(modelId);
 				if (target) {
 					setTimeout(() => {
 						target.scrollIntoView({ behavior: "smooth", block: "center" });
-						target.classList.add("model-highlight");
-					}, 100);
+						target.classList.add("glow-animate");
+						setTimeout(() => target.classList.remove("glow-animate"), 4500);
+					}, 150);
 				}
 			}
 
-			function renderModels(filter = "") {
+			function renderCloudCard(m) {
+				const type = modelType(m);
+				const displayName = m.name || m.id || "Unnamed model";
+				const displaySlug = slug(m) || "—";
+				const price = formatPrice(m);
+
+				const card = document.createElement("div");
+				card.className = "model-card";
+				card.id = "model-" + encodeURIComponent(slug(m) || displayName);
+
+				card.innerHTML = `
+					<div class="model-card-top">
+						<span class="model-card-name">${escapeHtml(displayName)}</span>
+						<div>
+							<span class="model-pill pill-p2g">P2G CLOUD</span>
+							<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
+						</div>
+					</div>
+					<div class="model-meta">
+						<span class="model-key">Slug</span>
+						<span class="model-value">${escapeHtml(displaySlug)}</span>
+					</div>
+					<div class="model-meta">
+						<span class="model-key">Pricing</span>
+						<span class="model-value">${price}</span>
+					</div>
+					<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" class="btn-card-action btn-console">Open Console</a>
+				`;
+
+				return card;
+			}
+
+			function renderLocalCard(m) {
+				const card = document.createElement("div");
+				card.className = "model-card";
+				card.id = "local-" + m.name;
+
+				const sizesHtml = (m.sizes || []).map(s => `<span class="size-chip">${escapeHtml(s)}</span>`).join("");
+				const tagsHtml = (m.tags || []).map(t => `<span class="model-pill ${tagPillClass(t)}">${escapeHtml(t)}</span>`).join(" ");
+				const deeplink = "inferenceport-ai:///marketplace/ollama#" + encodeURIComponent(m.name);
+
+				card.innerHTML = `
+					<div class="model-card-top">
+						<span class="model-card-name">${escapeHtml(m.name)}</span>
+						<span class="model-pill pill-local">LOCAL</span>
+					</div>
+					<p style="font-size:0.78rem;color:var(--muted);margin:0;line-height:1.4;">${escapeHtml(m.description || "")}</p>
+					${sizesHtml ? `<div class="model-sizes">${sizesHtml}</div>` : ""}
+					${tagsHtml ? `<div style="display:flex;gap:4px;flex-wrap:wrap;">${tagsHtml}</div>` : ""}
+					<div class="model-stats">
+						${m.pulls ? `<span>Pulls: ${escapeHtml(m.pulls)}</span>` : ""}
+						${m.updated ? `<span>Updated: ${escapeHtml(m.updated)}</span>` : ""}
+					</div>
+					<div style="display:flex;gap:6px;margin-top:auto;">
+						${m.link ? `<a href="${escapeHtml(m.link)}" target="_blank" rel="noopener" class="btn-card-action btn-more-info" style="flex:1;">More Info</a>` : ""}
+						<a href="${deeplink}" class="btn-card-action btn-open-app" style="flex:1;">Open in App</a>
+					</div>
+				`;
+
+				return card;
+			}
+
+			function renderAll(filter = "") {
 				const container = document.getElementById("available-models");
 				const countEl = document.getElementById("model-count");
 				const noResults = document.getElementById("no-results");
 				container.innerHTML = "";
 
-				const filtered = allModels.filter((m) => {
-					const matchesSearch = !filter || (m.name || "").toLowerCase().includes(filter.toLowerCase()) || (m.id || "").toLowerCase().includes(filter.toLowerCase());
-					const type = modelType(m);
-					const matchesType = activeFilter === "all" || type === activeFilter || (activeFilter === "3d" && type === "3D");
-					return matchesSearch && matchesType;
-				});
+				const showCloud = activeFilter !== "local";
+				const showLocal = activeFilter === "all" || activeFilter === "local";
 
-				if (filtered.length === 0) {
+				let rendered = [];
+
+				if (showCloud) {
+					const filteredCloud = cloudModels.filter((m) => {
+						const matchesSearch = !filter || (m.name || "").toLowerCase().includes(filter.toLowerCase()) || (m.id || "").toLowerCase().includes(filter.toLowerCase());
+						const type = modelType(m);
+						const matchesType = activeFilter === "all" || type === activeFilter || (activeFilter === "3d" && type === "3D");
+						return matchesSearch && matchesType;
+					});
+					filteredCloud.forEach(m => rendered.push(renderCloudCard(m)));
+				}
+
+				if (showLocal) {
+					const filteredLocal = localModels.filter((m) => {
+						return !filter || (m.name || "").toLowerCase().includes(filter.toLowerCase()) || (m.description || "").toLowerCase().includes(filter.toLowerCase());
+					});
+					filteredLocal.forEach(m => rendered.push(renderLocalCard(m)));
+				}
+
+				rendered.forEach(c => container.appendChild(c));
+
+				const total = rendered.length;
+				if (total === 0) {
 					noResults.style.display = "block";
 					countEl.textContent = "";
 				} else {
 					noResults.style.display = "none";
-					countEl.textContent = `${filtered.length} model${filtered.length !== 1 ? "s" : ""} available`;
+					countEl.textContent = `${total} model${total !== 1 ? "s" : ""} available`;
 				}
-
-				filtered.forEach((m) => {
-					const type = modelType(m);
-					const displayName = m.name || m.id || "Unnamed model";
-					const displaySlug = slug(m) || "—";
-					const price = formatPrice(m);
-
-					const card = document.createElement("div");
-					card.className = "model-card";
-					card.id = "model-" + encodeURIComponent(displayName);
-
-					card.innerHTML = `
-						<div class="model-card-top">
-							<span class="model-card-name">${displayName}</span>
-							<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
-						</div>
-						<div class="model-meta">
-							<span class="model-key">Slug</span>
-							<span class="model-value">${displaySlug}</span>
-						</div>
-						<div class="model-meta">
-							<span class="model-key">Pricing</span>
-							<span class="model-value">${price}</span>
-						</div>
-					`;
-
-					container.appendChild(card);
-				});
 			}
 
 			document.getElementById("search-models").addEventListener("input", (e) => {
-				renderModels(e.target.value);
+				renderAll(e.target.value);
 			});
 
 			document.getElementById("filter-tabs").addEventListener("click", (e) => {
@@ -410,12 +602,12 @@
 				document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
 				tab.classList.add("active");
 				activeFilter = tab.dataset.filter;
-				renderModels(document.getElementById("search-models").value);
+				renderAll(document.getElementById("search-models").value);
 			});
 
 			document.addEventListener("DOMContentLoaded", async () => {
 				await loadModels();
-				renderModels();
+				renderAll();
 				scrollToHashModel();
 			});
 		</script>
