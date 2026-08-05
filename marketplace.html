@@ -418,13 +418,26 @@
 			}
 
 			function formatModelPrice(m) {
-				const p = m?.price;
-				if (p == null) return null;
-				const type = m.type;
-				if (type === "video" || type === "audio") return `$${p}/sec`;
-				if (type === "image") return `$${p}/gen`;
-				if (type === "3D") return `$${p}/model`;
-				return `$${p}`;
+				const pricing = m?.pricing;
+				if (!pricing) return null;
+				const type = modelType(m);
+				if (type === "image" && pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+				if (type === "3d" || type === "3D") {
+					if (m.price_tiers) {
+						const values = Object.values(m.price_tiers).map((v) => parseFloat(v));
+						const min = Math.min(...values);
+						const max = Math.max(...values);
+						if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
+						return `$${min.toFixed(4)}/model`;
+					}
+					if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
+				}
+				if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
+				if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+					const perMillion = (v) => (parseFloat(v) * 1_000_000).toFixed(2);
+					return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
+				}
+				return null;
 			}
 
 			function formatPrice(m) {
@@ -441,24 +454,17 @@
 				const spinner = document.getElementById("loading-spinner");
 				spinner.style.display = "block";
 				try {
-					const [configRes, modelsRes, localRes] = await Promise.all([
-						fetch(`${API_BASE}/v1/config`),
+					const [modelsRes, localRes] = await Promise.all([
 						fetch(`${API_BASE}/v1/models`),
 						fetch(`${API_BASE}/models`)
 					]);
 
-					const cfg = await configRes.json().catch(() => ({}));
-					config = cfg;
-
 					const modelsData = await modelsRes.json().catch(() => ({}));
 					const remoteModels = Array.isArray(modelsData.data) ? modelsData.data : [];
-					const configModels = Array.isArray(cfg.models) ? cfg.models : [];
-
-					const textRemote = remoteModels.filter((m) => isTextModel(m) && m.is_ready !== false);
-					const all = [...textRemote, ...configModels];
 
 					const seen = new Set();
-					cloudModels = all.filter((m) => {
+					cloudModels = remoteModels.filter((m) => {
+						if (m.is_ready === false) return false;
 						const k = slug(m) || m.name;
 						if (!k || seen.has(k)) return false;
 						seen.add(k);

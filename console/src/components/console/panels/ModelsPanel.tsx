@@ -13,7 +13,7 @@ interface ThreeJobResult {
 }
 
 export default function ModelsPanel({ config, session, apiBase }: Props) {
-  const [models, setModels] = useState<any[]>([]);
+  const [allModels, setAllModels] = useState<any[]>([]);
   const [genModels, setGenModels] = useState<any[]>([]);
   const [source, setSource] = useState<"p2g" | "gen">("p2g");
   const [selectedModel, setSelectedModel] = useState("");
@@ -42,8 +42,14 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
 
   const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
+  const modelType = (m: any) => { if (m.type) return m.type; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; if (o.includes("image")) return "image"; if (o.includes("video")) return "video"; if (o.includes("audio")) return "audio"; if (o.includes("3d")) return "3d"; return "text"; };
   const modalities = (m: any) => { const arr = Array.isArray(m?.input_modalities) ? m.input_modalities : []; return arr.length ? arr.map((v: string) => v.toUpperCase()).join(" / ") : "Configured model"; };
-  const configPillClass = (m: any) => { const t = m?.type; if (t === "image") return styles.isConfigImage; if (t === "3D") return styles.isConfig3d; return styles.isConfigVideo; };
+  const configPillClass = (m: any) => {
+    const t = modelType(m);
+    if (t === "image") return styles.isConfigImage;
+    if (t === "3d" || t === "3D") return styles.isConfig3d;
+    return styles.isConfigVideo;
+  };
 
   const formatPricing = (m: any) => {
     const p = m?.pricing || {};
@@ -55,32 +61,45 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   };
 
   const textModels = useCallback(() => {
-    const all = [...models.filter(isTextModel), ...(config?.models || []).filter(isTextModel)];
+    const textOnly = allModels.filter((m: any) => isTextModel(m) && m.is_ready !== false);
     const seen = new Set();
-    return all.filter((m) => { const k = slug(m) || m.name; if (!k || seen.has(k)) return false; seen.add(k); return true; });
-  }, [models, config]);
+    return textOnly.filter((m: any) => { const k = slug(m) || m.name; if (!k || seen.has(k)) return false; seen.add(k); return true; });
+  }, [allModels]);
 
   const nonTextConfigModels = useCallback(() => {
-    return (config?.models || []).filter((m: any) => !isTextModel(m));
-  }, [config]);
+    return allModels.filter((m: any) => !isTextModel(m) && m.is_ready !== false);
+  }, [allModels]);
 
   const imageConfigModels = useCallback(() => {
-    return (config?.models || []).filter((m: any) => m.type === "image");
-  }, [config]);
+    return allModels.filter((m: any) => m.output_modalities?.includes("image") && m.is_ready !== false);
+  }, [allModels]);
 
   const formatModelPrice = (m: any) => {
-    const p = m?.price;
-    if (p == null) return null;
-    const type = m.type;
-    if (type === "video" || type === "audio") return `$${p}/sec`;
-    if (type === "image") return `$${p}/gen`;
-    if (type === "3D") return `$${p}/model`;
-    return `$${p}`;
+    const pricing = m?.pricing;
+    if (!pricing) return null;
+    const type = modelType(m);
+    if (type === "image" && pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+    if (type === "3d" || type === "3D") {
+      if (m.price_tiers) {
+        const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v));
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
+        return `$${min.toFixed(4)}/model`;
+      }
+      if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
+    }
+    if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
+    if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+      const perMillion = (v: string) => (parseFloat(v) * 1_000_000).toFixed(2);
+      return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
+    }
+    return null;
   };
 
   const loadModels = useCallback(async () => {
     try {
-      if (source === "p2g") { const r = await fetch(`${apiBase}/v1/models`); const d = await r.json().catch(() => ({})); setModels((Array.isArray(d.data) ? d.data : []).filter((m: any) => isTextModel(m) && m.is_ready !== false)); }
+      if (source === "p2g") { const r = await fetch(`${apiBase}/v1/models`); const d = await r.json().catch(() => ({})); setAllModels(Array.isArray(d.data) ? d.data : []); }
       else { const r = await fetch(`${apiBase}/gen/models`); const d = await r.json().catch(() => ({})); setGenModels(Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []); }
     } catch { /* ignore */ }
   }, [source, apiBase]);
@@ -225,7 +244,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
               <div key={i} className={styles.modelCard}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(m.type || modalities(m)).toUpperCase()}</span>
+                  <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}</span></div>
@@ -238,7 +257,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
               <div key={`cfg-${i}`} className={styles.modelCard}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(m.type || modalities(m)).toUpperCase()}</span>
+                  <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}</span></div>
@@ -283,7 +302,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
         </div>}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
-            {(config?.models || []).filter((m: any) => m.type === "3D").map((m: any) => (
+            {allModels.filter((m: any) => m.type === "3d" || m.output_modalities?.includes("3d")).map((m: any) => (
               <option key={m.id} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
             ))}
           </select></label>

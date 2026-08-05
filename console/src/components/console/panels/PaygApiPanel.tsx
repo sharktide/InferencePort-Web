@@ -18,29 +18,53 @@ function isTextModel(m: any) {
   return i.includes("text") && o.includes("text");
 }
 
+function modelType(m: any) {
+  if (m.type) return m.type;
+  const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
+  if (o.includes("image")) return "image";
+  if (o.includes("video")) return "video";
+  if (o.includes("audio")) return "audio";
+  if (o.includes("3d")) return "3d";
+  return "text";
+}
+
 function slug(m: any) {
   return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
 }
 
 function formatModelPrice(m: any) {
-  const p = m?.price;
-  if (p == null) return null;
-  const type = m.type;
-  if (type === "video" || type === "audio") return `$${p}/sec`;
-  if (type === "image") return `$${p}/gen`;
-  if (type === "3D") return `$${p}/model`;
-  return `$${p}`;
+  const pricing = m?.pricing;
+  if (!pricing) return null;
+  const type = modelType(m);
+  if (type === "image" && pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+  if (type === "3d" || type === "3D") {
+    if (m.price_tiers) {
+      const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v));
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
+      return `$${min.toFixed(4)}/model`;
+    }
+    if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
+  }
+  if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
+  if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+    const perMillion = (v: string) => (parseFloat(v) * 1_000_000).toFixed(2);
+    return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
+  }
+  return null;
 }
 
-function getImageModels(config: any) {
-  return (config?.models || []).filter((m: any) => m.type === "image");
+function getImageModels(allModels: any[]) {
+  return allModels.filter((m: any) => m.output_modalities?.includes("image") && m.is_ready !== false);
 }
 
-function get3DModels(config: any) {
-  return (config?.models || []).filter((m: any) => m.type === "3D");
+function get3DModels(allModels: any[]) {
+  return allModels.filter((m: any) => m.type === "3d" || m.output_modalities?.includes("3d"));
 }
 
 export default function PaygApiPanel({ session, config, apiBase }: Props) {
+  const [allModels, setAllModels] = useState<any[]>([]);
   const [textModels, setTextModels] = useState<any[]>([]);
   const [tab, setTab] = useState("text");
   const [busy, setBusy] = useState<Record<string, boolean>>({});
@@ -81,17 +105,18 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
     try {
       const res = await fetch(`${apiBase}/v1/models`);
       const data = await res.json().catch(() => ({}));
-      const remoteModels = (Array.isArray(data.data) ? data.data : []).filter((m: any) => isTextModel(m) && m.is_ready !== false);
-      const configModels = (config?.models || []).filter(isTextModel);
-      const all = [...remoteModels, ...configModels];
+      const remoteModels = (Array.isArray(data.data) ? data.data : []).filter((m: any) => m.is_ready !== false);
+      setAllModels(remoteModels);
+
+      const textOnly = remoteModels.filter((m: any) => isTextModel(m));
       const seen = new Set();
-      const unique = all.filter((m: any) => { const k = slug(m) || m.name; if (!k || seen.has(k)) return false; seen.add(k); return true; });
+      const unique = textOnly.filter((m: any) => { const k = slug(m) || m.name; if (!k || seen.has(k)) return false; seen.add(k); return true; });
       setTextModels(unique);
       if (unique.length > 0 && !textModel) {
         setTextModel(unique[0].id || unique[0].upstream_id || slug(unique[0]));
       }
     } catch { /* ignore */ }
-  }, [apiBase, config, textModel]);
+  }, [apiBase, textModel]);
 
   useEffect(() => { loadModels(); }, [loadModels]);
 
@@ -235,12 +260,12 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test the Pay-2-Go API. Every successful generation consumes credits.</p>
         <div className={styles.tabs}>{(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}><label>Model<select value={textModel} onChange={(e) => setTextModel(e.target.value)}>{textModels.map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{m.name}</option>)}</select></label><textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} /><button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button><pre className={styles.output}>{textOutput}</pre></div>}
-        {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}><label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}><option value="">Default</option>{getImageModels(config).map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}</select></label><textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} /><button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>{imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}</div>}
+        {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}>          <label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}><option value="">Default</option>{getImageModels(allModels).map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}</select></label><textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} /><button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>{imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}</div>}
         {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} /><label>Duration (seconds)<input type="number" min={1} max={10} value={videoDur} onChange={(e) => setVideoDur(Number(e.target.value))} /></label><button onClick={runVideo} disabled={busy.video}>{busy.video ? "Generating\u2026" : "Generate video"}</button>{videoOutput?.startsWith("blob:") ? <video controls src={videoOutput} className={styles.mediaOutputMedia} /> : <div className={styles.output}>{videoOutput}</div>}</div>}
         {tab === "audio" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe audio / music / sfx..." value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} /><label>Charge duration estimate (seconds)<input type="number" min={1} max={90} value={audioDur} onChange={(e) => setAudioDur(Number(e.target.value))} /></label><button onClick={runAudio} disabled={busy.audio}>{busy.audio ? "Generating\u2026" : "Generate audio"}</button>{audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}</div>}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
-            {get3DModels(config).map((m: any) => (
+            {get3DModels(allModels).map((m: any) => (
               <option key={m.id} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
             ))}
           </select></label>

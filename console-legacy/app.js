@@ -278,13 +278,26 @@ function formatModelPricing(model) {
 }
 
 function formatConfigModelPrice(model) {
-  const p = model?.price;
-  if (p == null) return null;
-  const type = model.type;
-  if (type === "video" || type === "audio") return `$${p}/sec`;
-  if (type === "image") return `$${p}/gen`;
-  if (type === "3D") return `$${p}/model`;
-  return `$${p}`;
+  const pricing = model?.pricing;
+  if (!pricing) return null;
+  const type = model.type || (model.output_modalities?.includes("image") ? "image" : model.output_modalities?.includes("3d") ? "3d" : model.output_modalities?.includes("video") ? "video" : model.output_modalities?.includes("audio") ? "audio" : "text");
+  if (type === "image" && pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+  if (type === "3d" || type === "3D") {
+    if (model.price_tiers) {
+      const values = Object.values(model.price_tiers).map((v) => parseFloat(v));
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
+      return `$${min.toFixed(4)}/model`;
+    }
+    if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
+  }
+  if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
+  if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+    const perMillion = (v) => (parseFloat(v) * 1_000_000).toFixed(2);
+    return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
+  }
+  return null;
 }
 
 function formatModalities(model) {
@@ -300,12 +313,7 @@ function isTextModel(model) {
 }
 
 function getTextModels() {
-  const textModels = remoteTextModels.slice();
-  (cfg.models || []).forEach((model) => {
-    if (isTextModel(model)) {
-      textModels.push(model);
-    }
-  });
+  const textModels = remoteTextModels.filter((model) => isTextModel(model));
   const seen = new Set();
   return textModels.filter((model) => {
     const key = formatModelSlug(model) || model.name;
@@ -357,17 +365,21 @@ function renderModels() {
     });
   });
 
-  (cfg.models || []).forEach((model) => {
-    if (isTextModel(model)) return;
-    cards.push({
-      label: String(model.type || formatModalities(model)).toUpperCase(),
-      name: model.name || model.id || "Unnamed model",
-      slug: formatModelSlug(model) || "—",
-      pricing: formatConfigModelPrice(model) || "Existing configuration",
-      source: "config",
-      modelType: model.type || ""
+  if (currentModelsSource === "p2g") {
+    remoteTextModels.forEach((model) => {
+      if (isTextModel(model)) return;
+      if (!model.name && !model.id) return;
+      const type = model.type || (model.output_modalities?.includes("image") ? "image" : model.output_modalities?.includes("3d") ? "3d" : model.output_modalities?.includes("video") ? "video" : model.output_modalities?.includes("audio") ? "audio" : "");
+      cards.push({
+        label: String(type || formatModalities(model)).toUpperCase(),
+        name: model.name || model.id || "Unnamed model",
+        slug: formatModelSlug(model) || "—",
+        pricing: formatConfigModelPrice(model) || formatModelPricing(model) || "—",
+        source: "config",
+        modelType: type
+      });
     });
-  });
+  }
 
   el.modelsGrid.innerHTML = "";
   cards.forEach((model) => {
@@ -392,7 +404,7 @@ function renderModels() {
     card.innerHTML = `
       <div class="model-card-top">
         <strong>${escapeHtml(model.name)}</strong>
-        <span class="model-pill ${model.source === "text" ? "is-text" : model.modelType === "image" ? "is-config-image" : model.modelType === "3D" ? "is-config-3d" : "is-config-video"}">${escapeHtml(model.label)}</span>
+        <span class="model-pill ${model.source === "text" ? "is-text" : model.modelType === "image" ? "is-config-image" : model.modelType === "3D" || model.modelType === "3d" ? "is-config-3d" : "is-config-video"}">${escapeHtml(model.label)}</span>
       </div>
       <div class="model-meta">
         <span class="model-key">Slug</span>
@@ -618,7 +630,7 @@ function authHeaders() {
   };
 }
 
-async function loadRemoteTextModels() {
+async function loadAllModels() {
   const response = await fetch("https://sharktide-lightning.hf.space/v1/models");
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -626,7 +638,7 @@ async function loadRemoteTextModels() {
   }
 
   const items = Array.isArray(data.data) ? data.data : [];
-  remoteTextModels = items.filter((model) => isTextModel(model) && (model.is_ready !== false));
+  remoteTextModels = items.filter((model) => model.is_ready !== false);
   renderModels();
 }
 
@@ -647,7 +659,7 @@ function setupModelsSourceToggle() {
 
 async function loadModelsForCurrentSource() {
   if (currentModelsSource === "p2g") {
-    await loadRemoteTextModels();
+    await loadAllModels();
   } else {
     await loadRemoteGenModels();
   }
@@ -2090,7 +2102,7 @@ async function init() {
   setupPaygPlayground();
   setupShieldPlayground();
   setupOAuthGrantsPanel();
-  await loadRemoteTextModels().catch((error) => {
+  await loadAllModels().catch((error) => {
     console.warn(error);
     renderModels();
   });
