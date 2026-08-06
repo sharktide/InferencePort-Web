@@ -74,24 +74,32 @@
 
 			.models-grid {
 				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-				gap: 1rem;
+				grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+				gap: 1.25rem;
 			}
 
 			.model-card {
 				background: var(--surface);
 				border: 1.5px solid var(--border);
 				border-radius: 12px;
-				padding: 1.1rem 1.25rem;
-				display: grid;
-				gap: 0.8rem;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 0;
 				transition: border-color 0.15s, transform 0.15s;
+				overflow: hidden;
 			}
 
 			.model-card:hover {
 				border-color: var(--brand-border);
 				transform: translateY(-2px);
 				box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+			}
+
+			.model-card-content {
+				padding: 1.1rem 1.25rem;
+				display: grid;
+				gap: 0.8rem;
 			}
 
 			.model-card-top {
@@ -298,6 +306,64 @@
 				animation: glow-pulse 1.5s ease-in-out 3;
 				outline: 2px solid var(--brand);
 			}
+
+			.model-card-image {
+				width: 100%;
+				display: block;
+				background: rgba(255, 255, 255, 0.04);
+				flex-shrink: 0;
+			}
+
+			.model-card-image-placeholder {
+				width: 100%;
+				aspect-ratio: 16 / 9;
+				background: linear-gradient(135deg, rgba(79, 124, 255, 0.08), rgba(124, 58, 237, 0.08));
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: var(--muted);
+				font-size: 0.85rem;
+				font-weight: 600;
+				flex-shrink: 0;
+			}
+
+			.pagination {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				gap: 8px;
+				margin-top: 2rem;
+			}
+
+			.pagination-btn {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				color: var(--text);
+				padding: 8px 18px;
+				border-radius: 8px;
+				font-size: 0.85rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all 0.15s;
+			}
+
+			.pagination-btn:hover:not(:disabled) {
+				border-color: var(--brand-border);
+				color: var(--brand);
+			}
+
+			.pagination-btn:disabled {
+				opacity: 0.35;
+				cursor: not-allowed;
+			}
+
+			.pagination-info {
+				color: var(--muted);
+				font-size: 0.85rem;
+				font-weight: 500;
+				min-width: 120px;
+				text-align: center;
+			}
 		</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -350,6 +416,7 @@
 				<div class="section-count" id="model-count"></div>
 				<div class="models-grid" id="available-models"></div>
 				<div class="no-results" id="no-results" style="display: none;">No models found.</div>
+				<div class="pagination" id="pagination"></div>
 			</div>
 		</section>
 
@@ -364,6 +431,9 @@
 			let localModels = [];
 			let config = null;
 			let activeFilter = "all";
+			const MODELS_PER_PAGE = 24;
+			let currentPage = 1;
+			let filteredModels = [];
 
 			function isTextModel(m) {
 				const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
@@ -501,28 +571,34 @@
 				const displayName = m.name || m.id || "Unnamed model";
 				const displaySlug = slug(m) || "—";
 				const price = formatPrice(m);
+				const modelId = (slug(m) || displayName).toLowerCase().replace(/\//g, "_");
+				const imgUrl = `https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/${encodeURIComponent(modelId)}.webp?download=true`;
 
 				const card = document.createElement("div");
 				card.className = "model-card";
-				card.id = "model-" + encodeURIComponent(slug(m) || displayName);
+				card.id = "model-" + modelId;
 
 				card.innerHTML = `
-					<div class="model-card-top">
-						<span class="model-card-name">${escapeHtml(displayName)}</span>
-						<div>
-							<span class="model-pill pill-p2g">P2G CLOUD</span>
-							<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
+					<img class="model-card-image" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(displayName)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+					<div class="model-card-image-placeholder" style="display:none;">${escapeHtml(displayName)}</div>
+					<div class="model-card-content">
+						<div class="model-card-top">
+							<span class="model-card-name">${escapeHtml(displayName)}</span>
+							<div>
+								<span class="model-pill pill-p2g">P2G CLOUD</span>
+								<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
+							</div>
 						</div>
+						<div class="model-meta">
+							<span class="model-key">Slug</span>
+							<span class="model-value">${escapeHtml(displaySlug)}</span>
+						</div>
+						<div class="model-meta">
+							<span class="model-key">Pricing</span>
+							<span class="model-value">${price}</span>
+						</div>
+						<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" class="btn-card-action btn-console">Open Console</a>
 					</div>
-					<div class="model-meta">
-						<span class="model-key">Slug</span>
-						<span class="model-value">${escapeHtml(displaySlug)}</span>
-					</div>
-					<div class="model-meta">
-						<span class="model-key">Pricing</span>
-						<span class="model-value">${price}</span>
-					</div>
-					<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" class="btn-card-action btn-console">Open Console</a>
 				`;
 
 				return card;
@@ -532,26 +608,32 @@
 				const card = document.createElement("div");
 				card.className = "model-card";
 				card.id = m.name;
+				const normalizedId = m.name.toLowerCase().replace(/\//g, "_");
+				const imgUrl = `https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/${encodeURIComponent(normalizedId)}.local.webp?download=true`;
 
 				const sizesHtml = (m.sizes || []).map(s => `<span class="size-chip">${escapeHtml(s)}</span>`).join("");
 				const tagsHtml = (m.tags || []).map(t => `<span class="model-pill ${tagPillClass(t)}">${escapeHtml(t)}</span>`).join(" ");
 				const deeplink = "inferenceport-ai:///marketplace/ollama#" + encodeURIComponent(m.name);
 
 				card.innerHTML = `
-					<div class="model-card-top">
-						<span class="model-card-name">${escapeHtml(m.name)}</span>
-						<span class="model-pill pill-local">LOCAL</span>
-					</div>
-					<p style="font-size:0.78rem;color:var(--muted);margin:0;line-height:1.4;">${escapeHtml(m.description || "")}</p>
-					${sizesHtml ? `<div class="model-sizes">${sizesHtml}</div>` : ""}
-					${tagsHtml ? `<div style="display:flex;gap:4px;flex-wrap:wrap;">${tagsHtml}</div>` : ""}
-					<div class="model-stats">
-						${m.pulls ? `<span>Pulls: ${escapeHtml(m.pulls)}</span>` : ""}
-						${m.updated ? `<span>Updated: ${escapeHtml(m.updated)}</span>` : ""}
-					</div>
-					<div style="display:flex;gap:6px;margin-top:auto;">
-						${m.link ? `<a href="${escapeHtml(m.link)}" target="_blank" rel="noopener" class="btn-card-action btn-more-info" style="flex:1;">More Info</a>` : ""}
-						<a href="${deeplink}" class="btn-card-action btn-open-app" style="flex:1;">Open in App</a>
+					<img class="model-card-image" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(m.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+					<div class="model-card-image-placeholder" style="display:none;">${escapeHtml(m.name)}</div>
+					<div class="model-card-content">
+						<div class="model-card-top">
+							<span class="model-card-name">${escapeHtml(m.name)}</span>
+							<span class="model-pill pill-local">LOCAL</span>
+						</div>
+						<p style="font-size:0.78rem;color:var(--muted);margin:0;line-height:1.4;">${escapeHtml(m.description || "")}</p>
+						${sizesHtml ? `<div class="model-sizes">${sizesHtml}</div>` : ""}
+						${tagsHtml ? `<div style="display:flex;gap:4px;flex-wrap:wrap;">${tagsHtml}</div>` : ""}
+						<div class="model-stats">
+							${m.pulls ? `<span>Pulls: ${escapeHtml(m.pulls)}</span>` : ""}
+							${m.updated ? `<span>Updated: ${escapeHtml(m.updated)}</span>` : ""}
+						</div>
+						<div style="display:flex;gap:6px;margin-top:auto;">
+							${m.link ? `<a href="${escapeHtml(m.link)}" target="_blank" rel="noopener" class="btn-card-action btn-more-info" style="flex:1;">More Info</a>` : ""}
+							<a href="${deeplink}" class="btn-card-action btn-open-app" style="flex:1;">Open in App</a>
+						</div>
 					</div>
 				`;
 
@@ -562,12 +644,14 @@
 				const container = document.getElementById("available-models");
 				const countEl = document.getElementById("model-count");
 				const noResults = document.getElementById("no-results");
+				const paginationEl = document.getElementById("pagination");
 				container.innerHTML = "";
+				paginationEl.innerHTML = "";
 
 				const showCloud = activeFilter !== "local";
 				const showLocal = activeFilter === "all" || activeFilter === "local";
 
-				let rendered = [];
+				let allModels = [];
 
 				if (showCloud) {
 					const filteredCloud = cloudModels.filter((m) => {
@@ -576,19 +660,31 @@
 						const matchesType = activeFilter === "all" || type === activeFilter || (activeFilter === "3d" && type === "3D");
 						return matchesSearch && matchesType;
 					});
-					filteredCloud.forEach(m => rendered.push(renderCloudCard(m)));
+					filteredCloud.forEach(m => allModels.push({ type: "cloud", data: m }));
 				}
 
 				if (showLocal) {
 					const filteredLocal = localModels.filter((m) => {
 						return !filter || (m.name || "").toLowerCase().includes(filter.toLowerCase()) || (m.description || "").toLowerCase().includes(filter.toLowerCase());
 					});
-					filteredLocal.forEach(m => rendered.push(renderLocalCard(m)));
+					filteredLocal.forEach(m => allModels.push({ type: "local", data: m }));
 				}
 
-				rendered.forEach(c => container.appendChild(c));
+				const total = allModels.length;
+				const totalPages = Math.ceil(total / MODELS_PER_PAGE);
 
-				const total = rendered.length;
+				if (currentPage > totalPages) currentPage = totalPages;
+				if (currentPage < 1) currentPage = 1;
+
+				const startIdx = (currentPage - 1) * MODELS_PER_PAGE;
+				const endIdx = startIdx + MODELS_PER_PAGE;
+				const pageModels = allModels.slice(startIdx, endIdx);
+
+				pageModels.forEach(m => {
+					const card = m.type === "cloud" ? renderCloudCard(m.data) : renderLocalCard(m.data);
+					container.appendChild(card);
+				});
+
 				if (total === 0) {
 					noResults.style.display = "block";
 					countEl.textContent = "";
@@ -596,9 +692,33 @@
 					noResults.style.display = "none";
 					countEl.textContent = `${total} model${total !== 1 ? "s" : ""} available`;
 				}
+
+				if (totalPages > 1) {
+					const startNum = startIdx + 1;
+					const endNum = Math.min(endIdx, total);
+
+					paginationEl.innerHTML = `
+						<button class="pagination-btn" id="page-prev" ${currentPage <= 1 ? "disabled" : ""}>&larr; Previous</button>
+						<span class="pagination-info">${startNum}–${endNum} of ${total}</span>
+						<button class="pagination-btn" id="page-next" ${currentPage >= totalPages ? "disabled" : ""}>Next &rarr;</button>
+					`;
+
+					document.getElementById("page-prev").addEventListener("click", () => {
+						currentPage--;
+						renderAll(document.getElementById("search-models").value);
+						container.scrollIntoView({ behavior: "smooth", block: "start" });
+					});
+
+					document.getElementById("page-next").addEventListener("click", () => {
+						currentPage++;
+						renderAll(document.getElementById("search-models").value);
+						container.scrollIntoView({ behavior: "smooth", block: "start" });
+					});
+				}
 			}
 
 			document.getElementById("search-models").addEventListener("input", (e) => {
+				currentPage = 1;
 				renderAll(e.target.value);
 			});
 
@@ -608,6 +728,7 @@
 				document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
 				tab.classList.add("active");
 				activeFilter = tab.dataset.filter;
+				currentPage = 1;
 				renderAll(document.getElementById("search-models").value);
 			});
 
