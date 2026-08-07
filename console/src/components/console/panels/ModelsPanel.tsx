@@ -17,6 +17,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [genModels, setGenModels] = useState<any[]>([]);
   const [source, setSource] = useState<"p2g" | "gen">("p2g");
   const [selectedModel, setSelectedModel] = useState("");
+  const [selectedDetailModel, setSelectedDetailModel] = useState<any | null>(null);
   const [tab, setTab] = useState("text");
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [textPrompt, setTextPrompt] = useState("");
@@ -58,6 +59,12 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
       return `In: $${perMillion(p.prompt)}/M \u00b7 Out: $${perMillion(p.completion)}/M`;
     }
     return "Pricing unavailable";
+  };
+
+  const modelImageUrl = (m: any) => {
+    const name = m?.name || m?.id || "";
+    const modelId = (slug(m) || name).toLowerCase().replace(/\//g, "_");
+    return `https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/${encodeURIComponent(modelId)}.webp?download=true`;
   };
 
   const textModels = useCallback(() => {
@@ -114,6 +121,12 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   useEffect(() => {
     return () => { if (pollRef.current) clearTimeout(pollRef.current); };
   }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSelectedDetailModel(null); };
+    if (selectedDetailModel) window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedDetailModel]);
 
   const displayModels = source === "p2g" ? textModels() : genModels;
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
@@ -241,7 +254,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
             const dynamicPrice = formatModelPrice(m);
             const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m);
             return (
-              <div key={i} className={styles.modelCard}>
+              <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
@@ -254,7 +267,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {source === "p2g" && nonTextConfigModels().map((m: any, i: number) => {
             const label = formatModelPrice(m) || "Existing configuration";
             return (
-              <div key={`cfg-${i}`} className={styles.modelCard}>
+              <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
@@ -368,6 +381,40 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           )}
         </div>}
       </section>
+
+      {selectedDetailModel && (
+        <div className={styles.modelDetailOverlay} onClick={() => setSelectedDetailModel(null)}>
+          <div className={styles.modelDetailTray} onClick={(e) => e.stopPropagation()}>
+            <button className={styles.modelDetailClose} onClick={() => setSelectedDetailModel(null)} aria-label="Close">&times;</button>
+            <div className={styles.modelDetailImageWrap}>
+              <img
+                className={styles.modelDetailImage}
+                src={modelImageUrl(selectedDetailModel)}
+                alt={selectedDetailModel.name || ""}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                onLoad={(e) => { const img = e.target as HTMLImageElement; img.classList.add(styles.loaded); const ph = img.nextElementSibling as HTMLElement; if (ph) ph.style.display = "none"; }}
+              />
+              <div className={styles.modelDetailImagePlaceholder}>
+                {selectedDetailModel.name || selectedDetailModel.id || "?"}
+              </div>
+            </div>
+            <div className={styles.modelDetailContent}>
+              <div className={styles.modelDetailHeader}>
+                <span className={styles.modelDetailName}>{selectedDetailModel.name || selectedDetailModel.id || "Unnamed model"}</span>
+                <span className={`${styles.modelPill} ${isTextModel(selectedDetailModel) ? styles.isText : styles.isConfig}`}>
+                  {String(modelType(selectedDetailModel)).toUpperCase()}
+                </span>
+              </div>
+              <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(selectedDetailModel) || "\u2014"}</span></div>
+              <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{formatModelPrice(selectedDetailModel) || formatPricing(selectedDetailModel)}</span></div>
+              <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{modalities(selectedDetailModel)}</span></div>
+              {selectedDetailModel.output_modalities && (
+                <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selectedDetailModel.output_modalities.map((v: string) => v.toUpperCase()).join(" / ")}</span></div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
