@@ -26,8 +26,13 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [imagePrompt, setImagePrompt] = useState("");
   const [imageOutput, setImageOutput] = useState("");
   const [videoPrompt, setVideoPrompt] = useState("");
-  const [videoDur, setVideoDur] = useState(5);
-  const [videoOutput, setVideoOutput] = useState("");
+  const [videoModels, setVideoModels] = useState<any[]>([]);
+  const [videoModel, setVideoModel] = useState("");
+  const [videoDur, setVideoDur] = useState(4);
+  const [videoStatus, setVideoStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
+  const [videoStatusText, setVideoStatusText] = useState("");
+  const [videoError, setVideoError] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [audioPrompt, setAudioPrompt] = useState("");
   const [audioDur, setAudioDur] = useState(10);
   const [audioOutput, setAudioOutput] = useState("");
@@ -81,6 +86,10 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
     return allModels.filter((m: any) => m.output_modalities?.includes("image") && m.is_ready !== false);
   }, [allModels]);
 
+  const videoConfigModels = useCallback(() => {
+    return allModels.filter((m: any) => m.output_modalities?.includes("video") && m.is_ready !== false);
+  }, [allModels]);
+
   const formatModelPrice = (m: any) => {
     const pricing = m?.pricing;
     if (!pricing) return null;
@@ -106,8 +115,17 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
 
   const loadModels = useCallback(async () => {
     try {
-      if (source === "p2g") { const r = await fetch(`${apiBase}/v1/models`); const d = await r.json().catch(() => ({})); setAllModels(Array.isArray(d.data) ? d.data : []); }
-      else { const r = await fetch(`${apiBase}/gen/models`); const d = await r.json().catch(() => ({})); setGenModels(Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []); }
+      if (source === "p2g") {
+        const r = await fetch(`${apiBase}/v1/models`);
+        const d = await r.json().catch(() => ({}));
+        const remoteModels = (Array.isArray(d.data) ? d.data : []).filter((m: any) => m.is_ready !== false);
+        setAllModels(remoteModels);
+        setVideoModels(remoteModels.filter((m: any) => m.output_modalities?.includes("video") && m.is_ready !== false));
+      } else {
+        const r = await fetch(`${apiBase}/gen/models`);
+        const d = await r.json().catch(() => ({}));
+        setGenModels(Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []);
+      }
     } catch { /* ignore */ }
   }, [source, apiBase]);
 
@@ -142,7 +160,74 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
 
   const runText = async () => { if (!session) return alert("Sign in required"); sb("text", true); setTextOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/chat/completions" : "/gen/chat/completions"; setTextOutput(JSON.stringify(await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ stream: false, model: selectedModel || undefined, messages: [{ role: "user", content: textPrompt || "Hello" }] }) }), null, 2)); } catch (e: any) { setTextOutput(e.message); } sb("text", false); };
   const runImage = async () => { if (!session) return alert("Sign in required"); sb("image", true); setImageOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/images/generations" : "/gen/images/generations"; const r = await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: imagePrompt || "A colorful neon city.", model: imageModel || undefined }) }); const b = r?.data?.[0]?.b64_json; if (!b) throw new Error("No image returned"); setImageOutput(`data:image/jpeg;base64,${b}`); } catch (e: any) { setImageOutput(e.message); } sb("image", false); };
-  const runVideo = async () => { if (!session) return alert("Sign in required"); sb("video", true); setVideoOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/videos/generations" : "/gen/videos/generations"; const r = await fetch(`${apiBase}${path}`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: videoPrompt || "A drifting cloudscape.", duration: Number(videoDur) }) }); if (!r.ok) throw new Error("Video generation failed"); setVideoOutput(URL.createObjectURL(await r.blob())); } catch (e: any) { setVideoOutput(e.message); } sb("video", false); };
+  const runVideo = async () => {
+    if (!session) return alert("Sign in required");
+    if (source === "gen") { setVideoError("Video generation is only available via the P2G API."); return; }
+    sb("video", true);
+    setVideoStatus("submitting");
+    setVideoStatusText("Submitting video generation job\u2026");
+    setVideoError("");
+    try {
+      const body: Record<string, any> = { prompt: videoPrompt };
+      if (videoModel) body.model = videoModel;
+      if (videoDur) body.seconds = videoDur;
+      const r = await fj("/v1/videos", { method: "POST", headers: authH(), body: JSON.stringify(body) });
+      if (r.id) {
+        setVideoStatus("polling");
+        setVideoStatusText(`Job submitted (ID: ${r.id.slice(0, 8)}\u2026). Polling for result\u2026`);
+        await pollVideoJob(r.id);
+      } else {
+        throw new Error("Unexpected response from video generation endpoint");
+      }
+    } catch (e: any) {
+      setVideoStatus("failed");
+      setVideoError(e.message);
+      sb("video", false);
+    }
+  };
+
+  const fetchVideoContent = async (jobId: string): Promise<string> => {
+    const r = await fetch(`${apiBase}/v1/videos/${jobId}/content`, {
+      headers: { Authorization: `Bearer ${session?.access_token}` },
+      redirect: "manual",
+    });
+    if (r.type === "opaqueredirect" || r.status === 303 || r.status === 302) {
+      return r.headers.get("Location") || "";
+    }
+    if (r.ok) {
+      const blob = await r.blob();
+      return URL.createObjectURL(blob);
+    }
+    return "";
+  };
+
+  const pollVideoJob = async (jobId: string) => {
+    try {
+      const r = await fj(`/v1/videos/${jobId}`, { headers: authH() });
+      if (r.status === "completed") {
+        setVideoStatus("completed");
+        setVideoStatusText("Video generation complete!");
+        try {
+          const url = await fetchVideoContent(jobId);
+          if (url) setVideoUrl(url);
+        } catch { /* ignore content fetch errors */ }
+        sb("video", false);
+        return;
+      }
+      if (r.status === "failed") {
+        setVideoStatus("failed");
+        setVideoError(r.error?.message || (typeof r.error === "string" ? r.error : "Video generation job failed."));
+        sb("video", false);
+        return;
+      }
+      setVideoStatusText(`Job ${r.status}${r.progress ? ` (${r.progress}%)` : ""}\u2026 Polling in 3s`);
+      pollRef.current = setTimeout(() => pollVideoJob(jobId), 3000);
+    } catch (e: any) {
+      setVideoStatus("failed");
+      setVideoError(e.message);
+      sb("video", false);
+    }
+  };
   const runAudio = async () => { if (!session) return alert("Sign in required"); sb("audio", true); setAudioOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/audio/generations" : "/gen/audio/generations"; const r = await fetch(`${apiBase}${path}`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: audioPrompt || "Energetic electronic beat", duration_seconds: Number(audioDur) }) }); if (!r.ok) throw new Error("Audio generation failed"); setAudioOutput(URL.createObjectURL(await r.blob())); } catch (e: any) { setAudioOutput(e.message); } sb("audio", false); };
 
   const run3d = async () => {
@@ -302,10 +387,36 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}
         </div>}
         {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
+          <label>Video model<select value={videoModel} onChange={(e) => setVideoModel(e.target.value)}>
+            <option value="">Default</option>
+            {videoConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
+          </select></label>
           <textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} />
-          <label>Duration (seconds)<input type="number" min={1} max={10} value={videoDur} onChange={(e) => setVideoDur(Number(e.target.value))} /></label>
+          <label>Duration
+            <select value={videoDur} onChange={(e) => setVideoDur(Number(e.target.value))}>
+              <option value={4}>4 seconds</option>
+              <option value={8}>8 seconds</option>
+              <option value={12}>12 seconds</option>
+              <option value={20}>20 seconds</option>
+              <option value={30}>30 seconds</option>
+            </select>
+          </label>
           <button onClick={runVideo} disabled={busy.video}>{busy.video ? "Generating\u2026" : "Generate video"}</button>
-          {videoOutput?.startsWith("blob:") ? <video controls src={videoOutput} className={styles.mediaOutputMedia} /> : <div className={styles.output}>{videoOutput}</div>}
+          {videoStatusText && videoStatus !== "idle" && (
+            <div className={styles.threeJobStatus}>
+              <div className={`${styles.threeStatusDot} ${videoStatus === "completed" ? styles.threeStatusDone : videoStatus === "failed" ? styles.threeStatusFailed : styles.threeStatusPending}`} />
+              <span>{videoStatusText}</span>
+            </div>
+          )}
+          {videoError && <div className={styles.threeError}>{videoError}</div>}
+          {videoStatus === "completed" && videoUrl && (
+            <div style={{ marginTop: "0.75rem" }}>
+              <video controls src={videoUrl} className={styles.mediaOutputMedia} />
+            </div>
+          )}
+          {videoStatus === "completed" && !videoUrl && (
+            <p className={`${styles.muted} ${styles.tiny}`}>Video generation complete. Use the asset CDN endpoint to retrieve the result.</p>
+          )}
         </div>}
         {tab === "audio" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <textarea rows={4} placeholder="Describe audio / music / sfx..." value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} />
