@@ -140,11 +140,7 @@ export default function GenApiPanel({ session, config, apiBase }: Props) {
   const fetchVideoContent = async (jobId: string): Promise<string> => {
     const r = await fetch(`${apiBase}/gen/videos/${jobId}/content`, {
       headers: { Authorization: `Bearer ${session?.access_token}` },
-      redirect: "manual",
     });
-    if (r.type === "opaqueredirect" || r.status === 303 || r.status === 302) {
-      return r.headers.get("Location") || "";
-    }
     if (r.ok) {
       const blob = await r.blob();
       return URL.createObjectURL(blob);
