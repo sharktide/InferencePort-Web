@@ -34,30 +34,10 @@
 			"operatingSystem": "Windows, macOS, Linux",
 			"description": "Cloud and local AI models through a unified platform. Chat with Lightning at 1,000 words/sec, self-host models for your team, use production APIs, and detect fraud with AI Shield.",
 			"offers": [
-				{
-					"@type": "Offer",
-					"price": "0",
-					"priceCurrency": "USD",
-					"name": "Free"
-				},
-				{
-					"@type": "Offer",
-					"price": "9.99",
-					"priceCurrency": "USD",
-					"name": "AI Light"
-				},
-				{
-					"@type": "Offer",
-					"price": "15.99",
-					"priceCurrency": "USD",
-					"name": "AI Core"
-				},
-				{
-					"@type": "Offer",
-					"price": "99.99",
-					"priceCurrency": "USD",
-					"name": "AI Professional"
-				}
+				{ "@type": "Offer", "price": "0", "priceCurrency": "USD", "name": "Free" },
+				{ "@type": "Offer", "price": "9.99", "priceCurrency": "USD", "name": "AI Light" },
+				{ "@type": "Offer", "price": "15.99", "priceCurrency": "USD", "name": "AI Core" },
+				{ "@type": "Offer", "price": "99.99", "priceCurrency": "USD", "name": "AI Professional" }
 			],
 			"featureList": [
 				"Cloud AI text generation up to 1,000 words/sec",
@@ -163,48 +143,406 @@
 				margin-top: 3rem;
 				padding-top: 2.5rem;
 			}
+			.counter-animate { display: inline-block; min-width: 80px; }
 
-			/* ── Model Rows ── */
-			.model-row {
-				display: flex;
+			/* ── 3-Pillars Strip ── */
+			.pillars-strip {
+				background: var(--bg-alt);
+				border-top: 1px solid var(--border);
+				border-bottom: 1px solid var(--border);
+				padding: 32px 0;
+			}
+			.pillars-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 0;
+			}
+			.pillar {
+				text-align: center;
+				padding: 8px 20px;
+				position: relative;
+				transition: transform 0.2s var(--ease);
+			}
+			.pillar:hover { transform: translateY(-2px); }
+			.pillar:not(:last-child)::after {
+				content: "";
+				position: absolute;
+				right: 0;
+				top: 10%;
+				height: 80%;
+				width: 1px;
+				background: var(--border);
+			}
+			.pillar-icon {
+				font-size: 1.6rem;
+				margin-bottom: 8px;
+			}
+			.pillar-name {
+				font-weight: 700;
+				font-size: 0.92rem;
+				color: var(--text);
+				margin-bottom: 4px;
+			}
+			.pillar-desc {
+				font-size: 0.78rem;
+				color: var(--text-muted);
+				line-height: 1.5;
+				margin-bottom: 8px;
+			}
+			.pillar-link {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+				text-decoration: none;
+				transition: color 0.15s var(--ease);
+			}
+			.pillar-link-app { color: var(--brand); }
+			.pillar-link-api { color: var(--purple); }
+			.pillar-link-shield { color: var(--danger); }
+			.pillar-link:hover { text-decoration: underline; }
+			@media (max-width: 767.98px) {
+				.pillars-grid { grid-template-columns: 1fr; gap: 16px; }
+				.pillar:not(:last-child)::after { display: none; }
+			}
+
+			/* ── Section Headers ── */
+			.section-header {
+				text-align: center;
+				margin-bottom: 40px;
+			}
+			.section-eyebrow {
+				display: inline-flex;
 				align-items: center;
-				gap: 14px;
+				gap: 8px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.72rem;
+				font-weight: 500;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				border-radius: 50px;
+				padding: 6px 16px;
+				margin-bottom: 14px;
+			}
+			.eyebrow-blue { color: var(--brand); background: var(--brand-dim); border: 1px solid var(--brand-border); }
+			.eyebrow-green { color: var(--success); background: var(--success-dim); border: 1px solid var(--success-border); }
+			.eyebrow-purple { color: var(--purple); background: var(--purple-dim); border: 1px solid var(--purple-border); }
+			.eyebrow-red { color: var(--danger); background: var(--danger-dim); border: 1px solid var(--danger-border); }
+			.section-title-lg {
+				font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+				font-weight: 800;
+				letter-spacing: -0.04em;
+				line-height: 1.1;
+				color: var(--text);
+			}
+			.section-sub-lg {
+				font-size: 0.95rem;
+				color: var(--text-muted);
+				max-width: 520px;
+				margin: 12px auto 0;
+				line-height: 1.65;
+			}
+
+			/* ── Carousel ── */
+			.carousel-wrap {
+				overflow: hidden;
+				position: relative;
+				margin: 0 -16px;
+				padding: 0 16px;
+			}
+			.carousel-wrap::before,
+			.carousel-wrap::after {
+				content: "";
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				width: 80px;
+				z-index: 2;
+				pointer-events: none;
+			}
+			.carousel-wrap::before {
+				left: 0;
+				background: linear-gradient(90deg, var(--bg) 0%, transparent 100%);
+			}
+			.carousel-wrap::after {
+				right: 0;
+				background: linear-gradient(-90deg, var(--bg) 0%, transparent 100%);
+			}
+			.carousel-wrap.alt-bg::before { background: linear-gradient(90deg, var(--bg-alt) 0%, transparent 100%); }
+			.carousel-wrap.alt-bg::after { background: linear-gradient(-90deg, var(--bg-alt) 0%, transparent 100%); }
+			.carousel-track {
+				display: flex;
+				gap: 16px;
+				width: max-content;
+			}
+			.carousel-track.scroll-left {
+				animation: scrollLeft var(--scroll-duration, 40s) linear infinite;
+			}
+			.carousel-track.scroll-right {
+				animation: scrollRight var(--scroll-duration, 40s) linear infinite;
+			}
+			.carousel-track:hover {
+				animation-play-state: paused;
+			}
+			@keyframes scrollLeft {
+				0% { transform: translateX(0); }
+				100% { transform: translateX(-50%); }
+			}
+			@keyframes scrollRight {
+				0% { transform: translateX(-50%); }
+				100% { transform: translateX(0); }
+			}
+
+			/* Feature cards in carousel */
+			.carousel-card {
 				background: var(--surface);
 				border: 1px solid var(--border);
-				border-radius: var(--radius);
-				padding: 14px 18px;
+				border-radius: var(--radius-lg);
+				padding: 24px;
+				width: 320px;
+				min-width: 320px;
+				flex-shrink: 0;
 				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 			}
-			.model-row:hover {
+			.carousel-card:hover {
 				border-color: var(--brand-border);
-				transform: translateX(3px);
-				box-shadow: var(--shadow-sm);
+				transform: translateY(-2px);
+				box-shadow: var(--shadow-md);
 			}
-			.model-row.featured {
+			.carousel-card-icon { font-size: 1.5rem; margin-bottom: 12px; }
+			.carousel-card-title { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 6px; }
+			.carousel-card-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; }
+
+			/* ── Marketplace-style Model Cards (compact) ── */
+			.model-card {
+				background: var(--surface);
+				border: 1.5px solid var(--border);
+				border-radius: 12px;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 0;
+				transition: border-color 0.15s, transform 0.15s;
+				overflow: hidden;
+				width: 260px;
+				min-width: 260px;
+				flex-shrink: 0;
+			}
+			.model-card:hover {
 				border-color: var(--brand-border);
-				background: rgba(79, 124, 255, 0.03);
+				transform: translateY(-2px);
+				box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
 			}
-			.model-icon {
-				width: 40px;
-				height: 40px;
-				border-radius: 10px;
+			.model-card-image {
+				width: 100%;
+				display: block;
+				background: rgba(255, 255, 255, 0.04);
+				flex-shrink: 0;
+			}
+			.model-card-image-placeholder {
+				width: 100%;
+				aspect-ratio: 16 / 9;
+				background: linear-gradient(135deg, rgba(79, 124, 255, 0.08), rgba(124, 58, 237, 0.08));
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				font-size: 1.15rem;
+				color: var(--muted);
+				font-size: 0.75rem;
+				font-weight: 600;
 				flex-shrink: 0;
 			}
-			.icon-blue   { background: var(--brand-dim); }
-			.icon-cyan   { background: var(--cyan-dim); }
-			.icon-purple { background: var(--purple-dim); }
-			.icon-green  { background: var(--success-dim); }
-			.model-name  { font-weight: 700; font-size: 0.9rem; color: var(--text); }
-			.model-desc  { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+			.model-card-content {
+				padding: 0.85rem 1rem;
+				display: grid;
+				gap: 0.55rem;
+			}
+			.model-card-top {
+				display: flex;
+				justify-content: space-between;
+				align-items: start;
+				gap: 6px;
+			}
+			.model-card-name {
+				font-size: 0.82rem;
+				font-weight: 600;
+				color: var(--text);
+				letter-spacing: -0.01em;
+			}
+			.model-pill {
+				font-size: 0.6rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				padding: 0.22rem 0.45rem;
+				border-radius: 999px;
+				border: 1px solid transparent;
+				white-space: nowrap;
+				flex-shrink: 0;
+			}
+			.pill-text { color: #0f766e; background: rgba(20, 184, 166, 0.12); }
+			.pill-image { color: #b45309; background: rgba(245, 158, 11, 0.10); }
+			.pill-video, .pill-audio { color: #7c3aed; background: rgba(124, 58, 237, 0.10); }
+			.pill-3d { color: #1a6bff; background: rgba(26, 107, 255, 0.10); }
+			.pill-p2g { color: #7c3aed; background: rgba(124, 58, 237, 0.12); }
+			.pill-local { color: #0891b2; background: rgba(8, 145, 178, 0.12); }
+			.pill-embedding { color: #6366f1; background: rgba(99, 102, 241, 0.12); }
+			.pill-thinking { color: #a855f7; background: rgba(168, 85, 247, 0.12); }
+			.pill-tools { color: #16a34a; background: rgba(22, 163, 74, 0.12); }
+			.pill-vision { color: #eab308; background: rgba(234, 179, 8, 0.12); }
+			.pill-new { color: #16a34a; background: rgba(22, 163, 74, 0.12); border: 1px solid rgba(22, 163, 74, 0.25); }
+			.model-meta {
+				display: flex;
+				flex-direction: column;
+				gap: 0.2rem;
+			}
+			.model-key {
+				font-size: 0.6rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				color: var(--muted);
+				letter-spacing: 0.04em;
+			}
+			.model-value {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.68rem;
+				color: var(--text);
+			}
 
-			/* ── Feature Cards ── */
-			.feat-icon { font-size: 1.5rem; margin-bottom: 12px; }
-			.feat-title { font-weight: 700; font-size: 0.97rem; color: var(--text); margin-bottom: 6px; }
-			.feat-body  { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+			/* ── Shield Section ── */
+			.shield-hero {
+				text-align: center;
+				position: relative;
+				overflow: hidden;
+			}
+			.shield-hero::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(180deg, rgba(239,68,68,0.03) 0%, transparent 100%);
+				pointer-events: none;
+			}
+			.shield-stats {
+				display: flex;
+				justify-content: center;
+				gap: 32px;
+				margin-top: 24px;
+				flex-wrap: wrap;
+			}
+			.shield-stat { text-align: center; }
+			.shield-stat-num {
+				font-size: 1.8rem;
+				font-weight: 800;
+				color: var(--danger);
+				letter-spacing: -0.04em;
+			}
+			.shield-stat-label {
+				font-size: 0.78rem;
+				color: var(--text-muted);
+				margin-top: 4px;
+			}
+			.shield-modules {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 14px;
+			}
+			.shield-module {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-lg);
+				padding: 20px 20px;
+				border-left: 3px solid var(--danger);
+				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+			}
+			.shield-module:hover {
+				border-color: var(--danger);
+				transform: translateY(-3px);
+				box-shadow: var(--shadow-md);
+			}
+			.shield-module-icon { font-size: 1.6rem; margin-bottom: 12px; }
+			.shield-module-title { font-weight: 700; font-size: 1.05rem; color: var(--text); margin-bottom: 8px; }
+			.shield-module-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+			.shield-module-list { list-style: none; padding: 0; margin: 0; }
+			.shield-module-list li {
+				font-size: 0.82rem;
+				color: var(--text-body);
+				padding: 4px 0;
+				display: flex;
+				align-items: flex-start;
+				gap: 8px;
+			}
+			.shield-module-list li::before {
+				content: "\2713";
+				color: var(--danger);
+				font-weight: 700;
+				flex-shrink: 0;
+			}
+			.shield-api-box {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius-xl);
+				overflow: hidden;
+				margin-top: 40px;
+			}
+			.shield-api-header {
+				padding: 20px 28px;
+				border-bottom: 1px solid var(--border);
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.shield-api-method {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.75rem;
+				font-weight: 700;
+				color: var(--success);
+				background: var(--success-dim);
+				border: 1px solid var(--success-border);
+				padding: 4px 10px;
+				border-radius: 6px;
+			}
+			.shield-api-endpoint {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.85rem;
+				color: var(--text);
+				font-weight: 500;
+			}
+			.shield-api-body { padding: 24px 28px; }
+			.shield-api-body pre {
+				background: var(--bg-alt);
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				padding: 18px;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.78rem;
+				line-height: 1.6;
+				color: var(--text-body);
+				overflow-x: auto;
+				margin: 0;
+			}
+			.shield-decisions {
+				display: flex;
+				justify-content: center;
+				gap: 12px;
+				flex-wrap: wrap;
+				margin-top: 32px;
+			}
+			.shield-decision {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				padding: 12px 20px;
+				text-align: center;
+				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+			}
+			.shield-decision:hover { border-color: var(--brand-border); transform: translateY(-2px); }
+			.shield-decision-icon { font-size: 1.5rem; margin-bottom: 6px; }
+			.shield-decision-name {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.78rem;
+				font-weight: 600;
+				color: var(--text);
+			}
+			.shield-decision-desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
 
 			/* ── Compare Box ── */
 			.compare-box {
@@ -217,17 +555,11 @@
 			.compare-box::before {
 				content: "";
 				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
+				top: 0; left: 0; right: 0;
 				height: 3px;
 				background: linear-gradient(90deg, var(--brand), var(--purple), var(--cyan));
 			}
-			.compare-list {
-				list-style: none;
-				padding: 0;
-				margin: 0;
-			}
+			.compare-list { list-style: none; padding: 0; margin: 0; }
 			.compare-list li {
 				display: flex;
 				align-items: center;
@@ -269,19 +601,11 @@
 				position: relative;
 				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 			}
-			.plan-card:hover {
-				transform: translateY(-4px);
-				border-color: var(--brand-border);
-				box-shadow: var(--shadow-md);
-			}
-			.plan-card.popular {
-				border-color: var(--brand);
-				background: rgba(79, 124, 255, 0.03);
-			}
+			.plan-card:hover { transform: translateY(-4px); border-color: var(--brand-border); box-shadow: var(--shadow-md); }
+			.plan-card.popular { border-color: var(--brand); background: rgba(79, 124, 255, 0.03); }
 			.popular-pill {
 				position: absolute;
-				top: -11px;
-				left: 50%;
+				top: -11px; left: 50%;
 				transform: translateX(-50%);
 				background: var(--brand);
 				color: #fff;
@@ -350,164 +674,6 @@
 			}
 			.btn-plan-outline:hover { background: var(--bg-alt); border-color: #d1d5db; color: var(--text); transform: translateY(-1px); }
 
-			/* ── Bento Grid ── */
-			.bento-grid {
-				display: grid;
-				grid-template-columns: 2fr 1fr;
-				grid-template-rows: auto auto;
-				gap: 16px;
-			}
-			.bento-app           { grid-column: 1 / 2; grid-row: 1 / 2; }
-			.bento-console       { grid-column: 2 / 3; grid-row: 1 / 2; }
-			.bento-lightning-full { grid-column: 1 / -1; grid-row: 2 / 3; }
-
-			.bento-card {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-xl);
-				overflow: hidden;
-				transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), transform 0.25s var(--ease);
-			}
-			.bento-card:hover {
-				border-color: var(--brand-border);
-				box-shadow: var(--shadow-md);
-				transform: translateY(-3px);
-			}
-			.bento-inner {
-				padding: 28px 28px 24px;
-				display: flex;
-				flex-direction: column;
-				height: 100%;
-			}
-			.bento-eyebrow {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.68rem;
-				font-weight: 600;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin-bottom: 10px;
-			}
-			.bento-title {
-				font-size: 1.3rem;
-				font-weight: 800;
-				color: var(--text);
-				letter-spacing: -0.03em;
-				line-height: 1.2;
-				margin-bottom: 10px;
-			}
-			.bento-body {
-				font-size: 0.88rem;
-				color: var(--text-muted);
-				line-height: 1.6;
-				margin-bottom: 18px;
-			}
-
-			/* App card features */
-			.bento-features { display: flex; flex-direction: column; gap: 14px; }
-			.bento-feat {
-				display: flex;
-				align-items: flex-start;
-				gap: 12px;
-			}
-			.bento-feat-icon {
-				font-size: 1.3rem;
-				width: 38px;
-				height: 38px;
-				background: var(--bg-alt);
-				border: 1px solid var(--border);
-				border-radius: 10px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				flex-shrink: 0;
-			}
-			.bento-feat-title { font-weight: 700; font-size: 0.88rem; color: var(--text); }
-			.bento-feat-desc  { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
-
-			/* Console section blocks */
-			.bento-section-block {
-				background: var(--bg-alt);
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				padding: 14px 16px;
-				margin-bottom: 12px;
-			}
-			.bento-section-block:last-of-type { margin-bottom: 0; }
-			.bento-section-badge {
-				display: inline-block;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.6rem;
-				font-weight: 600;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
-				padding: 2px 9px;
-				border-radius: 50px;
-				border: 1px solid;
-				margin-bottom: 6px;
-			}
-			.bento-section-name {
-				font-weight: 700;
-				font-size: 0.92rem;
-				color: var(--text);
-				margin-bottom: 6px;
-			}
-
-			/* Checklist */
-			.bento-checklist {
-				list-style: none;
-				padding: 0;
-				margin: 0;
-			}
-			.bento-checklist li {
-				font-size: 0.78rem;
-				color: var(--text-body);
-				padding: 3px 0;
-			}
-
-			/* Lightning full-width card */
-			.bento-lightning-row {
-				flex-direction: row;
-				align-items: center;
-				gap: 40px;
-				padding: 28px 32px;
-			}
-			.bento-lightning-text { flex: 1; }
-			.bento-lightning-meta { flex-shrink: 0; min-width: 300px; }
-
-			/* Stats */
-			.bento-stat-row {
-				display: flex;
-				gap: 24px;
-				margin-bottom: 14px;
-			}
-			.bento-stat-num {
-				font-size: 1.4rem;
-				font-weight: 800;
-				color: var(--text);
-				letter-spacing: -0.04em;
-				line-height: 1;
-			}
-			.bento-stat-label {
-				font-size: 0.7rem;
-				color: var(--text-muted);
-				margin-top: 3px;
-			}
-
-			/* Model tags */
-			.bento-model-tags {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 6px;
-			}
-			.bento-tag {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.68rem;
-				font-weight: 500;
-				padding: 4px 10px;
-				border-radius: 6px;
-				border: 1px solid;
-			}
-
 			/* ── Timeline ── */
 			.timeline {
 				display: flex;
@@ -519,21 +685,13 @@
 			}
 			.timeline-line {
 				position: absolute;
-				top: 22px;
-				left: 40px;
-				right: 40px;
+				top: 22px; left: 40px; right: 40px;
 				height: 2px;
 				background: var(--border);
 			}
-			.timeline-step {
-				flex: 1;
-				text-align: center;
-				position: relative;
-				z-index: 1;
-			}
+			.timeline-step { flex: 1; text-align: center; position: relative; z-index: 1; }
 			.timeline-dot {
-				width: 44px;
-				height: 44px;
+				width: 44px; height: 44px;
 				border-radius: 50%;
 				background: var(--brand);
 				color: #fff;
@@ -546,357 +704,14 @@
 				margin: 0 auto 14px;
 				box-shadow: 0 0 0 5px var(--bg), 0 0 0 6px var(--brand-border);
 			}
-			.timeline-label {
-				font-weight: 700;
-				font-size: 0.95rem;
-				color: var(--text);
-				margin-bottom: 4px;
-			}
-			.timeline-desc {
-				font-size: 0.82rem;
-				color: var(--text-muted);
-				line-height: 1.5;
-				max-width: 200px;
-				margin: 0 auto;
-			}
+			.timeline-label { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; }
+			.timeline-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; max-width: 200px; margin: 0 auto; }
 
-			/* ── Responsive ── */
-			@media (max-width: 991.98px) {
-				.bento-grid {
-					grid-template-columns: 1fr;
-					grid-template-rows: auto;
-				}
-				.bento-app,
-				.bento-console,
-				.bento-lightning-full {
-					grid-column: 1 / -1;
-					grid-row: auto;
-				}
-			}
-			@media (max-width: 767.98px) {
-				.bento-lightning-row {
-					flex-direction: column;
-					gap: 20px;
-				}
-				.bento-lightning-meta {
-					min-width: 0;
-					width: 100%;
-				}
-				.timeline {
-					flex-direction: column;
-					align-items: flex-start;
-					gap: 0;
-					padding-left: 30px;
-				}
-				.timeline-line {
-					top: 0;
-					bottom: 0;
-					left: 49px;
-					right: auto;
-					width: 2px;
-					height: auto;
-				}
-				.timeline-step {
-					text-align: left;
-					padding: 16px 0;
-					display: flex;
-					align-items: flex-start;
-					gap: 16px;
-				}
-				.timeline-dot {
-					margin: 0;
-					flex-shrink: 0;
-				}
-				.timeline-desc {
-					max-width: none;
-					margin: 0;
-				}
-			}
-
-			/* ── Lightning Section ── */
-			.lr-section { position: relative; overflow: hidden; }
-			.lr-section::before {
-				content: "";
-				position: absolute;
-				inset: 0;
-				background: linear-gradient(180deg, rgba(251,191,36,0.03) 0%, transparent 100%);
-				pointer-events: none;
-			}
-			.lr-divider { height: 1px; background: var(--border); margin: 0; }
-			.lr-eyebrow {
-				display: inline-flex;
-				align-items: center;
-				gap: 7px;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.7rem;
-				font-weight: 500;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				color: #92400e;
-				background: var(--gold-dim);
-				border: 1px solid var(--gold-border);
-				border-radius: 50px;
-				padding: 5px 14px;
-				margin-bottom: 18px;
-			}
-			.lr-bolt { animation: lrPulseBolt 1.8s ease infinite; }
-			@keyframes lrPulseBolt {
-				0%, 100% { opacity: 1; }
-				50% { opacity: 0.35; }
-			}
-			.lr-title {
-				font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-				font-weight: 800;
-				letter-spacing: -0.04em;
-				line-height: 1.1;
-				color: var(--text);
-			}
-			.lr-title .accent-gold { color: #b45309; }
-			.lr-sub {
-				font-size: 0.92rem;
-				color: var(--text-muted);
-				max-width: 490px;
-				line-height: 1.65;
-				margin-top: 14px;
-			}
-
-			/* Lightning Card */
-			.lr-card {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-xl);
-				overflow: hidden;
-				position: relative;
-				box-shadow: var(--shadow-sm);
-			}
-			.lr-card::before {
-				content: "";
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				height: 3px;
-				background: linear-gradient(90deg, var(--gold), #f59e0b, var(--brand), var(--cyan));
-			}
-			.lr-card-inner { padding: 26px 26px 22px; }
-			.lr-card-label {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.64rem;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				color: #92400e;
-				margin-bottom: 13px;
-				font-weight: 500;
-			}
-			.lr-prompt-input {
-				width: 100%;
-				background: var(--bg-alt);
-				border: 1px solid var(--border);
-				border-radius: 10px;
-				color: var(--text);
-				font-family: "Inter", sans-serif;
-				font-size: 0.9rem;
-				line-height: 1.6;
-				padding: 13px 15px;
-				resize: none;
-				outline: none;
-				transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
-				box-sizing: border-box;
-			}
-			.lr-prompt-input::placeholder { color: var(--text-muted); }
-			.lr-prompt-input:focus {
-				border-color: var(--brand);
-				box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.1);
-			}
-			.lr-analyze-btn {
-				display: inline-flex;
-				align-items: center;
-				gap: 7px;
-				background: var(--gold-dim);
-				color: #92400e;
-				border: 1px solid var(--gold-border);
-				border-radius: 8px;
-				padding: 7px 16px;
-				font-size: 0.85rem;
-				font-weight: 600;
-				cursor: pointer;
-				transition: background 0.15s var(--ease), transform 0.15s var(--ease);
-				font-family: "Inter", sans-serif;
-				white-space: nowrap;
-			}
-			.lr-analyze-btn:hover:not(:disabled) {
-				background: rgba(251,191,36,0.18);
-				transform: translateY(-1px);
-			}
-			.lr-analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-			/* Toolbar */
-			.lr-toolbar {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				gap: 10px;
-				margin-top: 10px;
-				flex-wrap: wrap;
-			}
-			.lr-toolbar-toggles {
-				display: flex;
-				align-items: center;
-				gap: 6px;
-				flex-wrap: wrap;
-			}
-			.lr-toolbar-actions {
-				display: flex;
-				align-items: center;
-				gap: 8px;
-				flex-shrink: 0;
-			}
-			.lr-toggle {
-				display: inline-flex;
-				align-items: center;
-				gap: 5px;
-				background: var(--bg);
-				border: 1px solid var(--border);
-				border-radius: 7px;
-				padding: 6px 11px;
-				font-size: 0.78rem;
-				font-weight: 500;
-				color: var(--text-muted);
-				cursor: pointer;
-				font-family: "Inter", sans-serif;
-				transition: background 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease);
-				user-select: none;
-			}
-			.lr-toggle svg { width: 13px; height: 13px; flex-shrink: 0; }
-			.lr-toggle:hover { background: var(--bg-alt); color: var(--text-body); border-color: #d1d5db; }
-			.lr-toggle.active {
-				background: var(--brand-dim);
-				border-color: var(--brand-border);
-				color: var(--brand);
-			}
-			#tog-search.active  { background: var(--cyan-dim);    border-color: var(--cyan-border);    color: #0891b2; }
-			#tog-img.active     { background: var(--purple-dim);  border-color: var(--purple-border);  color: var(--purple); }
-			#tog-vid.active     { background: var(--danger-dim);  border-color: var(--danger-border);  color: var(--danger); }
-			#tog-audio.active   { background: var(--success-dim); border-color: var(--success-border); color: var(--success); }
-
-			/* Upload */
-			.lr-upload-btn {
-				display: inline-flex;
-				align-items: center;
-				gap: 5px;
-				background: var(--bg);
-				border: 1px solid var(--border);
-				border-radius: 7px;
-				padding: 6px 11px;
-				font-size: 0.78rem;
-				font-weight: 500;
-				color: var(--text-muted);
-				cursor: pointer;
-				font-family: "Inter", sans-serif;
-				transition: background 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease);
-				user-select: none;
-				white-space: nowrap;
-			}
-			.lr-upload-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-			.lr-upload-btn:hover { background: var(--bg-alt); color: var(--text-body); border-color: #d1d5db; }
-			.lr-upload-btn.has-file {
-				background: var(--gold-dim);
-				border-color: var(--gold-border);
-				color: #92400e;
-			}
-
-			/* Image preview */
-			.lr-img-preview {
-				display: inline-flex;
-				align-items: center;
-				gap: 6px;
-				background: var(--gold-dim);
-				border: 1px solid var(--gold-border);
-				border-radius: 6px;
-				padding: 5px 10px;
-				font-size: 0.76rem;
-				color: #92400e;
-				margin-top: 8px;
-				max-width: 100%;
-			}
-			.lr-img-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
-			.lr-img-remove {
-				background: none;
-				border: none;
-				padding: 0;
-				margin: 0;
-				color: #92400e;
-				cursor: pointer;
-				display: flex;
-				align-items: center;
-				opacity: 0.6;
-				transition: opacity 0.15s;
-				flex-shrink: 0;
-			}
-			.lr-img-remove:hover { opacity: 1; }
-			.lr-img-remove svg { width: 10px; height: 10px; }
-			.lr-btn-spinner {
-				width: 12px;
-				height: 12px;
-				border: 2px solid rgba(251,191,36,0.3);
-				border-top-color: #92400e;
-				border-radius: 50%;
-				animation: lrSpin 0.65s linear infinite;
-				display: none;
-			}
-			@keyframes lrSpin { to { transform: rotate(360deg); } }
-			.lr-result {
-				margin-top: 16px;
-				display: none;
-				animation: lrFadeUp 0.3s ease both;
-			}
-			@keyframes lrFadeUp {
-				from { opacity: 0; transform: translateY(7px); }
-				to   { opacity: 1; transform: translateY(0); }
-			}
-			.lr-result-row {
-				display: flex;
-				align-items: center;
-				gap: 12px;
-				background: var(--gold-dim);
-				border: 1px solid var(--gold-border);
-				border-radius: 10px;
-				padding: 13px 15px;
-			}
-			.lr-result-icon {
-				font-size: 1.2rem;
-				flex-shrink: 0;
-				width: 36px;
-				height: 36px;
-				background: rgba(251,191,36,0.15);
-				border-radius: 8px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-			.lr-result-label {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.6rem;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				color: var(--text-muted);
-			}
-			.lr-result-model { font-weight: 700; font-size: 0.95rem; color: #92400e; margin-top: 2px; }
-			.lr-result-provider { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; }
-			.lr-error { color: var(--danger); font-size: 0.8rem; margin-top: 9px; display: none; }
-
-			/* ── Open Source Cards ── */
-			.oss-card {
-				display: flex;
-				align-items: center;
-				gap: 16px;
-				text-decoration: none;
-				color: inherit;
-			}
+			/* ── Open Source ── */
+			.oss-card { display: flex; align-items: center; gap: 16px; text-decoration: none; color: inherit; }
 			.oss-icon {
 				font-size: 1.8rem;
-				width: 52px;
-				height: 52px;
+				width: 52px; height: 52px;
 				background: var(--bg-alt);
 				border: 1px solid var(--border);
 				border-radius: 12px;
@@ -906,15 +721,19 @@
 				flex-shrink: 0;
 				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
 			}
-			.oss-card:hover .oss-icon {
-				border-color: var(--brand-border);
-				transform: translateY(-2px);
-			}
+			.oss-card:hover .oss-icon { border-color: var(--brand-border); transform: translateY(-2px); }
 			.oss-title { font-weight: 700; font-size: 0.97rem; color: var(--text); margin-bottom: 3px; }
-			.oss-desc  { font-size: 0.83rem; color: var(--text-muted); }
+			.oss-desc { font-size: 0.83rem; color: var(--text-muted); }
+
+			/* ── Responsive ── */
+			@media (max-width: 767.98px) {
+				.carousel-card { width: 280px; min-width: 280px; }
+				.model-card { width: 240px; min-width: 240px; }
+				.carousel-wrap::before, .carousel-wrap::after { width: 40px; }
+			}
 		</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-</head>
+	</head>
 	<body>
 		<ip-navbar active="home" show-solutions></ip-navbar>
 
@@ -938,8 +757,16 @@
 				<div class="stats-divider reveal reveal-delay-4">
 					<div class="row justify-content-center g-4">
 						<div class="col-auto text-center">
+							<div class="stat-num"><span class="counter-animate" data-target="10000" data-suffix="+" data-duration="2000">0</span></div>
+							<div class="stat-label">requests / week</div>
+						</div>
+						<div class="col-auto text-center">
 							<div class="stat-num">1,000</div>
 							<div class="stat-label">words / sec (cloud)</div>
+						</div>
+						<div class="col-auto text-center">
+							<div class="stat-num">45,000+</div>
+							<div class="stat-label">open-source models</div>
 						</div>
 						<div class="col-auto text-center">
 							<div class="stat-num">3</div>
@@ -954,137 +781,161 @@
 			</div>
 		</section>
 
-		<!-- ═══════════════════════════════════════════════════
-		     BENTO GRID — APP / CONSOLE / LIGHTNING
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
+		<!-- ── 3-Pillars Strip ── -->
+		<div class="pillars-strip reveal">
 			<div class="container">
-				<div class="text-center mb-5">
-					<div class="section-tag reveal">The Full Stack</div>
-					<h2 class="section-title reveal reveal-delay-1">Two products. One AI backbone.</h2>
-					<p class="section-sub mx-auto mt-2 reveal reveal-delay-2">The InferencePort AI App for chat, hosting, and model management. The Developer Console for production APIs and fraud detection. Both powered by Lightning.</p>
+				<div class="pillars-grid">
+					<div class="pillar">
+						<div class="pillar-icon">&#128187;</div>
+						<div class="pillar-name">InferencePort AI App</div>
+						<div class="pillar-desc">Chat with Lightning models, self-host AI servers, and manage 45,000+ open-source models.</div>
+						<a href="#app-section" class="pillar-link pillar-link-app">Explore &darr;</a>
+					</div>
+					<div class="pillar">
+						<div class="pillar-icon">&#128268;</div>
+						<div class="pillar-name">Unified API</div>
+						<div class="pillar-desc">Text + Image + Video + Audio + 3D &mdash; one OpenAI-compatible endpoint for every modality.</div>
+						<a href="#api-section" class="pillar-link pillar-link-api">Explore &darr;</a>
+					</div>
+					<div class="pillar">
+						<div class="pillar-icon">&#128737;</div>
+						<div class="pillar-name">AI Shield</div>
+						<div class="pillar-desc">Real-time fraud detection, bot protection, and abuse prevention. One call. Five decisions.</div>
+						<a href="#shield-section" class="pillar-link pillar-link-shield">Explore &darr;</a>
+					</div>
 				</div>
+			</div>
+		</div>
 
-				<div class="bento-grid reveal">
-
-					<!-- ── InferencePort AI App (large) ── -->
-					<div class="bento-card bento-app">
-						<div class="bento-inner">
-							<div class="bento-eyebrow" style="color: var(--brand);">InferencePort AI App</div>
-							<h3 class="bento-title">Chat, host, and manage models.</h3>
-							<p class="bento-body">The desktop app for end users and teams. Cloud chat powered by the Generation API, self-hosted AI servers with team access, local Ollama models, and a built-in marketplace.</p>
-							<div class="bento-features">
-								<div class="bento-feat">
-									<div class="bento-feat-icon">&#128172;</div>
-									<div>
-										<div class="bento-feat-title">Generation API (Subscription)</div>
-										<div class="bento-feat-desc">Default chat path. Plan quotas, OpenAI-style endpoint, optimized for everyday chatting.</div>
-									</div>
-								</div>
-								<div class="bento-feat">
-									<div class="bento-feat-icon">&#127760;</div>
-									<div>
-										<div class="bento-feat-title">Self-Hosted AI Server</div>
-										<div class="bento-feat-desc">Run local LLMs, invite teams by email, authenticate via accounts or custom API keys.</div>
-									</div>
-								</div>
-								<div class="bento-feat">
-									<div class="bento-feat-icon">&#128230;</div>
-									<div>
-										<div class="bento-feat-title">Model Marketplace</div>
-										<div class="bento-feat-desc">Browse, download, and run community models and tools.</div>
-									</div>
-								</div>
-								<div class="bento-feat">
-									<div class="bento-feat-icon">&#128187;</div>
-									<div>
-										<div class="bento-feat-title">Local Models (Ollama)</div>
-										<div class="bento-feat-desc">100% on-device, fully offline, unlimited local chat.</div>
-									</div>
-								</div>
-							</div>
-							<div class="d-flex gap-2 mt-auto pt-3">
-								<a href="install.html" class="btn btn-brand">Download App</a>
-								<a href="solutions.html" class="btn btn-ghost">All Services</a>
-							</div>
-						</div>
-					</div>
-
-					<!-- ── Developer Console (tall) ── -->
-					<div class="bento-card bento-console">
-						<div class="bento-inner">
-							<div class="bento-eyebrow" style="color: var(--purple);">{ } Developer Console</div>
-							<h3 class="bento-title">Production APIs &amp; security.</h3>
-							<p class="bento-body">The backend for developers. Credit-metered API for enterprise integrations, and real-time fraud detection for sign-ups and traffic.</p>
-
-							<!-- P2G -->
-							<div class="bento-section-block">
-								<div class="bento-section-badge" style="background: var(--success-dim); color: var(--success); border-color: var(--success-border);">P2G API</div>
-								<div class="bento-section-name">Credit-Billed Production</div>
-								<ul class="bento-checklist">
-									<li>&#10003; Wallet-based billing, separate ledger</li>
-									<li>&#10003; Enterprise &amp; production integrations</li>
-									<li>&#10003; Managed through the console</li>
-								</ul>
-							</div>
-
-							<!-- Shield -->
-							<div class="bento-section-block">
-								<div class="bento-section-badge" style="background: var(--danger-dim); color: var(--danger); border-color: var(--danger-border);">AI Shield</div>
-								<div class="bento-section-name">Fraud Detection</div>
-								<ul class="bento-checklist">
-									<li>&#10003; Email, phone, IP, username, device signals</li>
-									<li>&#10003; Risk score + confidence level</li>
-									<li>&#10003; Duplicate &amp; linked-account detection</li>
-								</ul>
-							</div>
-
-							<a href="/console" class="btn btn-ghost btn-sm mt-auto">Open Console &rarr;</a>
-						</div>
-					</div>
-
-					<!-- ── Lightning — full width bottom ── -->
-					<div class="bento-card bento-lightning-full">
-						<div class="bento-inner bento-lightning-row">
-							<div class="bento-lightning-text">
-								<div class="bento-eyebrow" style="color: #92400e;"><span class="lr-bolt">&#9889;</span> Lightning</div>
-								<h3 class="bento-title" style="font-size: 1.15rem;">The model behind the platform.</h3>
-								<p class="bento-body mb-0">Lightning is a model available over the API and the default model used by all InferencePort AI subscriptions. Up to 1,000 words/sec, with smart routing to the best provider for each task.</p>
-							</div>
-							<div class="bento-lightning-meta">
-								<div class="bento-stat-row">
-									<div class="bento-stat">
-										<div class="bento-stat-num" style="color: #92400e;">1,000</div>
-										<div class="bento-stat-label">words / sec</div>
-									</div>
-									<div class="bento-stat">
-										<div class="bento-stat-num" style="color: #92400e;">&#9889;</div>
-										<div class="bento-stat-label">Default model</div>
-									</div>
-									<div class="bento-stat">
-										<div class="bento-stat-num" style="color: #92400e;">API</div>
-										<div class="bento-stat-label">Available over</div>
-									</div>
-								</div>
-								<div class="bento-model-tags">
-									<span class="bento-tag" style="background: var(--brand-dim); color: var(--brand);">OpenAI</span>
-									<span class="bento-tag" style="background: var(--success-dim); color: var(--success);">Llama</span>
-									<span class="bento-tag" style="background: var(--cyan-dim); color: #0891b2;">Qwen</span>
-									<span class="bento-tag" style="background: var(--purple-dim); color: var(--purple);">Nemotron</span>
-								</div>
-								<a href="lightning.html" class="btn btn-ghost btn-sm mt-3">Try It &rarr;</a>
-							</div>
-						</div>
-					</div>
-
+		<!-- ═══════════════════════════════════════════════════
+		     THE API — Full Feature Breakdown (Carousel)
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5" id="api-section">
+			<div class="container">
+				<div class="section-header">
+					<div class="section-eyebrow eyebrow-purple reveal">{ } Developer Console</div>
+					<h2 class="section-title-lg reveal reveal-delay-1">One API. Every modality.</h2>
+					<p class="section-sub-lg reveal reveal-delay-2">A unified, credit-metered API for production workloads. Text, image, video, audio, and 3D &mdash; all through a single OpenAI-compatible endpoint.</p>
+				</div>
+			</div>
+			<div class="carousel-wrap reveal">
+				<div class="carousel-track scroll-left" style="--scroll-duration:55s;">
+					<div class="carousel-card"><div class="carousel-card-icon">&#128268;</div><div class="carousel-card-title">OpenAI-Compatible Endpoint</div><div class="carousel-card-desc">Drop-in replacement for existing OpenAI integrations. Use your current SDK, libraries, and tools with zero code changes.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#9998;</div><div class="carousel-card-title">Text Generation</div><div class="carousel-card-desc">Access frontier text models including Lightning at up to 1,000 words/sec. Supports streaming, function calling, and multi-turn conversations.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127912;</div><div class="carousel-card-title">Image Generation</div><div class="carousel-card-desc">Generate images from text prompts. Support for multiple aspect ratios, styles, and quality levels. Batch generation for production use.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127909;</div><div class="carousel-card-title">Video Generation</div><div class="carousel-card-desc">Create videos from text descriptions. Configurable duration, resolution, and frame rate. Ideal for content creation and media pipelines.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127925;</div><div class="carousel-card-title">Audio Generation</div><div class="carousel-card-desc">Text-to-speech and audio synthesis from prompts. Multiple voice options, configurable speed, and high-fidelity output.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128302;</div><div class="carousel-card-title">3D Generation</div><div class="carousel-card-desc">Generate 3D models and assets from text or image inputs. Export in standard formats for games, simulations, and 3D printing.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128176;</div><div class="carousel-card-title">Credit-Based Billing</div><div class="carousel-card-desc">Wallet-based billing with a separate ledger. Pay only for what you use. Pre-paid credits with transparent per-request pricing.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Usage Analytics</div><div class="carousel-card-desc">Real-time dashboard with per-model usage breakdowns, cost tracking, and performance metrics. Export logs for billing and compliance.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128737;</div><div class="carousel-card-title">Rate Limiting &amp; Quotas</div><div class="carousel-card-desc">Configurable rate limits per API key. Set spending caps, request quotas, and model-specific limits. Automatic throttling.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128272;</div><div class="carousel-card-title">Enterprise &amp; Production</div><div class="carousel-card-desc">Built for production workloads. 99.9% uptime SLA, priority support, dedicated infrastructure options, and custom deployments.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Model Marketplace API</div><div class="carousel-card-desc">Programmatic access to the full model catalog. Discover, list, and select models via API. Filter by type, provider, and capability.</div></div>
+					<!-- duplicate set -->
+					<div class="carousel-card"><div class="carousel-card-icon">&#128268;</div><div class="carousel-card-title">OpenAI-Compatible Endpoint</div><div class="carousel-card-desc">Drop-in replacement for existing OpenAI integrations. Use your current SDK, libraries, and tools with zero code changes.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#9998;</div><div class="carousel-card-title">Text Generation</div><div class="carousel-card-desc">Access frontier text models including Lightning at up to 1,000 words/sec. Supports streaming, function calling, and multi-turn conversations.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127912;</div><div class="carousel-card-title">Image Generation</div><div class="carousel-card-desc">Generate images from text prompts. Support for multiple aspect ratios, styles, and quality levels. Batch generation for production use.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127909;</div><div class="carousel-card-title">Video Generation</div><div class="carousel-card-desc">Create videos from text descriptions. Configurable duration, resolution, and frame rate. Ideal for content creation and media pipelines.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127925;</div><div class="carousel-card-title">Audio Generation</div><div class="carousel-card-desc">Text-to-speech and audio synthesis from prompts. Multiple voice options, configurable speed, and high-fidelity output.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128302;</div><div class="carousel-card-title">3D Generation</div><div class="carousel-card-desc">Generate 3D models and assets from text or image inputs. Export in standard formats for games, simulations, and 3D printing.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128176;</div><div class="carousel-card-title">Credit-Based Billing</div><div class="carousel-card-desc">Wallet-based billing with a separate ledger. Pay only for what you use. Pre-paid credits with transparent per-request pricing.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Usage Analytics</div><div class="carousel-card-desc">Real-time dashboard with per-model usage breakdowns, cost tracking, and performance metrics. Export logs for billing and compliance.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128737;</div><div class="carousel-card-title">Rate Limiting &amp; Quotas</div><div class="carousel-card-desc">Configurable rate limits per API key. Set spending caps, request quotas, and model-specific limits. Automatic throttling.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128272;</div><div class="carousel-card-title">Enterprise &amp; Production</div><div class="carousel-card-desc">Built for production workloads. 99.9% uptime SLA, priority support, dedicated infrastructure options, and custom deployments.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Model Marketplace API</div><div class="carousel-card-desc">Programmatic access to the full model catalog. Discover, list, and select models via API. Filter by type, provider, and capability.</div></div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="d-flex justify-content-center mt-4 reveal">
+					<a href="/console" class="btn btn-brand">Open Developer Console &rarr;</a>
+				</div>
+			</div>
+		</section>
+		<!-- ═══════════════════════════════════════════════════
+		     THE APP — Chat, Self-Host, Manage Models (Carousel)
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5" id="app-section">
+			<div class="container">
+				<div class="section-header">
+					<div class="section-eyebrow eyebrow-blue reveal">&#128187; InferencePort AI App</div>
+					<h2 class="section-title-lg reveal reveal-delay-1">Chat. Self-Host. Manage.</h2>
+					<p class="section-sub-lg reveal reveal-delay-2">The all-in-one desktop app for end users and teams. Chat with Lightning-speed models, self-host your own AI server, and manage 45,000+ open-source models from Hugging Face.</p>
+				</div>
+			</div>
+			<div class="carousel-wrap reveal">
+				<div class="carousel-track scroll-right" style="--scroll-duration:50s;">
+					<!-- cards duplicated for seamless loop -->
+					<div class="carousel-card"><div class="carousel-card-icon">&#9889;</div><div class="carousel-card-title">Chat with Lightning Models</div><div class="carousel-card-desc">Talk to our Lightning-powered models at up to 1,000 words per second. Optimized for speed with smart provider routing that selects the best backend for every response.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128172;</div><div class="carousel-card-title">Generation API Chat</div><div class="carousel-card-desc">The default cloud chat path. Uses your subscription plan quotas with an OpenAI-compatible endpoint. Optimized for everyday chatting with access to all frontier models.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Self-Hosted AI Server</div><div class="carousel-card-desc">Run local LLMs on your own hardware and invite your entire team by email. Authenticate via accounts or custom API keys. Keep all data on-premise.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128230;</div><div class="carousel-card-title">Model Marketplace</div><div class="carousel-card-desc">Browse, download, and run community models and tools directly from the built-in marketplace. Filter by type, size, and capability. One-click install.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128187;</div><div class="carousel-card-title">Local Models (Ollama)</div><div class="carousel-card-desc">100% on-device, fully offline AI. Full Ollama compatibility with access to thousands of open-source models. Unlimited local chat with zero data leaving your machine.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127919;</div><div class="carousel-card-title">45,000+ Hugging Face Models</div><div class="carousel-card-desc">Chat with any one of the compatible 45,000+ open-source models on Hugging Face. Requires compatible model metadata and local hardware support.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128101;</div><div class="carousel-card-title">Team Management</div><div class="carousel-card-desc">Invite team members via email, assign roles, and manage access to self-hosted servers. Custom API keys for programmatic access. Monitor usage across your org.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128640;</div><div class="carousel-card-title">Remote Server Connection</div><div class="carousel-card-desc">Connect to remote Ollama servers and self-hosted instances from anywhere. Manage multiple server endpoints and switch between them on the fly.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Hugging Face Spaces</div><div class="carousel-card-desc">Access and run Hugging Face Spaces directly from the app. Deploy demos, experiment with community models, and run interactive ML applications.</div></div>
+					<!-- duplicate set for seamless loop -->
+					<div class="carousel-card"><div class="carousel-card-icon">&#9889;</div><div class="carousel-card-title">Chat with Lightning Models</div><div class="carousel-card-desc">Talk to our Lightning-powered models at up to 1,000 words per second. Optimized for speed with smart provider routing that selects the best backend for every response.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128172;</div><div class="carousel-card-title">Generation API Chat</div><div class="carousel-card-desc">The default cloud chat path. Uses your subscription plan quotas with an OpenAI-compatible endpoint. Optimized for everyday chatting with access to all frontier models.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Self-Hosted AI Server</div><div class="carousel-card-desc">Run local LLMs on your own hardware and invite your entire team by email. Authenticate via accounts or custom API keys. Keep all data on-premise.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128230;</div><div class="carousel-card-title">Model Marketplace</div><div class="carousel-card-desc">Browse, download, and run community models and tools directly from the built-in marketplace. Filter by type, size, and capability. One-click install.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128187;</div><div class="carousel-card-title">Local Models (Ollama)</div><div class="carousel-card-desc">100% on-device, fully offline AI. Full Ollama compatibility with access to thousands of open-source models. Unlimited local chat with zero data leaving your machine.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127919;</div><div class="carousel-card-title">45,000+ Hugging Face Models</div><div class="carousel-card-desc">Chat with any one of the compatible 45,000+ open-source models on Hugging Face. Requires compatible model metadata and local hardware support.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128101;</div><div class="carousel-card-title">Team Management</div><div class="carousel-card-desc">Invite team members via email, assign roles, and manage access to self-hosted servers. Custom API keys for programmatic access. Monitor usage across your org.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128640;</div><div class="carousel-card-title">Remote Server Connection</div><div class="carousel-card-desc">Connect to remote Ollama servers and self-hosted instances from anywhere. Manage multiple server endpoints and switch between them on the fly.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Hugging Face Spaces</div><div class="carousel-card-desc">Access and run Hugging Face Spaces directly from the app. Deploy demos, experiment with community models, and run interactive ML applications.</div></div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="d-flex justify-content-center gap-3 mt-4 reveal">
+					<a href="install.html" class="btn btn-brand">Download App</a>
+					<a href="solutions.html" class="btn btn-ghost">All Services &rarr;</a>
 				</div>
 			</div>
 		</section>
 
 		<!-- ═══════════════════════════════════════════════════
-		     CLOUD vs LOCAL
+		     AI SHIELD
 		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" style="background: var(--bg-alt);">
+		<section class="py-5" id="shield-section">
+			<div class="container">
+				<div class="section-header">
+					<div class="section-eyebrow eyebrow-red reveal">&#128737; AI Shield</div>
+					<h2 class="section-title-lg reveal reveal-delay-1">The trust layer for modern apps.</h2>
+					<p class="section-sub-lg reveal reveal-delay-2">Real-time fraud detection, bot protection, and abuse prevention. One API call. Five decisions. Sub-second response.</p>
+				</div>
+			</div>
+			<div class="carousel-wrap reveal">
+				<div class="carousel-track scroll-left" style="--scroll-duration:50s;">
+					<div class="carousel-card"><div class="carousel-card-icon">&#128683;</div><div class="carousel-card-title">Shield Signup</div><div class="carousel-card-desc">Stop bots, fake accounts, and multi-account abuse before they happen. Protect free trials and account creation flows.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128100;</div><div class="carousel-card-title">Shield Identity</div><div class="carousel-card-desc">Detect duplicate accounts, ban evasion, and identity farming. Link suspicious accounts automatically.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Shield Content</div><div class="carousel-card-desc">Identify spam, scams, and automated content in real-time. Protect your platform's integrity and user experience.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#9888;</div><div class="carousel-card-title">Shield Prompt</div><div class="carousel-card-desc">Detect prompt injection, jailbreak attempts, and system prompt extraction. Protect AI models from adversarial attacks.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128274;</div><div class="carousel-card-title">Shield Data</div><div class="carousel-card-desc">Prevent data exfiltration, bulk scraping, and credential harvesting. Monitor for unusual data access patterns.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Trust Scoring</div><div class="carousel-card-desc">Real-time risk scores with confidence levels. Combine signals for accurate fraud assessment across all touchpoints.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Shared Abuse Graph</div><div class="carousel-card-desc">Cross-customer intelligence network. Known bad actors flagged across the entire platform ecosystem.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Human Explanations</div><div class="carousel-card-desc">Every decision comes with a clear explanation. No black boxes &mdash; understand why each request was flagged.</div></div>
+					<!-- duplicate set -->
+					<div class="carousel-card"><div class="carousel-card-icon">&#128683;</div><div class="carousel-card-title">Shield Signup</div><div class="carousel-card-desc">Stop bots, fake accounts, and multi-account abuse before they happen. Protect free trials and account creation flows.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128100;</div><div class="carousel-card-title">Shield Identity</div><div class="carousel-card-desc">Detect duplicate accounts, ban evasion, and identity farming. Link suspicious accounts automatically.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Shield Content</div><div class="carousel-card-desc">Identify spam, scams, and automated content in real-time. Protect your platform's integrity and user experience.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#9888;</div><div class="carousel-card-title">Shield Prompt</div><div class="carousel-card-desc">Detect prompt injection, jailbreak attempts, and system prompt extraction. Protect AI models from adversarial attacks.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128274;</div><div class="carousel-card-title">Shield Data</div><div class="carousel-card-desc">Prevent data exfiltration, bulk scraping, and credential harvesting. Monitor for unusual data access patterns.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Trust Scoring</div><div class="carousel-card-desc">Real-time risk scores with confidence levels. Combine signals for accurate fraud assessment across all touchpoints.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Shared Abuse Graph</div><div class="carousel-card-desc">Cross-customer intelligence network. Known bad actors flagged across the entire platform ecosystem.</div></div>
+					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Human Explanations</div><div class="carousel-card-desc">Every decision comes with a clear explanation. No black boxes &mdash; understand why each request was flagged.</div></div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="d-flex justify-content-center gap-3 mt-4 reveal">
+					<a href="shield.html" class="btn btn-brand" style="background:var(--danger);">Learn More &rarr;</a>
+					<a href="/console" class="btn btn-ghost">Open Console</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- ── Cloud vs Local ── -->
+		<section class="py-5">
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag reveal">Your Choice</div>
@@ -1099,7 +950,7 @@
 								<li>&#10022; Instant access to frontier models</li>
 								<li>&#10022; Up to 1,000 words/sec throughput</li>
 								<li>&#10022; Auto-updated &mdash; always latest models</li>
-								<li>&#10022; Image, video &amp; audio generation</li>
+								<li>&#10022; Image, video, audio &amp; 3D generation</li>
 							</ul>
 						</div>
 						<div class="col-md-2 d-none d-md-flex align-items-center justify-content-center">
@@ -1112,7 +963,7 @@
 								<li>&#10022; Works fully offline</li>
 								<li>&#10022; Unlimited local chat</li>
 								<li>&#10022; Full Ollama model compatibility</li>
-								<li>&#10022; Remote server connection supported</li>
+								<li>&#10022; 45,000+ Hugging Face models supported</li>
 							</ul>
 						</div>
 					</div>
@@ -1120,8 +971,8 @@
 			</div>
 		</section>
 
-		<!-- ── Getting Started — horizontal timeline ── -->
-		<section class="py-5">
+		<!-- ── Getting Started ── -->
+		<section class="py-5" style="background:var(--bg-alt);">
 			<div class="container">
 				<div class="text-center mb-5">
 					<div class="section-tag reveal">Getting Started</div>
@@ -1154,8 +1005,8 @@
 			</div>
 		</section>
 
-		<!-- ── Pricing Preview ── -->
-		<section class="py-5" style="background: var(--bg-alt);">
+		<!-- ── Pricing ── -->
+		<section class="py-5">
 			<div class="container">
 				<div class="text-center mb-5">
 					<div class="section-tag reveal">Plans</div>
@@ -1249,7 +1100,7 @@
 		</section>
 
 		<!-- ── Open Source ── -->
-		<section class="py-5">
+		<section class="py-5" style="background:var(--bg-alt);">
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag reveal">Open Source</div>
@@ -1279,116 +1130,203 @@
 			</div>
 		</section>
 
+		<!-- ── New API Additions ── -->
+		<section class="py-5">
+			<div class="container">
+				<div class="section-header" style="margin-bottom:24px;">
+					<div class="section-eyebrow eyebrow-green reveal">&#10024; New This Week</div>
+					<h2 class="section-title-lg reveal reveal-delay-1" style="font-size:clamp(1.3rem,2.5vw,1.8rem);">New API Additions</h2>
+					<p class="section-sub-lg reveal reveal-delay-2" style="font-size:0.88rem;">Freshly added models now available on the unified API.</p>
+				</div>
+				<div class="carousel-wrap reveal">
+					<div class="carousel-track scroll-right" style="--scroll-duration:50s;" id="new-models-track">
+						<!-- populated by JS, then duplicated -->
+					</div>
+				</div>
+			</div>
+		</section>
+
 		</main>
 
 		<ip-footer></ip-footer>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
+		/* ── Animated Counter ── */
 		(function() {
-			const toggleState = { search: false, img: false, vid: false, audio: false };
-			let attachedImageB64 = null;
-			let attachedImageType = null;
-			let attachedImageName = null;
+			const counters = document.querySelectorAll('.counter-animate');
+			if (!counters.length) return;
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting) {
+						const el = entry.target;
+						const target = parseInt(el.dataset.target);
+						const suffix = el.dataset.suffix || '';
+						const duration = parseInt(el.dataset.duration) || 2000;
+						const start = performance.now();
+						function update(now) {
+							const elapsed = now - start;
+							const progress = Math.min(elapsed / duration, 1);
+							const eased = 1 - Math.pow(1 - progress, 3);
+							const current = Math.floor(eased * target);
+							el.textContent = current.toLocaleString() + suffix;
+							if (progress < 1) requestAnimationFrame(update);
+						}
+						requestAnimationFrame(update);
+						observer.unobserve(el);
+					}
+				});
+			}, { threshold: 0.5 });
+			counters.forEach(c => observer.observe(c));
+		})();
 
-			window.lrToggle = function(key) {
-				toggleState[key] = !toggleState[key];
-				const btn = document.getElementById('tog-' + key);
-				btn.classList.toggle('active', toggleState[key]);
-			};
+		/* ── New API Additions (marketplace-exact cards) ── */
+		(function() {
+			const track = document.getElementById('new-models-track');
+			if (!track) return;
 
-			window.lrImageAttached = function(input) {
-				const file = input.files[0];
-				if (!file) return;
-				attachedImageName = file.name;
-				attachedImageType = file.type || 'image/jpeg';
-				const reader = new FileReader();
-				reader.onload = function(e) {
-					attachedImageB64 = e.target.result.split(',')[1];
-					document.getElementById('lr-img-name').textContent = attachedImageName;
-					document.getElementById('lr-img-preview').style.display = 'inline-flex';
-					document.querySelector('.lr-upload-btn').classList.add('has-file');
-					document.getElementById('lr-upload-label').textContent = 'Attached';
-				};
-				reader.readAsDataURL(file);
-			};
+			const MODEL_IDS = [
+				"nova-reel",
+				"trellis2",
+				"grok-4.1",
+				"kimi-k3",
+				"minimax-m3",
+				"nemotron-3-ultra",
+				"flux-2-dev",
+				"ideogram-v4-turbo",
+				"lightning-texture-quality",
+				"ideogram-v4-balanced",
+				"ideogram-v4-quality",
+				"flux-2-pro",
+				"imagen-4-preview",
+				"lightning-image-turbo",
+				"lightning",
+				"flux-3",
+				"pixverse-v5"
+			];
 
-			window.lrClearImage = function() {
-				attachedImageB64 = null;
-				attachedImageType = null;
-				attachedImageName = null;
-				document.getElementById('lr-img-preview').style.display = 'none';
-				document.querySelector('.lr-upload-btn').classList.remove('has-file');
-				document.getElementById('lr-upload-label').textContent = 'Image';
-				document.getElementById('lr-img-upload').value = '';
-			};
+			function escapeHtml(str) {
+				const d = document.createElement("div");
+				d.textContent = str;
+				return d.innerHTML;
+			}
 
-			window.lrAnalyze = async function() {
-				const promptText = document.getElementById("lr-prompt").value.trim();
-				if (!promptText && !attachedImageB64) return;
+			function modelType(m) {
+				if (m.type) return m.type;
+				const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
+				const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
+				if (i.includes("text") && o.includes("text")) return "text";
+				if (o.includes("image")) return "image";
+				if (o.includes("video")) return "video";
+				if (o.includes("audio")) return "audio";
+				return "text";
+			}
 
-				const btn    = document.getElementById("lr-analyze-btn");
-				const spin   = document.getElementById("lr-btn-spinner");
-				const btnTxt = document.getElementById("lr-btn-text");
-				const errEl  = document.getElementById("lr-error");
-				const resEl  = document.getElementById("lr-result");
-
-				btn.disabled = true;
-				spin.style.display = "block";
-				btnTxt.textContent = "Routing…";
-				errEl.style.display = "none";
-				resEl.style.display = "none";
-
-				let msgContent;
-				if (attachedImageB64) {
-					msgContent = [
-						{ type: "image_url", image_url: { url: `data:${attachedImageType};base64,${attachedImageB64}` } }
-					];
-					if (promptText) msgContent.push({ type: "text", text: promptText });
-				} else {
-					msgContent = promptText;
+			function pillClass(type) {
+				switch (type) {
+					case "text": return "pill-text";
+					case "image": return "pill-image";
+					case "video": return "pill-video";
+					case "audio": return "pill-audio";
+					case "3D":
+					case "3d": return "pill-3d";
+					default: return "pill-text";
 				}
+			}
 
-				const tools = [];
-				if (toggleState.search) tools.push({ type: "function", function: { name: "web_search", description: "Search the web" } });
-				if (toggleState.img)    tools.push({ type: "function", function: { name: "image_generation", description: "Generate images" } });
-				if (toggleState.vid)    tools.push({ type: "function", function: { name: "video_generation", description: "Generate video" } });
-				if (toggleState.audio)  tools.push({ type: "function", function: { name: "audio_generation", description: "Generate audio" } });
+			function slug(m) {
+				return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
+			}
 
-				const payload = {
-					prompt: [{ role: "user", content: msgContent }]
-				};
-				if (tools.length > 0) payload.tools = tools;
-
-				try {
-					const resp = await fetch("https://sharktide-lightning.hf.space/gen/prompt_analyze", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify(payload)
-					});
-					if (!resp.ok) throw new Error(`${resp.status}`);
-					const data = await resp.json();
-
-					const modelName = data;
-					const provider  = data.provider   || data.provider_name || "";
-
-					document.getElementById("lr-result-icon").textContent     = "\u26A1";
-					document.getElementById("lr-result-model").textContent    = modelName;
-					document.getElementById("lr-result-provider").textContent = provider ? `via ${provider}` : "";
-					resEl.style.display = "block";
-				} catch(e) {
-					errEl.textContent   = "Couldn't reach the routing API \u2014 please try again.";
-					errEl.style.display = "block";
-				} finally {
-					btn.disabled = false;
-					spin.style.display = "none";
-					btnTxt.textContent = "\u26A1 Analyze";
+			function formatModelPrice(m) {
+				const pricing = m?.pricing;
+				if (!pricing) return null;
+				const type = modelType(m);
+				if (type === "image" && pricing.image && pricing.image !== "0") return "$" + parseFloat(pricing.image).toFixed(4) + "/gen";
+				if (type === "3d" || type === "3D") {
+					if (m.price_tiers) {
+						const values = Object.values(m.price_tiers).map(v => parseFloat(v));
+						const min = Math.min(...values);
+						const max = Math.max(...values);
+						if (min !== max) return "$" + min.toFixed(2) + "-$" + max.toFixed(2);
+						return "$" + min.toFixed(4) + "/model";
+					}
+					if (pricing.request && pricing.request !== "0") return "$" + parseFloat(pricing.request).toFixed(4) + "/model";
 				}
-			};
+				if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return "$" + parseFloat(pricing.request).toFixed(4) + "/sec";
+				if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+					const perMillion = v => (parseFloat(v) * 1000000).toFixed(2);
+					return "In: $" + perMillion(pricing.prompt) + "/M \u00b7 Out: $" + perMillion(pricing.completion) + "/M";
+				}
+				return null;
+			}
 
-			document.getElementById("lr-prompt").addEventListener("keydown", function(e) {
-				if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); lrAnalyze(); }
-			});
+			function formatPricing(m) {
+				const p = m?.pricing || {};
+				if (p.prompt != null && p.completion != null) {
+					const perMillion = v => (v * 1000000).toFixed(2);
+					return "In: $" + perMillion(p.prompt) + "/M \u00b7 Out: $" + perMillion(p.completion) + "/M";
+				}
+				return null;
+			}
+
+			function formatPrice(m) {
+				return formatModelPrice(m) || formatPricing(m) || "Credit-based";
+			}
+
+			function renderCard(m) {
+				const id = slug(m) || m.name || "unknown";
+				const name = m.name || id.split("/").pop();
+				const displaySlug = slug(m) || "\u2014";
+				const type = modelType(m);
+				const price = formatPrice(m);
+				const modelId = (slug(m) || name).toLowerCase().replace(/\//g, "_");
+				const imgUrl = "https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/" + encodeURIComponent(modelId) + ".webp?download=true";
+
+				const card = document.createElement("div");
+				card.className = "model-card";
+				card.innerHTML =
+					'<img class="model-card-image" src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(name) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+					'<div class="model-card-image-placeholder" style="display:none;">' + escapeHtml(name) + '</div>' +
+					'<div class="model-card-content">' +
+						'<div class="model-card-top">' +
+							'<span class="model-card-name">' + escapeHtml(name) + '</span>' +
+							'<div>' +
+								'<span class="model-pill pill-new">NEW</span> ' +
+								'<span class="model-pill ' + pillClass(type) + '">' + (m.type || type).toUpperCase() + '</span>' +
+							'</div>' +
+						'</div>' +
+						'<div class="model-meta">' +
+							'<span class="model-key">Slug</span>' +
+							'<span class="model-value">' + escapeHtml(displaySlug) + '</span>' +
+						'</div>' +
+						'<div class="model-meta">' +
+							'<span class="model-key">Pricing</span>' +
+							'<span class="model-value">' + escapeHtml(price) + '</span>' +
+						'</div>' +
+						'<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" style="display:block;width:100%;text-align:center;padding:0.55rem 1rem;border-radius:9px;font-size:0.8rem;font-weight:600;background:rgba(79,124,255,0.08);color:var(--brand);border:1px solid rgba(79,124,255,0.2);text-decoration:none;margin-top:auto;">Open Console</a>' +
+					'</div>';
+				return card;
+			}
+
+			/* Fetch and render */
+			fetch("https://sharktide-lightning.hf.space/v1/models")
+				.then(r => r.json())
+				.then(data => {
+					const models = Array.isArray(data) ? data : (data.data || []);
+					const modelMap = {};
+					models.forEach(m => { modelMap[m.id] = m; });
+
+					let found = MODEL_IDS.filter(id => modelMap[id]);
+					if (!found.length) found = models.slice(0, 10).map(m => m.id);
+					const cards = found.map(id => renderCard(modelMap[id]));
+
+					/* Append first set */
+					cards.forEach(c => track.appendChild(c));
+					/* Duplicate for seamless loop */
+					cards.forEach(c => track.appendChild(c.cloneNode(true)));
+				})
+				.catch(() => {});
 		})();
 		</script>
 	</body>
