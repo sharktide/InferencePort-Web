@@ -28,6 +28,7 @@ export default function ConsoleLayout() {
   const [activeTab, setActiveTab] = useState("account");
   const [initialized, setInitialized] = useState(false);
   const [apiBase, setApiBase] = useState(FALLBACK_API_BASE);
+  const [unclaimedRewards, setUnclaimedRewards] = useState(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -100,7 +101,7 @@ export default function ConsoleLayout() {
   const panelMap: Record<string, React.ReactNode> = {
     account: <AccountPanel config={config} session={session} supabase={supabase} apiBase={apiBase} />,
     models: <ModelsPanel config={config} session={session} apiBase={apiBase} />,
-    rewards: <RewardsPanel session={session} apiBase={apiBase} />,
+    rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
     "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
     usage: <UsagePanel session={session} apiBase={apiBase} />,
     "gen-api": <GenApiPanel session={session} config={config} apiBase={apiBase} />,
@@ -137,6 +138,7 @@ export default function ConsoleLayout() {
           onClose={() => setIsMobileNavOpen(false)}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          unclaimedRewards={unclaimedRewards}
         />
         <main className={styles.consoleContent}>
           {panelMap[activeTab] || panelMap.account}

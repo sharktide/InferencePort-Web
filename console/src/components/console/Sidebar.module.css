@@ -49,6 +49,80 @@
   color: #fff;
 }
 
+.navTabWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rewardBadge {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  animation: badgeBounce 2s ease-in-out infinite;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes badgeBounce {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  25% { transform: translateY(-50%) scale(1.15); }
+  50% { transform: translateY(-50%) scale(1); }
+  75% { transform: translateY(-50%) scale(1.1); }
+}
+
+.sidebarUserSection {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rewardNotification {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(26, 107, 255, 0.08) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 10px;
+  animation: notificationPulse 3s ease-in-out infinite;
+}
+
+@keyframes notificationPulse {
+  0%, 100% { border-color: rgba(16, 185, 129, 0.25); }
+  50% { border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 0 12px rgba(16, 185, 129, 0.1); }
+}
+
+.rewardNotificationIcon {
+  font-size: 1rem;
+  animation: iconBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.rewardNotificationText {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #059669;
+  line-height: 1.3;
+}
+
 .sidebarUserTag {
   margin-top: auto;
   display: flex;
