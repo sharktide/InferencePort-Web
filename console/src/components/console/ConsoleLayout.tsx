@@ -13,6 +13,7 @@ import GenApiPanel from "./panels/GenApiPanel";
 import PaygApiPanel from "./panels/PaygApiPanel";
 import ShieldPanel from "./panels/ShieldPanel";
 import AuthorizedAppsPanel from "./panels/AuthorizedAppsPanel";
+import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
 const FALLBACK_API_BASE = "https://sharktide-lightning.hf.space";
@@ -99,6 +100,7 @@ export default function ConsoleLayout() {
   const panelMap: Record<string, React.ReactNode> = {
     account: <AccountPanel config={config} session={session} supabase={supabase} apiBase={apiBase} />,
     models: <ModelsPanel config={config} session={session} apiBase={apiBase} />,
+    rewards: <RewardsPanel session={session} apiBase={apiBase} />,
     "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
     usage: <UsagePanel session={session} apiBase={apiBase} />,
     "gen-api": <GenApiPanel session={session} config={config} apiBase={apiBase} />,

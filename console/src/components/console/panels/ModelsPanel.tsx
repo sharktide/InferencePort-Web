@@ -20,6 +20,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [selectedDetailModel, setSelectedDetailModel] = useState<any | null>(null);
   const [tab, setTab] = useState("text");
   const [busy, setBusy] = useState<Record<string, boolean>>({});
+  const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
   const [textPrompt, setTextPrompt] = useState("");
   const [textOutput, setTextOutput] = useState("");
   const [imageModel, setImageModel] = useState("");
@@ -113,6 +114,18 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
     return null;
   };
 
+  const getModelDiscount = (m: any) => {
+    const id = m?.id || "";
+    if (modelDiscounts[id]) return modelDiscounts[id];
+    if (modelDiscounts["__all_models__"]) return modelDiscounts["__all_models__"];
+    for (const [pattern, pct] of Object.entries(modelDiscounts)) {
+      if (pattern.startsWith("__")) continue;
+      if (pattern.endsWith("-*") && id.startsWith(pattern.slice(0, -2))) return pct;
+      if (pattern === id) return pct;
+    }
+    return 0;
+  };
+
   const loadModels = useCallback(async () => {
     try {
       if (source === "p2g") {
@@ -130,6 +143,16 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   }, [source, apiBase]);
 
   useEffect(() => { loadModels(); }, [loadModels]);
+
+  useEffect(() => {
+    if (!session?.access_token) return;
+    fetch(`${apiBase}/v1/rewards/discounts`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((d) => setModelDiscounts(d.discounts || {}))
+      .catch(() => {});
+  }, [session, apiBase]);
 
   useEffect(() => {
     //@ts-ignore
@@ -334,27 +357,35 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {displayModels.map((m: any, i: number) => {
             const dynamicPrice = formatModelPrice(m);
             const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m);
+            const discount = getModelDiscount(m);
             return (
               <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
+                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                    {discount > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{discount}% OFF</span>}
+                    <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
+                  </div>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}</span></div>
+                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}{discount > 0 ? ` (→ ${(100 - discount)}% of list)` : ""}</span></div>
               </div>
             );
           })}
           {source === "p2g" && nonTextConfigModels().map((m: any, i: number) => {
             const label = formatModelPrice(m) || "Existing configuration";
+            const discount = getModelDiscount(m);
             return (
               <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
+                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                    {discount > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{discount}% OFF</span>}
+                    <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
+                  </div>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}</span></div>
+                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}{discount > 0 ? ` (→ ${(100 - discount)}% of list)` : ""}</span></div>
               </div>
             );
           })}

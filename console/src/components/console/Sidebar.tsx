@@ -16,6 +16,7 @@ interface SidebarProps {
 const navTabs = [
   { id: "account", label: "Account management" },
   { id: "models", label: "Models" },
+  { id: "rewards", label: "Rewards" },
   { id: "api-key", label: "API key" },
   { id: "usage", label: "Usage" },
   { id: "gen-api", label: "Generation (Subscription)" },
