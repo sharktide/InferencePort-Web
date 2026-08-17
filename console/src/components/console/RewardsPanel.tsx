@@ -61,6 +61,7 @@ function formatCriteria(criteria: any): string {
   if (t === "total_requests") return `${formatNumber(thr)} requests`;
   if (t === "total_tokens") return `${formatNumber(thr)} tokens`;
   if (t === "unique_models_tried") return `${thr} models`;
+  if (t === "days_visited") return `${thr} days visited`;
   if (t === "consecutive_days") return `${thr}-day streak`;
   if (t === "multi_criteria") {
     const conds = criteria?.conditions || [];
@@ -187,8 +188,8 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
             <span className={styles.statValue}>{stats?.unique_models_tried || 0}</span>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statLabel}>Requests</span>
-            <span className={styles.statValue}>{formatNumber(stats?.total_requests || 0)}</span>
+            <span className={styles.statLabel}>Days Visited</span>
+            <span className={styles.statValue}>{stats?.days_visited || 0}</span>
           </div>
           <div className={styles.statCard}>
             <span className={styles.statLabel}>Earned</span>
@@ -247,22 +248,26 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
                 <div className={styles.chainHeader}>
                   <span className={styles.chainIcon}>{chainIcon}</span>
                   <span className={styles.chainTitle}>{chainLabel} Chain</span>
+                  <span className={styles.chainCount}>
+                    {chainRewards.filter((r) => r.progress.claimed).length}/{chainRewards.length} claimed
+                  </span>
                 </div>
-                <div className={styles.chainTimeline}>
-                  {chainRewards.map((r, idx) => {
-                    const isLast = idx === chainRewards.length - 1;
+                <div className={styles.chainGrid}>
+                  {chainRewards.map((r) => {
                     const cardClass = r.progress.claimed
                       ? styles.rewardCardClaimed
                       : r.progress.earned
                       ? styles.rewardCardEarned
                       : "";
                     return (
-                      <div key={r.id} className={styles.chainStep}>
-                        <div className={styles.chainLine}>
-                          <div className={`${styles.chainDot} ${r.progress.earned ? styles.chainDotEarned : ""} ${r.progress.claimed ? styles.chainDotClaimed : ""}`} />
-                          {!isLast && <div className={`${styles.chainConnector} ${r.progress.claimed ? styles.chainConnectorFilled : ""}`} />}
+                      <div key={r.id} className={`${styles.rewardCard} ${cardClass}`}>
+                        <div className={styles.rewardCardConnector}>
+                          <div className={`${styles.connectorDot} ${r.progress.earned ? styles.connectorDotEarned : ""} ${r.progress.claimed ? styles.connectorDotClaimed : ""}`} />
+                          {r.tier < chainRewards.length && (
+                            <div className={`${styles.connectorLine} ${r.progress.claimed ? styles.connectorLineFilled : ""}`} />
+                          )}
                         </div>
-                        <div className={`${styles.rewardCard} ${cardClass}`}>
+                        <div className={styles.rewardCardBody}>
                           <div className={styles.rewardHeader}>
                             <div className={`${styles.rewardIcon} ${r.progress.earned ? styles.rewardIconEarned : ""}`}>
                               {r.icon}

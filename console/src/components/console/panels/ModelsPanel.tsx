@@ -21,6 +21,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [tab, setTab] = useState("text");
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
+  const [fixedPrices, setFixedPrices] = useState<Record<string, number>>({});
   const [textPrompt, setTextPrompt] = useState("");
   const [textOutput, setTextOutput] = useState("");
   const [imageModel, setImageModel] = useState("");
@@ -116,14 +117,15 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
 
   const getModelDiscount = (m: any) => {
     const id = m?.id || "";
-    if (modelDiscounts[id]) return modelDiscounts[id];
-    if (modelDiscounts["__all_models__"]) return modelDiscounts["__all_models__"];
+    if (fixedPrices[id]) return { type: "fixed" as const, fixedPrice: fixedPrices[id], percent: 0 };
+    if (modelDiscounts[id]) return { type: "percent" as const, percent: modelDiscounts[id], fixedPrice: 0 };
+    if (modelDiscounts["__all_models__"]) return { type: "percent" as const, percent: modelDiscounts["__all_models__"], fixedPrice: 0 };
     for (const [pattern, pct] of Object.entries(modelDiscounts)) {
       if (pattern.startsWith("__")) continue;
-      if (pattern.endsWith("-*") && id.startsWith(pattern.slice(0, -2))) return pct;
-      if (pattern === id) return pct;
+      if (pattern.endsWith("-*") && id.startsWith(pattern.slice(0, -2))) return { type: "percent" as const, percent: pct as number, fixedPrice: 0 };
+      if (pattern === id) return { type: "percent" as const, percent: pct as number, fixedPrice: 0 };
     }
-    return 0;
+    return { type: "none" as const, percent: 0, fixedPrice: 0 };
   };
 
   const loadModels = useCallback(async () => {
@@ -151,6 +153,22 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
     })
       .then((r) => r.json())
       .then((d) => setModelDiscounts(d.discounts || {}))
+      .catch(() => {});
+    fetch(`${apiBase}/v1/rewards`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        const raw = d.active_discounts || {};
+        const fixed: Record<string, number> = {};
+        for (const [k, v] of Object.entries(raw)) {
+          if (k.startsWith("__fixed_")) {
+            const modelId = k.replace("__fixed_", "").replace("__", "");
+            fixed[modelId] = v as number;
+          }
+        }
+        setFixedPrices(fixed);
+      })
       .catch(() => {});
   }, [session, apiBase]);
 
@@ -357,35 +375,73 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {displayModels.map((m: any, i: number) => {
             const dynamicPrice = formatModelPrice(m);
             const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m);
-            const discount = getModelDiscount(m);
+            const disc = getModelDiscount(m);
+            const hasDiscount = disc.type !== "none";
             return (
               <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-                    {discount > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{discount}% OFF</span>}
+                    {disc.type === "percent" && disc.percent > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{disc.percent}% OFF</span>}
+                    {disc.type === "fixed" && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", color: "#dc2626" }}>FIXED PRICE</span>}
                     <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}{discount > 0 ? ` (→ ${(100 - discount)}% of list)` : ""}</span></div>
+                <div className={styles.modelMeta}>
+                  <span className={styles.modelKey}>Pricing</span>
+                  <span className={styles.modelValue}>
+                    {disc.type === "fixed" ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
+                      </>
+                    ) : disc.type === "percent" && disc.percent > 0 ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>(→ {(100 - disc.percent)}% of list)</span>
+                      </>
+                    ) : (
+                      label
+                    )}
+                  </span>
+                </div>
               </div>
             );
           })}
           {source === "p2g" && nonTextConfigModels().map((m: any, i: number) => {
             const label = formatModelPrice(m) || "Existing configuration";
-            const discount = getModelDiscount(m);
+            const disc = getModelDiscount(m);
+            const hasDiscount = disc.type !== "none";
             return (
               <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-                    {discount > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{discount}% OFF</span>}
+                    {disc.type === "percent" && disc.percent > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{disc.percent}% OFF</span>}
+                    {disc.type === "fixed" && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", color: "#dc2626" }}>FIXED PRICE</span>}
                     <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}{discount > 0 ? ` (→ ${(100 - discount)}% of list)` : ""}</span></div>
+                <div className={styles.modelMeta}>
+                  <span className={styles.modelKey}>Pricing</span>
+                  <span className={styles.modelValue}>
+                    {disc.type === "fixed" ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
+                      </>
+                    ) : disc.type === "percent" && disc.percent > 0 ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>(→ {(100 - disc.percent)}% of list)</span>
+                      </>
+                    ) : (
+                      label
+                    )}
+                  </span>
+                </div>
               </div>
             );
           })}
