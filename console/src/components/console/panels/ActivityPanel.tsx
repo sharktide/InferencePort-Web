@@ -193,19 +193,19 @@ export default function ActivityPanel({ session, apiBase }: Props) {
             const isRefund = e.entry_type === "adjustment" && e.delta_credits > 0;
             return (
               <div key={e.id || i} className={s.tableRow}>
-                <div className={s.tableModel}>{e.model || "\u2014"}</div>
-                <div className={s.tableType}>
+                <div className={s.tableModel} data-label="Model">{e.model || "\u2014"}</div>
+                <div className={s.tableType} data-label="Type">
                   <span className={`${s.typeDot} ${isRefund ? s.typeRefund : s.typeUsage}`} />
                   {isRefund ? "Refund" : "Usage"}
                   {e.usage_kind ? <span className={s.tableMuted}>({e.usage_kind})</span> : null}
                 </div>
-                <div className={`${s.tableCredits} ${e.delta_credits < 0 ? s.creditsNeg : s.creditsPos}`}>
+                <div className={`${s.tableCredits} ${e.delta_credits < 0 ? s.creditsNeg : s.creditsPos}`} data-label="Credits">
                   {e.delta_credits < 0 ? "" : "+"}{e.delta_credits.toFixed(4)}
                 </div>
-                <div className={s.tableMuted}>
+                <div className={s.tableMuted} data-label="Units">
                   {e.units != null ? e.units : "\u2014"} {e.unit_label || ""}
                 </div>
-                <div className={s.tableDate}>{fmtDate(e.created_at)}</div>
+                <div className={s.tableDate} data-label="Date">{fmtDate(e.created_at)}</div>
               </div>
             );
           })}

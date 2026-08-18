@@ -29,7 +29,7 @@ export default function UsagePanel({ session, apiBase }: Props) {
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Generation API Usage (Plan Limits)</div>
         {genUsage ? (
-          <div className={styles.statGrid} style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+          <div className={styles.statGrid}>
             {[["Chat (Daily)", genUsage.cloudChatDaily], ["Images (Daily)", genUsage.imagesDaily], ["Videos (Daily)", genUsage.videosDaily], ["Audio (Weekly)", genUsage.audioWeekly], ["AI Shield (Daily)", genUsage.aiShieldDaily], ["Server Token Verifications (Daily)", genUsage.verifyTokenWithEmailDaily]].map(([label, val], i) => (
               <div key={i} className={styles.statArticle}><span className={styles.statLabel}>{label}</span><strong className={styles.statValue}>{fmt(val)}</strong></div>
             ))}

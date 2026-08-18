@@ -114,6 +114,10 @@
   display: none;
 }
 
+.desktopOnly {
+  display: inline;
+}
+
 .hamburgerLine {
   display: block;
   width: 18px;
@@ -133,6 +137,10 @@
     width: 36px;
     height: 36px;
     padding: 0;
+  }
+
+  .desktopOnly {
+    display: none !important;
   }
 
   .brandEmphasis {

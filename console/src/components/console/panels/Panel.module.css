@@ -28,6 +28,7 @@
 .subheading { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 1.8rem 0 0.8rem; }
 
 .authCard { grid-column: span 5; display: flex; flex-direction: column; }
+.walletCard { grid-column: span 7; }
 .signedInView { display: flex; flex-direction: column; gap: 1rem; }
 .userBadge { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.1rem; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; }
 .userAvatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 1rem; font-weight: 600; color: #fff; flex-shrink: 0; }
@@ -38,7 +39,7 @@
 .statLabel { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.5rem; }
 .statValue { font-family: var(--mono); font-size: 1.5rem; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
 
-.packGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 0.5rem; }
+.packGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr)); gap: 1rem; margin-bottom: 0.5rem; }
 .pack { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.3rem; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; }
 .pack:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(26,107,255,0.1); transform: translateY(-2px); }
 .creditAmount { font-family: var(--mono); font-size: 0.82rem; color: var(--accent); font-weight: 500; }
@@ -125,7 +126,7 @@
   50% { opacity: 0.4; }
 }
 
-.modelsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.modelsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 1rem; }
 .modelCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: grid; gap: 0.8rem; transition: border-color 0.15s, transform 0.15s; }
 .modelCard:hover { border-color: #c8c0b0; transform: translateY(-1px); }
 .modelCardTop { display: flex; justify-content: space-between; gap: 0.75rem; align-items: start; }
@@ -170,7 +171,7 @@
 .apiKeyName { font-weight: 600; color: var(--text); }
 .apiKeyPrefix { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 .apiKeyMeta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.7rem; display: flex; gap: 0.9rem; flex-wrap: wrap; }
-.apiKeyBadge { font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.6rem; border-radius: 999px; border: 1px solid transparent; }
+.apiKeyBadge { font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.6rem; border-radius: 999px; border: 1px solid transparent; flex-shrink: 0; }
 .isActive { color: #0f766e; background: rgba(20,184,166,0.12); border-color: rgba(20,184,166,0.24); }
 .isExpired { color: #b45309; background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.24); }
 .isRevoked { color: var(--danger); background: rgba(224,49,80,0.08); border-color: rgba(224,49,80,0.18); }
@@ -211,7 +212,7 @@
 
 .shieldConfigDetails { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 10px; padding: 0.65rem 1rem; margin-bottom: 0.5rem; }
 .shieldConfigSummary { cursor: pointer; font-weight: 600; font-size: 0.88rem; padding: 0.25rem 0; color: var(--text); list-style: none; }
-.shieldConfigGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
+.shieldConfigGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
 .shieldConfigGroup h4 { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 0.4rem; }
 .shieldToggle { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; cursor: pointer; padding: 0.2rem 0; }
 
@@ -247,17 +248,22 @@
 
 @media (max-width: 960px) {
   .panel, .card { grid-column: span 12; }
-  .authCard { grid-column: span 12; }
+  .authCard, .walletCard { grid-column: span 12; }
   .apiKeyShell { grid-template-columns: 1fr; }
   .statGrid { grid-template-columns: 1fr; }
+  .shieldAdvancedGrid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 680px) {
   .shieldResultGrid { grid-template-columns: 1fr; }
   .ledgerHeader, .ledgerRow { grid-template-columns: 1fr; }
+  .tabs { flex-wrap: wrap; }
+  .apiKeyRowMeta { flex-direction: column; gap: 0.3rem; }
 }
 
 @media (max-width: 640px) {
   .oauthGrantHead { flex-wrap: wrap; }
   .oauthGrantFooter { flex-direction: column; align-items: flex-start; }
+  .modelDetailTray { width: 100vw; }
+  .shieldConfigGrid { grid-template-columns: 1fr; }
 }

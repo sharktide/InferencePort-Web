@@ -76,33 +76,31 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
   if (!session) {
     return (
       <div className={`${styles.panel} ${styles.active}`}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(12, minmax(0, 1fr))", gap: "1.5rem", gridColumn: "span 12" }}>
-          <section className={`${styles.card} ${styles.authCard}`}>
-            <div className={styles.heading}>Account</div>
-            <div className={styles.stack}>
-              <p className={`${styles.muted} ${styles.tiny}`}>Sign in to access the Pay-2-Go API.</p>
-              <form className={styles.stack} onSubmit={handleEmailSignIn}>
-                <input id="email-input" name="email" type="email" placeholder="Email" required />
-                <input id="password-input" name="password" type="password" placeholder="Password" required />
-                <div className={styles.row}>
-                  <button type="submit" style={{ flex: 1 }}>Sign in</button>
-                  <button type="button" className="ghost" style={{ flex: 1 }} onClick={handleSignUp}>Sign up</button>
-                </div>
-              </form>
-              <div className={styles.stack}>
-                <button className="ghost" onClick={() => handleOAuth("google")}>Continue with Google</button>
-                <button className="ghost" onClick={() => handleOAuth("github")}>Continue with GitHub</button>
-                <button className="ghost" onClick={() => handleOAuth("azure")}>Continue with Microsoft</button>
-                <button className="ghost" onClick={() => handleOAuth("custom:huggingface")}>Continue with HuggingFace</button>
+        <div className={`${styles.card} ${styles.authCard}`}>
+          <div className={styles.heading}>Account</div>
+          <div className={styles.stack}>
+            <p className={`${styles.muted} ${styles.tiny}`}>Sign in to access the Pay-2-Go API.</p>
+            <form className={styles.stack} onSubmit={handleEmailSignIn}>
+              <input id="email-input" name="email" type="email" placeholder="Email" required />
+              <input id="password-input" name="password" type="password" placeholder="Password" required />
+              <div className={styles.row}>
+                <button type="submit" style={{ flex: 1 }}>Sign in</button>
+                <button type="button" className="ghost" style={{ flex: 1 }} onClick={handleSignUp}>Sign up</button>
               </div>
-              <button className={`${styles.muted} ${styles.tiny}`} type="button" onClick={handleForgot}>Forgot password?</button>
+            </form>
+            <div className={styles.stack}>
+              <button className="ghost" onClick={() => handleOAuth("google")}>Continue with Google</button>
+              <button className="ghost" onClick={() => handleOAuth("github")}>Continue with GitHub</button>
+              <button className="ghost" onClick={() => handleOAuth("azure")}>Continue with Microsoft</button>
+              <button className="ghost" onClick={() => handleOAuth("custom:huggingface")}>Continue with HuggingFace</button>
             </div>
-          </section>
-          <section className={styles.card} style={{ gridColumn: "span 7" }}>
-            <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
-            <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>
-          </section>
+            <button className={`${styles.muted} ${styles.tiny}`} type="button" onClick={handleForgot}>Forgot password?</button>
+          </div>
         </div>
+        <section className={`${styles.card} ${styles.walletCard}`}>
+          <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
+          <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>
+        </section>
         <section className={styles.card}>
           <div className={styles.heading}>Subscription (Generation API)</div>
           <div className={styles.lockedOverlay}>Sign in to view your subscription info</div>
@@ -113,19 +111,18 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(12, minmax(0, 1fr))", gap: "1.5rem", gridColumn: "span 12" }}>
-        <section className={`${styles.card} ${styles.authCard}`}>
-          <div className={styles.heading}>Account</div>
-          <div className={styles.signedInView}>
-            <div className={styles.userBadge}>
-              <div className={styles.userAvatar}>{session.user?.email?.[0]?.toUpperCase() || "?"}</div>
-              <div className={styles.userEmail}>{session.user?.email}</div>
-            </div>
-            <button className="text-btn danger" onClick={handleDelete}>Delete account</button>
+      <section className={`${styles.card} ${styles.authCard}`}>
+        <div className={styles.heading}>Account</div>
+        <div className={styles.signedInView}>
+          <div className={styles.userBadge}>
+            <div className={styles.userAvatar}>{session.user?.email?.[0]?.toUpperCase() || "?"}</div>
+            <div className={styles.userEmail}>{session.user?.email}</div>
           </div>
-        </section>
-        <section className={styles.card} style={{ gridColumn: "span 7" }}>
-          <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
+          <button className="text-btn danger" onClick={handleDelete}>Delete account</button>
+        </div>
+      </section>
+      <section className={`${styles.card} ${styles.walletCard}`}>
+        <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
           {wallet ? (
             <div>
               <div className={styles.statGrid}>
@@ -137,7 +134,6 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
             </div>
           ) : <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>}
         </section>
-      </div>
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Subscription (Generation API)</div>
@@ -149,7 +145,7 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
               <div className={styles.statArticle}><span className={styles.statLabel}>Signed Up</span><strong className={styles.statValue}>{subscription.signed_up ? fmt(subscription.signed_up) : "\u2014"}</strong></div>
             </div>
             {subscription.subscription?.length ? subscription.subscription.map((sub: any, i: number) => (
-              <div key={i} className={styles.ledgerRow} style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+              <div key={i} className={styles.ledgerRow}>
                 <div><strong>Status</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.status || "\u2014"}</div></div>
                 <div><strong>Period</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.current_period_start ? fmt(sub.current_period_start) : "\u2014"} \u2014 {sub.current_period_end ? fmt(sub.current_period_end) : "\u2014"}</div></div>
                 <div><strong>Plan</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.plan_id || "\u2014"}</div></div>

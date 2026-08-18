@@ -173,6 +173,7 @@
   background: rgba(0, 0, 0, 0.4);
   opacity: 0;
   transition: opacity 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mobileNavBackdrop.visible {
@@ -186,7 +187,8 @@
     top: 0;
     left: 0;
     z-index: 200;
-    width: 260px;
+    width: 280px;
+    max-width: 85vw;
     height: 100vh;
     height: 100dvh;
     transform: translateX(-100%);
@@ -194,7 +196,10 @@
     border-right: 1px solid var(--border);
     border-bottom: none;
     padding-top: 1.25rem;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     background: var(--surface);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .consoleNav.mobileOpen {
@@ -213,5 +218,9 @@
     width: 100%;
     flex: none;
     white-space: normal;
+  }
+
+  .sidebarUserSection {
+    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
   }
 }

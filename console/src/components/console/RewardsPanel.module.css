@@ -204,7 +204,7 @@
 
 .chainGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
   gap: 1.25rem;
 }
 
@@ -572,6 +572,9 @@
 @media (max-width: 640px) {
   .statsRow {
     grid-template-columns: 1fr 1fr;
+  }
+  .statsRow > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
   .tabs {
     flex-wrap: wrap;

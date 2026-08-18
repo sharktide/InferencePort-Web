@@ -39,6 +39,7 @@
   display: grid;
   gap: 1.5rem;
   padding: 2rem;
+  max-width: 1400px;
 }
 
 @media (max-width: 960px) {

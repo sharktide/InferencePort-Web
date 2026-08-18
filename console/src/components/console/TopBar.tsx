@@ -50,8 +50,8 @@ export default function TopBar({
           <span className={styles.hamburgerLine}></span>
           <span className={styles.hamburgerLine}></span>
         </button>
-        <a id="home-link" href={homeUrl} target="_blank" rel="noreferrer">Home</a>
-        <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer">Docs</a>
+        <a id="home-link" href={homeUrl} target="_blank" rel="noreferrer" className={styles.desktopOnly}>Home</a>
+        <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.desktopOnly}>Docs</a>
         <button
           id="theme-toggle"
           className={styles.ghost}

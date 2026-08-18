@@ -32,7 +32,7 @@
 
 .modelGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 0.75rem;
 }
 .modelCard {
@@ -247,6 +247,26 @@
 
 @media (max-width: 960px) {
   .activityGrid { grid-template-columns: 1fr; }
-  .tableHeader, .tableRow { grid-template-columns: 1fr; }
   .tableHeader { display: none; }
+  .tableRow {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+    padding: 1rem;
+  }
+  .tableRow > div::before {
+    content: attr(data-label) ": ";
+    font-size: 0.67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-right: 0.3rem;
+  }
+  .tableRow > div[data-label="Model"]::before {
+    display: none;
+  }
+  .tableModel {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
 }
