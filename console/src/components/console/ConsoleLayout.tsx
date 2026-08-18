@@ -13,6 +13,7 @@ import GenApiPanel from "./panels/GenApiPanel";
 import PaygApiPanel from "./panels/PaygApiPanel";
 import ShieldPanel from "./panels/ShieldPanel";
 import AuthorizedAppsPanel from "./panels/AuthorizedAppsPanel";
+import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
 const FALLBACK_API_BASE = "https://sharktide-lightning.hf.space";
@@ -27,6 +28,7 @@ export default function ConsoleLayout() {
   const [activeTab, setActiveTab] = useState("account");
   const [initialized, setInitialized] = useState(false);
   const [apiBase, setApiBase] = useState(FALLBACK_API_BASE);
+  const [unclaimedRewards, setUnclaimedRewards] = useState(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -96,9 +98,23 @@ export default function ConsoleLayout() {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    if (!session?.access_token) return;
+    fetch(`${apiBase}/v1/rewards`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        const unclaimed = (d.rewards || []).filter((r: any) => r.progress?.earned && !r.progress?.claimed).length;
+        setUnclaimedRewards(unclaimed);
+      })
+      .catch(() => {});
+  }, [session, apiBase]);
+
   const panelMap: Record<string, React.ReactNode> = {
     account: <AccountPanel config={config} session={session} supabase={supabase} apiBase={apiBase} />,
     models: <ModelsPanel config={config} session={session} apiBase={apiBase} />,
+    rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
     "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
     usage: <UsagePanel session={session} apiBase={apiBase} />,
     "gen-api": <GenApiPanel session={session} config={config} apiBase={apiBase} />,
@@ -135,6 +151,7 @@ export default function ConsoleLayout() {
           onClose={() => setIsMobileNavOpen(false)}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          unclaimedRewards={unclaimedRewards}
         />
         <main className={styles.consoleContent}>
           {panelMap[activeTab] || panelMap.account}

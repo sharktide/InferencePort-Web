@@ -20,6 +20,9 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [selectedDetailModel, setSelectedDetailModel] = useState<any | null>(null);
   const [tab, setTab] = useState("text");
   const [busy, setBusy] = useState<Record<string, boolean>>({});
+  const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
+  const [fixedPrices, setFixedPrices] = useState<Record<string, number>>({});
+  const [rewardsOptedOut, setRewardsOptedOut] = useState(false);
   const [textPrompt, setTextPrompt] = useState("");
   const [textOutput, setTextOutput] = useState("");
   const [imageModel, setImageModel] = useState("");
@@ -113,6 +116,51 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
     return null;
   };
 
+  const formatDiscountedPrice = (m: any, discount: { type: string; percent: number; fixedPrice: number }) => {
+    if (discount.type === "fixed") {
+      return `$${discount.fixedPrice.toFixed(2)}/M tokens`;
+    }
+    if (discount.type !== "percent" || discount.percent <= 0) return null;
+    const pricing = m?.pricing;
+    if (!pricing) return null;
+    const pct = 1 - discount.percent / 100;
+    const type = modelType(m);
+    if (type === "image" && pricing.image && pricing.image !== "0") {
+      return `$${(parseFloat(pricing.image) * pct).toFixed(4)}/gen`;
+    }
+    if (type === "3d" || type === "3D") {
+      if (m.price_tiers) {
+        const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v) * pct);
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
+        return `$${min.toFixed(4)}/model`;
+      }
+      if (pricing.request && pricing.request !== "0") return `$${(parseFloat(pricing.request) * pct).toFixed(4)}/model`;
+    }
+    if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") {
+      return `$${(parseFloat(pricing.request) * pct).toFixed(4)}/sec`;
+    }
+    if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+      const perMillion = (v: string) => (parseFloat(v) * 1_000_000 * pct).toFixed(2);
+      return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
+    }
+    return null;
+  };
+
+  const getModelDiscount = (m: any) => {
+    const id = m?.id || "";
+    if (fixedPrices[id]) return { type: "fixed" as const, fixedPrice: fixedPrices[id], percent: 0 };
+    if (modelDiscounts[id]) return { type: "percent" as const, percent: modelDiscounts[id], fixedPrice: 0 };
+    if (modelDiscounts["__all_models__"]) return { type: "percent" as const, percent: modelDiscounts["__all_models__"], fixedPrice: 0 };
+    for (const [pattern, pct] of Object.entries(modelDiscounts)) {
+      if (pattern.startsWith("__")) continue;
+      if (pattern.endsWith("-*") && id.startsWith(pattern.slice(0, -2))) return { type: "percent" as const, percent: pct as number, fixedPrice: 0 };
+      if (pattern === id) return { type: "percent" as const, percent: pct as number, fixedPrice: 0 };
+    }
+    return { type: "none" as const, percent: 0, fixedPrice: 0 };
+  };
+
   const loadModels = useCallback(async () => {
     try {
       if (source === "p2g") {
@@ -130,6 +178,39 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   }, [source, apiBase]);
 
   useEffect(() => { loadModels(); }, [loadModels]);
+
+  useEffect(() => {
+    if (!session?.access_token) return;
+    fetch(`${apiBase}/v1/rewards`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        const optedOut = d.opted_out || false;
+        setRewardsOptedOut(optedOut);
+        if (optedOut) {
+          setModelDiscounts({});
+          setFixedPrices({});
+          return;
+        }
+        const raw = d.active_discounts || {};
+        const pctDiscounts: Record<string, number> = {};
+        const fixed: Record<string, number> = {};
+        for (const [k, v] of Object.entries(raw)) {
+          if (k.startsWith("__fixed_")) {
+            const modelId = k.replace("__fixed_", "").replace("__", "");
+            fixed[modelId] = v as number;
+          } else if (!k.startsWith("__")) {
+            pctDiscounts[k] = v as number;
+          } else if (k === "__all_models__") {
+            pctDiscounts[k] = v as number;
+          }
+        }
+        setModelDiscounts(pctDiscounts);
+        setFixedPrices(fixed);
+      })
+      .catch(() => {});
+  }, [session, apiBase]);
 
   useEffect(() => {
     //@ts-ignore
@@ -334,27 +415,69 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {displayModels.map((m: any, i: number) => {
             const dynamicPrice = formatModelPrice(m);
             const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m);
+            const disc = getModelDiscount(m);
+            const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
+                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                    <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
+                  </div>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}</span></div>
+                <div className={styles.modelMeta}>
+                  <span className={styles.modelKey}>Pricing</span>
+                  <span className={styles.modelValue}>
+                    {disc.type === "fixed" ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
+                      </>
+                    ) : disc.type === "percent" && disc.percent > 0 && discountedLabel ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{discountedLabel}</span>
+                      </>
+                    ) : (
+                      label
+                    )}
+                  </span>
+                </div>
               </div>
             );
           })}
           {source === "p2g" && nonTextConfigModels().map((m: any, i: number) => {
             const label = formatModelPrice(m) || "Existing configuration";
+            const disc = getModelDiscount(m);
+            const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
+                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                    <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
+                  </div>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{label}</span></div>
+                <div className={styles.modelMeta}>
+                  <span className={styles.modelKey}>Pricing</span>
+                  <span className={styles.modelValue}>
+                    {disc.type === "fixed" ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
+                      </>
+                    ) : disc.type === "percent" && disc.percent > 0 && discountedLabel ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{discountedLabel}</span>
+                      </>
+                    ) : (
+                      label
+                    )}
+                  </span>
+                </div>
               </div>
             );
           })}
@@ -513,7 +636,29 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
                 </span>
               </div>
               <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(selectedDetailModel) || "\u2014"}</span></div>
-              <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{formatModelPrice(selectedDetailModel) || formatPricing(selectedDetailModel)}</span></div>
+              <div className={styles.modelMeta}>
+                <span className={styles.modelKey}>Pricing</span>
+                <span className={styles.modelValue}>
+                  {(() => {
+                    const d = getModelDiscount(selectedDetailModel);
+                    const dp = formatDiscountedPrice(selectedDetailModel, d);
+                    const base = formatModelPrice(selectedDetailModel) || formatPricing(selectedDetailModel);
+                    if (d.type === "fixed") {
+                      return <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{base}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${d.fixedPrice.toFixed(2)}/M tokens</span>
+                      </>;
+                    }
+                    if (d.type === "percent" && d.percent > 0 && dp) {
+                      return <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{base}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{dp}</span>
+                      </>;
+                    }
+                    return base;
+                  })()}
+                </span>
+              </div>
               <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{modalities(selectedDetailModel)}</span></div>
               {selectedDetailModel.output_modalities && (
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selectedDetailModel.output_modalities.map((v: string) => v.toUpperCase()).join(" / ")}</span></div>
