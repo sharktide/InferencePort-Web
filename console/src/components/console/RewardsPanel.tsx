@@ -39,15 +39,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   special: "Special",
 };
 
-const CATEGORY_ICONS: Record<string, string> = {
-  spend: "$",
-  diversity: "#",
-  volume: "@",
-  tokens: "~",
-  streak: "!",
-  special: "*",
-};
-
 function formatNumber(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
@@ -224,14 +215,6 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
         </div>
       )}
 
-      <div className={styles.tabs}>
-        {["all", "spend", "diversity", "volume", "tokens", "streak", "special"].map((cat) => (
-          <button key={cat} className={`${styles.tab} ${category === cat ? styles.active : ""}`} onClick={() => setCategory(cat)}>
-            {cat === "all" ? "All" : CATEGORY_LABELS[cat] || cat}
-          </button>
-        ))}
-      </div>
-
       {filtered.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>🏅</div>
@@ -242,12 +225,10 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
           {chainOrder.filter((ch) => groupedByChain[ch]).map((chainKey) => {
             const chainRewards = groupedByChain[chainKey];
             const chainLabel = CATEGORY_LABELS[chainKey] || chainKey;
-            const chainIcon = CATEGORY_ICONS[chainKey] || "";
             return (
               <div key={chainKey} className={styles.chainGroup}>
                 <div className={styles.chainHeader}>
-                  <span className={styles.chainIcon}>{chainIcon}</span>
-                  <span className={styles.chainTitle}>{chainLabel} Chain</span>
+                  <span className={styles.chainTitle}>{chainLabel} Track</span>
                   <span className={styles.chainCount}>
                     {chainRewards.filter((r) => r.progress.claimed).length}/{chainRewards.length} claimed
                   </span>
@@ -261,12 +242,6 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
                       : "";
                     return (
                       <div key={r.id} className={`${styles.rewardCard} ${cardClass}`}>
-                        <div className={styles.rewardCardConnector}>
-                          <div className={`${styles.connectorDot} ${r.progress.earned ? styles.connectorDotEarned : ""} ${r.progress.claimed ? styles.connectorDotClaimed : ""}`} />
-                          {r.tier < chainRewards.length && (
-                            <div className={`${styles.connectorLine} ${r.progress.claimed ? styles.connectorLineFilled : ""}`} />
-                          )}
-                        </div>
                         <div className={styles.rewardCardBody}>
                           <div className={styles.rewardHeader}>
                             <div className={`${styles.rewardIcon} ${r.progress.earned ? styles.rewardIconEarned : ""}`}>
