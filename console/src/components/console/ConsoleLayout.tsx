@@ -98,6 +98,19 @@ export default function ConsoleLayout() {
     return () => { cancelled = true; };
   }, []);
 
+  useEffect(() => {
+    if (!session?.access_token) return;
+    fetch(`${apiBase}/v1/rewards`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        const unclaimed = (d.rewards || []).filter((r: any) => r.progress?.earned && !r.progress?.claimed).length;
+        setUnclaimedRewards(unclaimed);
+      })
+      .catch(() => {});
+  }, [session, apiBase]);
+
   const panelMap: Record<string, React.ReactNode> = {
     account: <AccountPanel config={config} session={session} supabase={supabase} apiBase={apiBase} />,
     models: <ModelsPanel config={config} session={session} apiBase={apiBase} />,
