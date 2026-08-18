@@ -422,8 +422,6 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-                    {disc.type === "percent" && disc.percent > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{disc.percent}% OFF</span>}
-                    {disc.type === "fixed" && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", color: "#dc2626" }}>FIXED PRICE</span>}
                     <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>
@@ -458,8 +456,6 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-                    {disc.type === "percent" && disc.percent > 0 && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(20,184,166,0.12)", border: "1px solid rgba(20,184,166,0.3)", color: "#0f766e" }}>{disc.percent}% OFF</span>}
-                    {disc.type === "fixed" && <span style={{ fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.5rem", borderRadius: "999px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", color: "#dc2626" }}>FIXED PRICE</span>}
                     <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>
@@ -640,7 +636,29 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
                 </span>
               </div>
               <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(selectedDetailModel) || "\u2014"}</span></div>
-              <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{formatModelPrice(selectedDetailModel) || formatPricing(selectedDetailModel)}</span></div>
+              <div className={styles.modelMeta}>
+                <span className={styles.modelKey}>Pricing</span>
+                <span className={styles.modelValue}>
+                  {(() => {
+                    const d = getModelDiscount(selectedDetailModel);
+                    const dp = formatDiscountedPrice(selectedDetailModel, d);
+                    const base = formatModelPrice(selectedDetailModel) || formatPricing(selectedDetailModel);
+                    if (d.type === "fixed") {
+                      return <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{base}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${d.fixedPrice.toFixed(2)}/M tokens</span>
+                      </>;
+                    }
+                    if (d.type === "percent" && d.percent > 0 && dp) {
+                      return <>
+                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{base}</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{dp}</span>
+                      </>;
+                    }
+                    return base;
+                  })()}
+                </span>
+              </div>
               <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{modalities(selectedDetailModel)}</span></div>
               {selectedDetailModel.output_modalities && (
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selectedDetailModel.output_modalities.map((v: string) => v.toUpperCase()).join(" / ")}</span></div>
