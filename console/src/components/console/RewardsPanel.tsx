@@ -202,19 +202,6 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
         </div>
       )}
 
-      {discountCount > 0 && !optedOut && (
-        <div className={styles.discountSection}>
-          <div className={styles.discountTitle}>Active Discounts</div>
-          <div className={styles.discountGrid}>
-            {Object.entries(discounts).map(([modelId, pct]) => (
-              <span key={modelId} className={`${styles.discountChip} ${modelId === "__all_models__" ? styles.discountChipAll : ""}`}>
-                {modelId === "__all_models__" ? "All Models" : modelId}: {pct}% off
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
       {filtered.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyIcon}>🏅</div>
