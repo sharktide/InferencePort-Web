@@ -22,6 +22,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
   const [fixedPrices, setFixedPrices] = useState<Record<string, number>>({});
+  const [rewardsOptedOut, setRewardsOptedOut] = useState(false);
   const [textPrompt, setTextPrompt] = useState("");
   const [textOutput, setTextOutput] = useState("");
   const [imageModel, setImageModel] = useState("");
@@ -115,6 +116,38 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
     return null;
   };
 
+  const formatDiscountedPrice = (m: any, discount: { type: string; percent: number; fixedPrice: number }) => {
+    if (discount.type === "fixed") {
+      return `$${discount.fixedPrice.toFixed(2)}/M tokens`;
+    }
+    if (discount.type !== "percent" || discount.percent <= 0) return null;
+    const pricing = m?.pricing;
+    if (!pricing) return null;
+    const pct = 1 - discount.percent / 100;
+    const type = modelType(m);
+    if (type === "image" && pricing.image && pricing.image !== "0") {
+      return `$${(parseFloat(pricing.image) * pct).toFixed(4)}/gen`;
+    }
+    if (type === "3d" || type === "3D") {
+      if (m.price_tiers) {
+        const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v) * pct);
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
+        return `$${min.toFixed(4)}/model`;
+      }
+      if (pricing.request && pricing.request !== "0") return `$${(parseFloat(pricing.request) * pct).toFixed(4)}/model`;
+    }
+    if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") {
+      return `$${(parseFloat(pricing.request) * pct).toFixed(4)}/sec`;
+    }
+    if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+      const perMillion = (v: string) => (parseFloat(v) * 1_000_000 * pct).toFixed(2);
+      return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
+    }
+    return null;
+  };
+
   const getModelDiscount = (m: any) => {
     const id = m?.id || "";
     if (fixedPrices[id]) return { type: "fixed" as const, fixedPrice: fixedPrices[id], percent: 0 };
@@ -148,25 +181,32 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
 
   useEffect(() => {
     if (!session?.access_token) return;
-    fetch(`${apiBase}/v1/rewards/discounts`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    })
-      .then((r) => r.json())
-      .then((d) => setModelDiscounts(d.discounts || {}))
-      .catch(() => {});
     fetch(`${apiBase}/v1/rewards`, {
       headers: { Authorization: `Bearer ${session.access_token}` },
     })
       .then((r) => r.json())
       .then((d) => {
+        const optedOut = d.opted_out || false;
+        setRewardsOptedOut(optedOut);
+        if (optedOut) {
+          setModelDiscounts({});
+          setFixedPrices({});
+          return;
+        }
         const raw = d.active_discounts || {};
+        const pctDiscounts: Record<string, number> = {};
         const fixed: Record<string, number> = {};
         for (const [k, v] of Object.entries(raw)) {
           if (k.startsWith("__fixed_")) {
             const modelId = k.replace("__fixed_", "").replace("__", "");
             fixed[modelId] = v as number;
+          } else if (!k.startsWith("__")) {
+            pctDiscounts[k] = v as number;
+          } else if (k === "__all_models__") {
+            pctDiscounts[k] = v as number;
           }
         }
+        setModelDiscounts(pctDiscounts);
         setFixedPrices(fixed);
       })
       .catch(() => {});
@@ -376,7 +416,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
             const dynamicPrice = formatModelPrice(m);
             const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m);
             const disc = getModelDiscount(m);
-            const hasDiscount = disc.type !== "none";
+            const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
@@ -396,10 +436,10 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
                         <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
                         <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
                       </>
-                    ) : disc.type === "percent" && disc.percent > 0 ? (
+                    ) : disc.type === "percent" && disc.percent > 0 && discountedLabel ? (
                       <>
                         <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>(→ {(100 - disc.percent)}% of list)</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{discountedLabel}</span>
                       </>
                     ) : (
                       label
@@ -412,7 +452,7 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
           {source === "p2g" && nonTextConfigModels().map((m: any, i: number) => {
             const label = formatModelPrice(m) || "Existing configuration";
             const disc = getModelDiscount(m);
-            const hasDiscount = disc.type !== "none";
+            const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 <div className={styles.modelCardTop}>
@@ -432,10 +472,10 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
                         <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
                         <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
                       </>
-                    ) : disc.type === "percent" && disc.percent > 0 ? (
+                    ) : disc.type === "percent" && disc.percent > 0 && discountedLabel ? (
                       <>
                         <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>(→ {(100 - disc.percent)}% of list)</span>
+                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{discountedLabel}</span>
                       </>
                     ) : (
                       label
