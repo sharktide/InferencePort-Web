@@ -62,6 +62,14 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
 
   const formatPricing = (m: any) => {
     const p = m?.pricing || {};
+    if (p.token_pricing) {
+      const tp = p.token_pricing;
+      const parts: string[] = [];
+      if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${(parseFloat(tp.text_in)).toFixed(2)}/M`);
+      if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${(parseFloat(tp.image_in)).toFixed(2)}/M`);
+      if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${(parseFloat(tp.image_out)).toFixed(2)}/M`);
+      if (parts.length > 0) return parts.join(" · ");
+    }
     if (p.prompt != null && p.completion != null) {
       const perMillion = (v: number) => (v * 1_000_000).toFixed(2);
       return `In: $${perMillion(p.prompt)}/M \u00b7 Out: $${perMillion(p.completion)}/M`;
