@@ -29,7 +29,17 @@ function formatModelPrice(m: any) {
   const pricing = m?.pricing;
   if (!pricing) return null;
   const type = modelType(m);
-  if (type === "image" && pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+  if (type === "image") {
+    if (pricing.token_pricing) {
+      const tp = pricing.token_pricing;
+      const parts: string[] = [];
+      if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${(parseFloat(tp.text_in)).toFixed(2)}/M`);
+      if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${(parseFloat(tp.image_in)).toFixed(2)}/M`);
+      if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${(parseFloat(tp.image_out)).toFixed(2)}/M`);
+      if (parts.length > 0) return parts.join(" · ");
+    }
+    if (pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+  }
   if (type === "3d" || type === "3D") {
     if (m.price_tiers) {
       const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v));
