@@ -25,7 +25,7 @@
       "permanent": false
     },
     {
-      "source": "/:path((?!index\\.html|redirect\\.html).*)",
+      "source": "/:path((?!index\\.html|redirect\\.html|.*\\.css|.*\\.js|.*\\.png|.*\\.ico).*)",
       "has": [
         { "type": "host", "value": "inference.js.org" }
       ],
