@@ -19,7 +19,7 @@ New-Item -ItemType Directory -Force -Path dist | Out-Null
 $files = @(
     "index.html", "pricing.html", "lightning.html", "marketplace.html", 
     "redirect.html", "solutions.html", "seniorband.html", "tools.html", 
-    "security.html", "shield.html", "install.html", "reset.html", 
+    "security.html", "shield.html", "install.html", "reset.html", "verifyemail.html",
     "openapp.html", "authcallback.html", "robots.txt", "sitemap.xml", 
     "CNAME", "LICENSE", "icon.png"
 )
