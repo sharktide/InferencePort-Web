@@ -229,8 +229,8 @@
 				let totp;
 				let res;
 				try {
-					let retoken
-					grecaptcha.enterprise.ready(async () => {
+					let retoken;
+					await grecaptcha.enterprise.ready(async () => {
 						retoken = await grecaptcha.enterprise.execute('6Lfi7ZEtAAAAAGIZL_RHFFjkylHAYP6BKl9GEjNH', {action: 'LOGIN'});
 					});
 					const totpkey  = await fetch(
@@ -241,7 +241,7 @@
 						return
 					}
 					totp = (await totpkey.json()).efuheruifhuiefhrerrefrurhfurfrepkokopweiuqb19288912hfurhurfh
-					const challenge = totp.challenge;
+					const challenge = totpkey.challenge;
 					const { otp, expires } = await TOTP.generate(totp);
 
 					res = await fetch(
