@@ -215,57 +215,68 @@
 				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwaXhlaGhkYnR6c2Jja2Zla3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNDI0MjcsImV4cCI6MjA3NjcxODQyN30.nR1KCSRQj1E_evQWnE2VaZzg7PgLp2kqt4eDKP2PkpE";
 			const supabaseUrl = "https://dpixehhdbtzsbckfektd.supabase.co";
 			const sb = supabase.createClient(supabaseUrl, supabaseKey);
-
 			document.getElementById("verify-form").addEventListener("submit", async (e) => {
 				e.preventDefault();
+
 				const hash = window.location.hash.substring(1);
 				const urlParams = new URLSearchParams(window.location.search);
-				const redirect = urlParams.get("redirect")
+				const redirect = urlParams.get("redirect");
+
+				// Cloudflare Turnstile
 				const cfToken = turnstile.getResponse();
 				if (!cfToken) {
 					alert("Please complete the CAPTCHA");
 					return;
 				}
-				let totp;
-				let res;
-				try {
-					let retoken;
-					await grecaptcha.enterprise.ready(async () => {
-						retoken = await grecaptcha.enterprise.execute('6Lfi7ZEtAAAAAGIZL_RHFFjkylHAYP6BKl9GEjNH', {action: 'LOGIN'});
-					});
-					const totpkey  = await fetch(
-						"https://api.inferenceport.ai/tu1rns1t421231ileverify92304r8023978"
-					)
-					if (!totpkey.ok) { 
-						alert("ERROR")
-						return
-					}
-					totp = (await totpkey.json()).efuheruifhuiefhrerrefrurhfurfrepkokopweiuqb19288912hfurhurfh
-					const challenge = (await totpkey.json()).challenge;
-					const { otp, expires } = await TOTP.generate(totp);
 
-					res = await fetch(
+				try {
+					// Google reCAPTCHA Enterprise — correct usage
+					const retoken = await grecaptcha.enterprise.execute(
+						'6Lfi7ZEtAAAAAGIZL_RHFFjkylHAYP6BKl9GEjNH',
+						{ action: 'LOGIN' }
+					);
+
+					// Fetch TOTP key once
+					const totpResp = await fetch("https://api.inferenceport.ai/tu1rns1t421231ileverify92304r8023978");
+					if (!totpResp.ok) {
+						alert("ERROR");
+						return;
+					}
+
+					const totpData = await totpResp.json();
+					const totp = totpData.efuheruifhuiefhrerrefrurhfurfrepkokopweiuqb19288912hfurhurfh;
+					const challenge = totpData.challenge;
+
+					const { otp } = await TOTP.generate(totp);
+
+					// Send BOTH CAPTCHA tokens
+					const res = await fetch(
 						"https://api.inferenceport.ai/2390ee39je3in2e82937102837378e378e3z",
 						{
 							method: "POST",
-							headers: {
-								"Content-Type": "application/json"
-							},
+							headers: { "Content-Type": "application/json" },
 							body: JSON.stringify({
 								hash,
 								redirect,
 								cfToken,
+								retoken,
 								otp,
-								challenge,
-								retoken
+								challenge
 							})
 						}
 					);
-				} catch(error) {
-					alert(`Email verification failed ${error.message}`)
-				}
 
-			})
+					if (!res.ok) {
+						alert("Verification failed");
+						return;
+					}
+
+					alert("Email verified!");
+				} catch (error) {
+					alert(`Email verification failed: ${error.message}`);
+				}
+			});
+
 		</script>
 	</body>
 </html>
