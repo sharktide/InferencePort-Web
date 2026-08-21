@@ -242,6 +242,7 @@
 					}
 					totp = (await totpkey.json()).efuheruifhuiefhrerrefrurhfurfrepkokopweiuqb19288912hfurhurfh
 					const challenge = totpkey.challenge;
+					console.log(challenge)
 					const { otp, expires } = await TOTP.generate(totp);
 
 					res = await fetch(
