@@ -13,6 +13,7 @@
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
 			rel="stylesheet"
 		/>
+	    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Lfi7ZEtAAAAAGIZL_RHFFjkylHAYP6BKl9GEjNH"></script>
 		<link rel="stylesheet" href="styles/shared.css" />
 		<script src="components/ip-navbar.js"></script>
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
@@ -227,7 +228,11 @@
 				}
 				let totp;
 				let res;
-				try { 
+				try {
+					let retoken
+					grecaptcha.enterprise.ready(async () => {
+						retoken = await grecaptcha.enterprise.execute('6Lfi7ZEtAAAAAGIZL_RHFFjkylHAYP6BKl9GEjNH', {action: 'LOGIN'});
+					});
 					const totpkey  = await fetch(
 						"https://api.inferenceport.ai/tu1rns1t421231ileverify92304r8023978"
 					)
@@ -236,7 +241,7 @@
 						return
 					}
 					totp = (await totpkey.json()).efuheruifhuiefhrerrefrurhfurfrepkokopweiuqb19288912hfurhurfh
-					const challenge = totp.challende;
+					const challenge = totp.challenge;
 					const { otp, expires } = await TOTP.generate(totp);
 
 					res = await fetch(
@@ -251,7 +256,8 @@
 								redirect,
 								cfToken,
 								otp,
-								challenge
+								challenge,
+								retoken
 							})
 						}
 					);
