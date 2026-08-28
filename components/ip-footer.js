@@ -13,10 +13,10 @@ class IpFooter extends HTMLElement {
 				<a href="pricing.html">Pricing</a>
 				<a href="shield.html">Shield</a>
 				<a href="security.html">Security</a>
-				<a href="https://inferenceport-ai.readthedocs.io" target="_blank" rel="noopener">Docs</a>
+				<a href="https:/docs.inferenceport.ai" target="_blank" rel="noopener">Docs</a>
 				<a href="security.html">Privacy</a>
 				<a href="security.html">Terms</a>
-				<a href="feedback.html">Feedback</a>
+				<a href="malito:feedback@inferenceport.ai">Feedback</a>
 			</div>
 		</div>
 	</div>
