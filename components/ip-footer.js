@@ -14,8 +14,8 @@ class IpFooter extends HTMLElement {
 				<a href="shield.html">Shield</a>
 				<a href="security.html">Security</a>
 				<a href="https://inferenceport-ai.readthedocs.io" target="_blank" rel="noopener">Docs</a>
-				<a href="privacy.html">Privacy</a>
-				<a href="terms.html">Terms</a>
+				<a href="security.html">Privacy</a>
+				<a href="security.html">Terms</a>
 				<a href="feedback.html">Feedback</a>
 			</div>
 		</div>
