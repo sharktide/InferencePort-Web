@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
+import accountStyles from "./AccountPanel.module.css";
+
+type AuthMode = "signin" | "signup" | "forgot";
 
 interface AccountPanelProps { config: any; session: any; supabase: any; apiBase: string; }
 
@@ -12,6 +15,7 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
   const [ledger, setLedger] = useState<any[]>([]);
   const [packs] = useState<any[]>(config?.billing?.packs || []);
   const [notices] = useState<any[]>(config?.notices || []);
+  const [authMode, setAuthMode] = useState<AuthMode>("signin");
 
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
   const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`); return d; };
@@ -42,17 +46,22 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
     try { const { error } = await supabase.auth.signInWithPassword({ email: fd.get("email") as string, password: fd.get("password") as string }); if (error) throw error; } catch (err: any) { alert(err.message); }
   };
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!supabase) return;
-    const email = (document.getElementById("email-input") as HTMLInputElement)?.value;
-    const password = (document.getElementById("password-input") as HTMLInputElement)?.value;
+    const fd = new FormData(e.currentTarget);
+    const email = fd.get("email") as string;
+    const password = fd.get("password") as string;
     try { const { error } = await supabase.auth.signUp({ email, password }); if (error) throw error; alert("Sign-up complete. Check your email."); } catch (err: any) { alert(err.message); }
   };
 
   const handleOAuth = async (p: string) => { await supabase?.auth.signInWithOAuth({ provider: p as any, options: { redirectTo: window.location.href } }); };
 
-  const handleForgot = async () => {
-    const email = (document.getElementById("email-input") as HTMLInputElement)?.value?.trim();
+  const handleForgot = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!supabase) return;
+    const fd = new FormData(e.currentTarget);
+    const email = fd.get("email") as string;
     if (!email) return alert("Enter your email first.");
     try { const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: config?.supabase?.resetRedirectUrl }); if (error) throw error; alert("Password reset email sent."); } catch (err: any) { alert(err.message); }
   };
@@ -73,67 +82,170 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
     } catch (err: any) { alert(err.message); }
   };
 
+  const renderAuthCard = () => {
+    if (authMode === "forgot") {
+      return (
+        <div className={accountStyles.signInCard}>
+          <div className={accountStyles.brandMark}>InferencePortAI</div>
+          <p className={accountStyles.signInSubtitle}>Reset your password</p>
+
+          <form className={accountStyles.authForm} onSubmit={handleForgot}>
+            <div className={accountStyles.fieldGroup}>
+              <label className={accountStyles.fieldLabel} htmlFor="forgot-email">Email</label>
+              <input id="forgot-email" name="email" type="email" placeholder="Enter your email" required />
+            </div>
+            <button type="submit" data-auth className={accountStyles.primaryBtn}>Send Reset Link</button>
+          </form>
+
+          <div className={accountStyles.authFooter}>
+            <button type="button" data-auth className={accountStyles.backLink} onClick={() => setAuthMode("signin")}>Back to Sign In</button>
+          </div>
+        </div>
+      );
+    }
+
+    if (authMode === "signup") {
+      return (
+        <div className={accountStyles.signInCard}>
+          <div className={accountStyles.brandMark}>InferencePortAI</div>
+          <p className={accountStyles.signInSubtitle}>Create your account</p>
+
+          <div className={accountStyles.socialGrid}>
+            <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("github")}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              GitHub
+            </button>
+            <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("google")}>
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.565 24 12.255 24z"/><path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 000 10.76l3.98-3.09z"/><path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.69 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+              Google
+            </button>
+            <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("azure")}>
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#F25022" d="M1 1h10v10H1z"/><path fill="#00A4EF" d="M1 13h10v10H1z"/><path fill="#7FBA00" d="M13 1h10v10H13z"/><path fill="#FFB900" d="M13 13h10v10H13z"/></svg>
+              Microsoft
+            </button>
+            <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("custom:huggingface")}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm5.2 13.4-1.6.4a3 3 0 0 1-3.6-3.6l.4-1.6a1 1 0 0 0-.6-1.2l-2-.6a1 1 0 0 0-1.2.6l-.4 1.6a3 3 0 0 1-3.6 3.6l-1.6-.4a1 1 0 0 0-1.2.6l-.6 2a1 1 0 0 0 .6 1.2l1.6.4a3 3 0 0 1 3.6 3.6l-.4 1.6a1 1 0 0 0 .6 1.2l2 .6a1 1 0 0 0 1.2-.6l.4-1.6a3 3 0 0 1 3.6-3.6l1.6.4a1 1 0 0 0 1.2-.6l.6-2a1 1 0 0 0-.6-1.2z"/></svg>
+              Hugging Face
+            </button>
+          </div>
+
+          <div className={accountStyles.divider}><span>OR</span></div>
+
+          <form className={accountStyles.authForm} onSubmit={handleSignUp}>
+            <div className={accountStyles.fieldGroup}>
+              <label className={accountStyles.fieldLabel} htmlFor="signup-email">Email</label>
+              <input id="signup-email" name="email" type="email" placeholder="Enter your email" required />
+            </div>
+            <div className={accountStyles.fieldGroup}>
+              <label className={accountStyles.fieldLabel} htmlFor="signup-password">Password</label>
+              <input id="signup-password" name="password" type="password" placeholder="Enter your password" required />
+            </div>
+            <button type="submit" data-auth className={accountStyles.primaryBtn}>Create Account</button>
+          </form>
+
+          <div className={accountStyles.authFooter}>
+            Already have an account? <button type="button" data-auth onClick={() => setAuthMode("signin")}>Sign In</button>
+          </div>
+        </div>
+      );
+    }
+
+    // Default: sign in
+    return (
+      <div className={accountStyles.signInCard}>
+        <div className={accountStyles.brandMark}>InferencePortAI</div>
+        <p className={accountStyles.signInSubtitle}>Sign in to your account</p>
+
+        <div className={accountStyles.socialGrid}>
+          <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("github")}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </button>
+          <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("google")}>
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.565 24 12.255 24z"/><path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 000 10.76l3.98-3.09z"/><path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.69 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+            Google
+          </button>
+          <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("azure")}>
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#F25022" d="M1 1h10v10H1z"/><path fill="#00A4EF" d="M1 13h10v10H1z"/><path fill="#7FBA00" d="M13 1h10v10H13z"/><path fill="#FFB900" d="M13 13h10v10H13z"/></svg>
+            Microsoft
+          </button>
+          <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("custom:huggingface")}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm5.2 13.4-1.6.4a3 3 0 0 1-3.6-3.6l.4-1.6a1 1 0 0 0-.6-1.2l-2-.6a1 1 0 0 0-1.2.6l-.4 1.6a3 3 0 0 1-3.6 3.6l-1.6-.4a1 1 0 0 0-1.2.6l-.6 2a1 1 0 0 0 .6 1.2l1.6.4a3 3 0 0 1 3.6 3.6l-.4 1.6a1 1 0 0 0 .6 1.2l2 .6a1 1 0 0 0 1.2-.6l.4-1.6a3 3 0 0 1 3.6-3.6l1.6.4a1 1 0 0 0 1.2-.6l.6-2a1 1 0 0 0-.6-1.2z"/></svg>
+            Hugging Face
+          </button>
+        </div>
+
+        <div className={accountStyles.divider}><span>OR</span></div>
+
+        <form className={accountStyles.authForm} onSubmit={handleEmailSignIn}>
+          <div className={accountStyles.fieldGroup}>
+            <label className={accountStyles.fieldLabel} htmlFor="email-input">Email</label>
+            <input id="email-input" name="email" type="email" placeholder="Enter your email" required />
+          </div>
+          <div className={accountStyles.fieldGroup}>
+            <label className={accountStyles.fieldLabel} htmlFor="password-input">Password</label>
+            <input id="password-input" name="password" type="password" placeholder="Enter your password" required />
+          </div>
+          <button type="submit" data-auth className={accountStyles.primaryBtn}>Sign In</button>
+        </form>
+
+        <button data-auth className={accountStyles.textLink} type="button" onClick={() => setAuthMode("forgot")}>Forgot Password?</button>
+
+        <div className={accountStyles.authFooter}>
+          Don't have an account? <button type="button" data-auth onClick={() => setAuthMode("signup")}>Sign Up</button>
+        </div>
+      </div>
+    );
+  };
+
   if (!session) {
     return (
       <div className={`${styles.panel} ${styles.active}`}>
-        <div className={`${styles.card} ${styles.authCard}`}>
-          <div className={styles.heading}>Account</div>
-          <div className={styles.stack}>
-            <p className={`${styles.muted} ${styles.tiny}`}>Sign in to access the Pay-2-Go API.</p>
-            <form className={styles.stack} onSubmit={handleEmailSignIn}>
-              <input id="email-input" name="email" type="email" placeholder="Email" required />
-              <input id="password-input" name="password" type="password" placeholder="Password" required />
-              <div className={styles.row}>
-                <button type="submit" style={{ flex: 1 }}>Sign in</button>
-                <button type="button" className="ghost" style={{ flex: 1 }} onClick={handleSignUp}>Sign up</button>
-              </div>
-            </form>
-            <div className={styles.stack}>
-              <button className="ghost" onClick={() => handleOAuth("google")}>Continue with Google</button>
-              <button className="ghost" onClick={() => handleOAuth("github")}>Continue with GitHub</button>
-              <button className="ghost" onClick={() => handleOAuth("azure")}>Continue with Microsoft</button>
-              <button className="ghost" onClick={() => handleOAuth("custom:huggingface")}>Continue with HuggingFace</button>
-            </div>
-            <button className={`${styles.muted} ${styles.tiny}`} type="button" onClick={handleForgot}>Forgot password?</button>
-          </div>
+        <div className={accountStyles.signInWrapper}>
+          {renderAuthCard()}
         </div>
-        <section className={`${styles.card} ${styles.walletCard}`}>
-          <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
-          <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>
-        </section>
-        <section className={styles.card}>
-          <div className={styles.heading}>Subscription (Generation API)</div>
-          <div className={styles.lockedOverlay}>Sign in to view your subscription info</div>
-        </section>
       </div>
     );
   }
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
-      <section className={`${styles.card} ${styles.authCard}`}>
+      <section className={`${styles.card} ${accountStyles.userSection}`}>
         <div className={styles.heading}>Account</div>
-        <div className={styles.signedInView}>
-          <div className={styles.userBadge}>
-            <div className={styles.userAvatar}>{session.user?.email?.[0]?.toUpperCase() || "?"}</div>
-            <div className={styles.userEmail}>{session.user?.email}</div>
+        <div className={accountStyles.signedInContent}>
+          <div className={accountStyles.userBadge}>
+            <div className={accountStyles.userAvatar}>{session.user?.email?.[0]?.toUpperCase() || "?"}</div>
+            <div className={accountStyles.userInfo}>
+              <div className={accountStyles.userEmail}>{session.user?.email}</div>
+              <div className={accountStyles.userProvider}>Signed in via {session.user?.app_metadata?.provider || "email"}</div>
+            </div>
           </div>
-          <button className="text-btn danger" onClick={handleDelete}>Delete account</button>
+          <button className={accountStyles.deleteBtn} onClick={handleDelete}>Delete account</button>
         </div>
       </section>
-      <section className={`${styles.card} ${styles.walletCard}`}>
+
+      <section className={`${styles.card} ${accountStyles.creditSection}`}>
         <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
-          {wallet ? (
-            <div>
-              <div className={styles.statGrid}>
-                <div className={styles.statArticle}><span className={styles.statLabel}>Remaining</span><strong className={styles.statValue}>{Number(wallet.balance_credits || 0).toFixed(4)}</strong></div>
-                <div className={styles.statArticle}><span className={styles.statLabel}>Total purchased</span><strong className={styles.statValue}>{Number(wallet.lifetime_credits_purchased || 0).toFixed(4)}</strong></div>
-                <div className={styles.statArticle}><span className={styles.statLabel}>Total used</span><strong className={styles.statValue}>{Number(usageSummary.totalCreditsUsed || 0).toFixed(4)}</strong></div>
-              </div>
-              <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}>P2G credit balances enforced server-side. Low balance returns HTTP 402.</p>
+        {wallet ? (
+          <div className={accountStyles.walletContent}>
+            <div className={accountStyles.balanceCard}>
+              <div className={accountStyles.balanceLabel}>Available Balance</div>
+              <div className={accountStyles.balanceValue}>{Number(wallet.balance_credits || 0).toFixed(4)}</div>
+              <div className={accountStyles.balanceUnit}>credits</div>
             </div>
-          ) : <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>}
-        </section>
+            <div className={accountStyles.statsRow}>
+              <div className={accountStyles.statItem}>
+                <span className={accountStyles.statLabel}>Total purchased</span>
+                <strong className={accountStyles.statValue}>{Number(wallet.lifetime_credits_purchased || 0).toFixed(4)}</strong>
+              </div>
+              <div className={accountStyles.statItem}>
+                <span className={accountStyles.statLabel}>Total used</span>
+                <strong className={accountStyles.statValue}>{Number(usageSummary.totalCreditsUsed || 0).toFixed(4)}</strong>
+              </div>
+            </div>
+          </div>
+        ) : <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>}
+      </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Subscription (Generation API)</div>
@@ -159,20 +271,32 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
         <section className={`${styles.card} ${styles.wide}`}>
           <div className={styles.heading}>Notifications</div>
           <div className={styles.stack}>
-            {notices.map((n: any, i: number) => <article key={i} style={{ padding: "1rem 1.1rem", borderRadius: 10, border: "1.5px solid rgba(26,107,255,0.2)", background: "rgba(26,107,255,0.04)" }}><strong style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--accent)", display: "block", marginBottom: "0.4rem" }}>{(n.level || "info").toUpperCase()}</strong><p style={{ color: "var(--muted)", margin: 0, fontSize: "0.88rem", lineHeight: 1.55 }}>{n.message}</p></article>)}
+            {notices.map((n: any, i: number) => <article key={i} className={accountStyles.notice}><strong className={accountStyles.noticeLevel}>{(n.level || "info").toUpperCase()}</strong><p className={accountStyles.noticeMessage}>{n.message}</p></article>)}
           </div>
         </section>
       )}
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Credit Packs</div>
-        <div className={styles.packGrid}>
+        <div className={accountStyles.packsGrid}>
           {packs.map((p: any) => (
-            <div key={p.label} className={styles.pack}>
-              <strong style={{ fontSize: "0.95rem", fontWeight: 600 }}>{p.label}</strong>
-              <div className={styles.creditAmount}>{Number(p.credits).toFixed(4)} credits</div>
-              <div className={styles.muted} style={{ fontSize: "0.8rem", marginBottom: "0.65rem" }}>${Number(p.amountUsd).toFixed(2)} USD</div>
-              <button disabled={!p.stripePaymentLink} onClick={() => { if (!session?.user?.email) return alert("Sign in first."); const url = new URL(p.stripePaymentLink); url.searchParams.set("prefilled_email", session.user.email); window.location.href = url.toString(); }} style={{ width: "100%", fontSize: "0.8rem", padding: "0.6rem 0.75rem" }}>{!p.stripePaymentLink ? "Link pending" : "Add credits"}</button>
+            <div key={p.label} className={accountStyles.packCard}>
+              <div className={accountStyles.packPrice}>{p.label}</div>
+              <div className={accountStyles.packCredits}>{Number(p.credits).toFixed(4)} credits</div>
+              <div className={accountStyles.packUsd}>${Number(p.amountUsd).toFixed(2)} USD</div>
+              <button
+                data-pack
+                className={accountStyles.packBtn}
+                disabled={!p.stripePaymentLink}
+                onClick={() => {
+                  if (!session?.user?.email) return alert("Sign in first.");
+                  const url = new URL(p.stripePaymentLink);
+                  url.searchParams.set("prefilled_email", session.user.email);
+                  window.location.href = url.toString();
+                }}
+              >
+                {!p.stripePaymentLink ? "Link pending" : "Add credits"}
+              </button>
             </div>
           ))}
         </div>

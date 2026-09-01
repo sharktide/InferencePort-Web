@@ -127,16 +127,16 @@ button {
   line-height: 1;
 }
 
-button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab) {
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack]) {
   background: var(--accent);
   color: #fff;
 }
-button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):hover {
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack]):hover {
   background: #0055e0;
   box-shadow: 0 4px 16px rgba(26,107,255,0.3);
   transform: translateY(-1px);
 }
-button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):disabled {
+button:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack]):disabled {
   opacity: 0.4;
   cursor: not-allowed;
   transform: none;
