@@ -124,8 +124,7 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
               Microsoft
             </button>
             <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("custom:huggingface")}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm5.2 13.4-1.6.4a3 3 0 0 1-3.6-3.6l.4-1.6a1 1 0 0 0-.6-1.2l-2-.6a1 1 0 0 0-1.2.6l-.4 1.6a3 3 0 0 1-3.6 3.6l-1.6-.4a1 1 0 0 0-1.2.6l-.6 2a1 1 0 0 0 .6 1.2l1.6.4a3 3 0 0 1 3.6 3.6l-.4 1.6a1 1 0 0 0 .6 1.2l2 .6a1 1 0 0 0 1.2-.6l.4-1.6a3 3 0 0 1 3.6-3.6l1.6.4a1 1 0 0 0 1.2-.6l.6-2a1 1 0 0 0-.6-1.2z"/></svg>
-              Hugging Face
+              🤗&nbsp;&nbsp;Hugging Face
             </button>
           </div>
 
@@ -170,8 +169,7 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
             Microsoft
           </button>
           <button data-auth className={accountStyles.socialBtn} type="button" onClick={() => handleOAuth("custom:huggingface")}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm5.2 13.4-1.6.4a3 3 0 0 1-3.6-3.6l.4-1.6a1 1 0 0 0-.6-1.2l-2-.6a1 1 0 0 0-1.2.6l-.4 1.6a3 3 0 0 1-3.6 3.6l-1.6-.4a1 1 0 0 0-1.2.6l-.6 2a1 1 0 0 0 .6 1.2l1.6.4a3 3 0 0 1 3.6 3.6l-.4 1.6a1 1 0 0 0 .6 1.2l2 .6a1 1 0 0 0 1.2-.6l.4-1.6a3 3 0 0 1 3.6-3.6l1.6.4a1 1 0 0 0 1.2-.6l.6-2a1 1 0 0 0-.6-1.2z"/></svg>
-            Hugging Face
+              🤗&nbsp;&nbsp;Hugging Face
           </button>
         </div>
 
