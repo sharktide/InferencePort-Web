@@ -4,7 +4,7 @@ class IpFooter extends HTMLElement {
 <footer>
 	<div class="container">
 		<div class="footer-inner d-flex flex-wrap justify-content-between align-items-center gap-3">
-			<span>&copy; 2026 InferencePort AI; InferencePort LLC. | <a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank" rel="noopener">System Health</a></span>
+			<span>&copy; 2026 InferencePort LLC. InferencePort AI&trade; is a trademark of InferencePort LLC. All rights reserved. | <a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank" rel="noopener">System Health</a></span>
 			<div class="footer-links">
 				<a href="marketplace.html">Marketplace</a>
 				<a href="lightning.html">Lightning</a>
@@ -12,11 +12,10 @@ class IpFooter extends HTMLElement {
 				<a href="install.html">Install</a>
 				<a href="pricing.html">Pricing</a>
 				<a href="shield.html">Shield</a>
-				<a href="security.html">Security</a>
-				<a href="https:/docs.inferenceport.ai" target="_blank" rel="noopener">Docs</a>
+				<a href="https://docs.inferenceport.ai" target="_blank" rel="noopener">Docs</a>
 				<a href="security.html">Privacy</a>
 				<a href="security.html">Terms</a>
-				<a href="malito:feedback@inferenceport.ai">Feedback</a>
+				<a href="mailto:feedback@inferenceport.ai">Feedback</a>
 			</div>
 		</div>
 	</div>
