@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
 import Sidebar from "./Sidebar";
 import AccountPanel from "./panels/AccountPanel";
+import BillingPanel from "./panels/BillingPanel";
 import ModelsPanel from "./panels/ModelsPanel";
 import ApiKeyPanel from "./panels/ApiKeyPanel";
 import UsagePanel from "./panels/UsagePanel";
@@ -112,7 +113,8 @@ export default function ConsoleLayout() {
   }, [session, apiBase]);
 
   const panelMap: Record<string, React.ReactNode> = {
-    account: <AccountPanel config={config} session={session} supabase={supabase} apiBase={apiBase} />,
+    account: <AccountPanel config={config} session={session} supabase={supabase} />,
+    billing: <BillingPanel config={config} session={session} apiBase={apiBase} />,
     models: <ModelsPanel config={config} session={session} apiBase={apiBase} />,
     rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
     "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,

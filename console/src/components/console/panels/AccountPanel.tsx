@@ -1,43 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import styles from "./Panel.module.css";
 import accountStyles from "./AccountPanel.module.css";
 
 type AuthMode = "signin" | "signup" | "forgot";
 
-interface AccountPanelProps { config: any; session: any; supabase: any; apiBase: string; }
+interface AccountPanelProps { config: any; session: any; supabase: any; }
 
-export default function AccountPanel({ config, session, supabase, apiBase }: AccountPanelProps) {
-  const [wallet, setWallet] = useState<any>(null);
-  const [usageSummary, setUsageSummary] = useState<any>(null);
-  const [subscription, setSubscription] = useState<any>(null);
-  const [ledger, setLedger] = useState<any[]>([]);
-  const [packs] = useState<any[]>(config?.billing?.packs || []);
+export default function AccountPanel({ config, session, supabase }: AccountPanelProps) {
   const [notices] = useState<any[]>(config?.notices || []);
   const [authMode, setAuthMode] = useState<AuthMode>("signin");
-
-  const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
-  const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`); return d; };
-
-  const loadAccountData = useCallback(async () => {
-    if (!session?.access_token) return;
-    try {
-      const [me, ledgerData, subData] = await Promise.all([
-        fj("/v1/me", { headers: authH() }),
-        fj("/v1/credits/ledger?limit=30", { headers: authH() }),
-        fj("/subscription", { headers: authH() }).catch(() => null),
-      ]);
-      setWallet(me.wallet || {});
-      setUsageSummary(me.usage_summary || {});
-      setLedger(ledgerData.entries || []);
-      if (subData) setSubscription(subData);
-    } catch { /* ignore */ }
-  }, [session, apiBase]);
-
-  useEffect(() => { if (session?.access_token) loadAccountData(); }, [session, loadAccountData]);
-
-  const fmt = (v: string | null) => { if (!v) return "Never"; const d = new Date(v); return Number.isNaN(d.getTime()) ? v : d.toLocaleString(); };
 
   const handleEmailSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -222,49 +195,6 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
         </div>
       </section>
 
-      <section className={`${styles.card} ${accountStyles.creditSection}`}>
-        <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
-        {wallet ? (
-          <div className={accountStyles.walletContent}>
-            <div className={accountStyles.balanceCard}>
-              <div className={accountStyles.balanceLabel}>Available Balance</div>
-              <div className={accountStyles.balanceValue}>{Number(wallet.balance_credits || 0).toFixed(4)}</div>
-              <div className={accountStyles.balanceUnit}>credits</div>
-            </div>
-            <div className={accountStyles.statsRow}>
-              <div className={accountStyles.statItem}>
-                <span className={accountStyles.statLabel}>Total purchased</span>
-                <strong className={accountStyles.statValue}>{Number(wallet.lifetime_credits_purchased || 0).toFixed(4)}</strong>
-              </div>
-              <div className={accountStyles.statItem}>
-                <span className={accountStyles.statLabel}>Total used</span>
-                <strong className={accountStyles.statValue}>{Number(usageSummary.totalCreditsUsed || 0).toFixed(4)}</strong>
-              </div>
-            </div>
-          </div>
-        ) : <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>}
-      </section>
-
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Subscription (Generation API)</div>
-        {subscription ? (
-          <div>
-            <div className={styles.statGrid} style={{ marginBottom: "1rem" }}>
-              <div className={styles.statArticle}><span className={styles.statLabel}>Plan</span><strong className={styles.statValue}>{subscription.plan_name || "Free"}</strong></div>
-              <div className={styles.statArticle}><span className={styles.statLabel}>Plan Key</span><strong className={styles.statValue}>{subscription.plan_key || "\u2014"}</strong></div>
-              <div className={styles.statArticle}><span className={styles.statLabel}>Signed Up</span><strong className={styles.statValue}>{subscription.signed_up ? fmt(subscription.signed_up) : "\u2014"}</strong></div>
-            </div>
-            {subscription.subscription?.length ? subscription.subscription.map((sub: any, i: number) => (
-              <div key={i} className={styles.ledgerRow}>
-                <div><strong>Status</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.status || "\u2014"}</div></div>
-                <div><strong>Period</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.current_period_start ? fmt(sub.current_period_start) : "\u2014"} \u2014 {sub.current_period_end ? fmt(sub.current_period_end) : "\u2014"}</div></div>
-                <div><strong>Plan</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.plan_id || "\u2014"}</div></div>
-              </div>
-            )) : <p className={`${styles.muted} ${styles.tiny}`}>No active subscription. You are on the Free plan.</p>}
-          </div>
-        ) : <div className={styles.lockedOverlay}>Sign in to view your subscription info</div>}
-      </section>
-
       {notices.length > 0 && (
         <section className={`${styles.card} ${styles.wide}`}>
           <div className={styles.heading}>Notifications</div>
@@ -273,51 +203,6 @@ export default function AccountPanel({ config, session, supabase, apiBase }: Acc
           </div>
         </section>
       )}
-
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Credit Packs</div>
-        <div className={accountStyles.packsGrid}>
-          {packs.map((p: any) => (
-            <div key={p.label} className={accountStyles.packCard}>
-              <div className={accountStyles.packPrice}>{p.label}</div>
-              <div className={accountStyles.packCredits}>{Number(p.credits).toFixed(4)} credits</div>
-              <div className={accountStyles.packUsd}>${Number(p.amountUsd).toFixed(2)} USD</div>
-              <button
-                data-pack
-                className={accountStyles.packBtn}
-                disabled={!p.stripePaymentLink}
-                onClick={() => {
-                  if (!session?.user?.email) return alert("Sign in first.");
-                  const url = new URL(p.stripePaymentLink);
-                  url.searchParams.set("prefilled_email", session.user.email);
-                  window.location.href = url.toString();
-                }}
-              >
-                {!p.stripePaymentLink ? "Link pending" : "Add credits"}
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className={styles.subheading}>Usage Rates</div>
-        <ul className={styles.rateList}>
-          {[`${config?.pricing?.textCreditPerMillionTokens} credits per 1,000,000 text tokens (including multimodal text payloads)`, `${config?.pricing?.imageCreditPerImage} credits per image`, `${config?.pricing?.videoCreditPerSecond} credits per second of video`, `${config?.pricing?.audioCreditPerSecond} credits per second of audio (music/sfx)`].map((r, i) => <li key={i} className={styles.rateListItem}>{r}</li>)}
-        </ul>
-      </section>
-
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>P2G Ledger</div>
-        <div className={styles.ledger}>
-          <div className={styles.ledgerHeader}><span>Type</span><span>Credits</span><span>Units</span><span>Date</span></div>
-          {ledger.length === 0 ? <div className={styles.lockedOverlay} style={{ minHeight: 60 }}>No ledger entries yet.</div> : ledger.map((e: any, i: number) => (
-            <div key={i} className={styles.ledgerRow}>
-              <div><strong>{e.entry_type}</strong><div className={`${styles.muted} ${styles.tiny}`}>{e.usage_kind || "\u2014"}</div></div>
-              <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{Number(e.delta_credits || 0).toFixed(4)}</div>
-              <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{e.units != null ? e.units : "\u2014"} {e.unit_label || ""}</div>
-              <div className={`${styles.muted} ${styles.tiny}`}>{e.created_at || ""}</div>
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }
