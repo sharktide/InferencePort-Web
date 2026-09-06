@@ -324,6 +324,204 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    .login-brand {
+      font-family: var(--sans);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.02em;
+    }
+
+    .login-subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .social-btn {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      background: transparent !important;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text) !important;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .social-btn:hover {
+      background: var(--surface-2) !important;
+      border-color: var(--muted);
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .social-btn svg {
+      flex-shrink: 0;
+      opacity: 0.8;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .auth-divider span {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .auth-form {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 0.4rem;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .field-group input {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(26, 107, 255, 0.08);
+    }
+
+    .field-group input::placeholder {
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .primary-btn {
+      width: 100% !important;
+      padding: 0.75rem !important;
+      background: var(--text) !important;
+      color: var(--bg) !important;
+      border: none !important;
+      border-radius: 10px;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 0.25rem;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .primary-btn:hover {
+      opacity: 0.85 !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .text-link {
+      display: block !important;
+      width: 100%;
+      padding: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      color: var(--muted) !important;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 1rem;
+      transition: color 0.15s;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .text-link:hover {
+      color: var(--text) !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .auth-footer {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .auth-footer button {
+      background: transparent !important;
+      border: none !important;
+      color: var(--text) !important;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0 !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .auth-footer button:hover {
+      text-decoration: underline;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    @media (max-width: 680px) {
+      .social-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -364,29 +562,110 @@
 
     <!-- Login view (shown when not authenticated) -->
     <div id="login-view" class="authorize-card" style="display:none;">
-      <div class="authorize-header">
-        <img src="assets/logo.png" alt="InferencePort AI" />
-        <h1>Sign in to InferencePort AI</h1>
-        <p>You need to sign in before authorizing this application.</p>
-      </div>
 
-      <form id="email-auth-form" class="stack">
-        <input id="email-input" type="email" placeholder="Email" autocomplete="email" required />
-        <input id="password-input" type="password" placeholder="Password" autocomplete="current-password" required />
-        <div class="row">
-          <button type="submit" id="login-btn" style="flex:1;">Sign in</button>
-          <button type="button" id="signup-btn" class="ghost" style="flex:1;">Sign up</button>
+      <!-- Sign In card -->
+      <div id="signin-card">
+        <div class="login-brand">InferencePortAI</div>
+        <p class="login-subtitle">Sign in to your account</p>
+
+        <div class="social-grid">
+          <button id="github-btn" class="social-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </button>
+          <button id="google-btn" class="social-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.565 24 12.255 24z"/><path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 000 10.76l3.98-3.09z"/><path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.69 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+            Google
+          </button>
+          <button id="microsoft-btn" class="social-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#F25022" d="M1 1h10v10H1z"/><path fill="#00A4EF" d="M1 13h10v10H1z"/><path fill="#7FBA00" d="M13 1h10v10H13z"/><path fill="#FFB900" d="M13 13h10v10H13z"/></svg>
+            Microsoft
+          </button>
+          <button id="huggingface-btn" class="social-btn" type="button">
+            &#x1F917;&nbsp;&nbsp;Hugging Face
+          </button>
         </div>
-      </form>
 
-      <div class="stack" style="margin-top:0.65rem;">
-        <button id="google-btn" class="ghost" type="button">Continue with Google</button>
-        <button id="github-btn" class="ghost" type="button">Continue with GitHub</button>
-        <button id="microsoft-btn" class="ghost" type="button">Continue with Microsoft</button>
-        <button id="huggingface-btn" class="ghost" type="button">Continue with Hugging Face</button>
+        <div class="auth-divider"><span>OR</span></div>
+
+        <form id="email-auth-form" class="auth-form">
+          <div class="field-group">
+            <label class="field-label" for="email-input">Email</label>
+            <input id="email-input" name="email" type="email" placeholder="Enter your email" autocomplete="email" required />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="password-input">Password</label>
+            <input id="password-input" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required />
+          </div>
+          <button type="submit" id="login-btn" class="primary-btn">Sign In</button>
+        </form>
+
+        <button id="forgot-btn" class="text-link" type="button">Forgot Password?</button>
+
+        <div class="auth-footer">
+          Don't have an account? <button type="button" id="signup-btn">Sign Up</button>
+        </div>
       </div>
 
-      <button id="forgot-btn" class="text-btn" type="button" style="margin-top:0.5rem;">Forgot password?</button>
+      <!-- Sign Up card -->
+      <div id="signup-card" style="display:none;">
+        <div class="login-brand">InferencePortAI</div>
+        <p class="login-subtitle">Create your account</p>
+
+        <div class="social-grid">
+          <button id="signup-github-btn" class="social-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </button>
+          <button id="signup-google-btn" class="social-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.79-.07-1.54-.19-2.27h-11.3v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12.255 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96h-3.98v3.09C3.515 21.3 7.565 24 12.255 24z"/><path fill="#FBBC05" d="M5.525 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62h-3.98a11.86 11.86 0 000 10.76l3.98-3.09z"/><path fill="#EA4335" d="M12.255 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C18.205 1.19 15.495 0 12.255 0c-4.69 0-8.74 2.7-10.71 6.62l3.98 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+            Google
+          </button>
+          <button id="signup-microsoft-btn" class="social-btn" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#F25022" d="M1 1h10v10H1z"/><path fill="#00A4EF" d="M1 13h10v10H1z"/><path fill="#7FBA00" d="M13 1h10v10H13z"/><path fill="#FFB900" d="M13 13h10v10H13z"/></svg>
+            Microsoft
+          </button>
+          <button id="signup-huggingface-btn" class="social-btn" type="button">
+            &#x1F917;&nbsp;&nbsp;Hugging Face
+          </button>
+        </div>
+
+        <div class="auth-divider"><span>OR</span></div>
+
+        <form id="signup-auth-form" class="auth-form">
+          <div class="field-group">
+            <label class="field-label" for="signup-email-input">Email</label>
+            <input id="signup-email-input" name="email" type="email" placeholder="Enter your email" autocomplete="email" required />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="signup-password-input">Password</label>
+            <input id="signup-password-input" name="password" type="password" placeholder="Enter your password" autocomplete="new-password" required />
+          </div>
+          <button type="submit" class="primary-btn">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+          Already have an account? <button type="button" id="back-to-signin-btn">Sign In</button>
+        </div>
+      </div>
+
+      <!-- Forgot Password card -->
+      <div id="forgot-card" style="display:none;">
+        <div class="login-brand">InferencePortAI</div>
+        <p class="login-subtitle">Reset your password</p>
+
+        <form id="forgot-auth-form" class="auth-form">
+          <div class="field-group">
+            <label class="field-label" for="forgot-email-input">Email</label>
+            <input id="forgot-email-input" name="email" type="email" placeholder="Enter your email" autocomplete="email" required />
+          </div>
+          <button type="submit" class="primary-btn">Send Reset Link</button>
+        </form>
+
+        <div class="auth-footer">
+          <button type="button" id="back-to-signin-btn-2">Back to Sign In</button>
+        </div>
+      </div>
     </div>
     <div id="account-view" class="authorize-card" style="display:none;">
       <div class="authorize-header">
@@ -850,6 +1129,9 @@
       }
       // 3. Wire up the login view. authorization_id is preserved automatically
       //    since it's already part of window.location.href used as redirectTo.
+      const signinCard = document.getElementById("signin-card");
+      const signupCard = document.getElementById("signup-card");
+      const forgotCard = document.getElementById("forgot-card");
       const emailAuthForm = document.getElementById("email-auth-form");
       const emailInput = document.getElementById("email-input");
       const passwordInput = document.getElementById("password-input");
@@ -859,6 +1141,41 @@
       const microsoftBtn = document.getElementById("microsoft-btn");
       const forgotBtn = document.getElementById("forgot-btn");
       const huggingfaceBtn = document.getElementById("huggingface-btn");
+      const backToSigninBtn = document.getElementById("back-to-signin-btn");
+      const backToSigninBtn2 = document.getElementById("back-to-signin-btn-2");
+      const signupAuthForm = document.getElementById("signup-auth-form");
+      const signupEmailInput = document.getElementById("signup-email-input");
+      const signupPasswordInput = document.getElementById("signup-password-input");
+      const signupGithubBtn = document.getElementById("signup-github-btn");
+      const signupGoogleBtn = document.getElementById("signup-google-btn");
+      const signupMicrosoftBtn = document.getElementById("signup-microsoft-btn");
+      const signupHuggingfaceBtn = document.getElementById("signup-huggingface-btn");
+      const forgotAuthForm = document.getElementById("forgot-auth-form");
+      const forgotEmailInput = document.getElementById("forgot-email-input");
+
+      function showSigninCard() {
+        signinCard.style.display = "";
+        signupCard.style.display = "none";
+        forgotCard.style.display = "none";
+      }
+
+      function showSignupCard() {
+        signinCard.style.display = "none";
+        signupCard.style.display = "";
+        forgotCard.style.display = "none";
+      }
+
+      function showForgotCard() {
+        signinCard.style.display = "none";
+        signupCard.style.display = "none";
+        forgotCard.style.display = "";
+      }
+
+      signupBtn.addEventListener("click", showSignupCard);
+      backToSigninBtn.addEventListener("click", showSigninCard);
+      backToSigninBtn2.addEventListener("click", showSigninCard);
+      forgotBtn.addEventListener("click", showForgotCard);
+
       emailAuthForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         try {
@@ -872,11 +1189,12 @@
         }
       });
 
-      signupBtn.addEventListener("click", async () => {
+      signupAuthForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
         try {
           const { error } = await supabase.auth.signUp({
-            email: emailInput.value,
-            password: passwordInput.value
+            email: signupEmailInput.value,
+            password: signupPasswordInput.value
           });
           if (error) throw error;
           showToast("Sign-up complete. Check your email for confirmation if required.");
@@ -885,56 +1203,9 @@
         }
       });
 
-      googleBtn.addEventListener("click", async () => {
-        try {
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "google",
-            options: { redirectTo: window.location.href }
-          });
-          if (error) throw error;
-        } catch (err) {
-          showToast(err?.message || "Google sign-in failed");
-        }
-      });
-
-      githubBtn.addEventListener("click", async () => {
-        try {
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "github",
-            options: { redirectTo: window.location.href }
-          });
-          if (error) throw error;
-        } catch (err) {
-          showToast(err?.message || "GitHub sign-in failed");
-        }
-      });
-
-      microsoftBtn.addEventListener("click", async () => {
-        try {
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "azure",
-            options: { redirectTo: window.location.href }
-          });
-          if (error) throw error;
-        } catch (err) {
-          showToast(err?.message || "Microsoft sign-in failed");
-        }
-      });
-
-      huggingfaceBtn.addEventListener("click", async () => {
-        try {
-          const { error } = await supabase.auth.signInWithOAuth({
-            provider: "custom:huggingface",
-            options: { redirectTo: window.location.href }
-          });
-          if (error) throw error;
-        } catch (err) {
-          showToast(err?.message || "Hugging Face sign-in failed");
-        }
-      });
-
-      forgotBtn.addEventListener("click", async () => {
-        const email = emailInput.value?.trim();
+      forgotAuthForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = forgotEmailInput.value?.trim();
         if (!email) {
           showToast("Enter your email first.");
           return;
@@ -947,6 +1218,27 @@
           showToast(err?.message || "Failed to send password reset");
         }
       });
+
+      async function handleOAuth(provider) {
+        try {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo: window.location.href }
+          });
+          if (error) throw error;
+        } catch (err) {
+          showToast(err?.message || `${provider} sign-in failed`);
+        }
+      }
+
+      githubBtn.addEventListener("click", () => handleOAuth("github"));
+      googleBtn.addEventListener("click", () => handleOAuth("google"));
+      microsoftBtn.addEventListener("click", () => handleOAuth("azure"));
+      huggingfaceBtn.addEventListener("click", () => handleOAuth("custom:huggingface"));
+      signupGithubBtn.addEventListener("click", () => handleOAuth("github"));
+      signupGoogleBtn.addEventListener("click", () => handleOAuth("google"));
+      signupMicrosoftBtn.addEventListener("click", () => handleOAuth("azure"));
+      signupHuggingfaceBtn.addEventListener("click", () => handleOAuth("custom:huggingface"));
     }
 
     // Final safety net: whatever happens, never leave every view hidden.
