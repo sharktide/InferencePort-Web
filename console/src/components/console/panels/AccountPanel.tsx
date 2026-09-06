@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import styles from "./Panel.module.css";
 import accountStyles from "./AccountPanel.module.css";
+import { useModal } from "../../Modal";
 
 type AuthMode = "signin" | "signup" | "forgot";
 
@@ -48,6 +49,7 @@ function timeAgo(value: string | null | undefined) {
 }
 
 export default function AccountPanel({ config, session, supabase }: AccountPanelProps) {
+  const modal = useModal();
   const [notices] = useState<any[]>(config?.notices || []);
   const [authMode, setAuthMode] = useState<AuthMode>("signin");
 
@@ -58,72 +60,75 @@ export default function AccountPanel({ config, session, supabase }: AccountPanel
 
   const handleEmailSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!supabase) { await modal.alert("Authentication is not available. Please try again later."); return; }
     const fd = new FormData(e.currentTarget);
-    try { const { error } = await supabase.auth.signInWithPassword({ email: fd.get("email") as string, password: fd.get("password") as string }); if (error) throw error; } catch (err: any) { alert(err.message); }
+    try { const { error } = await supabase.auth.signInWithPassword({ email: fd.get("email") as string, password: fd.get("password") as string }); if (error) throw error; } catch (err: any) { await modal.alert(err.message); }
   };
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!supabase) { await modal.alert("Authentication is not available. Please try again later."); return; }
     const fd = new FormData(e.currentTarget);
     const email = fd.get("email") as string;
     const password = fd.get("password") as string;
-    try { const { error } = await supabase.auth.signUp({ email, password }); if (error) throw error; alert("Sign-up complete. Check your email."); } catch (err: any) { alert(err.message); }
+    try { const { error } = await supabase.auth.signUp({ email, password }); if (error) throw error; await modal.alert("Sign-up complete. Check your email."); } catch (err: any) { await modal.alert(err.message); }
   };
 
-  const handleOAuth = async (p: string) => { await supabase?.auth.signInWithOAuth({ provider: p as any, options: { redirectTo: window.location.href } }); };
+  const handleOAuth = async (p: string) => {
+    if (!supabase) { await modal.alert("Authentication is not available. Please try again later."); return; }
+    try { await supabase.auth.signInWithOAuth({ provider: p as any, options: { redirectTo: window.location.href } }); } catch (err: any) { await modal.alert(err.message || "OAuth sign-in failed."); }
+  };
 
   const handleForgot = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!supabase) { await modal.alert("Authentication is not available. Please try again later."); return; }
     const fd = new FormData(e.currentTarget);
     const email = fd.get("email") as string;
-    if (!email) return alert("Enter your email first.");
-    try { const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: config?.supabase?.resetRedirectUrl }); if (error) throw error; alert("Password reset email sent."); } catch (err: any) { alert(err.message); }
+    if (!email) return void await modal.alert("Enter your email first.");
+    try { const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: config?.supabase?.resetRedirectUrl }); if (error) throw error; await modal.alert("Password reset email sent."); } catch (err: any) { await modal.alert(err.message); }
   };
 
   const handleDelete = async () => {
     if (!supabase || !session?.user) return;
-    if (!confirm("Delete your account permanently?")) return;
+    if (!await modal.confirm("Delete your account permanently?")) return;
     try {
       if (session.user.app_metadata?.provider === "email") {
-        const password = prompt("Confirm your password:");
+        const password = await modal.prompt("Confirm your password:");
         if (!password) return;
         const vr = await fetch(config.supabase.deletePasswordVerifyEndpoint, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: session.user.email, password }) });
         if (!vr.ok) throw new Error("Password verification failed");
       }
       const dr = await fetch(config.supabase.deleteAccountEndpoint, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` } });
       if (!dr.ok) { const p = await dr.json().catch(() => ({})); throw new Error(p.error || "Delete failed"); }
-      await supabase.auth.signOut(); alert("Account deleted.");
-    } catch (err: any) { alert(err.message); }
+      await supabase.auth.signOut(); await modal.alert("Account deleted.");
+    } catch (err: any) { await modal.alert(err.message); }
   };
 
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!supabase) return;
-    if (newPassword !== confirmPassword) return alert("Passwords do not match.");
-    if (newPassword.length < 6) return alert("Password must be at least 6 characters.");
+    if (newPassword !== confirmPassword) return void await modal.alert("Passwords do not match.");
+    if (newPassword.length < 6) return void await modal.alert("Password must be at least 6 characters.");
     setChangingPassword(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      alert("Password updated successfully.");
+      await modal.alert("Password updated successfully.");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err: any) { alert(err.message); }
+    } catch (err: any) { await modal.alert(err.message); }
     setChangingPassword(false);
   };
 
   const handleSignOutEverywhere = async () => {
-    if (!supabase) return;
-    if (!confirm("Sign out from all devices and sessions?")) return;
+    if (!supabase) { await modal.alert("Authentication is not available. Please try again later."); return; }
+    if (!await modal.confirm("Sign out from all devices and sessions?")) return;
     setSigningOut(true);
     try {
       const { error } = await supabase.auth.signOut({ scope: "global" });
       if (error) throw error;
-      alert("Signed out from all sessions.");
-    } catch (err: any) { alert(err.message); }
+      await modal.alert("Signed out from all sessions.");
+    } catch (err: any) { await modal.alert(err.message); }
     setSigningOut(false);
   };
 

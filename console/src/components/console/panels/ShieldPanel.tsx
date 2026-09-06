@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import styles from "./Panel.module.css";
+import { useModal } from "../../Modal";
 
 const featureGroups: Record<string, string[]> = {
   Signal: ["heuristics"],
@@ -18,6 +19,7 @@ const defaultDisabled = new Set(["duplicate_detection", "campaign_detection", "m
 interface Props { session: any; config: any; apiBase: string; }
 
 export default function ShieldPanel({ session, config, apiBase }: Props) {
+  const modal = useModal();
   const [fields, setFields] = useState({ email: "", phone: "", ip: "", username: "", device: "", content: "", country: "", city: "", lat: "", lon: "", signupTime: "", metadata: "" });
   const [toggles, setToggles] = useState<Record<string, boolean>>(() => {
     const d: Record<string, boolean> = {};
@@ -28,7 +30,7 @@ export default function ShieldPanel({ session, config, apiBase }: Props) {
   const [busy, setBusy] = useState(false);
 
   const run = async () => {
-    if (!session) return alert("Sign in required");
+    if (!session) return void await modal.alert("Sign in required");
     setBusy(true);
     setResult(null);
     try {
@@ -52,7 +54,7 @@ export default function ShieldPanel({ session, config, apiBase }: Props) {
 
       if (fields.metadata) {
         try { body.metadata = JSON.parse(fields.metadata); }
-        catch { alert("Invalid metadata JSON"); setBusy(false); return; }
+        catch { await modal.alert("Invalid metadata JSON"); setBusy(false); return; }
       }
 
       const disabledFeatures = Object.keys(toggles).filter((k) => !toggles[k]);
@@ -62,7 +64,7 @@ export default function ShieldPanel({ session, config, apiBase }: Props) {
       }
 
       if (!Object.keys(body).length) {
-        alert("Enter at least one signal to analyze.");
+        await modal.alert("Enter at least one signal to analyze.");
         setBusy(false);
         return;
       }
@@ -75,7 +77,7 @@ export default function ShieldPanel({ session, config, apiBase }: Props) {
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`);
       setResult(d);
-    } catch (e: any) { alert(e.message || "Shield analysis failed"); }
+    } catch (e: any) { await modal.alert(e.message || "Shield analysis failed"); }
     setBusy(false);
   };
 

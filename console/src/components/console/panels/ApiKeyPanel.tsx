@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
+import { useModal } from "../../Modal";
 
 interface Props { session: any; apiBase: string; }
 
 export default function ApiKeyPanel({ session, apiBase }: Props) {
+  const modal = useModal();
   const [keys, setKeys] = useState<any[]>([]);
   const [keyName, setKeyName] = useState("");
   const [keyExpiry, setKeyExpiry] = useState("");
@@ -25,7 +27,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   useEffect(() => { refresh(); }, [refresh]);
 
   const create = async () => {
-    if (!session?.access_token) return alert("Sign in first.");
+    if (!session?.access_token) return void await modal.alert("Sign in first.");
     if (!keyName.trim()) return setStatus("Please enter a name.");
     setBusy(true); setStatus("Creating\u2026");
     try { const r = await fj("/v1/lightning-api-keys", { method: "POST", headers: authH(), body: JSON.stringify({ name: keyName.trim(), expiresAt: keyExpiry.trim() || null }) }); if (!r?.apiKey || !r?.rawKey) throw new Error("Could not create API key"); setKeyName(""); setKeyExpiry(""); setReveal({ raw: r.rawKey, name: r.apiKey.name }); setStatus("New key created. Copy it now."); await refresh(); } catch (e: any) { setStatus(`Error: ${e.message}`); }
@@ -33,7 +35,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   };
 
   const revoke = async (id: string) => {
-    if (prompt("Type REVOKE to confirm.") !== "REVOKE") return;
+    if (await modal.prompt("Type REVOKE to confirm.") !== "REVOKE") return;
     try { await fj(`/v1/lightning-api-keys/${encodeURIComponent(id)}`, { method: "DELETE", headers: authH() }); await refresh(); } catch (e: any) { setStatus(`Error: ${e.message}`); }
   };
 

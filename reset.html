@@ -105,6 +105,63 @@
 				color: #fff;
 			}
 
+			/* Modal */
+			.modal-overlay {
+				position: fixed;
+				inset: 0;
+				background: rgba(10, 10, 12, 0.5);
+				backdrop-filter: blur(3px);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 10000;
+				padding: 1.5rem;
+				animation: fadeIn 0.15s ease;
+			}
+			.modal-box {
+				width: 100%;
+				max-width: 400px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				padding: 1.75rem;
+				box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.06);
+				animation: scaleIn 0.15s ease;
+			}
+			.modal-message {
+				font-size: 0.92rem;
+				color: var(--text-body);
+				line-height: 1.6;
+				margin-bottom: 1.5rem;
+			}
+			.modal-actions {
+				display: flex;
+				justify-content: flex-end;
+			}
+			.modal-ok {
+				padding: 0.55rem 1.5rem;
+				background: var(--text);
+				color: var(--bg);
+				border: none;
+				border-radius: 9px;
+				font-family: "Inter", sans-serif;
+				font-size: 0.85rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: opacity 0.15s;
+			}
+			.modal-ok:hover {
+				opacity: 0.85;
+			}
+			@keyframes fadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}
+			@keyframes scaleIn {
+				from { opacity: 0; transform: scale(0.95); }
+				to { opacity: 1; transform: scale(1); }
+			}
+
 		</style>
 	</head>
 	<body>
@@ -224,25 +281,39 @@
 			const supabaseUrl = "https://dpixehhdbtzsbckfektd.supabase.co";
 			const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
+			function showToast(message) {
+				return new Promise((resolve) => {
+					const overlay = document.createElement("div");
+					overlay.className = "modal-overlay";
+					overlay.innerHTML = `<div class="modal-box"><div class="modal-message">${message}</div><div class="modal-actions"><button class="modal-ok">OK</button></div></div>`;
+					document.body.appendChild(overlay);
+					const btn = overlay.querySelector(".modal-ok");
+					const dismiss = () => { overlay.remove(); resolve(); };
+					btn.addEventListener("click", dismiss);
+					overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+					btn.focus();
+				});
+			}
+
 			const submitBtn = document.getElementById("submit");
 			const input1 = document.getElementById("pswrd-input");
 			const input2 = document.getElementById("confirm-input");
 
 			submitBtn.addEventListener("click", async () => {
 				if (input1.value !== input2.value) {
-					alert("Passwords do not match");
+					await showToast("Passwords do not match");
 					return;
 				}
 				const { error } = await sb.auth.updateUser({
 					password: input1.value,
 				});
 				if (!error) {
-					alert("Password reset successfully");
+					await showToast("Password reset successfully");
 					setTimeout(() => {
 						window.location.href = "/";
 					}, 1000);
 				} else {
-					alert(error.message || error);
+					await showToast(error.message || error);
 				}
 			});
 		</script>

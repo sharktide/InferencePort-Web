@@ -107,6 +107,63 @@
 				color: #fff;
 			}
 
+			/* Modal */
+			.modal-overlay {
+				position: fixed;
+				inset: 0;
+				background: rgba(10, 10, 12, 0.5);
+				backdrop-filter: blur(3px);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 10000;
+				padding: 1.5rem;
+				animation: fadeIn 0.15s ease;
+			}
+			.modal-box {
+				width: 100%;
+				max-width: 400px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				padding: 1.75rem;
+				box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.06);
+				animation: scaleIn 0.15s ease;
+			}
+			.modal-message {
+				font-size: 0.92rem;
+				color: var(--text-body);
+				line-height: 1.6;
+				margin-bottom: 1.5rem;
+			}
+			.modal-actions {
+				display: flex;
+				justify-content: flex-end;
+			}
+			.modal-ok {
+				padding: 0.55rem 1.5rem;
+				background: var(--text);
+				color: var(--bg);
+				border: none;
+				border-radius: 9px;
+				font-family: "Inter", sans-serif;
+				font-size: 0.85rem;
+				font-weight: 600;
+				cursor: pointer;
+				transition: opacity 0.15s;
+			}
+			.modal-ok:hover {
+				opacity: 0.85;
+			}
+			@keyframes fadeIn {
+				from { opacity: 0; }
+				to { opacity: 1; }
+			}
+			@keyframes scaleIn {
+				from { opacity: 0; transform: scale(0.95); }
+				to { opacity: 1; transform: scale(1); }
+			}
+
 		</style>
 	</head>
 	<body>
@@ -215,6 +272,21 @@
 				"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwaXhlaGhkYnR6c2Jja2Zla3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExNDI0MjcsImV4cCI6MjA3NjcxODQyN30.nR1KCSRQj1E_evQWnE2VaZzg7PgLp2kqt4eDKP2PkpE";
 			const supabaseUrl = "https://dpixehhdbtzsbckfektd.supabase.co";
 			const sb = supabase.createClient(supabaseUrl, supabaseKey);
+
+			function showToast(message) {
+				return new Promise((resolve) => {
+					const overlay = document.createElement("div");
+					overlay.className = "modal-overlay";
+					overlay.innerHTML = `<div class="modal-box"><div class="modal-message">${message}</div><div class="modal-actions"><button class="modal-ok">OK</button></div></div>`;
+					document.body.appendChild(overlay);
+					const btn = overlay.querySelector(".modal-ok");
+					const dismiss = () => { overlay.remove(); resolve(); };
+					btn.addEventListener("click", dismiss);
+					overlay.addEventListener("click", (e) => { if (e.target === overlay) dismiss(); });
+					btn.focus();
+				});
+			}
+
 			document.getElementById("verify-form").addEventListener("submit", async (e) => {
 				e.preventDefault();
 
@@ -225,7 +297,7 @@
 				// Cloudflare Turnstile
 				const cfToken = turnstile.getResponse();
 				if (!cfToken) {
-					alert("Please complete the CAPTCHA");
+					await showToast("Please complete the CAPTCHA");
 					return;
 				}
 
@@ -239,7 +311,7 @@
 					// Fetch TOTP key once
 					const totpResp = await fetch("https://api.inferenceport.ai/tu1rns1t421231ileverify92304r8023978");
 					if (!totpResp.ok) {
-						alert("ERROR");
+						await showToast("ERROR");
 						return;
 					}
 
@@ -267,13 +339,13 @@
 					);
 
 					if (!res.ok) {
-						alert("Verification failed");
+						await showToast("Verification failed");
 						return;
 					}
 
-					alert("Email verified!");
+					await showToast("Email verified!");
 				} catch (error) {
-					alert(`Email verification failed: ${error.message}`);
+					await showToast(`Email verification failed: ${error.message}`);
 				}
 			});
 
