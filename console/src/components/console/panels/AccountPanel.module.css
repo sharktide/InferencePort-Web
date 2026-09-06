@@ -464,10 +464,278 @@
   cursor: not-allowed;
 }
 
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.infoItem {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.infoLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.infoValue {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.infoValueMono {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.infoRelative {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.infoBadge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.badgeVerified {
+  color: #0f766e;
+  background: rgba(20, 184, 166, 0.12);
+  border: 1px solid rgba(20, 184, 166, 0.22);
+}
+
+.badgeUnverified {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+}
+
+.passwordForm {
+  display: grid;
+  gap: 1rem;
+  max-width: 400px;
+}
+
+.passwordForm .fieldGroup input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.passwordForm .fieldGroup input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(26, 107, 255, 0.08);
+}
+
+.passwordForm .fieldGroup input::placeholder {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.securityActions {
+  margin-top: 0.5rem;
+}
+
+.securityActions .primaryBtn {
+  width: auto !important;
+  padding: 0.65rem 1.5rem !important;
+}
+
+.providerNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.providerNoteIcon {
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.providerNote p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.providerNote strong {
+  color: var(--text);
+}
+
+.securityDangerZone {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dangerZoneLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--danger);
+  border: 1.5px solid rgba(224, 49, 80, 0.3);
+  padding: 0.55rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  box-shadow: none;
+  transform: none;
+}
+
+.dangerBtn:hover:not(:disabled) {
+  background: rgba(224, 49, 80, 0.08);
+  border-color: var(--danger);
+}
+
+.dangerBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.linkedList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.linkedItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+}
+
+.linkedIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.linkedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.linkedName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.linkedStatus {
+  font-size: 0.75rem;
+  color: #0f766e;
+  font-weight: 500;
+}
+
+.linkedEmpty {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  background: var(--surface-2);
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+}
+
+.dangerSection {
+  border-color: rgba(224, 49, 80, 0.2) !important;
+}
+
+.dangerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.dangerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dangerTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dangerDesc {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 @media (max-width: 960px) {
   .userSection,
   .creditSection {
     grid-column: span 12;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -486,5 +754,10 @@
 
   .packsGrid {
     grid-template-columns: 1fr;
+  }
+
+  .dangerContent {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

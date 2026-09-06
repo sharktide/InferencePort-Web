@@ -1,0 +1,343 @@
+.graphWrapper {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.controlLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.modelSelect {
+  padding: 0.5rem 0.8rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--text);
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.modelSelect:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.metricToggle {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.metricBtn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.metricBtn:hover {
+  color: var(--text);
+}
+
+.metricBtnActive {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.chartContainer {
+  position: relative;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  padding-top: 2.5rem;
+  min-height: 280px;
+  overflow: visible;
+}
+
+.chartArea {
+  display: flex;
+  gap: 0.75rem;
+  height: 220px;
+  overflow: visible;
+}
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 1.5rem;
+  min-width: 48px;
+}
+
+.yLabel {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.barsContainer {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.barsContainer::before,
+.barsContainer::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--border);
+}
+
+.barsContainer::before { top: 0; }
+.barsContainer::after { top: 25%; }
+
+.barCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  height: 100%;
+  position: relative;
+}
+
+.barWrapper {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bar {
+  width: 70%;
+  max-width: 32px;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  transition: opacity 0.15s, filter 0.15s;
+  min-height: 2px;
+}
+
+.barWrapper:hover .bar {
+  filter: brightness(1.15);
+}
+
+.barActive {
+  filter: brightness(1.15);
+}
+
+.xLabel {
+  font-size: 0.62rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 10;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  min-width: 180px;
+  max-width: 280px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.tooltipHeader {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  padding: 0.2rem 0;
+}
+
+.tooltipRow span {
+  color: var(--muted);
+}
+
+.tooltipRow strong {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tooltipModels {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 0.3rem;
+}
+
+.tooltipModelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.tooltipModelRow span:first-of-type {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tooltipModelRow span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tooltipModelRow span:nth-child(3),
+.tooltipModelRow span:nth-child(4) {
+  font-family: var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  font-size: 0.7rem;
+}
+
+.tooltipModelDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.summaryCard {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.summaryLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.summaryValue {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.summarySub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 680px) {
+  .controls {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .metricToggle {
+    flex-wrap: wrap;
+  }
+
+  .chartArea {
+    height: 180px;
+  }
+
+  .yAxis {
+    min-width: 36px;
+  }
+
+  .yLabel {
+    font-size: 0.6rem;
+  }
+
+  .summaryRow {
+    grid-template-columns: 1fr;
+  }
+}

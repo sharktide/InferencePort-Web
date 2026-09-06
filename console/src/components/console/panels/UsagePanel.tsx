@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
 import ActivityPanel from "./ActivityPanel";
+import UsageGraph from "./UsageGraph";
 
 interface Props { session: any; apiBase: string; }
 
@@ -26,6 +27,10 @@ export default function UsagePanel({ session, apiBase }: Props) {
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
+      <section className={`${styles.card} ${styles.wide}`}>
+        <div className={styles.heading}>Usage Overview</div>
+        <UsageGraph session={session} apiBase={apiBase} />
+      </section>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Generation API Usage (Plan Limits)</div>
         {genUsage ? (
