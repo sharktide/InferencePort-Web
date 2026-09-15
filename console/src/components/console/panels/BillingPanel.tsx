@@ -25,6 +25,12 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
   const [ledger, setLedger] = useState<any[]>([]);
   const [packs] = useState<any[]>(config?.billing?.packs || []);
   const [tierConfig, setTierConfig] = useState<any>(null);
+  const [showAllPacks, setShowAllPacks] = useState(false);
+
+  const DEFAULT_PACK_IDS = new Set(["pack_10", "pack_50", "pack_100", "pack_200"]);
+  const defaultPacks = packs.filter((p: any) => DEFAULT_PACK_IDS.has(p.id));
+  const extraPacks = packs.filter((p: any) => !DEFAULT_PACK_IDS.has(p.id));
+  const visiblePacks = showAllPacks ? packs : defaultPacks;
 
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
   const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`); return d; };
@@ -106,8 +112,8 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Top Up Credits</div>
-        <div className={billingStyles.packsGrid}>
-          {packs.map((p: any) => (
+        <div className={showAllPacks ? billingStyles.packsGrid : `${billingStyles.packsGrid} ${billingStyles.packsGridConstrained}`}>
+          {visiblePacks.map((p: any) => (
             <div key={p.label} className={billingStyles.packCard}>
               <div className={billingStyles.packPrice}>{p.label}</div>
               <div className={billingStyles.packCredits}>{Number(p.credits).toFixed(4)} credits</div>
@@ -127,6 +133,22 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
             </div>
           ))}
         </div>
+        {!showAllPacks && extraPacks.length > 0 && (
+          <button
+            className={billingStyles.showMorePacks}
+            onClick={() => setShowAllPacks(true)}
+          >
+            Show {extraPacks.length} more pack{extraPacks.length > 1 ? "s" : ""}
+          </button>
+        )}
+        {showAllPacks && (
+          <button
+            className={billingStyles.showMorePacks}
+            onClick={() => setShowAllPacks(false)}
+          >
+            Show fewer options
+          </button>
+        )}
         <div className={styles.subheading}>Usage Rates</div>
         <ul className={styles.rateList}>
           {[`${config?.pricing?.textCreditPerMillionTokens} credits per 1,000,000 text tokens (including multimodal text payloads)`, `${config?.pricing?.imageCreditPerImage} credits per image`, `${config?.pricing?.videoCreditPerSecond} credits per second of video`, `${config?.pricing?.audioCreditPerSecond} credits per second of audio (music/sfx)`].map((r, i) => <li key={i} className={styles.rateListItem}>{r}</li>)}

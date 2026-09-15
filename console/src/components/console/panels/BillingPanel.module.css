@@ -136,6 +136,44 @@
   cursor: not-allowed;
 }
 
+.packsGridConstrained {
+  max-height: 310px;
+  overflow: hidden;
+  position: relative;
+}
+
+.packsGridConstrained::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: linear-gradient(to bottom, transparent, var(--surface));
+  pointer-events: none;
+}
+
+.showMorePacks {
+  display: block;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  margin-top: 0.75rem;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.showMorePacks:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
 .subActions {
   display: flex;
   gap: 0.75rem;
@@ -356,6 +394,10 @@
 @media (max-width: 680px) {
   .packsGrid {
     grid-template-columns: 1fr;
+  }
+
+  .packsGridConstrained {
+    max-height: 700px;
   }
 
   .subActions {
