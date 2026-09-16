@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 
-interface Props { config: any; session: any; apiBase: string; }
+interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
 
 interface ThreeJobResult {
   glbUrl?: string;
@@ -12,7 +12,7 @@ interface ThreeJobResult {
   usage?: { payg_credits_charged: number; model_count: number };
 }
 
-export default function ModelsPanel({ config, session, apiBase }: Props) {
+export default function ModelsPanel({ config, session, apiBase, theme = "light" }: Props) {
   const [allModels, setAllModels] = useState<any[]>([]);
   const [genModels, setGenModels] = useState<any[]>([]);
   const [source, setSource] = useState<"p2g" | "gen">("p2g");
@@ -81,6 +81,13 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
     const name = m?.name || m?.id || "";
     const modelId = (slug(m) || name).toLowerCase().replace(/\//g, "_");
     return `https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/${encodeURIComponent(modelId)}.webp?download=true`;
+  };
+
+  const publisherLogoUrl = (publisherUrl: string | undefined) => {
+    if (!publisherUrl) return "";
+    if (publisherUrl === "inferenceport.ai") return "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png";
+    const themeParam = theme === "dark" ? "&theme=dark" : "";
+    return `https://cdn.brandfetch.io/${encodeURIComponent(publisherUrl)}?c=1idhv9JFxNDhJr50XTx${themeParam}`;
   };
 
   const textModels = useCallback(() => {
@@ -447,6 +454,17 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
             const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
+                {m.publisher_url && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
+                    <img
+                      src={publisherLogoUrl(m.publisher_url)}
+                      alt=""
+                      style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
+                      loading="lazy"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                  </div>
+                )}
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
@@ -481,6 +499,17 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
             const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
+                {m.publisher_url && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
+                    <img
+                      src={publisherLogoUrl(m.publisher_url)}
+                      alt=""
+                      style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
+                      loading="lazy"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    />
+                  </div>
+                )}
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
@@ -657,6 +686,17 @@ export default function ModelsPanel({ config, session, apiBase }: Props) {
               </div>
             </div>
             <div className={styles.modelDetailContent}>
+              {selectedDetailModel.publisher_url && (
+                <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "0.25rem" }}>
+                  <img
+                    src={publisherLogoUrl(selectedDetailModel.publisher_url)}
+                    alt=""
+                    style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
+                    loading="lazy"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                </div>
+              )}
               <div className={styles.modelDetailHeader}>
                 <span className={styles.modelDetailName}>{selectedDetailModel.name || selectedDetailModel.id || "Unnamed model"}</span>
                 <span className={`${styles.modelPill} ${isTextModel(selectedDetailModel) ? styles.isText : styles.isConfig}`}>

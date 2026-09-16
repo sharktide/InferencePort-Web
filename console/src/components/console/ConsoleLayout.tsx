@@ -124,7 +124,7 @@ export default function ConsoleLayout() {
   const panelMap: Record<string, React.ReactNode> = {
     account: <AccountPanel config={config} session={session} supabase={supabase} />,
     billing: <BillingPanel config={config} session={session} apiBase={apiBase} />,
-    models: <ModelsPanel config={config} session={session} apiBase={apiBase} />,
+    models: <ModelsPanel config={config} session={session} apiBase={apiBase} theme={theme} />,
     rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
     "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
     usage: <UsagePanel session={session} apiBase={apiBase} />,

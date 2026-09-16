@@ -103,12 +103,28 @@
 				gap: 0.8rem;
 			}
 
-			.model-card-top {
-				display: flex;
-				justify-content: space-between;
-				align-items: start;
-				gap: 8px;
-			}
+		.model-card-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: start;
+			gap: 8px;
+		}
+
+		.publisher-row {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 2px;
+		}
+
+		.publisher-logo {
+			width: 32px;
+			height: 32px;
+			border-radius: 6px;
+			flex-shrink: 0;
+			object-fit: contain;
+			border: 1px solid var(--border);
+		}
 
 			.model-card-name {
 				font-size: 0.95rem;
@@ -515,11 +531,22 @@
 				return formatModelPrice(m) || formatPricing(m) || "Pricing unavailable";
 			}
 
-			function escapeHtml(str) {
-				const d = document.createElement("div");
-				d.textContent = str;
-				return d.innerHTML;
-			}
+		function escapeHtml(str) {
+			const d = document.createElement("div");
+			d.textContent = str;
+			return d.innerHTML;
+		}
+
+		function isDarkMode() {
+			return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+		}
+
+		function publisherLogoUrl(publisherUrl) {
+			if (!publisherUrl) return "";
+			if (publisherUrl === "inferenceport.ai") return "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png";
+			const theme = isDarkMode() ? "&theme=dark" : "";
+			return `https://cdn.brandfetch.io/${encodeURIComponent(publisherUrl)}?c=1idhv9JFxNDhJr50XTx${theme}`;
+		}
 
 			async function loadModels() {
 				const spinner = document.getElementById("loading-spinner");
@@ -579,17 +606,18 @@
 				card.className = "model-card";
 				card.id = "model-" + modelId;
 
-				card.innerHTML = `
-					<img class="model-card-image" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(displayName)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-					<div class="model-card-image-placeholder" style="display:none;">${escapeHtml(displayName)}</div>
-					<div class="model-card-content">
-						<div class="model-card-top">
-							<span class="model-card-name">${escapeHtml(displayName)}</span>
-							<div>
-								<span class="model-pill pill-p2g">P2G CLOUD</span>
-								<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
-							</div>
+			card.innerHTML = `
+				<img class="model-card-image" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(displayName)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+				<div class="model-card-image-placeholder" style="display:none;">${escapeHtml(displayName)}</div>
+				<div class="model-card-content">
+					${m.publisher_url ? `<div class="publisher-row"><img class="publisher-logo" src="${escapeHtml(publisherLogoUrl(m.publisher_url))}" alt="" loading="lazy" onerror="this.style.display='none'" /></div>` : ""}
+					<div class="model-card-top">
+						<span class="model-card-name">${escapeHtml(displayName)}</span>
+						<div>
+							<span class="model-pill pill-p2g">P2G CLOUD</span>
+							<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
 						</div>
+					</div>
 						<div class="model-meta">
 							<span class="model-key">Slug</span>
 							<span class="model-value">${escapeHtml(displaySlug)}</span>
