@@ -26,7 +26,16 @@ export default function ConsoleLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("account");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window === "undefined") return "account";
+    return localStorage.getItem("console-active-tab") || "account";
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("console-active-tab", activeTab);
+    }
+  }, [activeTab]);
   const [initialized, setInitialized] = useState(false);
   const [apiBase, setApiBase] = useState(FALLBACK_API_BASE);
   const [unclaimedRewards, setUnclaimedRewards] = useState(0);
