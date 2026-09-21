@@ -199,7 +199,9 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const loadModels = useCallback(async () => {
     try {
       if (source === "p2g") {
-        const r = await fetch(`${apiBase}/v1/models`);
+        const headers: Record<string, string> = {};
+        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+        const r = await fetch(`${apiBase}/v1/models`, { headers });
         const d = await r.json().catch(() => ({}));
         const remoteModels = (Array.isArray(d.data) ? d.data : []).filter((m: any) => m.is_ready !== false);
         setAllModels(remoteModels);
@@ -210,7 +212,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         setGenModels(Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []);
       }
     } catch { /* ignore */ }
-  }, [source, apiBase]);
+  }, [source, apiBase, session]);
 
   useEffect(() => { loadModels(); }, [loadModels]);
 
@@ -264,7 +266,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
 
   const displayModels = source === "p2g" ? textModels() : genModels;
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
-  const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`); return d; };
+  const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) { const errMsg = d.detail || (typeof d.error === "object" ? d.error?.message : d.error) || `HTTP ${r.status}`; throw new Error(errMsg); } return d; };
   const sb = (k: string, v: boolean) => setBusy((p) => ({ ...p, [k]: v }));
 
   const decodeBase64 = (b64: string): string => {
@@ -467,7 +469,14 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                 )}
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                    {m.model_state && (
+                      <span className={`${styles.modelPill}`} style={{
+                        color: m.model_state === "warm" ? "#22c55e" : "#f59e0b",
+                        background: m.model_state === "warm" ? "rgba(34,197,94,0.12)" : "rgba(245,158,11,0.12)",
+                        borderColor: m.model_state === "warm" ? "rgba(34,197,94,0.22)" : "rgba(245,158,11,0.22)",
+                      }}>{m.model_state === "warm" ? "Warm" : "Loading"}</span>
+                    )}
                     <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>
@@ -512,7 +521,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                 )}
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
-                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
                     <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>

@@ -111,7 +111,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
-  const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`); return d; };
+  const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) { const errMsg = d.detail || (typeof d.error === "object" ? d.error?.message : d.error) || `HTTP ${r.status}`; throw new Error(errMsg); } return d; };
   const sb = (k: string, v: boolean) => setBusy((p) => ({ ...p, [k]: v }));
 
   const decodeBase64 = (b64: string): string => {
@@ -123,7 +123,9 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
 
   const loadModels = useCallback(async () => {
     try {
-      const res = await fetch(`${apiBase}/v1/models`);
+      const headers: Record<string, string> = {};
+      if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
+      const res = await fetch(`${apiBase}/v1/models`, { headers });
       const data = await res.json().catch(() => ({}));
       const remoteModels = (Array.isArray(data.data) ? data.data : []).filter((m: any) => m.is_ready !== false);
       setAllModels(remoteModels);
@@ -138,7 +140,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
         setTextModel(unique[0].id || unique[0].upstream_id || slug(unique[0]));
       }
     } catch { /* ignore */ }
-  }, [apiBase, textModel]);
+  }, [apiBase, textModel, session]);
 
   useEffect(() => { loadModels(); }, [loadModels]);
 
