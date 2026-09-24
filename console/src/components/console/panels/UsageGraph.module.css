@@ -1,11 +1,65 @@
 .graphWrapper {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
+/* Summary first: hairline-divided figures, the first one is the hero */
+.summaryRow {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.3fr;
+  border-top: 1px solid var(--text);
+  padding-top: 1rem;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0 1.25rem;
+  border-left: 1px solid var(--border);
+  min-width: 0;
+}
+.summaryCard:first-child { padding-left: 0; border-left: 0; }
+
+.summaryLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.summaryValue {
+  font-family: var(--sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.summaryCard:first-child .summaryValue {
+  font-size: clamp(2.25rem, 1.8rem + 1.4vw, 3rem);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 40;
+}
+.summaryCard:nth-child(3) .summaryValue {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.summarySub {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* One filter row above the chart */
 .controls {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem 1.5rem;
   align-items: flex-end;
   flex-wrap: wrap;
 }
@@ -17,50 +71,50 @@
 }
 
 .controlLabel {
-  font-size: 0.68rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
+  color: var(--text-2);
 }
 
 .modelSelect {
-  padding: 0.5rem 0.8rem;
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
+  min-height: 36px;
+  padding: 0 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-1);
   font-family: var(--sans);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--text);
   cursor: pointer;
-  min-width: 160px;
+  min-width: 180px;
+  width: auto;
 }
 
 .modelSelect:focus {
-  outline: none;
-  border-color: var(--accent);
+  border-color: var(--brand);
 }
 
 .metricToggle {
-  display: flex;
-  gap: 0.25rem;
+  display: inline-flex;
+  gap: 2px;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--r-1) + 2px);
+  padding: 2px;
 }
 
 .metricBtn {
-  padding: 0.4rem 0.75rem;
-  border-radius: 6px;
+  min-height: 32px;
+  padding: 0 0.8rem;
+  border-radius: var(--r-0);
   font-family: var(--sans);
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
   border: none;
   background: transparent;
-  color: var(--muted);
+  color: var(--text-2);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: background-color var(--d-fast), color var(--d-fast), box-shadow var(--d-fast);
   white-space: nowrap;
 }
 
@@ -69,42 +123,44 @@
 }
 
 .metricBtnActive {
-  background: var(--text);
-  color: var(--bg);
-  font-weight: 600;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--border), 0 1px 2px rgba(17, 24, 39, 0.06);
 }
 
+/* Chart: drawn to scale on a nice-number grid */
 .chartContainer {
   position: relative;
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 1.5rem;
-  padding-top: 2.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  padding: 1.5rem 1.25rem 1rem;
   min-height: 280px;
   overflow: visible;
 }
 
 .chartArea {
   display: flex;
-  gap: 0.75rem;
-  height: 220px;
+  gap: 0.6rem;
+  height: 240px;
   overflow: visible;
 }
 
 .yAxis {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-bottom: 1.5rem;
-  min-width: 48px;
+  position: relative;
+  min-width: 44px;
+  margin-bottom: 1.6rem;
 }
 
 .yLabel {
+  position: absolute;
+  right: 0;
+  transform: translateY(50%);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   color: var(--muted);
-  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .barsContainer {
@@ -112,33 +168,40 @@
   display: flex;
   align-items: flex-end;
   gap: 2px;
-  border-bottom: 1px solid var(--border);
-  border-left: 1px solid var(--border);
   position: relative;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1.6rem;
+  min-width: 0;
 }
 
-.barsContainer::before,
-.barsContainer::after {
-  content: "";
+.gridLines {
   position: absolute;
   left: 0;
   right: 0;
-  border-top: 1px dashed var(--border);
+  top: 0;
+  bottom: 1.6rem;
+  pointer-events: none;
 }
 
-.barsContainer::before { top: 0; }
-.barsContainer::after { top: 25%; }
+.gridLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid var(--border);
+}
+.gridLine:first-child { border-top-color: var(--border-strong); }
 
 .barCol {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   min-width: 0;
-  height: 100%;
+  height: calc(100% + 1.6rem);
+  margin-bottom: -1.6rem;
   position: relative;
+  z-index: 1;
 }
 
 .barWrapper {
@@ -152,78 +215,79 @@
 }
 
 .bar {
-  width: 70%;
-  max-width: 32px;
-  background: var(--accent);
-  border-radius: 3px 3px 0 0;
-  transition: opacity 0.15s, filter 0.15s;
+  width: 62%;
+  max-width: 24px;
+  background: var(--brand);
+  border-radius: 4px 4px 0 0;
+  transition: opacity var(--d-fast);
   min-height: 2px;
 }
 
-.barWrapper:hover .bar {
-  filter: brightness(1.15);
-}
+.barsContainer:hover .bar { opacity: 0.4; }
+.barsContainer:hover .barWrapper:hover .bar { opacity: 1; }
 
 .barActive {
-  filter: brightness(1.15);
+  opacity: 1 !important;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--brand);
 }
 
 .xLabel {
-  font-size: 0.62rem;
+  height: 1.15rem;
+  font-size: 0.6875rem;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
   text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
+/* Tooltip: ink surface, values right-aligned in tabular figures */
 .tooltip {
   position: absolute;
   z-index: 10;
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 0.85rem 1rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: var(--text);
+  color: var(--bg);
+  border-radius: var(--r-1);
+  padding: 0.75rem 0.9rem;
+  box-shadow: var(--shadow-lg);
   pointer-events: none;
-  min-width: 180px;
-  max-width: 280px;
+  min-width: 190px;
+  max-width: 290px;
   max-height: 60vh;
   overflow-y: auto;
 }
 
 .tooltipHeader {
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
 }
 
 .tooltipRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.82rem;
-  padding: 0.2rem 0;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  padding: 0.15rem 0;
 }
 
 .tooltipRow span {
-  color: var(--muted);
+  opacity: 0.75;
 }
 
 .tooltipRow strong {
   font-family: var(--mono);
   font-weight: 600;
-  color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 .tooltipModels {
   margin-top: 0.5rem;
   padding-top: 0.5rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid color-mix(in srgb, var(--bg) 25%, transparent);
   display: grid;
   gap: 0.3rem;
 }
@@ -231,9 +295,8 @@
 .tooltipModelRow {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   font-size: 0.75rem;
-  color: var(--text);
 }
 
 .tooltipModelRow span:first-of-type {
@@ -254,7 +317,7 @@
 .tooltipModelRow span:nth-child(3),
 .tooltipModelRow span:nth-child(4) {
   font-family: var(--mono);
-  color: var(--muted);
+  opacity: 0.8;
   white-space: nowrap;
   font-size: 0.7rem;
 }
@@ -262,47 +325,9 @@
 .tooltipModelDot {
   width: 6px;
   height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
+  border-radius: 2px;
+  background: var(--brand);
   flex-shrink: 0;
-}
-
-.summaryRow {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-}
-
-.summaryCard {
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.summaryLabel {
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-}
-
-.summaryValue {
-  font-family: var(--mono);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-
-.summarySub {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: 0.1rem;
 }
 
 .emptyState {
@@ -310,34 +335,39 @@
   align-items: center;
   justify-content: center;
   min-height: 200px;
-  color: var(--muted);
-  font-size: 0.88rem;
+  color: var(--text-2);
+  font-size: 0.9375rem;
 }
 
 @media (max-width: 680px) {
+  .summaryRow {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1rem;
+  }
+  .summaryCard:first-child { grid-column: 1 / -1; }
+  .summaryCard:nth-child(2) { padding-left: 0; border-left: 0; }
+
   .controls {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: stretch;
+    gap: 0.9rem;
   }
 
   .metricToggle {
     flex-wrap: wrap;
   }
 
+  .chartContainer {
+    padding: 1.25rem 0.75rem 0.75rem;
+  }
+
   .chartArea {
-    height: 180px;
+    height: 190px;
   }
 
   .yAxis {
-    min-width: 36px;
+    min-width: 34px;
   }
 
   .yLabel {
-    font-size: 0.6rem;
-  }
-
-  .summaryRow {
-    grid-template-columns: 1fr;
+    font-size: 0.625rem;
   }
 }

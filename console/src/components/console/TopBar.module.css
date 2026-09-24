@@ -5,166 +5,131 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
-  height: 64px;
-  background: rgba(248,246,240,0.82);
-  backdrop-filter: blur(16px);
+  gap: 1rem;
+  padding: 0 1.5rem 0 1.25rem;
+  height: 60px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
   border-bottom: 1px solid var(--border);
-}
-
-[data-theme="dark"] .topbar {
-  background: rgba(17,17,19,0.88);
-  border-bottom-color: var(--border);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.7rem;
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
+.brand > div { min-width: 0; }
+
 .brandLogo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-0);
+  flex: none;
 }
 
 .brand h1 {
   font-family: var(--sans);
   font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand p {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--muted);
   margin-top: 1px;
 }
 
+/* Wordmark: heavy, tight, with the brand-blue "AI" */
+/* 19px heavy: the brand-blue "AI" qualifies as large text (3.55:1 >= 3:1) */
 .brandEmphasis {
-  font-weight: 600;
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
 }
 
-.brandDesktop {
-  display: inline;
-}
+.brandAi { color: var(--brand); }
 
-.brandMobile {
-  display: none;
-}
+.brandDesktop { display: inline; }
+.brandMobile { display: none; }
 
 .topActions {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.35rem;
+  flex: none;
 }
 
 .themeIcon {
-  font-size: 1.1rem;
+  display: inline-flex;
   line-height: 1;
 }
 
-.hidden {
-  display: none;
-}
+.hidden { display: none; }
 
 .topActions a {
-  font-size: 0.85rem;
-  color: var(--muted);
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  transition: background 0.15s, color 0.15s;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-2);
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--r-0);
+  transition: background-color var(--d-fast), color var(--d-fast);
 }
 
 .topActions a:hover {
   background: var(--surface-2);
   color: var(--text);
+  text-decoration: none;
 }
 
 .ghost {
-  background: var(--surface-2);
+  background: transparent;
   color: var(--text);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-1);
+  padding: 0 0.85rem;
+  min-height: 36px;
   font-family: var(--sans);
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color var(--d-fast), background-color var(--d-fast);
 }
 .ghost:hover {
-  border-color: #c8c0b0;
-  background: #ece9e2;
-}
-
-[data-theme="dark"] .ghost {
+  border-color: var(--text-2);
   background: var(--surface-2);
-  border-color: var(--border);
-  color: var(--text);
-}
-[data-theme="dark"] .ghost:hover {
-  background: #2a2a32;
-  border-color: #444;
 }
 
-.mobileOnly {
-  display: none;
+.iconBtn {
+  width: 36px;
+  padding: 0;
+  border-color: transparent;
+  color: var(--text-2);
 }
+.iconBtn:hover { color: var(--text); border-color: transparent; }
 
-.desktopOnly {
-  display: inline;
-}
-
-.hamburgerLine {
-  display: block;
-  width: 18px;
-  height: 2px;
-  background: var(--text);
-  border-radius: 2px;
-  transition: transform 0.25s ease, opacity 0.2s ease;
-}
+.mobileOnly { display: none; }
+.desktopOnly { display: inline; }
 
 @media (max-width: 960px) {
-  .mobileOnly {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-  }
+  .topbar { padding: 0 0.75rem; }
+  .mobileOnly { display: inline-flex; }
+  .desktopOnly { display: none !important; }
+  .brandDesktop { display: none !important; }
+  .brandMobile { display: inline !important; }
+  .brand p { display: none !important; }
+}
 
-  .desktopOnly {
-    display: none !important;
-  }
-
-  .brandEmphasis {
-    display: none !important;
-  }
-
-  .brandDesktop {
-    display: none !important;
-  }
-
-  .brandMobile {
-    display: inline !important;
-  }
-
-  .brand p {
-    display: none !important;
-  }
-
-  .topbar {
-    padding: 0 1rem;
-  }
-
-  .brandLogo {
-    width: 32px;
-    height: 32px;
-  }
+@media (max-width: 480px) {
+  .brandLogo { display: none; }
+  .brandMobile { display: none !important; }
 }

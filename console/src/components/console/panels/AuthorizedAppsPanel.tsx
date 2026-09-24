@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "../../Icon";
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
 
@@ -137,13 +138,13 @@ export default function AuthorizedAppsPanel({ session, config, apiBase, supabase
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <h2>Authorized Applications</h2>
-        <div className={styles.oauthWarning}><span className={styles.oauthWarningIcon} aria-hidden="true">&#9888;&#65039;</span><p>Applications with access to your account can act according to the permissions you&apos;ve granted. Revoke access for apps you no longer trust.</p></div>
+        <h2>Authorized applications</h2>
+        <div className={styles.oauthWarning}><span className={styles.oauthWarningIcon} aria-hidden="true"><Icon name="warning" /></span><p>Applications with access to your account can act according to the permissions you&apos;ve granted. Revoke access for apps you no longer trust.</p></div>
         <div className={styles.oauthToolbar}><input type="search" placeholder="Search authorized applications..." aria-label="Search authorized applications" value={search} onChange={(e) => setSearch(e.target.value)} style={{ maxWidth: 340 }} /></div>
 
         {loading && <div className={styles.oauthStateBlock}><div className={styles.spinner} /><p className={`${styles.muted} ${styles.tiny}`}>Loading authorized applications&hellip;</p></div>}
         {error && <div className={`${styles.card} ${styles.oauthErrorCard}`}><h3 style={{ marginTop: 0 }}>Couldn&apos;t load authorized applications</h3><p className={`${styles.muted} ${styles.tiny}`}>{error}</p><button className="ghost" onClick={load}>Try again</button></div>}
-        {!loading && !error && grants.length === 0 && <div className={styles.oauthStateBlock}><div className={styles.oauthEmptyIcon} aria-hidden="true">&#128279;</div><p>You haven&apos;t authorized any applications yet.</p><p className={`${styles.muted} ${styles.tiny}`}>When you sign in to a third-party app using your account, it will show up here.</p></div>}
+        {!loading && !error && grants.length === 0 && <div className={styles.oauthStateBlock}><div className={styles.oauthEmptyIcon} aria-hidden="true"><Icon name="link" /></div><p>You haven&apos;t authorized any applications yet.</p><p className={`${styles.muted} ${styles.tiny}`}>When you sign in to a third-party app using your account, it will show up here.</p></div>}
 
         <div className={styles.oauthGrantsList}>
           {!loading && !error && grants.length > 0 && filtered.length === 0 && <p className={`${styles.muted} ${styles.tiny}`}>No applications match &quot;{search}&quot;.</p>}
@@ -167,13 +168,13 @@ export default function AuthorizedAppsPanel({ session, config, apiBase, supabase
               </div>
               <div className={styles.oauthGrantFooter}>
                 <details className="oauth-advanced-details">
-                  <summary>Advanced Details</summary>
+                  <summary>Advanced details</summary>
                   <div style={{ padding: "0.5rem 0", fontSize: "0.82rem", color: "var(--muted)" }}>
-                    <div style={{ marginBottom: 4 }}><strong>Client ID:</strong> {grant.clientId || "\u2014"}</div>
-                    <div><strong>Grant ID:</strong> {grant.grantId || "\u2014"}</div>
+                    <div style={{ marginBottom: 4 }}><strong>Client ID:</strong> {grant.clientId || "None"}</div>
+                    <div><strong>Grant ID:</strong> {grant.grantId || "None"}</div>
                   </div>
                 </details>
-                <button type="button" className={styles.dangerBtn} onClick={() => setRevokeTarget(grant)}>Revoke Access</button>
+                <button type="button" className={styles.dangerBtn} onClick={() => setRevokeTarget(grant)}>Revoke access</button>
               </div>
             </div>
           ))}
@@ -186,7 +187,7 @@ export default function AuthorizedAppsPanel({ session, config, apiBase, supabase
             <p className={`${styles.muted} ${styles.tiny}`}>Revoking access will immediately invalidate this application&apos;s authorization. It will no longer be able to act on your behalf, and it may lose access to any data or features it was granted.</p>
             <div className={styles.row} style={{ justifyContent: "flex-end", marginTop: "1.5rem" }}>
               <button className="ghost" onClick={() => setRevokeTarget(null)}>Cancel</button>
-              <button className={styles.dangerBtn} onClick={() => revokeGrant(revokeTarget)}>Revoke Access</button>
+              <button className={styles.dangerBtn} onClick={() => revokeGrant(revokeTarget)}>Revoke access</button>
             </div>
           </div>
         </div>

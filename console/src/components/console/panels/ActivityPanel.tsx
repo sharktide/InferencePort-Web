@@ -29,7 +29,7 @@ const KIND_COLORS: Record<string, string> = {
 };
 
 function fmtDate(iso?: string) {
-  if (!iso) return "\u2014";
+  if (!iso) return "None";
   try {
     const d = new Date(iso);
     return d.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -130,7 +130,7 @@ export default function ActivityPanel({ session, apiBase }: Props) {
           <span className={s.statSub}>model requests</span>
         </div>
         <div className={s.statCard}>
-          <span className={s.statLabel}>Credits Spent</span>
+          <span className={s.statLabel}>Credits spent</span>
           <strong className={s.statValue}>{stats.totalCredits.toFixed(4)}</strong>
           <span className={s.statSub}>net after refunds</span>
         </div>
@@ -143,7 +143,7 @@ export default function ActivityPanel({ session, apiBase }: Props) {
 
       {modelStats.length > 0 && (
         <>
-          <div className={s.sectionLabel}>Model Breakdown</div>
+          <div className={s.sectionLabel}>Model breakdown</div>
           <div className={s.modelGrid}>
             {modelStats.map(m => (
               <div key={m.model} className={s.modelCard}>
@@ -175,7 +175,7 @@ export default function ActivityPanel({ session, apiBase }: Props) {
         </>
       )}
 
-      <div className={s.sectionLabel} style={{ marginTop: "1.5rem" }}>Recent Activity</div>
+      <div className={s.sectionLabel} style={{ marginTop: "1.5rem" }}>Recent activity</div>
       {loading ? (
         <div className={s.emptyState}>Loading activity...</div>
       ) : filtered.length === 0 ? (
@@ -193,7 +193,7 @@ export default function ActivityPanel({ session, apiBase }: Props) {
             const isRefund = e.entry_type === "adjustment" && e.delta_credits > 0;
             return (
               <div key={e.id || i} className={s.tableRow}>
-                <div className={s.tableModel} data-label="Model">{e.model || "\u2014"}</div>
+                <div className={s.tableModel} data-label="Model">{e.model || "None"}</div>
                 <div className={s.tableType} data-label="Type">
                   <span className={`${s.typeDot} ${isRefund ? s.typeRefund : s.typeUsage}`} />
                   {isRefund ? "Refund" : "Usage"}
@@ -203,7 +203,7 @@ export default function ActivityPanel({ session, apiBase }: Props) {
                   {e.delta_credits < 0 ? "" : "+"}{e.delta_credits.toFixed(4)}
                 </div>
                 <div className={s.tableMuted} data-label="Units">
-                  {e.units != null ? e.units : "\u2014"} {e.unit_label || ""}
+                  {e.units != null ? e.units : "None"} {e.unit_label || ""}
                 </div>
                 <div className={s.tableDate} data-label="Date">{fmtDate(e.created_at)}</div>
               </div>

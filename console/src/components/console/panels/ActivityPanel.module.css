@@ -2,7 +2,7 @@
 
 .statCard {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem 1rem;
   display: flex;
@@ -11,10 +11,8 @@
 }
 .statLabel {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
   color: var(--muted);
   margin-bottom: 0.25rem;
 }
@@ -37,7 +35,7 @@
 }
 .modelCard {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1rem 1.15rem;
   display: flex;
@@ -46,7 +44,7 @@
   transition: border-color 0.15s, transform 0.15s;
 }
 .modelCard:hover {
-  border-color: #c8c0b0;
+  border-color: var(--border-strong);
   transform: translateY(-1px);
 }
 .modelTop {
@@ -66,20 +64,18 @@
   min-width: 0;
 }
 .modelBadge {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   padding: 0.28rem 0.5rem;
-  border-radius: 999px;
+  border-radius: 6px;
   border: 1px solid transparent;
   flex-shrink: 0;
 }
-.badgeText { color: #0f766e; background: rgba(20,184,166,0.12); border-color: rgba(20,184,166,0.22); }
-.badgeImage { color: #7c3aed; background: rgba(124,58,237,0.10); border-color: rgba(124,58,237,0.18); }
-.badgeVideo { color: #b45309; background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.22); }
-.badgeAudio { color: #be185d; background: rgba(190,24,93,0.10); border-color: rgba(190,24,93,0.20); }
-.badge3d { color: #1a6bff; background: rgba(26,107,255,0.10); border-color: rgba(26,107,255,0.22); }
+.badgeText { color: var(--text-2); background: rgba(107, 114, 128, 0.12); border-color: rgba(107, 114, 128, 0.22); }
+.badgeImage { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.18); }
+.badgeVideo { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.22); }
+.badgeAudio { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.20); }
+.badge3d { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.22); }
 .badgeDefault { color: var(--muted); background: var(--surface); border-color: var(--border); }
 
 .modelStats {
@@ -120,14 +116,12 @@
   grid-template-columns: 1.2fr 1fr 1fr 1fr 1.4fr;
   padding: 0.6rem 1rem;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 8px;
 }
 .tableHeader span {
-  font-size: 0.67rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--muted);
 }
 .tableRow {
@@ -135,7 +129,7 @@
   grid-template-columns: 1.2fr 1fr 1fr 1fr 1.4fr;
   padding: 0.75rem 1rem;
   background: var(--surface);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 8px;
   transition: background 0.12s;
   align-items: center;
@@ -153,7 +147,7 @@
   font-size: 0.8rem;
 }
 .creditsNeg { color: var(--danger); }
-.creditsPos { color: #10b981; }
+.creditsPos { color: var(--success-ink); }
 .tableMuted { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
 .tableDate { font-size: 0.8rem; color: var(--muted); }
 .tableType {
@@ -170,7 +164,7 @@
   flex-shrink: 0;
 }
 .typeUsage { background: var(--accent); }
-.typeRefund { background: #10b981; }
+.typeRefund { background: var(--success); }
 
 .emptyState {
   display: flex;
@@ -190,8 +184,6 @@
 .sectionLabel {
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--muted);
   margin-bottom: 0.85rem;
   display: flex;
@@ -211,7 +203,7 @@
   display: flex;
   gap: 0.35rem;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 4px;
   width: fit-content;
@@ -255,10 +247,8 @@
   }
   .tableRow > div::before {
     content: attr(data-label) ": ";
-    font-size: 0.67rem;
+    font-size: 0.75rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
     color: var(--muted);
     margin-right: 0.3rem;
   }

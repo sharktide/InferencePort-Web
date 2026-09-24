@@ -1,184 +1,171 @@
+/* Wallet: the balance is the page's hero figure; the rest are hairline-divided figures */
 .walletContent {
   display: grid;
   gap: 1.25rem;
 }
 
 .balanceCard {
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 1.75rem;
+  padding: 0;
 }
 
 .balanceLabel {
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
+  color: var(--text-2);
+  margin-bottom: 0.35rem;
 }
 
 .balanceValue {
-  font-family: var(--mono);
-  font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-family: var(--sans);
+  font-size: clamp(2.5rem, 2rem + 1.6vw, 3.25rem);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 1;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-variation-settings: "opsz" 40;
 }
 
 .balanceUnit {
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   color: var(--muted);
-  margin-top: 0.25rem;
+  margin-top: 0.35rem;
 }
 
 .statsRow {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--text);
+  padding-top: 0.9rem;
 }
 
 .statItem {
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem;
+  padding: 0 1.25rem;
+  border-left: 1px solid var(--border);
+  min-width: 0;
 }
+.statItem:first-child { padding-left: 0; border-left: 0; }
 
 .statLabel {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--muted);
-  margin-bottom: 0.5rem;
+  color: var(--text-2);
+  margin-bottom: 0.3rem;
 }
 
 .statValue {
-  font-family: var(--mono);
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-family: var(--sans);
+  font-size: 1.125rem;
+  font-weight: 700;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
 }
 
+/* Top-up packs: selectable options on the raised surface */
 .packsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 1rem;
+  gap: 0.75rem;
   margin-bottom: 0.5rem;
 }
 
 .packCard {
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  padding: 1.1rem 1.1rem 1rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.3rem;
-  transition: all 0.2s;
+  gap: 0.2rem;
+  transition: border-color var(--d-fast);
 }
 
 .packCard:hover {
-  border-color: var(--muted);
-  transform: translateY(-1px);
+  border-color: var(--brand);
 }
 
 .packPrice {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.375rem;
+  font-weight: 750;
   color: var(--text);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .packCredits {
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--accent);
+  color: var(--text-2);
 }
 
 .packUsd {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   color: var(--muted);
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.75rem;
 }
 
 .packBtn {
-  width: 100% !important;
-  padding: 0.6rem 0.9rem !important;
-  background: var(--text) !important;
-  color: var(--bg) !important;
-  border: none !important;
-  border-radius: 8px;
+  width: 100%;
+  margin-top: auto;
+  min-height: 38px;
+  padding: 0 0.9rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  border-radius: var(--r-1);
   font-family: var(--sans);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
-  box-shadow: none !important;
-  transform: none !important;
 }
 
 .packBtn:hover:not(:disabled) {
-  opacity: 0.85 !important;
-  box-shadow: none !important;
-  transform: none !important;
+  background: var(--accent-hover);
 }
 
 .packBtn:disabled {
-  opacity: 0.4;
+  background: var(--surface-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
   cursor: not-allowed;
 }
 
 .packsGridConstrained {
-  max-height: 310px;
+  max-height: 330px;
   overflow: hidden;
   position: relative;
 }
 
-.packsGridConstrained::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 70px;
-  background: linear-gradient(to bottom, transparent, var(--surface));
-  pointer-events: none;
-}
-
 .showMorePacks {
-  display: block;
-  width: 100%;
-  padding: 0.65rem 1rem;
+  display: inline-flex;
+  width: auto;
+  min-height: 36px;
+  padding: 0 0.9rem;
   margin-top: 0.75rem;
   background: transparent;
-  color: var(--muted);
-  border: 1.5px dashed var(--border);
-  border-radius: 10px;
+  color: var(--accent);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-1);
   font-family: var(--sans);
-  font-size: 0.82rem;
-  font-weight: 500;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
 }
 
 .showMorePacks:hover {
-  color: var(--text);
-  border-color: var(--muted);
+  border-color: var(--text-2);
+  background: var(--surface-2);
 }
 
 .subActions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.6rem;
   margin-top: 1.25rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .portalBtn,
@@ -186,128 +173,128 @@
 .cancelBtn {
   display: inline-flex;
   align-items: center;
-  padding: 0.65rem 1.1rem;
-  border-radius: 8px;
+  min-height: 40px;
+  padding: 0 1rem;
+  border-radius: var(--r-1);
   font-family: var(--sans);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.15s;
+  transition: background-color var(--d-fast), border-color var(--d-fast);
   cursor: pointer;
 }
+.portalBtn:hover, .upgradeBtn:hover, .cancelBtn:hover { text-decoration: none; }
 
 .portalBtn {
-  background: var(--surface-2);
+  background: var(--surface);
   color: var(--text);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border-strong);
 }
 
 .portalBtn:hover {
-  border-color: var(--accent);
-  background: var(--surface);
+  border-color: var(--text-2);
+  background: var(--surface-2);
 }
 
 .upgradeBtn {
-  background: var(--text);
-  color: var(--bg);
-  border: 1.5px solid var(--text);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
 }
 
 .upgradeBtn:hover {
-  opacity: 0.85;
+  border-color: var(--text-2);
+  background: var(--surface-2);
 }
 
 .cancelBtn {
   background: transparent;
-  color: var(--danger);
-  border: 1.5px solid rgba(224, 49, 80, 0.3);
+  color: var(--crit);
+  border: 1px solid transparent;
 }
 
 .cancelBtn:hover {
-  background: rgba(224, 49, 80, 0.08);
-  border-color: var(--danger);
+  background: color-mix(in srgb, var(--crit) 8%, transparent);
 }
 
+/* Plans: the current plan gets the brand border; one highlight, no pills */
 .plansGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .planCard {
-  background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  transition: all 0.2s;
+  gap: 0.5rem;
+  transition: border-color var(--d-fast);
 }
 
 .planCard:hover {
-  border-color: var(--muted);
-  transform: translateY(-1px);
+  border-color: var(--border-strong);
 }
 
-.planCurrent {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+.planCurrent,
+.planCurrent:hover {
+  border-color: var(--brand);
+  box-shadow: inset 0 0 0 1px var(--brand);
 }
 
 .planName {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.0625rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
   color: var(--text);
 }
 
 .planPrice {
-  font-family: var(--mono);
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
 }
 
 .planBadge {
-  display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.3rem 0.6rem;
-  border-radius: 999px;
-  background: rgba(26, 107, 255, 0.12);
-  color: var(--accent);
-  border: 1px solid rgba(26, 107, 255, 0.22);
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 650;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: var(--brand-dim);
+  color: var(--text);
+  border: 1px solid var(--brand-border);
   width: fit-content;
 }
 
 .planLimits {
   display: grid;
-  gap: 0.35rem;
   flex: 1;
+  border-top: 1px solid var(--border);
 }
 
 .planLimit {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.82rem;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
   padding: 0.4rem 0;
   border-bottom: 1px solid var(--border);
 }
 
-.planLimit:last-child {
-  border-bottom: none;
-}
-
 .planLimit span {
-  color: var(--muted);
+  color: var(--text-2);
 }
 
 .planLimit strong {
   font-family: var(--mono);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text);
   font-size: 0.78rem;
 }
@@ -316,92 +303,88 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.65rem 1rem;
-  border-radius: 8px;
+  min-height: 38px;
+  padding: 0 1rem;
+  border-radius: var(--r-1);
   font-family: var(--sans);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.15s;
+  transition: background-color var(--d-fast), border-color var(--d-fast);
   cursor: pointer;
   margin-top: 0.5rem;
   background: var(--surface);
   color: var(--text);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border-strong);
 }
 
 .planBtn:hover {
-  border-color: var(--accent);
+  border-color: var(--text-2);
+  text-decoration: none;
 }
 
-.planBtnManage {
-  background: var(--surface-2);
-  color: var(--muted);
-  border-color: var(--border);
-  cursor: default;
-  opacity: 0.6;
-}
-
+.planBtnManage,
 .planBtnCurrent {
   background: var(--surface-2);
-  color: var(--muted);
+  color: var(--text-2);
   border-color: var(--border);
   cursor: default;
-  opacity: 0.6;
 }
 
 .planBtnUpgrade {
-  background: var(--text);
-  color: var(--bg);
-  border-color: var(--text);
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
 }
 
 .planBtnUpgrade:hover {
-  opacity: 0.85;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .planBtnFree {
-  opacity: 0.6;
+  color: var(--text-2);
   cursor: default;
 }
 
 .pricingLink {
-  text-align: center;
-  margin-top: 1.25rem;
+  margin-top: 1.1rem;
 }
 
 .pricingLink a {
   color: var(--accent);
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.pricingLink a:hover {
-  text-decoration: underline;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
 @media (max-width: 960px) {
+  .plansGrid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
   .statsRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.9rem;
+  }
+  .statItem:nth-child(3) { padding-left: 0; border-left: 0; }
+
+  .packsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .packsGridConstrained {
+    max-height: none;
   }
 
   .plansGrid {
     grid-template-columns: 1fr;
   }
-}
-
-@media (max-width: 680px) {
-  .packsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .packsGridConstrained {
-    max-height: 700px;
-  }
 
   .subActions {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .portalBtn,

@@ -60,10 +60,10 @@ export default function ConfirmPage() {
             </div>
           )}
         </div>
-        <h2 className={styles.heading}>{error.includes("session") ? "Missing session" : "Payment Confirmed"}</h2>
+        <h2 className={styles.heading}>{error.includes("session") ? "Missing session" : "Payment confirmed"}</h2>
         <p style={{ color: "var(--muted)" }}>{error}</p>
         <div className={styles.btnRow}>
-          <a href="/console/" className={styles.btnLink}>Return to Dashboard</a>
+          <a href="/console/" className={styles.btnLink}>Return to dashboard</a>
         </div>
       </div>
     );
@@ -85,21 +85,21 @@ export default function ConfirmPage() {
           </svg>
         </div>
       </div>
-      <h2 className={styles.heading}>Payment Confirmed</h2>
+      <h2 className={styles.heading}>Payment confirmed</h2>
       <p style={{ color: "var(--text)", marginBottom: "1rem" }}>Your credits will be added to your account shortly.</p>
       <div className={styles.receiptBox}>
         <div><span className={styles.label}>Product: </span>{data.product?.name || "Unknown"}</div>
         <div><span className={styles.label}>Amount: </span>{(data.amount_total / 100).toFixed(2)} {data.currency?.toUpperCase()}</div>
         <div><span className={styles.label}>Email: </span>{data.customer_email || "N/A"}</div>
-        <div><span className={styles.label}>Payment Method: </span>{pm?.brand ? `${pm.brand.toUpperCase()} \u2022\u2022\u2022\u2022 ${pm.last4}` : "N/A"}</div>
+        <div><span className={styles.label}>Payment method: </span>{pm?.brand ? `${pm.brand.toUpperCase()} \u2022\u2022\u2022\u2022 ${pm.last4}` : "N/A"}</div>
       </div>
       <div className={styles.btnRow}>
-        <a href="/console/" className={styles.btnLink}>Return to Dashboard</a>
-        <a href="https://docs.inferenceport.ai" className={`${styles.btnLink} ${styles.btnLinkDocs}`}>View Docs</a>
+        <a href="/console/" className={styles.btnLink}>Return to dashboard</a>
+        <a href="https://docs.inferenceport.ai" className={`${styles.btnLink} ${styles.btnLinkDocs}`}>View docs</a>
       </div>
       <p style={{ color: "var(--muted)", marginTop: 30, fontSize: 12 }}>Contact us at <a href="mailto:inferenceportai@gmail.com">inferenceportai@gmail.com</a></p>
       <p style={{ color: "var(--muted)", marginTop: 15, fontSize: 10 }}>InferencePort AI partners with Stripe to provide invoicing and payment processing.</p>
-      <p style={{ color: "var(--muted)", fontSize: 10 }}>&copy; 2026 InferencePort AI &middot; <a href="https://inferenceport.ai/security.html">Terms</a> &middot; <a href="https://inferenceport.ai/security.html">Privacy</a></p>
+      <p style={{ color: "var(--muted)", fontSize: 10 }}>&copy; 2026 InferencePort AI. <a href="https://inferenceport.ai/security.html">Terms</a>, <a href="https://inferenceport.ai/security.html">Privacy</a></p>
     </div>
   );
 }

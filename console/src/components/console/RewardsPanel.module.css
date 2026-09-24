@@ -22,7 +22,7 @@
 
 .statCard {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.1rem 1.2rem;
   display: flex;
@@ -31,10 +31,8 @@
 }
 
 .statLabel {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
   color: var(--muted);
 }
 
@@ -49,7 +47,7 @@
   padding: 0.55rem 1.1rem;
   background: transparent;
   color: var(--muted);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-family: var(--sans);
   font-size: 0.82rem;
@@ -67,10 +65,10 @@
 
 .optedOutBanner {
   padding: 0.9rem 1.1rem;
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
   border-radius: 10px;
-  color: #b45309;
+  color: var(--gold-ink);
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
@@ -87,8 +85,6 @@
 .discountTitle {
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--muted);
   margin-bottom: 0.9rem;
 }
@@ -104,25 +100,25 @@
   align-items: center;
   gap: 0.35rem;
   padding: 0.45rem 0.85rem;
-  background: rgba(20, 184, 166, 0.1);
-  border: 1px solid rgba(20, 184, 166, 0.25);
-  border-radius: 999px;
+  background: rgba(107, 114, 128, 0.1);
+  border: 1px solid rgba(107, 114, 128, 0.25);
+  border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #0f766e;
+  color: var(--text-2);
 }
 
 .discountChipAll {
-  background: rgba(124, 58, 237, 0.1);
-  border-color: rgba(124, 58, 237, 0.25);
-  color: #7c3aed;
+  background: rgba(107, 114, 128, 0.1);
+  border-color: rgba(107, 114, 128, 0.25);
+  color: var(--text-2);
 }
 
 .tabs {
   display: flex;
   gap: 0.3rem;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 3px;
   width: fit-content;
@@ -177,7 +173,7 @@
   height: 32px;
   border-radius: 9px;
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -190,8 +186,6 @@
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .chainCount {
@@ -210,7 +204,7 @@
 
 .rewardCard {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 14px;
   display: flex;
   flex-direction: column;
@@ -220,19 +214,20 @@
 }
 
 .rewardCard:hover {
-  border-color: #c8c0b0;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  border-color: var(--border-strong);
+  transform: none;
+  box-shadow: none;
 }
 
 .rewardCardEarned {
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.55);
+  box-shadow: none;
 }
 
+/* Claimed: quieter surface instead of fading the text (keeps AA contrast) */
 .rewardCardClaimed {
-  border-color: rgba(26, 107, 255, 0.3);
-  opacity: 0.7;
+  border-color: var(--border);
+  background: var(--surface-2);
 }
 
 .rewardCardConnector {
@@ -254,15 +249,15 @@
 }
 
 .connectorDotEarned {
-  background: #10b981;
+  background: var(--success);
   border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  box-shadow: none;
 }
 
 .connectorDotClaimed {
   background: var(--accent);
-  border-color: rgba(26, 107, 255, 0.3);
-  box-shadow: 0 0 10px rgba(26, 107, 255, 0.4);
+  border-color: rgba(79, 124, 255, 0.3);
+  box-shadow: none;
 }
 
 .connectorLine {
@@ -273,7 +268,7 @@
 }
 
 .connectorLineFilled {
-  background: linear-gradient(90deg, #10b981, var(--accent));
+  background: var(--brand);
 }
 
 .rewardCardBody {
@@ -308,7 +303,7 @@
 .rewardIconEarned {
   background: rgba(16, 185, 129, 0.12);
   border-color: rgba(16, 185, 129, 0.3);
-  animation: iconPulse 2s ease-in-out infinite;
+  animation: none;
 }
 
 @keyframes iconPulse {
@@ -336,26 +331,24 @@
 }
 
 .rewardTier {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   padding: 0.25rem 0.55rem;
   border-radius: 6px;
-  background: rgba(26, 107, 255, 0.08);
-  border: 1px solid rgba(26, 107, 255, 0.15);
-  color: var(--accent);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
   flex-shrink: 0;
 }
 
 .rewardLabel {
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--accent-2);
-  padding: 0.4rem 0.7rem;
-  background: rgba(26,107,255,0.05);
-  border-radius: 7px;
-  border: 1px solid rgba(26,107,255,0.1);
+  color: var(--gold-ink);
+  padding: 0.3rem 0.6rem;
+  background: var(--gold-dim);
+  border-radius: 6px;
+  border: 1px solid var(--gold-border);
   align-self: flex-start;
 }
 
@@ -395,14 +388,14 @@
 }
 
 .progressFillComplete {
-  background: #10b981;
+  background: var(--success);
 }
 
 .claimBtn {
   margin-top: 0.3rem;
   padding: 0.6rem 1.2rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-ink);
   border: none;
   border-radius: 9px;
   font-family: var(--sans);
@@ -415,8 +408,8 @@
 }
 
 .claimBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  background: var(--accent-hover);
+  box-shadow: none;
 }
 
 .claimBtn:disabled {
@@ -431,12 +424,12 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.4rem 0.75rem;
-  background: rgba(26, 107, 255, 0.1);
-  border: 1px solid rgba(26, 107, 255, 0.2);
-  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text);
   align-self: flex-start;
 }
 
@@ -452,8 +445,9 @@
 }
 
 .emptyIcon {
-  font-size: 2.2rem;
-  opacity: 0.5;
+  display: inline-flex;
+  font-size: 2rem;
+  color: var(--muted);
 }
 
 .spinner {
@@ -470,7 +464,7 @@
 .claimOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 12, 0.7);
+  background: var(--overlay);
   backdrop-filter: blur(6px);
   z-index: 2000;
   display: flex;
@@ -529,9 +523,7 @@
 .claimTitle {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #10b981;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  color: var(--success-ink);
   z-index: 1;
   animation: titleSlideUp 0.5s ease 0.2s both;
 }

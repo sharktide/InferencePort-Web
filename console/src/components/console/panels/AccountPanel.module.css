@@ -19,12 +19,14 @@
 .brandMark {
   font-family: var(--sans);
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text);
   text-align: center;
   margin-bottom: 0.35rem;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
+
+.brandMarkAi { color: var(--brand); }
 
 .signInSubtitle {
   font-size: 0.9rem;
@@ -47,7 +49,7 @@
   gap: 0.5rem;
   padding: 0.65rem 0.75rem;
   background: transparent !important;
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text) !important;
   font-family: var(--sans);
@@ -87,11 +89,9 @@
 }
 
 .divider span {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .authForm {
@@ -115,7 +115,7 @@
   width: 100%;
   padding: 0.7rem 0.9rem;
   background: transparent;
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 10px;
   font-family: var(--sans);
   font-size: 0.88rem;
@@ -124,9 +124,11 @@
 }
 
 .fieldGroup input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(26, 107, 255, 0.08);
+  box-shadow: 0 0 0 3px var(--brand-dim);
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .fieldGroup input::placeholder {
@@ -244,22 +246,23 @@
   gap: 1rem;
   padding: 1.25rem;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
 }
 
 .userAvatar {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+  border-radius: var(--r-1);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
+  color: var(--text);
   flex-shrink: 0;
 }
 
@@ -284,7 +287,7 @@
   align-self: flex-start;
   background: transparent !important;
   color: var(--danger) !important;
-  border: 1.5px solid rgba(224, 49, 80, 0.3);
+  border: 1px solid rgba(190, 24, 93, 0.3);
   padding: 0.5rem 0.9rem;
   font-size: 0.82rem;
   box-shadow: none !important;
@@ -292,7 +295,7 @@
 }
 
 .deleteBtn:hover {
-  background: rgba(224, 49, 80, 0.08) !important;
+  background: rgba(190, 24, 93, 0.08) !important;
   border-color: var(--danger);
   box-shadow: none !important;
   transform: none !important;
@@ -309,16 +312,14 @@
 
 .balanceCard {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 1.75rem;
 }
 
 .balanceLabel {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--muted);
   margin-bottom: 0.5rem;
 }
@@ -346,17 +347,15 @@
 
 .statItem {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1.25rem;
 }
 
 .statLabel {
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
   color: var(--muted);
   margin-bottom: 0.5rem;
 }
@@ -371,15 +370,13 @@
 .notice {
   padding: 1rem 1.25rem;
   border-radius: 10px;
-  border: 1.5px solid rgba(26, 107, 255, 0.2);
-  background: rgba(26, 107, 255, 0.04);
+  border: 1px solid rgba(79, 124, 255, 0.2);
+  background: rgba(79, 124, 255, 0.04);
 }
 
 .noticeLevel {
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--accent);
   display: block;
   margin-bottom: 0.4rem;
@@ -401,7 +398,7 @@
 
 .packCard {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 1.5rem;
   display: flex;
@@ -472,7 +469,7 @@
 
 .infoItem {
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   display: flex;
@@ -483,8 +480,6 @@
 .infoLabel {
   font-size: 0.7rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--muted);
 }
 
@@ -512,23 +507,23 @@
 
 .infoBadge {
   display: inline-block;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   padding: 0.25rem 0.6rem;
-  border-radius: 999px;
+  border-radius: 6px;
   width: fit-content;
 }
 
 .badgeVerified {
-  color: #0f766e;
-  background: rgba(20, 184, 166, 0.12);
-  border: 1px solid rgba(20, 184, 166, 0.22);
+  color: var(--text-2);
+  background: rgba(107, 114, 128, 0.12);
+  border: 1px solid rgba(107, 114, 128, 0.22);
 }
 
 .badgeUnverified {
-  color: #b45309;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.22);
+  color: var(--gold-ink);
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.22);
 }
 
 .passwordForm {
@@ -541,7 +536,7 @@
   width: 100%;
   padding: 0.7rem 0.9rem;
   background: transparent;
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 10px;
   font-family: var(--sans);
   font-size: 0.88rem;
@@ -550,9 +545,11 @@
 }
 
 .passwordForm .fieldGroup input:focus {
-  outline: none;
+  outline: 2px solid transparent;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(26, 107, 255, 0.08);
+  box-shadow: 0 0 0 3px var(--brand-dim);
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
 }
 
 .passwordForm .fieldGroup input::placeholder {
@@ -574,7 +571,7 @@
   align-items: flex-start;
   gap: 0.75rem;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem 1.25rem;
 }
@@ -618,7 +615,7 @@
   gap: 0.4rem;
   background: transparent;
   color: var(--danger);
-  border: 1.5px solid rgba(224, 49, 80, 0.3);
+  border: 1px solid rgba(190, 24, 93, 0.3);
   padding: 0.55rem 1rem;
   font-family: var(--sans);
   font-size: 0.82rem;
@@ -632,7 +629,7 @@
 }
 
 .dangerBtn:hover:not(:disabled) {
-  background: rgba(224, 49, 80, 0.08);
+  background: rgba(190, 24, 93, 0.08);
   border-color: var(--danger);
 }
 
@@ -652,7 +649,7 @@
   gap: 1rem;
   padding: 1rem 1.25rem;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: 12px;
 }
 
@@ -661,7 +658,7 @@
   height: 40px;
   border-radius: 10px;
   background: var(--surface);
-  border: 1.5px solid var(--border);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -686,7 +683,7 @@
 
 .linkedStatus {
   font-size: 0.75rem;
-  color: #0f766e;
+  color: var(--text-2);
   font-weight: 500;
 }
 
@@ -701,7 +698,7 @@
 }
 
 .dangerSection {
-  border-color: rgba(224, 49, 80, 0.2) !important;
+  border-color: rgba(190, 24, 93, 0.2) !important;
 }
 
 .dangerContent {

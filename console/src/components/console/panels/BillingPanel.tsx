@@ -84,11 +84,11 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>P2G Credits (Pay-2-Go)</div>
+        <div className={styles.heading}>P2G credits (Pay-2-Go)</div>
         {wallet ? (
           <div className={billingStyles.walletContent}>
             <div className={billingStyles.balanceCard}>
-              <div className={billingStyles.balanceLabel}>Available Balance</div>
+              <div className={billingStyles.balanceLabel}>Available balance</div>
               <div className={billingStyles.balanceValue}>{Number(wallet.balance_credits || 0).toFixed(4)}</div>
               <div className={billingStyles.balanceUnit}>credits</div>
             </div>
@@ -107,11 +107,11 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
               </div>
             </div>
           </div>
-        ) : <div className={styles.lockedOverlay}>Sign in to view your credit balance</div>}
+        ) : <div className={styles.lockedOverlay}>Sign in to view your credit balance.</div>}
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Top Up Credits</div>
+        <div className={styles.heading}>Top up credits</div>
         <div className={showAllPacks ? billingStyles.packsGrid : `${billingStyles.packsGrid} ${billingStyles.packsGridConstrained}`}>
           {visiblePacks.map((p: any) => (
             <div key={p.label} className={billingStyles.packCard}>
@@ -149,7 +149,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
             Show fewer options
           </button>
         )}
-        <div className={styles.subheading}>Usage Rates</div>
+        <div className={styles.subheading}>Usage rates</div>
         <ul className={styles.rateList}>
           {[`${config?.pricing?.textCreditPerMillionTokens} credits per 1,000,000 text tokens (including multimodal text payloads)`, `${config?.pricing?.imageCreditPerImage} credits per image`, `${config?.pricing?.videoCreditPerSecond} credits per second of video`, `${config?.pricing?.audioCreditPerSecond} credits per second of audio (music/sfx)`].map((r, i) => <li key={i} className={styles.rateListItem}>{r}</li>)}
         </ul>
@@ -161,45 +161,45 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
           <div>
             <div className={styles.statGrid} style={{ marginBottom: "1rem" }}>
               <div className={styles.statArticle}>
-                <span className={styles.statLabel}>Current Plan</span>
+                <span className={styles.statLabel}>Current plan</span>
                 <strong className={styles.statValue}>{getPlanFriendlyName(subscription.plan_key)}</strong>
               </div>
               <div className={styles.statArticle}>
-                <span className={styles.statLabel}>Plan Key</span>
-                <strong className={styles.statValue}>{subscription.plan_key || "\u2014"}</strong>
+                <span className={styles.statLabel}>Plan key</span>
+                <strong className={styles.statValue}>{subscription.plan_key || "None"}</strong>
               </div>
               <div className={styles.statArticle}>
-                <span className={styles.statLabel}>Signed Up</span>
-                <strong className={styles.statValue}>{subscription.signed_up ? fmt(subscription.signed_up) : "\u2014"}</strong>
+                <span className={styles.statLabel}>Signed up</span>
+                <strong className={styles.statValue}>{subscription.signed_up ? fmt(subscription.signed_up) : "None"}</strong>
               </div>
             </div>
             {subscription.subscription?.length ? subscription.subscription.map((sub: any, i: number) => (
               <div key={i} className={styles.ledgerRow}>
-                <div><strong>Status</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.status || "\u2014"}</div></div>
-                <div><strong>Period</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.current_period_start ? fmt(sub.current_period_start) : "\u2014"} \u2014 {sub.current_period_end ? fmt(sub.current_period_end) : "\u2014"}</div></div>
-                <div><strong>Plan</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.plan_id || "\u2014"}</div></div>
+                <div><strong>Status</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.status || "None"}</div></div>
+                <div><strong>Period</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.current_period_start ? fmt(sub.current_period_start) : "None"} to {sub.current_period_end ? fmt(sub.current_period_end) : "None"}</div></div>
+                <div><strong>Plan</strong><div className={`${styles.muted} ${styles.tiny}`}>{sub.plan_id || "None"}</div></div>
               </div>
             )) : <p className={`${styles.muted} ${styles.tiny}`}>No active subscription. You are on the Free plan.</p>}
 
             {hasActiveSubscription && (
               <div className={billingStyles.subActions}>
                 <a href={getStripePortalUrl()} target="_blank" rel="noopener noreferrer" className={billingStyles.portalBtn}>
-                  Manage Subscription
+                  Manage subscription
                 </a>
                 <a href={getStripePortalUrl()} target="_blank" rel="noopener noreferrer" className={billingStyles.upgradeBtn}>
                   Upgrade / Downgrade
                 </a>
                 <a href={getStripePortalUrl()} target="_blank" rel="noopener noreferrer" className={billingStyles.cancelBtn}>
-                  Cancel Subscription
+                  Cancel subscription
                 </a>
               </div>
             )}
           </div>
-        ) : <div className={styles.lockedOverlay}>Sign in to view your subscription info</div>}
+        ) : <div className={styles.lockedOverlay}>Sign in to view your subscription.</div>}
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Available Plans</div>
+        <div className={styles.heading}>Available plans</div>
         <div className={billingStyles.plansGrid}>
           {plans.sort((a: any, b: any) => a.order - b.order).map((plan: any) => {
             const isCurrent = plan.key === currentPlanKey;
@@ -210,7 +210,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
               <div key={plan.key} className={`${billingStyles.planCard} ${isCurrent ? billingStyles.planCurrent : ""}`}>
                 <div className={billingStyles.planName}>{plan.name}</div>
                 <div className={billingStyles.planPrice}>{plan.price === "0.00" ? "Free" : `$${plan.price}/mo`}</div>
-                {isCurrent && <div className={billingStyles.planBadge}>Current Plan</div>}
+                {isCurrent && <div className={billingStyles.planBadge}>Current plan</div>}
                 <div className={billingStyles.planLimits}>
                   {plan.limits.cloudChatDaily != null && (
                     <div className={billingStyles.planLimit}>
@@ -239,12 +239,12 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
                   )}
                   {plan.limits.verifyTokenWithEmailDaily != null && (
                     <div className={billingStyles.planLimit}>
-                      <span>Token Verify</span><strong>{plan.limits.verifyTokenWithEmailDaily}/day</strong>
+                      <span>Token verify</span><strong>{plan.limits.verifyTokenWithEmailDaily}/day</strong>
                     </div>
                   )}
                 </div>
                 {isCurrent ? (
-                  <div className={`${billingStyles.planBtn} ${billingStyles.planBtnCurrent}`}>Current Plan</div>
+                  <div className={`${billingStyles.planBtn} ${billingStyles.planBtnCurrent}`}>Current plan</div>
                 ) : plan.url ? (
                   <a
                     href={hasActiveSubscription ? getStripePortalUrl() : plan.url}
@@ -255,7 +255,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
                     {isUpgrade ? "Upgrade" : "Downgrade"}
                   </a>
                 ) : (
-                  <div className={`${billingStyles.planBtn} ${billingStyles.planBtnFree}`}>Free Plan</div>
+                  <div className={`${billingStyles.planBtn} ${billingStyles.planBtnFree}`}>Free plan</div>
                 )}
               </div>
             );
@@ -267,14 +267,14 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>P2G Ledger (Recent Usage & Purchases)</div>
+        <div className={styles.heading}>P2G ledger <span className={`${styles.muted} ${styles.tiny}`} style={{ fontWeight: 500 }}>Recent usage and purchases</span></div>
         <div className={styles.ledger}>
           <div className={styles.ledgerHeader}><span>Type</span><span>Credits</span><span>Units</span><span>Date</span></div>
           {ledger.length === 0 ? <div className={styles.lockedOverlay} style={{ minHeight: 60 }}>No ledger entries yet.</div> : ledger.slice(0, 30).map((e: any, i: number) => (
             <div key={i} className={styles.ledgerRow}>
-              <div><strong>{e.entry_type}</strong><div className={`${styles.muted} ${styles.tiny}`}>{e.usage_kind || "\u2014"}</div></div>
+              <div><strong>{e.entry_type}</strong><div className={`${styles.muted} ${styles.tiny}`}>{e.usage_kind || "None"}</div></div>
               <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{Number(e.delta_credits || 0).toFixed(4)}</div>
-              <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{e.units != null ? e.units : "\u2014"} {e.unit_label || ""}</div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{e.units != null ? e.units : "None"} {e.unit_label || ""}</div>
               <div className={`${styles.muted} ${styles.tiny}`}>{e.created_at || ""}</div>
             </div>
           ))}

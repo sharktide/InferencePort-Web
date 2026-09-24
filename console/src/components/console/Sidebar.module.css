@@ -1,52 +1,28 @@
 .consoleNav {
   position: sticky;
-  top: 64px;
+  top: 60px;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 1.25rem 0.75rem;
-  background: #faf8f4;
+  gap: 1.1rem;
+  padding: 1.25rem 0.75rem 1rem;
+  background: var(--bg);
   border-right: 1px solid var(--border);
-  height: calc(100vh - 64px);
+  height: calc(100vh - 60px);
+  height: calc(100dvh - 60px);
   overflow-y: auto;
 }
 
-[data-theme="dark"] .consoleNav {
-  background: #151518;
-  border-right-color: var(--border);
+.navGroup {
+  display: grid;
+  gap: 1px;
 }
 
+/* Group titles: sentence case, quiet, not tracked caps */
 .consoleNavLabel {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: var(--muted);
-  padding: 0.4rem 0.9rem 0.6rem;
-}
-
-.consoleNavTab {
-  width: 100%;
-  justify-content: flex-start;
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid transparent;
-  padding: 0.8rem 0.9rem;
-  border-radius: 10px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  white-space: normal;
-  text-align: left;
-}
-
-.consoleNavTab:hover:not(.active) {
-  background: var(--surface-2);
-  color: var(--text);
-}
-
-.consoleNavTab.active {
-  background: var(--accent);
-  color: #fff;
+  padding: 0 0.7rem 0.35rem;
 }
 
 .navTabWrap {
@@ -55,109 +31,141 @@
   align-items: center;
 }
 
+.consoleNavTab {
+  position: relative;
+  width: 100%;
+  min-height: 38px;
+  justify-content: flex-start;
+  gap: 0.65rem;
+  background: transparent;
+  color: var(--text-2);
+  border: 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--r-0);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.25;
+}
+
+.navIcon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  transition: color var(--d-fast);
+}
+
+.navLabel { min-width: 0; }
+.navTabWrap:has(.rewardBadge) .navLabel { padding-right: 1.9rem; }
+
+.consoleNavTab:hover:not(.active) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.consoleNavTab:hover:not(.active) .navIcon { color: var(--text-2); }
+
+.consoleNavTab.active {
+  background: var(--brand-dim);
+  color: var(--text);
+  font-weight: 650;
+}
+.consoleNavTab.active .navIcon { color: var(--brand); }
+.consoleNavTab.active::before {
+  content: '';
+  position: absolute;
+  left: -0.75rem;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--brand);
+}
+
+/* Unclaimed rewards: a gold count chip (the console's one gold highlight) */
 .rewardBadge {
   position: absolute;
-  right: 0.6rem;
+  right: 0.55rem;
   top: 50%;
   transform: translateY(-50%);
-  min-width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: #ef4444;
-  color: #fff;
-  font-size: 0.6rem;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  color: var(--gold-ink);
+  font-size: 0.72rem;
   font-weight: 700;
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
-  animation: badgeBounce 2s ease-in-out infinite;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
-}
-
-@keyframes badgeBounce {
-  0%, 100% { transform: translateY(-50%) scale(1); }
-  25% { transform: translateY(-50%) scale(1.15); }
-  50% { transform: translateY(-50%) scale(1); }
-  75% { transform: translateY(-50%) scale(1.1); }
+  pointer-events: none;
 }
 
 .sidebarUserSection {
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
 }
 
 .rewardNotification {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 0.85rem;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(26, 107, 255, 0.08) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: 10px;
-  animation: notificationPulse 3s ease-in-out infinite;
-}
-
-@keyframes notificationPulse {
-  0%, 100% { border-color: rgba(16, 185, 129, 0.25); }
-  50% { border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 0 12px rgba(16, 185, 129, 0.1); }
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--r-1);
 }
 
 .rewardNotificationIcon {
-  font-size: 1rem;
-  animation: iconBounce 1.5s ease-in-out infinite;
-}
-
-@keyframes iconBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: var(--gold-ink);
 }
 
 .rewardNotificationText {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: #059669;
-  line-height: 1.3;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--gold-ink);
+  line-height: 1.35;
 }
 
 .sidebarUserTag {
-  margin-top: auto;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.7rem 0.85rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-[data-theme="dark"] .sidebarUserTag {
-  background: var(--surface-2);
-  border-color: var(--border);
+  gap: 0.6rem;
+  padding: 0.35rem 0.4rem;
+  min-width: 0;
 }
 
 .sidebarUserAvatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-0);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--mono);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text);
   flex-shrink: 0;
 }
 
 .sidebarUserEmail {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--text-2);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -170,9 +178,9 @@
   position: fixed;
   inset: 0;
   z-index: 199;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--overlay);
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity var(--d-move) var(--ease-out);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -187,40 +195,26 @@
     top: 0;
     left: 0;
     z-index: 200;
-    width: 280px;
-    max-width: 85vw;
+    width: 300px;
+    max-width: 86vw;
     height: 100vh;
     height: 100dvh;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-102%);
+    visibility: hidden;
+    transition: transform var(--d-move) var(--ease-out), visibility 0s linear var(--d-move);
     border-right: 1px solid var(--border);
-    border-bottom: none;
     padding-top: 1.25rem;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     background: var(--surface);
-    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
     overscroll-behavior: contain;
   }
 
   .consoleNav.mobileOpen {
     transform: translateX(0);
+    visibility: visible;
+    transition: transform var(--d-move) var(--ease-out), visibility 0s;
   }
 
-  .consoleNavLabel {
-    display: block;
-  }
-
-  .sidebarUserTag {
-    display: flex !important;
-  }
-
-  .consoleNavTab {
-    width: 100%;
-    flex: none;
-    white-space: normal;
-  }
-
-  .sidebarUserSection {
-    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
-  }
+  .consoleNavTab { min-height: 44px; }
 }
