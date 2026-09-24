@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
 import styles from "./Sidebar.module.css";
+import Icon, { type IconName } from "../Icon";
 
 interface SidebarProps {
   user: any;
@@ -14,7 +12,7 @@ interface SidebarProps {
   unclaimedRewards?: number;
 }
 
-const navTabs = [
+export const navTabs = [
   { id: "account", label: "Account management" },
   { id: "billing", label: "Billing" },
   { id: "models", label: "Models" },
@@ -26,6 +24,27 @@ const navTabs = [
   { id: "shield", label: "Shield" },
   { id: "authorized-apps", label: "Authorized Applications" },
 ];
+
+/* Presentation only: visual groups over the same ordered tabs, and one icon per tab. */
+const navGroups: { title: string; ids: string[] }[] = [
+  { title: "Account", ids: ["account", "billing"] },
+  { title: "Explore", ids: ["models", "rewards"] },
+  { title: "Build", ids: ["api-key", "usage", "gen-api", "payg-api", "shield"] },
+  { title: "Access", ids: ["authorized-apps"] },
+];
+
+const navIcons: Record<string, IconName> = {
+  account: "user-circle",
+  billing: "credit-card",
+  models: "cube",
+  rewards: "gift",
+  "api-key": "key",
+  usage: "chart-bar",
+  "gen-api": "chat-circle-text",
+  "payg-api": "coins",
+  shield: "shield-check",
+  "authorized-apps": "plugs-connected",
+};
 
 export default function Sidebar({
   user,
@@ -47,34 +66,40 @@ export default function Sidebar({
         aria-label="Console sections"
         role="navigation"
       >
-        <span className={styles.consoleNavLabel}>Navigation</span>
-        {navTabs.map((tab) => (
-          <div key={tab.id} className={styles.navTabWrap}>
-            <button
-              type="button"
-              className={`console-nav-tab ${styles.consoleNavTab} ${activeTab === tab.id ? styles.active : ""}`}
-              data-console-tab={tab.id}
-              onClick={() => {
-                onTabChange(tab.id);
-                onClose();
-              }}
-            >
-              {tab.label}
-            </button>
-            {tab.id === "rewards" && unclaimedRewards > 0 && (
-              <span className={styles.rewardBadge}>
-                {unclaimedRewards}
-              </span>
-            )}
+        {navGroups.map((group) => (
+          <div key={group.title} className={styles.navGroup}>
+            <span className={styles.consoleNavLabel}>{group.title}</span>
+            {navTabs.filter((tab) => group.ids.includes(tab.id)).map((tab) => (
+              <div key={tab.id} className={styles.navTabWrap}>
+                <button
+                  type="button"
+                  className={`console-nav-tab ${styles.consoleNavTab} ${activeTab === tab.id ? styles.active : ""}`}
+                  data-console-tab={tab.id}
+                  aria-current={activeTab === tab.id ? "page" : undefined}
+                  onClick={() => {
+                    onTabChange(tab.id);
+                    onClose();
+                  }}
+                >
+                  <Icon name={navIcons[tab.id]} className={styles.navIcon} />
+                  <span className={styles.navLabel}>{tab.label}</span>
+                </button>
+                {tab.id === "rewards" && unclaimedRewards > 0 && (
+                  <span className={styles.rewardBadge} aria-label={`${unclaimedRewards} unclaimed`}>
+                    {unclaimedRewards}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
         ))}
         {user && (
           <div className={styles.sidebarUserSection}>
             {unclaimedRewards > 0 && (
               <div className={styles.rewardNotification}>
-                <span className={styles.rewardNotificationIcon}>🎁</span>
+                <Icon name="gift" className={styles.rewardNotificationIcon} />
                 <span className={styles.rewardNotificationText}>
-                  You have {unclaimedRewards} new reward{unclaimedRewards !== 1 ? "s" : ""} to claim!
+                  You have {unclaimedRewards} new reward{unclaimedRewards !== 1 ? "s" : ""} to claim.
                 </span>
               </div>
             )}

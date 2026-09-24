@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "../Icon";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./RewardsPanel.module.css";
 
@@ -161,7 +162,7 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
           <div className={styles.claimEffect}>
             <div className={styles.claimBurst} />
             <div className={styles.claimIcon}>{showClaimEffect.icon}</div>
-            <div className={styles.claimTitle}>Reward Claimed!</div>
+            <div className={styles.claimTitle}>Reward claimed</div>
             <div className={styles.claimName}>{showClaimEffect.name}</div>
             <div className={styles.claimReward}>{showClaimEffect.reward?.label}</div>
           </div>
@@ -171,15 +172,15 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
       <div className={styles.headerRow}>
         <div className={styles.statsRow}>
           <div className={styles.statCard}>
-            <span className={styles.statLabel}>Total Spent</span>
+            <span className={styles.statLabel}>Total spent</span>
             <span className={styles.statValue}>${formatNumber(stats?.total_spend_usd || 0)}</span>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statLabel}>Models Tried</span>
+            <span className={styles.statLabel}>Models tried</span>
             <span className={styles.statValue}>{stats?.unique_models_tried || 0}</span>
           </div>
           <div className={styles.statCard}>
-            <span className={styles.statLabel}>Days Visited</span>
+            <span className={styles.statLabel}>Days visited</span>
             <span className={styles.statValue}>{stats?.days_visited || 0}</span>
           </div>
           <div className={styles.statCard}>
@@ -192,19 +193,19 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
           </div>
         </div>
         <button className={styles.optOutBtn} onClick={handleOptOut}>
-          {optedOut ? "Enable Rewards" : "Opt Out"}
+          {optedOut ? "Enable rewards" : "Opt out"}
         </button>
       </div>
 
       {optedOut && (
         <div className={styles.optedOutBanner}>
-          Rewards are disabled. Click &quot;Enable Rewards&quot; to reactivate.
+          Rewards are disabled. Select &quot;Enable rewards&quot; to turn them back on.
         </div>
       )}
 
       {filtered.length === 0 ? (
         <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>🏅</div>
+          <div className={styles.emptyIcon}><Icon name="medal" /></div>
           <p>No rewards in this category yet.</p>
         </div>
       ) : (
@@ -261,14 +262,14 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
                           </div>
 
                           {r.progress.claimed ? (
-                            <span className={styles.claimedBadge}>✓ Claimed</span>
+                            <span className={styles.claimedBadge}><Icon name="check" /> Claimed</span>
                           ) : r.progress.earned ? (
                             <button
                               className={styles.claimBtn}
                               disabled={claiming === r.id}
                               onClick={() => handleClaim(r)}
                             >
-                              {claiming === r.id ? "Claiming..." : "Claim Reward"}
+                              {claiming === r.id ? "Claiming..." : "Claim reward"}
                             </button>
                           ) : null}
                         </div>

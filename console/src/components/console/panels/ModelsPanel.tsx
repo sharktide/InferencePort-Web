@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "../../Icon";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 
@@ -471,7 +472,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                     <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
+                <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "None"}</span></div>
                 <div className={styles.modelMeta}>
                   <span className={styles.modelKey}>Pricing</span>
                   <span className={styles.modelValue}>
@@ -516,7 +517,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                     <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
                 </div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "\u2014"}</span></div>
+                <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "None"}</span></div>
                 <div className={styles.modelMeta}>
                   <span className={styles.modelKey}>Pricing</span>
                   <span className={styles.modelValue}>
@@ -542,7 +543,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Live Playground</div>
+        <div className={styles.heading}>Live playground</div>
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test generation using {source === "p2g" ? "P2G API" : "Gen API"}. Every successful generation consumes credits.</p>
         <div className={styles.tabs}>
           {(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
@@ -620,7 +621,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
             {threeModel === "sv3d" && "SF3D produces a GLB model from a single image."}
             {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
-            {" "}Async job polling &mdash; most jobs complete within 1&ndash;5 minutes.
+            {" "}Async job polling: most jobs complete within 1 to 5 minutes.
           </p>
           <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? (threeStatus === "submitting" ? "Submitting\u2026" : "Generating\u2026") : "Generate 3D model"}</button>
 
@@ -649,7 +650,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
               )}
               {threeResult.videoUrl && (
                 <div className={styles.threeMediaRow}>
-                  <span className={`${styles.muted} ${styles.tiny}`}>Orbit Preview</span>
+                  <span className={`${styles.muted} ${styles.tiny}`}>Orbit preview</span>
                   <video controls src={threeResult.videoUrl} className={styles.mediaOutputMedia} />
                 </div>
               )}
@@ -672,7 +673,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
       {selectedDetailModel && (
         <div className={styles.modelDetailOverlay} onClick={() => setSelectedDetailModel(null)}>
           <div className={styles.modelDetailTray} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.modelDetailClose} onClick={() => setSelectedDetailModel(null)} aria-label="Close">&times;</button>
+            <button className={styles.modelDetailClose} onClick={() => setSelectedDetailModel(null)} aria-label="Close"><Icon name="x" size={18} /></button>
             <div className={styles.modelDetailImageWrap}>
               <img
                 className={styles.modelDetailImage}
@@ -703,7 +704,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                   {String(modelType(selectedDetailModel)).toUpperCase()}
                 </span>
               </div>
-              <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(selectedDetailModel) || "\u2014"}</span></div>
+              <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(selectedDetailModel) || "None"}</span></div>
               <div className={styles.modelMeta}>
                 <span className={styles.modelKey}>Pricing</span>
                 <span className={styles.modelValue}>

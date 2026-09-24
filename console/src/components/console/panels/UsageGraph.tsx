@@ -41,11 +41,23 @@ function getBarTime(date: Date, period: string): number {
 }
 
 function fmtDate(iso?: string) {
-  if (!iso) return "\u2014";
+  if (!iso) return "None";
   try {
     const d = new Date(iso);
     return d.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
   } catch { return iso; }
+}
+
+/* Presentation only: round the y-axis to clean steps (1, 2, 2.5, 5 x 10^n) so ticks are honest and readable. */
+function niceScale(maxVal: number) {
+  if (!(maxVal > 0)) return { max: 1, step: 0.25, decimals: 2 };
+  const raw = maxVal / 4;
+  const p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const n = raw / p;
+  const step = (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+  const max = Math.ceil(maxVal / step - 1e-9) * step;
+  const decimals = step >= 1 ? 0 : (String(+step.toFixed(8)).split(".")[1] || "").length;
+  return { max, step, decimals };
 }
 
 export default function UsageGraph({ session, apiBase }: Props) {
@@ -150,6 +162,13 @@ export default function UsageGraph({ session, apiBase }: Props) {
     return { totalCredits, totalRequests, topModel, topCredits, topReqs };
   }, [filtered]);
 
+  const scale = useMemo(() => niceScale(maxVal), [maxVal]);
+  const ticks = useMemo(() => {
+    const out: number[] = [];
+    for (let v = 0; v <= scale.max + scale.step / 1000; v += scale.step) out.push(v);
+    return out;
+  }, [scale]);
+
   const periods = ["24h", "7d", "30d", "all"] as const;
 
   const showTooltip = (barEl: HTMLElement, bar: BarData) => {
@@ -175,6 +194,23 @@ export default function UsageGraph({ session, apiBase }: Props) {
 
   return (
     <div className={s.graphWrapper} onClick={(e) => { if (touchedBar !== null && !graphRef.current?.contains(e.target as Node)) hideTooltip(); }}>
+      <div className={s.summaryRow}>
+        <div className={s.summaryCard}>
+          <span className={s.summaryLabel}>Credits spent</span>
+          <strong className={s.summaryValue}>{summary.totalCredits.toFixed(4)}</strong>
+        </div>
+        <div className={s.summaryCard}>
+          <span className={s.summaryLabel}>Requests</span>
+          <strong className={s.summaryValue}>{summary.totalRequests.toLocaleString()}</strong>
+        </div>
+        {summary.topModel && (
+          <div className={s.summaryCard}>
+            <span className={s.summaryLabel}>Top model</span>
+            <strong className={s.summaryValue}>{summary.topModel}</strong>
+            <span className={s.summarySub}>{summary.topReqs} requests, {summary.topCredits.toFixed(4)} credits</span>
+          </div>
+        )}
+      </div>
       <div className={s.controls}>
         <div className={s.controlGroup}>
           <span className={s.controlLabel}>Models</span>
@@ -210,24 +246,28 @@ export default function UsageGraph({ session, apiBase }: Props) {
         ) : (
           <>
             <div className={s.chartArea}>
-              <div className={s.yAxis}>
-                {Array.from({ length: 5 }, (_, i) => {
-                  const val = (maxVal / 4) * (4 - i);
-                  return (
-                    <span key={i} className={s.yLabel}>
-                      {metric === "credits" ? val.toFixed(val >= 1 ? 1 : 4) : Math.round(val)}
-                    </span>
-                  );
-                })}
+              <div className={s.yAxis} aria-hidden="true">
+                {ticks.map((val) => (
+                  <span key={val} className={s.yLabel} style={{ bottom: `${(val / scale.max) * 100}%` }}>
+                    {metric === "credits" ? val.toFixed(scale.decimals) : Math.round(val).toLocaleString()}
+                  </span>
+                ))}
               </div>
               <div className={s.barsContainer}>
+                <div className={s.gridLines} aria-hidden="true">
+                  {ticks.map((val) => (
+                    <span key={val} className={s.gridLine} style={{ bottom: `${(val / scale.max) * 100}%` }} />
+                  ))}
+                </div>
                 {bars.map((bar, i) => {
                   const val = metric === "credits" ? bar.credits : bar.requests;
-                  const heightPct = (val / maxVal) * 100;
+                  const heightPct = (val / scale.max) * 100;
                   return (
                     <div key={i} className={s.barCol}>
                       <div
                         className={s.barWrapper}
+                        role="img"
+                        aria-label={`${bar.label}: ${bar.credits.toFixed(4)} credits, ${bar.requests} requests`}
                         onMouseEnter={(e) => showTooltip(e.currentTarget, bar)}
                         onMouseLeave={hideTooltip}
                         onTouchStart={(e) => { e.preventDefault(); handleTouch(e.currentTarget, bar, i); }}
@@ -271,23 +311,6 @@ export default function UsageGraph({ session, apiBase }: Props) {
         )}
       </div>
 
-      <div className={s.summaryRow}>
-        <div className={s.summaryCard}>
-          <span className={s.summaryLabel}>Credits Spent</span>
-          <strong className={s.summaryValue}>{summary.totalCredits.toFixed(4)}</strong>
-        </div>
-        <div className={s.summaryCard}>
-          <span className={s.summaryLabel}>Requests</span>
-          <strong className={s.summaryValue}>{summary.totalRequests.toLocaleString()}</strong>
-        </div>
-        {summary.topModel && (
-          <div className={s.summaryCard}>
-            <span className={s.summaryLabel}>Top Model</span>
-            <strong className={s.summaryValue}>{summary.topModel}</strong>
-            <span className={s.summarySub}>{summary.topReqs} reqs &middot; {summary.topCredits.toFixed(4)} cr</span>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

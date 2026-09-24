@@ -44,27 +44,27 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Lightning API Keys</div>
+        <div className={styles.heading}>Lightning API keys</div>
         <div className={styles.apiKeyShell}>
           <div className={styles.apiKeyForm}>
             <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "0.85rem" }}>Create long-lived API keys for hosted scripts, servers, and production integrations.</p>
             <div className={styles.stack}>
-              <input type="text" maxLength={64} placeholder="Production deploy, CI, backend service..." value={keyName} onChange={(e) => setKeyName(e.target.value)} />
-              <input type="text" placeholder="Optional ISO expiry, e.g. 2026-12-31T23:59:59Z" value={keyExpiry} onChange={(e) => setKeyExpiry(e.target.value)} />
+              <label>Name<input type="text" maxLength={64} placeholder="Production deploy, CI, backend service..." value={keyName} onChange={(e) => setKeyName(e.target.value)} /></label>
+              <label>Expires (optional)<input type="text" placeholder="ISO date, for example 2026-12-31T23:59:59Z" value={keyExpiry} onChange={(e) => setKeyExpiry(e.target.value)} /></label>
               <div className={styles.row}>
-                <button onClick={create} disabled={busy} style={{ flex: 1 }}>{busy ? "Creating\u2026" : "Generate API Key"}</button>
-                <button className="ghost" onClick={refresh} style={{ flex: 1 }}>Refresh Keys</button>
+                <button onClick={create} disabled={busy} style={{ flex: 1 }}>{busy ? "Creating\u2026" : "Generate API key"}</button>
+                <button className="ghost" onClick={refresh} style={{ flex: 1 }}>Refresh keys</button>
               </div>
               <p className={`${styles.muted} ${styles.tiny}`}>{status}</p>
             </div>
           </div>
           {reveal && (
             <div className={styles.apiKeyReveal}>
-              <div className={styles.apiKeyRevealTitle}>API key created</div>
+              <div className={styles.apiKeyRevealTitle} role="status">API key created</div>
               <p className={`${styles.muted} ${styles.tiny}`}>Copy this secret now. It is only shown once.</p>
               <pre className={styles.apiKeySecret}>{reveal.raw}</pre>
               <div className={styles.row}>
-                <button onClick={async () => { await navigator.clipboard.writeText(reveal.raw); setStatus(`Copied "${reveal.name}".`); }} style={{ flex: 1 }}>Copy Key</button>
+                <button onClick={async () => { await navigator.clipboard.writeText(reveal.raw); setStatus(`Copied "${reveal.name}".`); }} style={{ flex: 1 }}>Copy key</button>
                 <button className="ghost" onClick={() => setReveal(null)} style={{ flex: 1 }}>Dismiss</button>
               </div>
             </div>
@@ -79,8 +79,8 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
                   <div className={styles.apiKeyRowTitle}><div className={styles.apiKeyName}>{k.name}</div><div className={styles.apiKeyPrefix}>{k.keyPrefix}...</div></div>
                   <div className={`${styles.apiKeyBadge} ${st.cls}`}>{st.label}</div>
                 </div>
-                <div className={styles.apiKeyMeta}><span>Created: {fmt(k.createdAt)}</span><span>Last used: {fmt(k.lastUsedAt)}</span><span>Expires: {k.expiresAt ? fmt(k.expiresAt) : "Never"}</span></div>
-                <div className={styles.apiKeyActions}><button className="ghost" disabled={k.isRevoked} onClick={() => revoke(k.id)}>{k.isRevoked ? "Revoked" : "Revoke Key"}</button></div>
+                <div className={styles.apiKeyMeta}><span>Created {fmt(k.createdAt)}</span><span>Last used {fmt(k.lastUsedAt)}</span><span>Expires {k.expiresAt ? fmt(k.expiresAt) : "Never"}</span></div>
+                <div className={styles.apiKeyActions}><button className="ghost" disabled={k.isRevoked} onClick={() => revoke(k.id)}>{k.isRevoked ? "Revoked" : "Revoke key"}</button></div>
               </div>
             );
           })}
