@@ -127,18 +127,18 @@
 }
 
 .modelsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 1rem; }
-.modelCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: grid; gap: 0.8rem; transition: border-color 0.15s, transform 0.15s; }
+.modelCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; display: grid; gap: 0.8rem; transition: border-color 0.15s, transform 0.15s; overflow: hidden; min-width: 0; }
 .modelCard:hover { border-color: #c8c0b0; transform: translateY(-1px); }
-.modelCardTop { display: flex; justify-content: space-between; gap: 0.75rem; align-items: start; }
-.modelCardName { font-size: 0.95rem; font-weight: 600; display: block; line-height: 1.35; }
-.modelPill { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.32rem 0.55rem; border-radius: 999px; border: 1px solid transparent; flex-shrink: 0; }
+.modelCardTop { display: flex; justify-content: space-between; gap: 0.5rem; align-items: start; min-width: 0; overflow: hidden; }
+.modelCardName { font-size: 0.95rem; font-weight: 600; line-height: 1.35; min-width: 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.modelPill { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.32rem 0.55rem; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; }
 .isText { color: #0f766e; background: rgba(20,184,166,0.12); border-color: rgba(20,184,166,0.22); }
 .isConfigVideo, .isConfigAudio { color: #7c3aed; background: rgba(124,58,237,0.10); border-color: rgba(124,58,237,0.18); }
 .isConfigImage { color: #b45309; background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.22); }
 .isConfig3d { color: #1a6bff; background: rgba(26,107,255,0.10); border-color: rgba(26,107,255,0.22); }
-.modelMeta { display: flex; flex-direction: column; gap: 0.25rem; }
+.modelMeta { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
 .modelKey { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
-.modelValue { font-family: var(--mono); font-size: 0.74rem; color: var(--text); word-break: break-word; }
+.modelValue { font-family: var(--mono); font-size: 0.74rem; color: var(--text); word-break: break-all; overflow: hidden; text-overflow: ellipsis; }
 
 .modelDetailOverlay { position: fixed; inset: 0; background: rgba(10,10,12,0.45); backdrop-filter: blur(2px); z-index: 900; display: flex; justify-content: flex-end; animation: fadeIn 0.15s ease; }
 .modelDetailTray { width: 420px; max-width: 100vw; height: 100vh; background: var(--surface); border-left: 1.5px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; animation: slideInRight 0.2s ease; box-shadow: -8px 0 32px rgba(0,0,0,0.12); }
