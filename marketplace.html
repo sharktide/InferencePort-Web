@@ -408,7 +408,7 @@
 					class="fw-bold text-center mb-4"
 					style="color: var(--text); letter-spacing: -0.02em"
 				>
-					P2G Cloud & Local Models
+					Pay-to-Go Cloud &amp; Local Models
 				</h2>
 				<div class="filter-tabs" id="filter-tabs">
 					<button class="filter-tab active" data-filter="all">All</button>
@@ -614,7 +614,7 @@
 					<div class="model-card-top">
 						<span class="model-card-name">${escapeHtml(displayName)}</span>
 						<div>
-							<span class="model-pill pill-p2g">P2G CLOUD</span>
+							<span class="model-pill pill-p2g">PAY-TO-GO</span>
 							<span class="model-pill ${pillClass(type)}">${(m.type || type).toUpperCase()}</span>
 						</div>
 					</div>
@@ -626,7 +626,7 @@
 							<span class="model-key">Pricing</span>
 							<span class="model-value">${price}</span>
 						</div>
-						<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" class="btn-card-action btn-console">Open Console</a>
+						<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" class="btn-card-action btn-console">Open Developer Console</a>
 					</div>
 				`;
 
@@ -767,5 +767,6 @@
 				scrollToHashModel();
 			});
 		</script>
+	<script src="scripts/hero-canvas.js"></script>
 	</body>
 </html>

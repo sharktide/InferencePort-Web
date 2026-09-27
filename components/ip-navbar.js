@@ -5,12 +5,10 @@ class IpNavbar extends HTMLElement {
 		const items = [
 			{ id: "home", label: "Home", href: "index.html" },
 			{ id: "marketplace", label: "Marketplace", href: "marketplace.html" },
-			{ id: "lightning", label: "Lightning", href: "lightning.html" },
 		];
 		items.push({ id: "solutions", label: "Solutions", href: "solutions.html" });
 		items.push({ id: "shield", label: "Shield", href: "shield.html" });
 		items.push(
-			{ id: "install", label: "Install", href: "install.html" },
 			{ id: "pricing", label: "Pricing", href: "pricing.html" },
 			{ id: "security", label: "Security", href: "security.html" },
 		);
@@ -29,9 +27,9 @@ class IpNavbar extends HTMLElement {
 		<div class="collapse navbar-collapse" id="ip-nav">
 			<ul class="navbar-nav ms-auto align-items-lg-center gap-1">
 				${navItems}
-				<li class="nav-item ms-1"><a class="nav-link nav-pill-download" href="install.html#install">Download App</a></li>
-				<li class="nav-item ms-1"><a class="nav-link nav-pill-chat" href="chat/">Chat Now</a></li>
-				<li class="nav-item ms-1"><a class="nav-link nav-pill-console" href="/console">Console</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-download" href="install.html#install">Download Self-Hosted Platform</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-chat" href="chat/">Try Lightning</a></li>
+				<li class="nav-item ms-1"><a class="nav-link nav-pill-console" href="/console">Developer Console</a></li>
 			</ul>
 		</div>
 	</div>
