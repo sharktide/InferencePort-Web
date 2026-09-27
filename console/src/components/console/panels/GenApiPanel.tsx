@@ -51,7 +51,7 @@ function formatModelPrice(m: any) {
     if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
   }
   if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
-  if (pricing.prompt && pricing.prompt !== "0" && pricing.completion && pricing.completion !== "0") {
+  if (pricing.prompt != null && pricing.completion != null && (parseFloat(pricing.prompt) !== 0 || parseFloat(pricing.completion) !== 0)) {
     const perMillion = (v: string) => (parseFloat(v) * 1_000_000).toFixed(2);
     return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
   }

@@ -94,6 +94,16 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
               <div className={billingStyles.balanceLabel}>Available Balance</div>
               <div className={billingStyles.balanceValue}>{Number(wallet.balance_credits || 0).toFixed(4)}</div>
               <div className={billingStyles.balanceUnit}>credits</div>
+              <div style={{ display: "flex", gap: "1.5rem", marginTop: "0.75rem", paddingTop: "0.75rem", borderTop: "1px solid var(--border)" }}>
+                <div>
+                  <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: "0.2rem" }}>Paid Credits</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: "1.1rem", fontWeight: 600, color: "#22c55e" }}>{Number(wallet.paid_credits || 0).toFixed(4)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: "0.2rem" }}>Promotional Credits</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: "1.1rem", fontWeight: 600, color: "#a78bfa" }}>{Number(wallet.promotional_credits || 0).toFixed(4)}</div>
+                </div>
+              </div>
             </div>
             <div className={billingStyles.statsRow}>
               <div className={billingStyles.statItem}>
