@@ -26,6 +26,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
   const [packs] = useState<any[]>(config?.billing?.packs || []);
   const [tierConfig, setTierConfig] = useState<any>(null);
   const [showAllPacks, setShowAllPacks] = useState(false);
+  const [deployments, setDeployments] = useState<any[]>([]);
 
   const DEFAULT_PACK_IDS = new Set(["pack_10", "pack_50", "pack_100", "pack_200"]);
   const defaultPacks = packs.filter((p: any) => DEFAULT_PACK_IDS.has(p.id));
@@ -38,15 +39,17 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
   const loadBillingData = useCallback(async () => {
     if (!session?.access_token) return;
     try {
-      const [me, ledgerData, subData, tiers] = await Promise.all([
+      const [me, ledgerData, subData, tiers, deployData] = await Promise.all([
         fj("/v1/me", { headers: authH() }),
         fj("/v1/credits/ledger?limit=100", { headers: authH() }),
         fj("/subscription", { headers: authH() }).catch(() => null),
         fetch(TIER_CONFIG_URL).then(r => r.json()).catch(() => null),
+        fj("/v1/deploy", { headers: authH() }).catch(() => ({ data: [] })),
       ]);
       setWallet(me.wallet || {});
       setUsageSummary(me.usage_summary || {});
       setLedger(ledgerData.entries || []);
+      setDeployments(deployData.data || []);
       if (subData) setSubscription(subData);
       if (tiers) setTierConfig(tiers);
     } catch { /* ignore */ }
@@ -91,6 +94,16 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
               <div className={billingStyles.balanceLabel}>Available Balance</div>
               <div className={billingStyles.balanceValue}>{Number(wallet.balance_credits || 0).toFixed(4)}</div>
               <div className={billingStyles.balanceUnit}>credits</div>
+              <div style={{ display: "flex", gap: "1.5rem", marginTop: "0.75rem", paddingTop: "0.75rem", borderTop: "1px solid var(--border)" }}>
+                <div>
+                  <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: "0.2rem" }}>Paid Credits</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: "1.1rem", fontWeight: 600, color: "#22c55e" }}>{Number(wallet.paid_credits || 0).toFixed(4)}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--muted)", marginBottom: "0.2rem" }}>Promotional Credits</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: "1.1rem", fontWeight: 600, color: "#a78bfa" }}>{Number(wallet.promotional_credits || 0).toFixed(4)}</div>
+                </div>
+              </div>
             </div>
             <div className={billingStyles.statsRow}>
               <div className={billingStyles.statItem}>
@@ -196,6 +209,60 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
             )}
           </div>
         ) : <div className={styles.lockedOverlay}>Sign in to view your subscription info</div>}
+      </section>
+
+      <section className={`${styles.card} ${styles.wide}`}>
+        <div className={styles.heading}>Featherless Deployments</div>
+        {(() => {
+          const activeDeployments = deployments.filter((d: any) => d.status === "active");
+          if (activeDeployments.length === 0) {
+            return <p className={`${styles.muted} ${styles.tiny}`}>No active deployments. Deploy models from the Deploy tab.</p>;
+          }
+          return (
+            <div>
+              <div className={billingStyles.statsRow} style={{ marginBottom: "12px" }}>
+                <div className={billingStyles.statItem}>
+                  <span className={billingStyles.statLabel}>Active</span>
+                  <strong className={billingStyles.statValue}>{activeDeployments.length}</strong>
+                </div>
+                <div className={billingStyles.statItem}>
+                  <span className={billingStyles.statLabel}>Monthly Fees</span>
+                  <strong className={billingStyles.statValue}>${activeDeployments.reduce((s: number, d: any) => s + (d.monthly_fee || 0), 0).toFixed(2)}</strong>
+                </div>
+              </div>
+              {activeDeployments.map((d: any) => (
+                <div key={d.id} className={styles.ledgerRow}>
+                  <div>
+                    <strong>{d.featherless_model_id}</strong>
+                    <div className={`${styles.muted} ${styles.tiny}`}>{d.display_model_id}</div>
+                  </div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>${d.monthly_fee}/mo</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>
+                    {d.total_input_tokens?.toLocaleString()} in / {d.total_output_tokens?.toLocaleString()} out
+                  </div>
+                  <div>
+                    <span className={`${styles.muted} ${styles.tiny}`}>Cycle ends: {d.billing_cycle_end ? new Date(d.billing_cycle_end).toLocaleDateString() : "N/A"}</span>
+                    <button
+                      onClick={async () => {
+                        if (!confirm("Cancel this deployment?")) return;
+                        try {
+                          await fj(`/v1/deploy/${d.id}/cancel`, { method: "POST", headers: authH() });
+                          loadBillingData();
+                        } catch (e: any) { alert(e.message); }
+                      }}
+                      style={{ marginLeft: "8px", padding: "2px 8px", border: "1px solid var(--border)", borderRadius: "4px", background: "var(--surface)", color: "var(--text)", cursor: "pointer", fontSize: "11px" }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ))}
+              <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "8px" }}>
+                <a href="#" onClick={(e) => { e.preventDefault(); (document.querySelector('[data-console-tab="deploy"]') as HTMLButtonElement)?.click(); }}>Manage all deployments</a>
+              </p>
+            </div>
+          );
+        })()}
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>

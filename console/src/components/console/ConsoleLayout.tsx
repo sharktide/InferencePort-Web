@@ -14,6 +14,7 @@ import GenApiPanel from "./panels/GenApiPanel";
 import PaygApiPanel from "./panels/PaygApiPanel";
 import ShieldPanel from "./panels/ShieldPanel";
 import AuthorizedAppsPanel from "./panels/AuthorizedAppsPanel";
+import DeployPanel from "./panels/DeployPanel";
 import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
@@ -125,6 +126,7 @@ export default function ConsoleLayout() {
     account: <AccountPanel config={config} session={session} supabase={supabase} />,
     billing: <BillingPanel config={config} session={session} apiBase={apiBase} />,
     models: <ModelsPanel config={config} session={session} apiBase={apiBase} theme={theme} />,
+    deploy: <DeployPanel session={session} apiBase={apiBase} config={config} theme={theme} />,
     rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
     "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
     usage: <UsagePanel session={session} apiBase={apiBase} />,

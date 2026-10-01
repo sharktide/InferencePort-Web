@@ -327,6 +327,25 @@ a:hover { color: var(--brand-hover); }
 .tag-new    { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple-border); }
 .tag-local  { background: var(--success-dim); color: #059669; border: 1px solid var(--success-border); }
 
+/* ── Hero particle canvas ── */
+.hero-section,
+.page-hero,
+.hero {
+  position: relative;
+  z-index: 0;
+}
+.hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-canvas { display: none; }
+}
+
 /* ── Footer ── */
 ip-footer {
   border-top: 1px solid var(--border);

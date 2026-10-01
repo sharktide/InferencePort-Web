@@ -63,12 +63,33 @@
         background: linear-gradient(135deg, rgba(79, 124, 255, 0.08), rgba(79, 124, 255, 0.02));
       }
       .solution-kicker {
+        display: inline-block;
         font-family: "JetBrains Mono", monospace;
-        font-size: 0.66rem;
-        color: var(--gold);
-        letter-spacing: 0.1em;
+        font-size: 0.63rem;
+        font-weight: 600;
+        color: #4b5563;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 50px;
+        padding: 4px 11px;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+      }
+      .kicker-lightning {
+        color: #92400e;
+        background: rgba(251, 191, 36, 0.18);
+        border-color: rgba(251, 191, 36, 0.55);
+      }
+      .kicker-cloud {
+        color: #6d28d9;
+        background: rgba(139, 92, 246, 0.14);
+        border-color: rgba(139, 92, 246, 0.45);
+      }
+      .kicker-selfhosted {
+        color: #1d4ed8;
+        background: rgba(79, 124, 255, 0.14);
+        border-color: rgba(79, 124, 255, 0.45);
       }
       .solution-title {
         font-size: 1.15rem;
@@ -194,9 +215,9 @@
           One stack for <span class="accent">hosting, chat, and billing.</span>
         </h1>
         <p class="hero-subtitle">
-          Use the the subscription (Gen) API for day-to-day chatting, the P2G API for production integrations, AI Shield for fraud detection, and InferencePort AI Server to self-host local AI models with secure team access.</p>
+          Use Lightning subscriptions for day-to-day chatting, the Pay-to-Go API for production integrations, AI Shield for fraud detection, and the Self-Hosted Platform to self-host local AI models with secure team access.</p>
         <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-          <a href="https://inference.js.org/console" class="btn btn-primary">Open Console</a>
+          <a href="https://inference.js.org/console" class="btn btn-brand">Open Developer Console</a>
           <a href="https://inferenceport-ai.readthedocs.io" class="btn btn-ghost">Read Docs</a>
         </div>
       </div>
@@ -209,28 +230,28 @@
           The services behind the <span class="accent">InferencePort AI</span> stack.
         </h2>
         <p class="section-sub mb-4">
-          Each part of the platform has a specific job: AI Shield handles fraud detection and abuse prevention, the generation API powers the default chat experience, the P2G API handles metered production workloads, InferencePort AI Server enables secure frictionless self-hosting of local models, and the console ties billing together.
+          Each part of the platform has a specific job: AI Shield handles fraud detection and abuse prevention, Lightning Router subscriptions power the default chat experience, the Pay-to-Go Cloud Platform handles metered production workloads, the Self-Hosted Platform enables secure frictionless self-hosting of local models, and the console ties billing together.
         </p>
 
         <div class="row g-3">
           <div class="col-md-6 col-lg-3">
             <div class="solution-card solution-gen">
-              <div class="solution-kicker">Generation API</div>
-              <div class="solution-title">Subscription chat</div>
+              <div class="solution-kicker kicker-lightning">Lightning Router</div>
+              <div class="solution-title">Lightning subscriptions</div>
               <div class="solution-body">
-                Best for high-volume, low-token chatting. This is the default chat path, but it uses strict plan quotas and abuse controls.
+                Best for high-volume, low-token chatting. Lightning Router models at up to 1,000 words/sec, backed by your subscription plan quotas and abuse controls.
               </div>
               <ul class="solution-list">
                 <li>Ideal for everyday chatbot traffic</li>
-                <li>Subscription-backed limits</li>
+                <li>Included with InferencePort subscriptions</li>
                 <li>OpenAI-style chat endpoint</li>
               </ul>
             </div>
           </div>
           <div class="col-md-6 col-lg-3">
             <div class="solution-card solution-p2g">
-              <div class="solution-kicker">P2G API</div>
-              <div class="solution-title">Credit-billed production API</div>
+              <div class="solution-kicker kicker-cloud">Cloud Platform</div>
+              <div class="solution-title">Pay-to-Go Cloud Platform</div>
               <div class="solution-body">
                 Best for enterprise integrations and stable production services. Requests charge credits from your wallet instead of consuming plan quotas.
               </div>
@@ -257,7 +278,7 @@
           </div>
           <div class="col-md-6 col-lg-3">
             <div class="solution-card solution-chat">
-              <div class="solution-kicker">Chat Services</div>
+              <div class="solution-kicker kicker-selfhosted">Self-Hosted Platform</div>
               <div class="solution-title">Local + cloud chat</div>
               <div class="solution-body">
                 Use local chat for offline work and the cloud chat stack when you need hosted access, sync, or shared usage across devices.
@@ -271,7 +292,7 @@
           </div>
           <div class="col-md-6 col-lg-6">
             <div class="solution-card solution-server">
-              <div class="solution-kicker">Self Hosting</div>
+              <div class="solution-kicker kicker-selfhosted">Self-Hosted Platform</div>
               <div class="solution-title">InferencePort AI Server</div>
               <div class="solution-body">
                 A zero-setup AI server that can be hosted directly from the app. Run your own local LLMs and marketplace models while securely sharing access with your team, customers, or organization.
@@ -307,7 +328,7 @@
       <div class="container">
         <div class="section-tag">Pick The Right API</div>
         <h2 class="section-title mb-3">
-          Subscription generation for <span class="accent">chatty workloads</span>, P2G for production.
+          Lightning subscriptions for <span class="accent">chatty workloads</span>, Cloud Platform for production.
         </h2>
         <div class="compare-box">
           <table class="compare-table">
@@ -321,22 +342,22 @@
             <tbody>
               <tr>
                 <td>Regular chat UI, assistant, or day-to-day usage</td>
-                <td class="best">Generation API</td>
-                <td>Default chat path, optimized for regular chatting and low token usage, but bounded by plan limits.</td>
+                <td class="best">Lightning Subscriptions</td>
+                <td>Lightning Router models at up to 1,000 words/sec, optimized for regular chatting and low token usage, but bounded by plan limits.</td>
               </tr>
               <tr>
                 <td>Enterprise integration or customer-facing backend</td>
-                <td class="best">P2G API</td>
-                <td>Credit-metered calls with a separate wallet and ledger, which is easier to treat as a production service.</td>
+                <td class="best">Pay-to-Go Cloud Platform</td>
+                <td>Pay-to-Go calls billed against credits, with a separate wallet and ledger, which is easier to treat as a production service.</td>
               </tr>
               <tr>
                 <td>Need account management, balances, or API keys</td>
-                <td class="best">Console Dashboard</td>
+                <td class="best">Developer Console</td>
                 <td>Use the console to view billing, buy packs, create API keys, and review usage in one place.</td>
               </tr>
               <tr>
                 <td>Self-hosting local models or private AI infrastructure</td>
-                <td class="best">InferencePort AI Server</td>
+                <td class="best">Self-Hosted Platform</td>
                 <td>
                   Deploy and manage your own AI server directly from the app. Share access with teams or users through InferencePort AI account authentication or custom API keys.
                 </td>
@@ -359,12 +380,12 @@
           Two billing models. <span class="accent">Two different jobs.</span>
         </h2>
         <p class="section-sub mb-4">
-          The subscription generation API is bundled with plan quotas, while P2G is charged against credits in your wallet. The console always shows the live pricing and usage values.
+          The Lightning subscription API is bundled with plan quotas, while the Pay-to-Go API is charged against credits in your wallet. The console always shows the live pricing and usage values.
         </p>
         <div class="row g-3">
           <div class="col-md-4 col-lg-3">
             <div class="pricing-card popular">
-              <div class="solution-kicker">Generation (Subscription)</div>
+              <div class="solution-kicker kicker-lightning">Lightning (Subscription)</div>
               <div class="solution-title">Best for regular chatting</div>
               <div class="plan-price">Plan quotas</div>
               <div class="plan-note">
@@ -379,11 +400,11 @@
           </div>
           <div class="col-md-4 col-lg-3">
             <div class="pricing-card">
-              <div class="solution-kicker">P2G (Credits)</div>
+              <div class="solution-kicker kicker-cloud">Pay-to-Go (Credits)</div>
               <div class="solution-title">Best for production APIs</div>
               <div class="plan-price">Credit pack billing</div>
               <div class="plan-note">
-                Current default server rates are credit-based and visible in the console. The repository defaults are 0.75 credits per million text tokens, 0.02 per image, 0.01 per video second, and 0.01 per audio second.
+                Current default server rates are billed through Pay-to-Go credits and visible in the Developer Console. The repository defaults are 0.75 credits per million text tokens, 0.02 per image, 0.01 per video second, and 0.01 per audio second.
               </div>
               <ul class="solution-list mt-3">
                 <li>Separate wallet and ledger</li>
@@ -409,7 +430,7 @@
           </div>
           <div class="col-md-4 col-lg-3">
             <div class="pricing-card">
-              <div class="solution-kicker">InferencePort AI Server</div>
+              <div class="solution-kicker kicker-selfhosted">Self-Hosted Platform</div>
               <div class="solution-title">Best for self-hosting</div>
               <div class="plan-price">Free to start</div>
               <div class="plan-note">
@@ -449,7 +470,7 @@
               <div class="solution-kicker">Step 2</div>
               <div class="solution-title">Choose cloud or self-hosted AI</div>
               <div class="solution-body">
-                Use the Generation API and P2G API for hosted workloads, or launch an InferencePort AI Server directly from the app to run your own local models.
+                Use Lightning subscriptions or the Pay-to-Go API for hosted workloads, or launch an InferencePort AI Server directly from the Self-Hosted Platform to run your own local models.
               </div>
             </div>
           </div>
@@ -458,7 +479,7 @@
               <div class="solution-kicker">Step 3</div>
               <div class="solution-title">Ship with the right billing model</div>
               <div class="solution-body">
-                Keep chat traffic on subscription quotas and move production or enterprise traffic to the credit-based P2G API.
+                Keep chat traffic on Lightning subscription quotas and move production or enterprise traffic to the Pay-to-Go API.
               </div>
             </div>
           </div>
@@ -469,5 +490,6 @@
     <ip-footer></ip-footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="scripts/hero-canvas.js"></script>
   </body>
 </html>
