@@ -46,9 +46,6 @@
 /* Grid children must be allowed to shrink so wide tables and code scroll inside themselves */
 .consoleContent > * { min-width: 0; }
 
-
-
-
 @media (max-width: 960px) {
   .consoleShell {
     grid-template-columns: 1fr;
@@ -56,7 +53,6 @@
   }
 
   .consoleContent {
-    padding: 1.5rem 1rem 3rem;
-    gap: 1.5rem;
+    padding: 1rem;
   }
 }

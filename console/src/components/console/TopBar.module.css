@@ -115,15 +115,41 @@
 .desktopOnly { display: inline; }
 
 @media (max-width: 960px) {
-  .topbar { padding: 0 0.75rem; }
-  .mobileOnly { display: inline-flex; }
-  .desktopOnly { display: none !important; }
-  .brandDesktop { display: none !important; }
-  .brandMobile { display: inline !important; }
-  .brand p { display: none !important; }
-}
+  .mobileOnly {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+  }
 
-@media (max-width: 480px) {
-  .brandLogo { display: none; }
-  .brandMobile { display: none !important; }
+  .desktopOnly {
+    display: none !important;
+  }
+
+  .brandEmphasis {
+    display: none !important;
+  }
+
+  .brandDesktop {
+    display: none !important;
+  }
+
+  .brandMobile {
+    display: inline !important;
+  }
+
+  .brand p {
+    display: none !important;
+  }
+
+  .topbar {
+    padding: 0 1rem;
+  }
+
+  .brandLogo {
+    width: 32px;
+    height: 32px;
+  }
 }

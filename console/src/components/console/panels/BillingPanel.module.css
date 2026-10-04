@@ -346,33 +346,25 @@
 }
 
 @media (max-width: 960px) {
-  .plansGrid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
-}
-
-@media (max-width: 680px) {
   .statsRow {
-    grid-template-columns: 1fr 1fr;
-    row-gap: 0.9rem;
-  }
-  .statItem:nth-child(3) { padding-left: 0; border-left: 0; }
-
-  .packsGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .packsGridConstrained {
-    max-height: none;
+    grid-template-columns: 1fr;
   }
 
   .plansGrid {
     grid-template-columns: 1fr;
   }
+}
+@media (max-width: 680px) {
+  .packsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .packsGridConstrained {
+    max-height: 700px;
+  }
 
   .subActions {
     flex-direction: column;
-    align-items: stretch;
   }
 
   .portalBtn,
