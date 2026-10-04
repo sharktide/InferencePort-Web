@@ -239,7 +239,7 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
 .oauthEmptyIcon { display: inline-flex; font-size: 1.75rem; color: var(--muted); margin-bottom: 0.2rem; }
 .spinner { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--brand); animation: spin 0.8s linear infinite; margin-bottom: 0.4rem; }
 .oauthErrorCard { border: 1px solid color-mix(in srgb, var(--crit) 40%, var(--border)) !important; border-radius: var(--r-2) !important; background: var(--surface) !important; padding: 1.75rem !important; text-align: center; }
-.oauthGrantsList { display: grid; border-top: 1px solid var(--text); }
+.oauthGrantsList { display: grid; gap: 1rem; }
 .oauthGrantCard { background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.4rem; transition: opacity 0.2s, transform 0.2s; min-width: 0; }
 .oauthGrantHead { display: flex; gap: 0.9rem; align-items: flex-start; }
 .oauthGrantIcon { width: 40px; height: 40px; border-radius: var(--r-1); border: 1px solid var(--border); background: var(--surface-2); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1rem; color: var(--text-2); }
@@ -279,4 +279,11 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
   .oauthGrantFooter { flex-direction: column; align-items: flex-start; }
   .modelDetailTray { width: 100vw; }
   .shieldConfigGrid { grid-template-columns: 1fr; }
+}
+
+/* Phones: less side padding so nested boxes keep a readable width */
+@media (max-width: 640px) {
+  .card { padding: 1.25rem; }
+  .oauthGrantCard { padding: 1rem 1.1rem; }
+  .oauthModal { padding: 1.25rem !important; }
 }

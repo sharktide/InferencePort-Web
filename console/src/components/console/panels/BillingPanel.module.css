@@ -374,3 +374,10 @@
     justify-content: center;
   }
 }
+
+@media (max-width: 640px) {
+  .balanceCard { padding: 1.25rem; }
+  .statItem { padding: 1rem; }
+  .planCard { padding: 1rem; }
+  .packCard { padding: 1rem; }
+}
