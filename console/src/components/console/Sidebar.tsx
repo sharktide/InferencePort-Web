@@ -16,6 +16,7 @@ export const navTabs = [
   { id: "account", label: "Account management" },
   { id: "billing", label: "Billing" },
   { id: "models", label: "Models" },
+  { id: "deploy", label: "Deploy (Featherless)" },
   { id: "rewards", label: "Rewards" },
   { id: "api-key", label: "API key" },
   { id: "usage", label: "Usage" },

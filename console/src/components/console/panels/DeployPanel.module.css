@@ -1,0 +1,350 @@
+.deploymentCard {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--surface-2);
+  transition: border-color 0.2s;
+}
+
+.deploymentCard:hover {
+  border-color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .deploymentHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .deploymentActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .modelCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.deploymentCard.expired {
+  opacity: 0.7;
+}
+
+.deploymentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.deploymentModel {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.deploymentActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cancelBtn,
+.terminateBtn,
+.deployBtn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.cancelBtn:hover {
+  border-color: var(--accent-2);
+  background: var(--accent-2);
+  color: #000;
+}
+
+.terminateBtn:hover {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: var(--bg);
+}
+
+.deployBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.deployBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deployBtn.deployed {
+  border-color: var(--success-ink);
+  background: var(--success-ink);
+  color: var(--bg);
+  cursor: default;
+}
+
+.modelCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  gap: 12px;
+}
+
+.modelInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.modelTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.providerLogo {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.providerLogoSmall {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.modelId {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.errorCard {
+  border-color: var(--danger) !important;
+  color: var(--danger);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.successCard {
+  border-color: var(--success-ink) !important;
+  color: var(--success-ink);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dismissBtn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  text-decoration: underline;
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+}
+
+.pageBtn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Provisioning overlay */
+.provisionOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes progressGlow {
+  0% { box-shadow: 0 0 4px var(--accent); }
+  50% { box-shadow: 0 0 16px var(--accent); }
+  100% { box-shadow: 0 0 4px var(--accent); }
+}
+
+.provisionModal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  min-width: 400px;
+  max-width: 480px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.provisionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.provisionSpinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+.provisionProgressBar {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.provisionProgressFill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+  animation: progressGlow 2s ease-in-out infinite;
+}
+
+.provisionStage {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  font-family: var(--mono);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.provisionStages {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.provisionStep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.provisionStepDone {
+  opacity: 0.7;
+  color: var(--success-ink);
+}
+
+.provisionStepActive {
+  opacity: 1;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.provisionStepIcon {
+  width: 14px;
+  text-align: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.provisionWarning {
+  font-size: 12px;
+  color: var(--warn);
+  text-align: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-weight: 500;
+}
