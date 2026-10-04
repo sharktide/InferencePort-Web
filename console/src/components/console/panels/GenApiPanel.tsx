@@ -199,22 +199,22 @@ export default function GenApiPanel({ session, config, apiBase }: Props) {
           <p>The <strong>Generation API</strong> (prefix <code>/gen</code>) provides AI generation backed by your plan&apos;s subscription quota. Each subscription tier (Free, Light, Core, Creator, Professional) includes daily/weekly usage limits.</p>
           <h3>Endpoints</h3>
           <ul>
-            <li><code>POST /gen/chat/completions</code> &mdash; Text chat completions</li>
-            <li><code>POST /gen/images/generations</code> &mdash; Image generation</li>
-            <li><code>POST /gen/videos/generations</code> &mdash; Video generation</li>
-            <li><code>POST /gen/audio/generations</code> &mdash; Audio/music generation</li>
-            <li><code>POST /gen/3d/generations</code> &mdash; 3D generation <span className={`${styles.muted} ${styles.tiny}`}>(P2G API only)</span></li>
-            <li><code>GET /gen/models</code> &mdash; Available model listing</li>
+            <li><code>POST /gen/chat/completions</code>: text chat completions</li>
+            <li><code>POST /gen/images/generations</code>: image generation</li>
+            <li><code>POST /gen/videos/generations</code>: video generation</li>
+            <li><code>POST /gen/audio/generations</code>: audio/music generation</li>
+            <li><code>POST /gen/3d/generations</code>: 3D generation <span className={`${styles.muted} ${styles.tiny}`}>(P2G API only)</span></li>
+            <li><code>GET /gen/models</code>: available model listing</li>
           </ul>
           <h3>Authentication</h3>
           <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
-          <h3>Rate Limits</h3>
+          <h3>Rate limits</h3>
           <p>Rate limits are determined by your subscription tier. See your plan for specific daily/weekly quotas.</p>
-          <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}><a href="https://docs.inferenceport.ai/en/latest/api/gen-api.html" target="_blank" rel="noreferrer">Full Generation API docs &rarr;</a></p>
+          <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}><a href="https://docs.inferenceport.ai/en/latest/api/gen-api.html" target="_blank" rel="noreferrer">Full Generation API docs</a></p>
         </div>
       </section>
       <section className={`${styles.card} ${styles.wide}`}>
-        <h2>Subscription API Playground</h2>
+        <h2>Subscription API playground</h2>
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test the Subscription API endpoints.</p>
         <div className={styles.tabs}>{(["text", "image", "video", "audio"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}><label>Model<select value={textModel} onChange={(e) => setTextModel(e.target.value)}>{textModels.map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{m.name}</option>)}</select></label><textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} /><button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button><pre className={styles.output}>{textOutput}</pre></div>}

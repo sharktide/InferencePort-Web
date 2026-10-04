@@ -317,32 +317,32 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
       <section className={`${styles.card} ${styles.wide}`}>
         <h2>Pay-2-Go (P2G) API</h2>
         <div className={styles.apiDocContent}>
-          <p>The <strong>Pay-2-Go API</strong> (prefix <code>/v1</code>) provides credit-billed AI generation. Purchase credits and consume them per request. No monthly subscription required &mdash; only pay for what you use.</p>
+          <p>The <strong>Pay-2-Go API</strong> (prefix <code>/v1</code>) provides credit-billed AI generation. Purchase credits and consume them per request. No monthly subscription required: only pay for what you use.</p>
           <h3>Endpoints</h3>
           <ul>
-            <li><code>POST /v1/chat/completions</code> &mdash; Text chat completions</li>
-            <li><code>POST /v1/images/generations</code> &mdash; Image generation</li>
-            <li><code>POST /v1/videos/generations</code> &mdash; Video generation</li>
-            <li><code>POST /v1/audio/generations</code> &mdash; Audio/music generation</li>
-            <li><code>POST /v1/3d/generations</code> &mdash; 3D generation (async job model)</li>
-            <li><code>GET /v1/3d/jobs/{'{'}job_id{'}'}</code> &mdash; Poll 3D job status</li>
-            <li><code>GET /v1/models</code> &mdash; Available models</li>
-            <li><code>GET /v1/me</code> &mdash; Account &amp; wallet info</li>
-            <li><code>GET /v1/credits/ledger</code> &mdash; Credit transaction history</li>
-            <li><code>GET /POST /v1/lightning-api-keys</code> &mdash; API key management</li>
+            <li><code>POST /v1/chat/completions</code>: text chat completions</li>
+            <li><code>POST /v1/images/generations</code>: image generation</li>
+            <li><code>POST /v1/videos/generations</code>: video generation</li>
+            <li><code>POST /v1/audio/generations</code>: audio/music generation</li>
+            <li><code>POST /v1/3d/generations</code>: 3D generation (async job model)</li>
+            <li><code>GET /v1/3d/jobs/{'{'}job_id{'}'}</code>: poll 3D job status</li>
+            <li><code>GET /v1/models</code>: available models</li>
+            <li><code>GET /v1/me</code>: account &amp; wallet info</li>
+            <li><code>GET /v1/credits/ledger</code>: credit transaction history</li>
+            <li><code>GET /POST /v1/lightning-api-keys</code>: API key management</li>
           </ul>
           <h3>Authentication</h3>
           <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
-          <h3>3D Generation</h3>
+          <h3>3D generation</h3>
           <p>3D generation uses an asynchronous job model. Submitting a request returns a <code>job_id</code> immediately (HTTP 202); you then poll <code>GET /v1/3d/jobs/{'{'}job_id{'}'}</code> until the job reaches <code>completed</code> or <code>failed</code> status. Credits are charged at submission time and refunded automatically if the job fails.</p>
-          <p>Supported models: <code>tripoSR</code> ($0.02), <code>asset-harvester</code> ($0.07), <code>sv3d</code> ($0.02), <code>trellis2</code> ($0.24&ndash;$0.35 with resolution options).</p>
+          <p>Supported models: <code>tripoSR</code> ($0.02), <code>asset-harvester</code> ($0.07), <code>sv3d</code> ($0.02), <code>trellis2</code> ($0.24 to $0.35 with resolution options).</p>
           <h3>Pricing</h3>
           <p>Credits are consumed per request. View your <strong>Account</strong> tab for current credit balance and purchase packs. See the <strong>Models</strong> tab for per-model pricing.</p>
-          <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}><a href="https://docs.inferenceport.ai/en/latest/api/p2g-api.html" target="_blank" rel="noreferrer">Full P2G API docs &rarr;</a></p>
+          <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}><a href="https://docs.inferenceport.ai/en/latest/api/p2g-api.html" target="_blank" rel="noreferrer">Full P2G API docs</a></p>
         </div>
       </section>
       <section className={`${styles.card} ${styles.wide}`}>
-        <h2>P2G API Playground</h2>
+        <h2>P2G API playground</h2>
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test the Pay-2-Go API. Every successful generation consumes credits.</p>
         <div className={styles.tabs}>{(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}><label>Model<select value={textModel} onChange={(e) => setTextModel(e.target.value)}>{textModels.map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{m.name}</option>)}</select></label><textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} /><button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button><pre className={styles.output}>{textOutput}</pre></div>}
@@ -400,7 +400,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
             {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
             {threeModel === "sv3d" && "SF3D produces a GLB model from a single image."}
             {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
-            {" "}Async job polling &mdash; most jobs complete within 1&ndash;5 minutes.
+            {" "}Async job polling: most jobs complete within 1 to 5 minutes.
           </p>
           <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? (threeStatus === "submitting" ? "Submitting\u2026" : "Generating\u2026") : "Generate 3D model"}</button>
 
@@ -429,7 +429,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
               )}
               {threeResult.videoUrl && (
                 <div className={styles.threeMediaRow}>
-                  <span className={`${styles.muted} ${styles.tiny}`}>Orbit Preview</span>
+                  <span className={`${styles.muted} ${styles.tiny}`}>Orbit preview</span>
                   <video controls src={threeResult.videoUrl} className={styles.mediaOutputMedia} />
                 </div>
               )}

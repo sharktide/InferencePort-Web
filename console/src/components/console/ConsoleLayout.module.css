@@ -11,15 +11,15 @@
   justify-content: center;
   min-height: 100vh;
   gap: 1rem;
-  color: var(--muted);
+  color: var(--text-2);
 }
 
 .spinner {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 3px solid var(--border);
-  border-top-color: var(--accent);
+  border-top-color: var(--brand);
   animation: spin 0.8s linear infinite;
 }
 
@@ -29,18 +29,22 @@
 
 .consoleShell {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  min-height: calc(100vh - 64px);
+  grid-template-columns: 264px minmax(0, 1fr);
+  min-height: calc(100vh - 60px);
   flex: 1;
 }
 
 .consoleContent {
   min-width: 0;
   display: grid;
+  align-content: start;
   gap: 1.5rem;
   padding: 2rem;
   max-width: 1400px;
 }
+
+/* Grid children must be allowed to shrink so wide tables and code scroll inside themselves */
+.consoleContent > * { min-width: 0; }
 
 @media (max-width: 960px) {
   .consoleShell {

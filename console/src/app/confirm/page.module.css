@@ -10,12 +10,11 @@
 }
 
 .heading {
-  font-size: 0.7rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin-bottom: 1rem;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
 }
 
 .successHeader {
@@ -36,14 +35,14 @@
 .brandImg {
   width: 70px;
   height: 70px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  border-radius: var(--r-2);
   object-fit: contain;
 }
 
 .brandName {
   font-size: 1rem;
   font-weight: 600;
+  letter-spacing: -0.03em;
   margin-top: 6px;
   color: var(--text);
 }
@@ -52,7 +51,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #dbeafe;
+  background: var(--brand-dim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,7 +61,7 @@
 .checkmarkSvg {
   width: 42px;
   height: 42px;
-  stroke: var(--accent);
+  stroke: var(--brand);
   stroke-width: 3;
   fill: none;
   stroke-linecap: round;
@@ -74,9 +73,10 @@
 .receiptBox {
   margin-top: 20px;
   background: var(--surface-2);
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
   padding: 14px 16px;
+  font-variant-numeric: tabular-nums;
   text-align: left;
   font-size: 0.9rem;
 }
@@ -93,29 +93,40 @@
   margin-top: 22px;
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .btnLink {
-  font-size: 0.88rem;
-  padding: 0.72rem 1.25rem;
-  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  font-size: 0.875rem;
+  padding: 0 1.15rem;
+  border-radius: var(--r-1);
   background: var(--accent);
-  color: white;
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
   text-decoration: none;
   font-weight: 600;
-  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 
 .btnLink:hover {
-  background: #0055e0;
-  box-shadow: 0 4px 16px rgba(26,107,255,0.3);
-  transform: translateY(-1px);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  text-decoration: none;
 }
 
 .btnLinkDocs {
-  background: var(--accent-2);
-  color: black;
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.btnLinkDocs:hover {
+  background: var(--surface-2);
+  border-color: var(--text-2);
 }
 
 @keyframes slideLeft {

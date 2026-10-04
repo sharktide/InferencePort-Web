@@ -21,22 +21,24 @@ export default function UsagePanel({ session, apiBase }: Props) {
 
   useEffect(() => { load(); }, [load]);
 
-  const fmt = (u: any) => u ? `${u.used} / ${u.limit} (${u.remaining} remaining)` : "\u2014";
+  const fmt = (u: any) => u ? `${u.used} / ${u.limit} (${u.remaining} remaining)` : "None";
+  /* Presentation only: meter fill from the same used/limit values, warn at 80% or more. */
+  const meterPct = (u: any) => (u && typeof u.used === "number" && typeof u.limit === "number" && u.limit > 0) ? Math.min(100, (u.used / u.limit) * 100) : null;
 
   if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to view recent usage and purchases.</div></div>;
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Usage Overview</div>
+        <div className={styles.heading}>Usage overview</div>
         <UsageGraph session={session} apiBase={apiBase} />
       </section>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Generation API Usage (Plan Limits)</div>
+        <div className={styles.heading}>Generation API usage (plan limits)</div>
         {genUsage ? (
           <div className={styles.statGrid}>
             {[["Chat (Daily)", genUsage.cloudChatDaily], ["Images (Daily)", genUsage.imagesDaily], ["Videos (Daily)", genUsage.videosDaily], ["Audio (Weekly)", genUsage.audioWeekly], ["AI Shield (Daily)", genUsage.aiShieldDaily], ["Server Token Verifications (Daily)", genUsage.verifyTokenWithEmailDaily]].map(([label, val], i) => (
-              <div key={i} className={styles.statArticle}><span className={styles.statLabel}>{label}</span><strong className={styles.statValue}>{fmt(val)}</strong></div>
+              <div key={i} className={`${styles.statArticle} ${styles.meterArticle}`}><span className={styles.statLabel}>{label}</span><strong className={styles.meterValue}>{fmt(val)}</strong>{meterPct(val) !== null && <span className={`${styles.meterTrack} ${(meterPct(val) as number) >= 80 ? styles.meterWarn : ""}`} aria-hidden="true"><span className={styles.meterFill} style={{ width: `${meterPct(val)}%` }} /></span>}</div>
             ))}
           </div>
         ) : <div className={styles.lockedOverlay}>Sign in to view your plan usage.</div>}
@@ -46,14 +48,14 @@ export default function UsagePanel({ session, apiBase }: Props) {
         <ActivityPanel session={session} apiBase={apiBase} />
       </section>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>P2G Ledger (Recent Usage & Purchases)</div>
+        <div className={styles.heading}>P2G ledger <span className={`${styles.muted} ${styles.tiny}`} style={{ fontWeight: 500 }}>Recent usage and purchases</span></div>
         <div className={styles.ledger}>
           <div className={styles.ledgerHeader}><span>Type</span><span>Credits</span><span>Units</span><span>Date</span></div>
           {ledger.length === 0 ? <div className={styles.lockedOverlay} style={{ minHeight: 60 }}>No ledger entries yet.</div> : ledger.map((e: any, i: number) => (
             <div key={i} className={styles.ledgerRow}>
-              <div><strong>{e.entry_type}</strong><div className={`${styles.muted} ${styles.tiny}`}>{e.usage_kind || "\u2014"}</div></div>
+              <div><strong>{e.entry_type}</strong><div className={`${styles.muted} ${styles.tiny}`}>{e.usage_kind || "None"}</div></div>
               <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{Number(e.delta_credits || 0).toFixed(4)}</div>
-              <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{e.units != null ? e.units : "\u2014"} {e.unit_label || ""}</div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>{e.units != null ? e.units : "None"} {e.unit_label || ""}</div>
               <div className={`${styles.muted} ${styles.tiny}`}>{e.created_at || ""}</div>
             </div>
           ))}

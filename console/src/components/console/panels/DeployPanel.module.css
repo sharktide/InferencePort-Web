@@ -10,21 +10,6 @@
   border-color: var(--accent);
 }
 
-@media (max-width: 640px) {
-  .deploymentHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .deploymentActions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-  .modelCard {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
 .deploymentCard.expired {
   opacity: 0.7;
 }
@@ -47,6 +32,7 @@
 
 .deploymentActions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   flex-shrink: 0;
 }
@@ -76,13 +62,13 @@
 .terminateBtn:hover {
   border-color: var(--danger);
   background: var(--danger);
-  color: #fff;
+  color: var(--bg);
 }
 
 .deployBtn:hover:not(:disabled) {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
 }
 
 .deployBtn:disabled {
@@ -91,9 +77,9 @@
 }
 
 .deployBtn.deployed {
-  border-color: #2ea043;
-  background: #2ea043;
-  color: #fff;
+  border-color: var(--success-ink);
+  background: var(--success-ink);
+  color: var(--bg);
   cursor: default;
 }
 
@@ -153,8 +139,8 @@
 }
 
 .successCard {
-  border-color: #2ea043 !important;
-  color: #2ea043;
+  border-color: var(--success-ink) !important;
+  color: var(--success-ink);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -203,7 +189,7 @@
 .pageBtn:hover:not(:disabled) {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--accent-ink);
 }
 
 .pageBtn:disabled {
@@ -221,6 +207,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 1rem;
   animation: fadeIn 0.2s ease;
 }
 
@@ -249,7 +236,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 28px 32px;
-  min-width: 400px;
+  width: 100%;
   max-width: 480px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.3s ease;
@@ -291,7 +278,7 @@
 
 .provisionProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), #8b5cf6);
+  background: var(--brand);
   border-radius: 3px;
   transition: width 0.4s ease;
   animation: progressGlow 2s ease-in-out infinite;
@@ -324,7 +311,7 @@
 
 .provisionStepDone {
   opacity: 0.7;
-  color: #22c55e;
+  color: var(--success-ink);
 }
 
 .provisionStepActive {
@@ -342,9 +329,29 @@
 
 .provisionWarning {
   font-size: 12px;
-  color: #f59e0b;
+  color: var(--warn);
   text-align: center;
   padding-top: 8px;
   border-top: 1px solid var(--border);
   font-weight: 500;
+}
+
+/* Declared last so these win over the base rules above */
+@media (max-width: 640px) {
+  .deploymentCard { padding: 14px; }
+  .deploymentHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .deploymentActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .deploymentActions > button { flex: 1 1 100%; }
+  .modelCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .modelCard > button { width: 100%; }
+  .provisionModal { padding: 20px; }
 }

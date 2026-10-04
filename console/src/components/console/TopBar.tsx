@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./TopBar.module.css";
+import Icon from "../Icon";
 
 interface TopBarProps {
   user: any;
@@ -41,26 +42,25 @@ export default function TopBar({
       <div className={styles.topActions}>
         <button
           id="mobile-nav-toggle"
-          className={`${styles.ghost} ${styles.mobileOnly}`}
+          className={`${styles.ghost} ${styles.iconBtn} ${styles.mobileOnly}`}
           type="button"
           aria-label={isMobileNavOpen ? "Close navigation" : "Open navigation"}
+          aria-expanded={isMobileNavOpen}
           onClick={onMobileNavToggle}
         >
-          <span className={styles.hamburgerLine}></span>
-          <span className={styles.hamburgerLine}></span>
-          <span className={styles.hamburgerLine}></span>
+          <Icon name={isMobileNavOpen ? "x" : "list"} size={20} />
         </button>
         <a id="home-link" href={homeUrl} target="_blank" rel="noreferrer" className={styles.desktopOnly}>Home</a>
         <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.desktopOnly}>Docs</a>
         <button
           id="theme-toggle"
-          className={styles.ghost}
+          className={`${styles.ghost} ${styles.iconBtn}`}
           type="button"
           aria-label="Toggle dark mode"
           onClick={onThemeToggle}
         >
-          <span className={`${styles.themeIcon} ${theme === "dark" ? styles.hidden : ""}`}>&#9788;</span>
-          <span className={`${styles.themeIcon} ${theme === "light" ? styles.hidden : ""}`}>&#9790;</span>
+          <span className={`${styles.themeIcon} ${theme === "dark" ? styles.hidden : ""}`}><Icon name="moon" size={18} /></span>
+          <span className={`${styles.themeIcon} ${theme === "light" ? styles.hidden : ""}`}><Icon name="sun" size={18} /></span>
         </button>
         {user ? (
           <button id="logout-btn" className={styles.ghost} onClick={onSignOut}>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import deployStyles from "./DeployPanel.module.css";
+import { useModal } from "../../Modal";
 
 interface Props {
   session: any;
@@ -47,6 +48,7 @@ const featherlessLogoUrl = (theme: string) =>
   `https://cdn.brandfetch.io/featherless.ai?c=1idhv9JFxNDhJr50XTx${theme === "dark" ? "&theme=dark" : ""}`;
 
 export default function DeployPanel({ session, apiBase, config, theme = "light" }: Props) {
+  const modal = useModal();
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [searchResults, setSearchResults] = useState<FeatherlessModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -187,7 +189,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const handleCancel = async (deploymentId: string) => {
-    if (!confirm("Cancel this deployment? Access will remain until the end of the current billing cycle.")) return;
+    if (!await modal.confirm("Access will remain until the end of the current billing cycle.", "Cancel this deployment?")) return;
     try {
       const result = await fj(`/v1/deploy/${deploymentId}/cancel`, {
         method: "POST",
@@ -201,7 +203,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const handleTerminate = async (deploymentId: string) => {
-    if (!confirm("Immediately terminate this deployment? This cannot be undone.")) return;
+    if (!await modal.confirm("This cannot be undone.", "Terminate this deployment now?")) return;
     try {
       const result = await fj(`/v1/deploy/${deploymentId}`, {
         method: "DELETE",
@@ -334,7 +336,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                               Restore
                             </button>
                             <span className={styles.muted} style={{ fontSize: "12px", alignSelf: "center" }}>
-                              Active until {d.billing_cycle_end ? new Date(d.billing_cycle_end).toLocaleDateString() : "—"}
+                              Active until {d.billing_cycle_end ? new Date(d.billing_cycle_end).toLocaleDateString() : "None"}
                             </span>
                           </>
                         )}
@@ -425,7 +427,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
           />
           <div className={styles.muted} style={{ marginBottom: "12px", fontSize: "12px" }}>
             {searching ? "Searching..." : `${searchTotal.toLocaleString()} models found`}
-            {searchTotalPages > 1 && ` — Page ${searchPage} of ${searchTotalPages}`}
+            {searchTotalPages > 1 && `, page ${searchPage} of ${searchTotalPages}`}
           </div>
 
           {searchResults.length === 0 && !searching ? (
@@ -517,7 +519,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
             </div>
 
             <div style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.5, marginBottom: "18px" }}>
-              A <strong style={{ color: "var(--text)" }}>${DEPLOYMENT_FEE}/mo</strong> deployment fee will be charged immediately. Usage is billed at Featherless rates + $0.05/M token markup. You can cancel anytime — access continues until the end of the billing cycle.
+              A <strong style={{ color: "var(--text)" }}>${DEPLOYMENT_FEE}/mo</strong> deployment fee will be charged immediately. Usage is billed at Featherless rates + $0.05/M token markup. You can cancel anytime. Access continues until the end of the billing cycle.
             </div>
 
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
