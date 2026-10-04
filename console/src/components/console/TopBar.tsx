@@ -14,17 +14,6 @@ interface TopBarProps {
   onMobileNavToggle: () => void;
 }
 
-/* The brand wordmark: "InferencePort" with a brand-blue trailing "AI" (presentation only). */
-function Wordmark({ name }: { name: string }) {
-  const match = name.match(/^(.*\S)\s+(AI)$/);
-  if (!match) return <span className={styles.brandEmphasis}>{name}</span>;
-  return (
-    <span className={styles.brandEmphasis}>
-      {match[1]} <span className={styles.brandAi}>{match[2]}</span>
-    </span>
-  );
-}
-
 export default function TopBar({
   user,
   onSignOut,
@@ -38,6 +27,19 @@ export default function TopBar({
   return (
     <header className={styles.topbar}>
       <div className={styles.brand}>
+        <img src="/console/assets/logo.png" alt="InferencePort AI" className={styles.brandLogo} />
+        <div>
+          <h1 id="app-name">
+            <span className={styles.brandEmphasis}>{appName}</span>{" "}
+            <span className={styles.brandDesktop}>Developer Console</span>
+            <span className={styles.brandMobile}>Console</span>
+          </h1>
+          <p className={styles.brandDesktop}>
+            <span className={styles.brandEmphasis}>{appName}</span> Pay-2-Go API dashboard
+          </p>
+        </div>
+      </div>
+      <div className={styles.topActions}>
         <button
           id="mobile-nav-toggle"
           className={`${styles.ghost} ${styles.iconBtn} ${styles.mobileOnly}`}
@@ -48,17 +50,6 @@ export default function TopBar({
         >
           <Icon name={isMobileNavOpen ? "x" : "list"} size={20} />
         </button>
-        <img src="/console/assets/logo.png" alt="" className={styles.brandLogo} />
-        <div>
-          <h1 id="app-name">
-            <Wordmark name={appName} />{" "}
-            <span className={styles.brandDesktop}>Developer Console</span>
-            <span className={styles.brandMobile}>Console</span>
-          </h1>
-          <p className={styles.brandDesktop}>Pay-2-Go API dashboard</p>
-        </div>
-      </div>
-      <div className={styles.topActions}>
         <a id="home-link" href={homeUrl} target="_blank" rel="noreferrer" className={styles.desktopOnly}>Home</a>
         <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.desktopOnly}>Docs</a>
         <button

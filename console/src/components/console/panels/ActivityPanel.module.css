@@ -65,7 +65,7 @@
 }
 .modelBadge {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 0.28rem 0.5rem;
   border-radius: 6px;
   border: 1px solid transparent;
@@ -121,7 +121,7 @@
 }
 .tableHeader span {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--muted);
 }
 .tableRow {
@@ -248,7 +248,7 @@
   .tableRow > div::before {
     content: attr(data-label) ": ";
     font-size: 0.75rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--muted);
     margin-right: 0.3rem;
   }

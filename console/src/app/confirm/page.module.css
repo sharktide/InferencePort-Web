@@ -11,7 +11,7 @@
 
 .heading {
   font-size: 1.5rem;
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.025em;
   color: var(--text);
   margin-bottom: 0.5rem;
@@ -41,7 +41,7 @@
 
 .brandName {
   font-size: 1rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.03em;
   margin-top: 6px;
   color: var(--text);

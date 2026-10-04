@@ -178,13 +178,13 @@
   align-items: center;
   justify-content: center;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
   font-family: var(--mono);
 }
 
 .chainTitle {
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text);
 }
 
@@ -332,7 +332,7 @@
 
 .rewardTier {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   padding: 0.25rem 0.55rem;
   border-radius: 6px;
   background: var(--surface-2);
@@ -522,7 +522,7 @@
 
 .claimTitle {
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--success-ink);
   z-index: 1;
   animation: titleSlideUp 0.5s ease 0.2s both;

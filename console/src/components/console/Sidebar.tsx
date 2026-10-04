@@ -29,7 +29,7 @@ export const navTabs = [
 /* Presentation only: visual groups over the same ordered tabs, and one icon per tab. */
 const navGroups: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
-  { title: "Explore", ids: ["models", "rewards"] },
+  { title: "Explore", ids: ["models", "deploy", "rewards"] },
   { title: "Build", ids: ["api-key", "usage", "gen-api", "payg-api", "shield"] },
   { title: "Access", ids: ["authorized-apps"] },
 ];

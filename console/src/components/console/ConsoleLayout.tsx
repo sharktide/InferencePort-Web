@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
-import Sidebar, { navTabs } from "./Sidebar";
+import Sidebar from "./Sidebar";
 import AccountPanel from "./panels/AccountPanel";
 import BillingPanel from "./panels/BillingPanel";
 import ModelsPanel from "./panels/ModelsPanel";
@@ -19,20 +19,6 @@ import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
 const FALLBACK_API_BASE = "https://sharktide-lightning.hf.space";
-
-/* Presentation only: one line under each page title. */
-const tabDescriptions: Record<string, string> = {
-  account: "Sign in, and manage your profile, linked accounts and security.",
-  billing: "Your P2G credit wallet, top-ups, subscription plan and recent ledger entries.",
-  models: "Browse the model catalog with pricing, and try models in the playground.",
-  rewards: "Rewards you have earned, and the ones ready to claim.",
-  "api-key": "Long-lived keys for scripts, servers and production. Send a key as a Bearer token when you call Lightning.",
-  usage: "Credits and requests from your P2G ledger, your plan limits and recent activity.",
-  "gen-api": "The subscription Generation API, which uses your plan quotas: reference and playground.",
-  "payg-api": "The credit-billed Pay-2-Go API: reference, pricing and playground.",
-  shield: "AI Shield abuse and fraud analysis: how it works, and a playground to test signals.",
-  "authorized-apps": "Applications you have allowed to access your InferencePort AI account.",
-};
 
 export default function ConsoleLayout() {
   const router = useRouter();
@@ -181,16 +167,6 @@ export default function ConsoleLayout() {
           unclaimedRewards={unclaimedRewards}
         />
         <main className={styles.consoleContent}>
-          {(() => {
-            const shownTab = panelMap[activeTab] ? activeTab : "account";
-            const tabInfo = navTabs.find((t) => t.id === shownTab);
-            return (
-              <header className={styles.pageHead}>
-                <h1>{tabInfo?.label}</h1>
-                {tabDescriptions[shownTab] && <p>{tabDescriptions[shownTab]}</p>}
-              </header>
-            );
-          })()}
           {panelMap[activeTab] || panelMap.account}
         </main>
       </div>

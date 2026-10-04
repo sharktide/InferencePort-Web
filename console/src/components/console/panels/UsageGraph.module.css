@@ -30,7 +30,7 @@
 .summaryValue {
   font-family: var(--sans);
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text);
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -39,9 +39,8 @@
 }
 .summaryCard:first-child .summaryValue {
   font-size: clamp(2.25rem, 1.8rem + 1.4vw, 3rem);
-  font-weight: 750;
+  font-weight: 600;
   letter-spacing: -0.035em;
-  font-variation-settings: "opsz" 40;
 }
 .summaryCard:nth-child(3) .summaryValue {
   font-family: var(--mono);
@@ -261,7 +260,7 @@
 
 .tooltipHeader {
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 0.4rem;
 }
 
