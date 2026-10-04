@@ -46,7 +46,6 @@
 /* Figures: hairline-divided, not boxed */
 .statGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .statArticle { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1rem; min-width: 0; }
-.statGrid > .statArticle:nth-child(3n + 1) { padding-left: 0; border-left: 0; }
 .statLabel { display: block; font-size: 0.8125rem; font-weight: 600; color: var(--text-2); margin-bottom: 0.4rem; }
 .statValue { font-family: var(--sans); font-size: 1.25rem; font-weight: 600; color: var(--text); letter-spacing: -0.015em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
@@ -201,7 +200,6 @@
 .shieldResultTitle { margin: 0; }
 .shieldResultGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem 0; }
 .shieldStat { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
-.shieldResultGrid > .shieldStat:nth-child(4n + 1) { padding-left: 0; border-left: 0; }
 .shieldStatLabel { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); }
 .shieldStatValue { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.015em; color: var(--text); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 /* Decisions: icon + label, color only on the marker; text stays in ink */

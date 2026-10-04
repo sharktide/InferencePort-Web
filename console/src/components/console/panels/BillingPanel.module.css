@@ -32,7 +32,6 @@
 .statsRow { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
 
 .statItem { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem; min-width: 0; }
-.statItem:first-child { padding-left: 0; border-left: 0; }
 
 .statLabel {
   display: block;

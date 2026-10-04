@@ -7,7 +7,6 @@
 .summaryRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
 
 .summaryCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1rem; display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
-.summaryCard:first-child { padding-left: 0; border-left: 0; }
 
 .summaryLabel {
   font-size: 0.8125rem;

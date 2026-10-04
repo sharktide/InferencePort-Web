@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
@@ -37,6 +37,10 @@ export default function ConsoleLayout() {
       localStorage.setItem("console-active-tab", activeTab);
     }
   }, [activeTab]);
+  /* Read once on first render: did the user already have a saved tab, and are they returning from an OAuth redirect? */
+  const hadSavedTab = useRef(typeof window !== "undefined" && !!localStorage.getItem("console-active-tab"));
+  const fromAuthRedirect = useRef(typeof window !== "undefined" && /access_token|[?&]code=/.test(window.location.hash + window.location.search));
+  const hadSession = useRef(false);
   const [initialized, setInitialized] = useState(false);
   const [apiBase, setApiBase] = useState(FALLBACK_API_BASE);
   const [unclaimedRewards, setUnclaimedRewards] = useState(0);
@@ -88,14 +92,21 @@ export default function ConsoleLayout() {
           if (!cancelled) {
             setSession(s);
             setInitialized(true);
-            if (s) setActiveTab("models");
+            if (s) {
+              hadSession.current = true;
+              /* Keep the tab the user was on; only land on Models on a first visit or right after signing in */
+              if (!hadSavedTab.current || fromAuthRedirect.current) setActiveTab("models");
+            }
           }
           client.auth.onAuthStateChange(async (_event, s) => {
             if (cancelled) return;
             setSession(s);
             if (s) {
-              setActiveTab("models");
+              /* Token refreshes and repeated SIGNED_IN events (e.g. returning to the browser tab) must not reset the tab */
+              if (!hadSession.current) setActiveTab("models");
+              hadSession.current = true;
             } else {
+              hadSession.current = false;
               setActiveTab("account");
             }
           });

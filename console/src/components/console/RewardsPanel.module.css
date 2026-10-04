@@ -552,6 +552,7 @@
 @media (max-width: 960px) {
   .headerRow {
     flex-direction: column;
+    align-items: stretch;
   }
   .statsRow {
     grid-template-columns: repeat(3, 1fr);
