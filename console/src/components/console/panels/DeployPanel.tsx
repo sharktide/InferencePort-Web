@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import deployStyles from "./DeployPanel.module.css";
+import { useModal } from "../../Modal";
 
 interface Props {
   session: any;
@@ -47,6 +48,7 @@ const featherlessLogoUrl = (theme: string) =>
   `https://cdn.brandfetch.io/featherless.ai?c=1idhv9JFxNDhJr50XTx${theme === "dark" ? "&theme=dark" : ""}`;
 
 export default function DeployPanel({ session, apiBase, config, theme = "light" }: Props) {
+  const modal = useModal();
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [searchResults, setSearchResults] = useState<FeatherlessModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -187,7 +189,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const handleCancel = async (deploymentId: string) => {
-    if (!confirm("Cancel this deployment? Access will remain until the end of the current billing cycle.")) return;
+    if (!await modal.confirm("Access will remain until the end of the current billing cycle.", "Cancel this deployment?")) return;
     try {
       const result = await fj(`/v1/deploy/${deploymentId}/cancel`, {
         method: "POST",
@@ -201,7 +203,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const handleTerminate = async (deploymentId: string) => {
-    if (!confirm("Immediately terminate this deployment? This cannot be undone.")) return;
+    if (!await modal.confirm("This cannot be undone.", "Terminate this deployment now?")) return;
     try {
       const result = await fj(`/v1/deploy/${deploymentId}`, {
         method: "DELETE",

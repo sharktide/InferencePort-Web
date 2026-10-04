@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
 import billingStyles from "./BillingPanel.module.css";
+import { useModal } from "../../Modal";
 
 interface BillingPanelProps { config: any; session: any; apiBase: string; }
 
@@ -19,6 +20,7 @@ const PLAN_FRIENDLY_NAMES: Record<string, string> = {
 };
 
 export default function BillingPanel({ config, session, apiBase }: BillingPanelProps) {
+  const modal = useModal();
   const [wallet, setWallet] = useState<any>(null);
   const [usageSummary, setUsageSummary] = useState<any>(null);
   const [subscription, setSubscription] = useState<any>(null);
@@ -135,7 +137,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
                 className={billingStyles.packBtn}
                 disabled={!p.stripePaymentLink}
                 onClick={() => {
-                  if (!session?.user?.email) return alert("Sign in first.");
+                  if (!session?.user?.email) return void modal.alert("Sign in first.");
                   const url = new URL(p.stripePaymentLink);
                   url.searchParams.set("prefilled_email", session.user.email);
                   window.location.href = url.toString();
@@ -244,11 +246,11 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
                     <span className={`${styles.muted} ${styles.tiny}`}>Cycle ends: {d.billing_cycle_end ? new Date(d.billing_cycle_end).toLocaleDateString() : "N/A"}</span>
                     <button
                       onClick={async () => {
-                        if (!confirm("Cancel this deployment?")) return;
+                        if (!await modal.confirm("Access will remain until the end of the current billing cycle.", "Cancel this deployment?")) return;
                         try {
                           await fj(`/v1/deploy/${d.id}/cancel`, { method: "POST", headers: authH() });
                           loadBillingData();
-                        } catch (e: any) { alert(e.message); }
+                        } catch (e: any) { await modal.alert(e.message); }
                       }}
                       style={{ marginLeft: "8px", padding: "2px 8px", border: "1px solid var(--border)", borderRadius: "4px", background: "var(--surface)", color: "var(--text)", cursor: "pointer", fontSize: "11px" }}
                     >

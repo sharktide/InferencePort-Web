@@ -38,6 +38,7 @@ const navIcons: Record<string, IconName> = {
   account: "user-circle",
   billing: "credit-card",
   models: "cube",
+  deploy: "gauge",
   rewards: "gift",
   "api-key": "key",
   usage: "chart-bar",
