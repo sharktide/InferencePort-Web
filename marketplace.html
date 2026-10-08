@@ -434,10 +434,9 @@
 	<script src="scripts/animations.js"></script>
 	<script>
 		const urlParams = new URLSearchParams(window.location.search);
+		let API_BASE = "https://us-east-2.api.inferenceport.ai";
 		if (urlParams.get('staging') == "true") {
-			const API_BASE = "https://staging-api.inferenceport.ai";
-		} else {
-			const API_BASE = "https://us-east-2.api.inferenceport.ai";
+			API_BASE = "https://staging-api.inferenceport.ai";
 		}
 		let cloudModels = [];
 		let localModels = [];
