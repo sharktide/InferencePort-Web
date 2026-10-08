@@ -64,7 +64,12 @@
 		<ip-footer></ip-footer>
 
 		<script>
-			const REGISTRY_URL = "https://sharktide-lightning.hf.space/tool-registry/tools";
+			const urlParams = new URLSearchParams(window.location.search);
+			let apibase = "https://us-east-2.api.inferenceport.ai";
+			if (urlParams.get('staging') == "true") {
+				apibase = "https://staging-api.inferenceport.ai";
+			}
+			const REGISTRY_URL = apibase + "/tool-registry/tools";
 			let allTools = [];
 			const toolsGrid = document.getElementById("tools-grid");
 			const searchInput = document.getElementById("search-tools");

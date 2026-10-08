@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://sharktide-lightning.hf.space";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://us-east-2.api.inferenceport.ai";
 
 export default function ConfirmPage() {
   const [loading, setLoading] = useState(true);

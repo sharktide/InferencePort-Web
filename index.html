@@ -1588,9 +1588,12 @@
 					'</div>';
 				return card;
 			}
-
-			/* Fetch and render */
-			fetch("https://sharktide-lightning.hf.space/v1/models")
+			const urlParams = new URLSearchParams(window.location.search);
+			let apibase = "https://us-east-2.api.inferenceport.ai";
+			if (urlParams.get('staging') == "true") {
+				apibase = "https://staging-api.inferenceport.ai";
+			}
+			fetch(`${apibase}/v1/models`)
 				.then(r => r.json())
 				.then(data => {
 					const models = Array.isArray(data) ? data : (data.data || []);

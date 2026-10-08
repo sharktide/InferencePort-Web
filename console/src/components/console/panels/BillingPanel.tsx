@@ -7,7 +7,7 @@ import { useModal } from "../../Modal";
 
 interface BillingPanelProps { config: any; session: any; apiBase: string; }
 
-const TIER_CONFIG_URL = "https://sharktide-lightning.hf.space/tier-config";
+const TIER_CONFIG_URL = "https://us-east-2.api.inferenceport.ai/tier-config";
 const STRIPE_BILLING_PORTAL = "https://billing.stripe.com/p/login/5kQdR9aIM3ts4steyabbG00";
 const PRICING_URL = "https://inferenceport.ai/pricing.html";
 

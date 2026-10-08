@@ -18,7 +18,7 @@ import DeployPanel from "./panels/DeployPanel";
 import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
-const FALLBACK_API_BASE = "https://sharktide-lightning.hf.space";
+const FALLBACK_API_BASE = "https://us-east-2.api.inferenceport.ai";
 
 export default function ConsoleLayout() {
   const router = useRouter();
