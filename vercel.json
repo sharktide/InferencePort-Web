@@ -36,11 +36,11 @@
   "rewrites": [
     {
       "source": "/ip-api/(.*)",
-      "destination": "https://sharktide-lightning.hf.space/$1"
+      "destination": "https://api.inferenceport.ai/$1"
     },
     {
       "source": "/v1/(.*)",
-      "destination": "https://sharktide-lightning.hf.space/gen/$1"
+      "destination": "https://api.inferenceport.ai/v1/$1"
     },
     {
       "source": "/MISC/(.*)",
