@@ -600,7 +600,7 @@
 				<img class="model-card-image" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(displayName)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
 				<div class="model-card-image-placeholder" style="display:none;">${escapeHtml(displayName)}</div>
 				<div class="model-card-content">
-					${m.publisher_url ? `<div class="publisher-row"><img class="publisher-logo" src="${escapeHtml(publisherLogoUrl(m.publisher_url))}" alt="" loading="lazy" onerror="this.style.display='none'" /></div>` : ""}
+					${m.publisher_url ? `<div class="publisher-row"><img class="publisher-logo" src="${escapeHtml(publisherLogoUrl(m.publisher_url))}" alt="" loading="lazy" onerror="this.style.display='none'" onclick="window.location.href='https://${escapeHtml(m.publisher_url)}'" target="_blank" /></div>` : ""}
 					<div class="model-card-top">
 						<span class="model-card-name">${escapeHtml(displayName)}</span>
 						<div>
