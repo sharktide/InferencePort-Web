@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
+import AudioPlayground from "./AudioPlayground";
+import { formatModelPrice } from "../../../lib/modelPricing";
 
 interface Props { session: any; config: any; apiBase: string; }
 
@@ -18,51 +20,8 @@ function isTextModel(m: any) {
   return i.includes("text") && o.includes("text");
 }
 
-function modelType(m: any) {
-  if (m.type) return m.type;
-  const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
-  if (o.includes("image")) return "image";
-  if (o.includes("video")) return "video";
-  if (o.includes("audio")) return "audio";
-  if (o.includes("3d")) return "3d";
-  return "text";
-}
-
 function slug(m: any) {
   return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
-}
-
-function formatModelPrice(m: any) {
-  const pricing = m?.pricing;
-  if (!pricing) return null;
-  const type = modelType(m);
-  if (type === "image") {
-    if (pricing.token_pricing) {
-      const tp = pricing.token_pricing;
-      const parts: string[] = [];
-      if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${(parseFloat(tp.text_in)).toFixed(2)}/M`);
-      if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${(parseFloat(tp.image_in)).toFixed(2)}/M`);
-      if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${(parseFloat(tp.image_out)).toFixed(2)}/M`);
-      if (parts.length > 0) return parts.join(" · ");
-    }
-    if (pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
-  }
-  if (type === "3d" || type === "3D") {
-    if (m.price_tiers) {
-      const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v));
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
-      return `$${min.toFixed(4)}/model`;
-    }
-    if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
-  }
-  if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
-  if (pricing.prompt != null && pricing.completion != null && (parseFloat(pricing.prompt) !== 0 || parseFloat(pricing.completion) !== 0)) {
-    const perMillion = (v: string) => (parseFloat(v) * 1_000_000).toFixed(2);
-    return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
-  }
-  return null;
 }
 
 function getImageModels(allModels: any[]) {
@@ -97,9 +56,6 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
   const [videoStatusText, setVideoStatusText] = useState("");
   const [videoError, setVideoError] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
-  const [audioPrompt, setAudioPrompt] = useState("");
-  const [audioDur, setAudioDur] = useState(10);
-  const [audioOutput, setAudioOutput] = useState("");
   const [threeModel, setThreeModel] = useState("tripoSR");
   const [threeResolution, setThreeResolution] = useState<"low" | "medium" | "high">("low");
   const [threePrompt, setThreePrompt] = useState("");
@@ -217,8 +173,6 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
       sb("video", false);
     }
   };
-  const runAudio = async () => { if (!session) return alert("Sign in required"); sb("audio", true); setAudioOutput("Generating\u2026"); try { const r = await fetch(`${apiBase}/v1/audio/generations`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: audioPrompt || "Energetic electronic beat", duration_seconds: Number(audioDur) }) }); if (!r.ok) { const p = await r.json().catch(() => ({})); throw new Error(p.detail || p.error || "Audio generation failed"); } const blob = await r.blob(); setAudioOutput(URL.createObjectURL(blob)); } catch (e: any) { setAudioOutput(e.message); } sb("audio", false); };
-
   const run3d = async () => {
     if (!session) return alert("Sign in required");
     if (!threeUrl?.trim()) { setThreeError("An image URL or base64 data URI is required for 3D generation."); return; }
@@ -324,6 +278,13 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
             <li><code>POST /v1/images/generations</code>: image generation</li>
             <li><code>POST /v1/videos/generations</code>: video generation</li>
             <li><code>POST /v1/audio/generations</code>: audio/music generation</li>
+            <li><code>POST /v1/audio/speech</code>: text-to-speech (OpenAI compatible)</li>
+            <li><code>POST /v1/audio/speech/with-timestamps</code>: text-to-speech with character timings</li>
+            <li><code>POST /v1/audio/transcriptions</code>: speech-to-text</li>
+            <li><code>POST /v1/audio/voice-changer</code>: speech-to-speech voice conversion</li>
+            <li><code>POST /v1/audio/voice-isolator</code>: background noise removal</li>
+            <li><code>POST /v1/audio/stem-separation</code>: split audio into stems</li>
+            <li><code>GET /v1/audio/models</code>: audio model catalog</li>
             <li><code>POST /v1/3d/generations</code>: 3D generation (async job model)</li>
             <li><code>GET /v1/3d/jobs/{'{'}job_id{'}'}</code>: poll 3D job status</li>
             <li><code>GET /v1/models</code>: available models</li>
@@ -338,6 +299,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
           <p>Supported models: <code>tripoSR</code> ($0.02), <code>asset-harvester</code> ($0.07), <code>sv3d</code> ($0.02), <code>trellis2</code> ($0.24 to $0.35 with resolution options).</p>
           <h3>Pricing</h3>
           <p>Credits are consumed per request. View your <strong>Account</strong> tab for current credit balance and purchase packs. See the <strong>Models</strong> tab for per-model pricing.</p>
+          <p>Audio models are billed on the unit their provider uses: per 1,000 input characters (TTS), per million UTF-8 bytes, per second of input audio (transcription, voice tools) or per second of generated audio (music and sound effects).</p>
           <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}><a href="https://docs.inferenceport.ai/en/latest/api/p2g-api.html" target="_blank" rel="noreferrer">Full P2G API docs</a></p>
         </div>
       </section>
@@ -379,7 +341,9 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
             <p className={`${styles.muted} ${styles.tiny}`}>Video generation complete. Use the asset CDN endpoint to retrieve the result.</p>
           )}
         </div>}
-        {tab === "audio" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe audio / music / sfx..." value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} /><label>Charge duration estimate (seconds)<input type="number" min={1} max={90} value={audioDur} onChange={(e) => setAudioDur(Number(e.target.value))} /></label><button onClick={runAudio} disabled={busy.audio}>{busy.audio ? "Generating\u2026" : "Generate audio"}</button>{audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}</div>}
+        {tab === "audio" && (
+          <AudioPlayground session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} />
+        )}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
             {get3DModels(allModels).map((m: any) => (

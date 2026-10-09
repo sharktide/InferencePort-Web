@@ -1466,6 +1466,14 @@
 			if (!track) return;
 
 			const MODEL_IDS = [
+				"elevenlabs-eleven-v4",
+				"elevenlabs-eleven-v4-turbo",
+				"qwen3-tts-flash",
+				"whisper-large-v3",
+				"elevenlabs-scribe-v2",
+				"elevenlabs-stem-separation",
+				"elevenlabs-voice-isolator",
+				"elevenlabs-text-to-sound-v2",
 				"gpt-6.1-sol",
 				"trellis2",
 				"gpt-image-2.5-flare",
@@ -1518,10 +1526,62 @@
 				return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
 			}
 
+			function num(v) {
+				if (v == null || v === "") return null;
+				const n = typeof v === "number" ? v : parseFloat(v);
+				return Number.isFinite(n) ? n : null;
+			}
+
+			function fmtRate(v) {
+				const s = v.toFixed(6);
+				return s.includes(".") ? s.replace(/0+$/, "").replace(/\.$/, "") : s;
+			}
+
+			function billingUnit(m) {
+				if (typeof m?.billing_unit === "string" && m.billing_unit) return m.billing_unit;
+				if (num(m?.price_per_1k_chars) != null) return "input_chars";
+				if (num(m?.price_per_million_bytes) != null) return "input_bytes";
+				if (num(m?.input_price_per_second) != null) return "input_seconds";
+				if (num(m?.price_per_second) != null) return "seconds";
+				return "";
+			}
+
+			function formatAudioPrice(m) {
+				const pricing = m?.pricing || {};
+				const unit = billingUnit(m);
+				const chars = num(m?.price_per_1k_chars);
+				const bytes = num(m?.price_per_million_bytes);
+				const inputSec = num(m?.input_price_per_second);
+				const outputSec = num(m?.price_per_second);
+				const request = num(pricing.request);
+				const input = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
+
+				if (unit === "input_chars" && chars != null) return "$" + fmtRate(chars) + "/1k chars";
+				if (unit === "input_bytes" && bytes != null) return "$" + fmtRate(bytes) + "/M bytes";
+				if (unit === "input_seconds") {
+					const rate = inputSec != null ? inputSec : request;
+					if (rate != null) return "$" + fmtRate(rate) + "/input sec";
+				}
+				if (unit === "seconds") {
+					const rate = outputSec != null ? outputSec : request;
+					if (rate != null) return "$" + fmtRate(rate) + "/sec";
+				}
+				if (chars != null) return "$" + fmtRate(chars) + "/1k chars";
+				if (bytes != null) return "$" + fmtRate(bytes) + "/M bytes";
+				if (inputSec != null && outputSec == null) return "$" + fmtRate(inputSec) + "/input sec";
+				if (outputSec != null) return "$" + fmtRate(outputSec) + "/sec";
+				if (request != null && request !== 0) return "$" + fmtRate(request) + (input.includes("audio") ? "/input sec" : "/sec");
+				return null;
+			}
+
 			function formatModelPrice(m) {
 				const pricing = m?.pricing;
 				if (!pricing) return null;
 				const type = modelType(m);
+				if (type === "audio") {
+					const audio = formatAudioPrice(m);
+					if (audio) return audio;
+				}
 				if (type === "image" && pricing.image && pricing.image !== "0") return "$" + parseFloat(pricing.image).toFixed(4) + "/gen";
 				if (type === "3d" || type === "3D") {
 					if (m.price_tiers) {
@@ -1533,7 +1593,7 @@
 					}
 					if (pricing.request && pricing.request !== "0") return "$" + parseFloat(pricing.request).toFixed(4) + "/model";
 				}
-				if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return "$" + parseFloat(pricing.request).toFixed(4) + "/sec";
+				if (type === "video" && pricing.request && pricing.request !== "0") return "$" + parseFloat(pricing.request).toFixed(4) + "/sec";
 				if (pricing.prompt != null && pricing.completion != null && (parseFloat(pricing.prompt) !== 0 || parseFloat(pricing.completion) !== 0)) {
 					const perMillion = v => (parseFloat(v) * 1000000).toFixed(2);
 					return "In: $" + perMillion(pricing.prompt) + "/M \u00b7 Out: $" + perMillion(pricing.completion) + "/M";
@@ -1542,6 +1602,7 @@
 			}
 
 			function formatPricing(m) {
+				if (modelType(m) === "audio") return formatAudioPrice(m);
 				const p = m?.pricing || {};
 				if (p.prompt != null && p.completion != null) {
 					const perMillion = v => (v * 1000000).toFixed(2);
