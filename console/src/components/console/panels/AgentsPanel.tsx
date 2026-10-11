@@ -443,7 +443,7 @@ export default function AgentsPanel({ session, apiBase }: Props) {
     }
   };
 
-  const startEdit = (agent: AgentEntry) => {
+  const startEdit = async (agent: AgentEntry) => {
     if (expanded?.id === agent.id && expanded.kind === "edit") {
       setExpanded(null);
       setEditForm(null);
@@ -466,6 +466,12 @@ export default function AgentsPanel({ session, apiBase }: Props) {
         mcpServers: fromApiMcp(agent.mcp_servers),
       },
     });
+    try {
+      const d = await fj(`/v1/agents/${encodeURIComponent(username)}/${encodeURIComponent(agentId)}`, { headers: authH() });
+      const prompt = d?.agent?.system_prompt ?? "";
+      setEditForm((p) => (p && p.form.agentId === agentId ? { ...p, form: { ...p.form, systemPrompt: prompt } } : p));
+    } catch {
+    }
   };
 
   const saveEdit = async () => {
