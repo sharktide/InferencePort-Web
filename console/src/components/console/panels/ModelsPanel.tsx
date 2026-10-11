@@ -57,6 +57,11 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
   const modelType = (m: any) => { if (m.type) return m.type; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; if (o.includes("image")) return "image"; if (o.includes("video")) return "video"; if (o.includes("audio")) return "audio"; if (o.includes("3d")) return "3d"; return "text"; };
+  const modelDisplayName = (m: any) => {
+    const name = m?.name || m?.id || "Unnamed model";
+    if ((m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by) return `@${m.owned_by}/${name}`;
+    return name;
+  };
   const modalities = (m: any) => { const arr = Array.isArray(m?.input_modalities) ? m.input_modalities : []; return arr.length ? arr.map((v: string) => v.toUpperCase()).join(" / ") : "Configured model"; };
   const configPillClass = (m: any) => {
     const t = modelType(m);
@@ -77,6 +82,12 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
     if (publisherUrl === "inferenceport.ai") return "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png";
     const themeParam = theme === "dark" ? "&theme=dark" : "";
     return `https://cdn.brandfetch.io/${encodeURIComponent(publisherUrl)}?c=1idhv9JFxNDhJr50XTx${themeParam}`;
+  };
+
+  const modelLogoUrl = (m: any) => {
+    const explicit = typeof m?.logo === "string" ? m.logo.trim() : "";
+    if (explicit) return explicit;
+    return publisherLogoUrl(m?.publisher_url);
   };
 
   const textModels = useCallback(() => {
@@ -181,7 +192,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const query = modelSearch.trim().toLowerCase();
   const matchesSearch = (m: any) => {
     if (!query) return true;
-    const haystack = [m?.name, m?.id, m?.upstream_id, m?.description, m?.publisher_url, modelType(m)]
+    const haystack = [m?.name, m?.id, m?.upstream_id, m?.description, m?.publisher_url, modelType(m), (m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by ? `@${m.owned_by}` : ""]
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
@@ -399,10 +410,10 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
-                {m.publisher_url && (
+                {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
-                      src={publisherLogoUrl(m.publisher_url)}
+                      src={modelLogoUrl(m)}
                       alt=""
                       style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
                       loading="lazy"
@@ -411,7 +422,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                   </div>
                 )}
                 <div className={styles.modelCardTop}>
-                  <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
+                  <span className={styles.modelCardName}>{modelDisplayName(m)}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
                     {m.model_state && (
                       <span className={`${styles.modelPill}`} style={{
@@ -451,10 +462,10 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
-                {m.publisher_url && (
+                {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
-                      src={publisherLogoUrl(m.publisher_url)}
+                      src={modelLogoUrl(m)}
                       alt=""
                       style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
                       loading="lazy"
@@ -463,7 +474,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                   </div>
                 )}
                 <div className={styles.modelCardTop}>
-                  <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
+                  <span className={styles.modelCardName}>{modelDisplayName(m)}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
                     <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
@@ -500,7 +511,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
           {(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
         </div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{m.name}</option>)}</select></label>
+          <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{modelDisplayName(m)}</option>)}</select></label>
           <textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} />
           <button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button>
           <pre className={styles.output}>{textOutput}</pre>
@@ -508,7 +519,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}>
             <option value="">Default</option>
-            {imageConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
+            {imageConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
           </select></label>
           <textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} />
           <button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>
@@ -517,7 +528,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>Video model<select value={videoModel} onChange={(e) => setVideoModel(e.target.value)}>
             <option value="">Default</option>
-            {videoConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
+            {videoConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
           </select></label>
           <textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} />
           <label>Duration
@@ -557,7 +568,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
             {allModels.filter((m: any) => m.type === "3d" || m.output_modalities?.includes("3d")).map((m: any) => (
-              <option key={m.id} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
+              <option key={m.id} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
             ))}
           </select></label>
           {threeModel === "trellis2" && (
@@ -631,19 +642,19 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
               <img
                 className={styles.modelDetailImage}
                 src={modelImageUrl(selectedDetailModel)}
-                alt={selectedDetailModel.name || ""}
+                alt={modelDisplayName(selectedDetailModel)}
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 onLoad={(e) => { const img = e.target as HTMLImageElement; img.classList.add(styles.loaded); const ph = img.nextElementSibling as HTMLElement; if (ph) ph.style.display = "none"; }}
               />
               <div className={styles.modelDetailImagePlaceholder}>
-                {selectedDetailModel.name || selectedDetailModel.id || "?"}
+                {modelDisplayName(selectedDetailModel)}
               </div>
             </div>
             <div className={styles.modelDetailContent}>
-              {selectedDetailModel.publisher_url && (
+              {modelLogoUrl(selectedDetailModel) && (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "0.25rem" }}>
                   <img
-                    src={publisherLogoUrl(selectedDetailModel.publisher_url)}
+                    src={modelLogoUrl(selectedDetailModel)}
                     alt=""
                     style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
                     loading="lazy"
@@ -652,7 +663,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                 </div>
               )}
               <div className={styles.modelDetailHeader}>
-                <span className={styles.modelDetailName}>{selectedDetailModel.name || selectedDetailModel.id || "Unnamed model"}</span>
+                <span className={styles.modelDetailName}>{modelDisplayName(selectedDetailModel)}</span>
                 <span className={`${styles.modelPill} ${isTextModel(selectedDetailModel) ? styles.isText : styles.isConfig}`}>
                   {String(modelType(selectedDetailModel)).toUpperCase()}
                 </span>

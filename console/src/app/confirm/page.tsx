@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://us-east-2.api.inferenceport.ai";
-
 export default function ConfirmPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -13,6 +11,10 @@ export default function ConfirmPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get("session_id");
+    const apiBase =
+      params.get("staging") === "true"
+        ? "https://staging-api.inferenceport.ai"
+        : process.env.NEXT_PUBLIC_API_BASE_URL || "https://us-east-2.api.inferenceport.ai";
 
     if (!sessionId) {
       setLoading(false);
@@ -22,7 +24,7 @@ export default function ConfirmPage() {
 
     (async () => {
       try {
-        const res = await fetch(`${API_BASE}/v1/stripe/reconcile/${sessionId}`);
+        const res = await fetch(`${apiBase}/v1/stripe/reconcile/${sessionId}`);
         const json = await res.json();
         if (!json.ok) {
           setError("Unable to load payment details.");

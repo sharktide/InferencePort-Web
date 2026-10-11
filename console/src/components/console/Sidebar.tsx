@@ -17,6 +17,7 @@ export const navTabs = [
   { id: "billing", label: "Billing" },
   { id: "models", label: "Models" },
   { id: "deploy", label: "Deploy (Featherless)" },
+  { id: "agents", label: "Agents" },
   { id: "rewards", label: "Rewards" },
   { id: "api-key", label: "API key" },
   { id: "usage", label: "Usage" },
@@ -30,7 +31,7 @@ export const navTabs = [
 const navGroups: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
   { title: "Explore", ids: ["models", "deploy", "rewards"] },
-  { title: "Build", ids: ["api-key", "usage", "gen-api", "payg-api", "shield"] },
+  { title: "Build", ids: ["agents", "api-key", "usage", "gen-api", "payg-api", "shield"] },
   { title: "Access", ids: ["authorized-apps"] },
 ];
 
@@ -39,6 +40,7 @@ const navIcons: Record<string, IconName> = {
   billing: "credit-card",
   models: "cube",
   deploy: "gauge",
+  agents: "chat-circle-text",
   rewards: "gift",
   "api-key": "key",
   usage: "chart-bar",
