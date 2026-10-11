@@ -13,6 +13,16 @@ type Mode =
   | "voice-isolator"
   | "stem-separation";
 
+// Task ids advertised by the API in each audio model's `capabilities` field.
+type Capability =
+  | "music_sfx"
+  | "tts"
+  | "tts_timestamps"
+  | "transcribe"
+  | "voice_changer"
+  | "voice_isolator"
+  | "stem_separation";
+
 interface Props {
   session: any;
   apiBase: string;
@@ -22,6 +32,7 @@ interface Props {
 
 interface ModeDef {
   id: Mode;
+  capability: Capability;
   label: string;
   path: string;
   defaultModel: string;
@@ -30,13 +41,13 @@ interface ModeDef {
 }
 
 const MODES: ModeDef[] = [
-  { id: "generations", label: "Music / SFX", path: "/audio/generations", defaultModel: "", kind: "json", blurb: "Text to music and sound effects." },
-  { id: "speech", label: "Text to speech", path: "/audio/speech", defaultModel: "openai-tts-1", kind: "json", blurb: "OpenAI-compatible TTS. Billed per input character, byte or output second." },
-  { id: "timestamps", label: "TTS + timestamps", path: "/audio/speech/with-timestamps", defaultModel: "elevenlabs-eleven-v3", kind: "json", blurb: "Text to speech with character-level timings." },
-  { id: "transcribe", label: "Transcribe", path: "/audio/transcriptions", defaultModel: "whisper-large-v3", kind: "multipart", blurb: "Speech to text. Billed per second of input audio." },
-  { id: "voice-changer", label: "Voice changer", path: "/audio/voice-changer", defaultModel: "elevenlabs-eleven-multilingual-sts-v2", kind: "multipart", blurb: "Speech to speech voice conversion. Billed per second of input audio." },
-  { id: "voice-isolator", label: "Voice isolator", path: "/audio/voice-isolator", defaultModel: "elevenlabs-voice-isolator", kind: "multipart", blurb: "Remove background noise while keeping speech. Billed per second of input audio." },
-  { id: "stem-separation", label: "Stem separation", path: "/audio/stem-separation", defaultModel: "elevenlabs-stem-separation", kind: "multipart", blurb: "Split a track into stems (ZIP download). Billed per second of input audio." },
+  { id: "generations", capability: "music_sfx", label: "Music / SFX", path: "/audio/generations", defaultModel: "", kind: "json", blurb: "Text to music and sound effects." },
+  { id: "speech", capability: "tts", label: "Text to speech", path: "/audio/speech", defaultModel: "openai-tts-1", kind: "json", blurb: "OpenAI-compatible TTS. Billed per input character, byte or output second." },
+  { id: "timestamps", capability: "tts_timestamps", label: "TTS + timestamps", path: "/audio/speech/with-timestamps", defaultModel: "elevenlabs-eleven-v3", kind: "json", blurb: "Text to speech with character-level timings." },
+  { id: "transcribe", capability: "transcribe", label: "Transcribe", path: "/audio/transcriptions", defaultModel: "whisper-large-v3", kind: "multipart", blurb: "Speech to text. Billed per second of input audio." },
+  { id: "voice-changer", capability: "voice_changer", label: "Voice changer", path: "/audio/voice-changer", defaultModel: "elevenlabs-eleven-multilingual-sts-v2", kind: "multipart", blurb: "Speech to speech voice conversion. Billed per second of input audio." },
+  { id: "voice-isolator", capability: "voice_isolator", label: "Voice isolator", path: "/audio/voice-isolator", defaultModel: "elevenlabs-voice-isolator", kind: "multipart", blurb: "Remove background noise while keeping speech. Billed per second of input audio." },
+  { id: "stem-separation", capability: "stem_separation", label: "Stem separation", path: "/audio/stem-separation", defaultModel: "elevenlabs-stem-separation", kind: "multipart", blurb: "Split a track into stems (ZIP download). Billed per second of input audio." },
 ];
 
 const SPEECH_FORMATS = ["mp3", "opus", "aac", "flac", "wav", "pcm"];
@@ -66,18 +77,27 @@ export default function AudioPlayground({ session, apiBase, apiPrefix, models }:
 
   const isReady = (m: any) => m?.is_ready !== false;
 
-  const modelsForMode = (m: Mode): any[] => {
-    if (apiPrefix !== "/v1") return [];
-    return models.filter((mod) => {
-      if (!isReady(mod)) return false;
-      const u = billingUnit(mod);
-      if (m === "generations") return u === "seconds";
-      if (m === "speech" || m === "timestamps") return u === "input_chars" || u === "input_bytes" || u === "seconds";
-      return u === "input_seconds";
-    });
+  const legacySupports = (m: any, id: Mode): boolean => {
+    const u = billingUnit(m);
+    if (id === "generations") return u === "seconds";
+    if (id === "speech" || id === "timestamps") return u === "input_chars" || u === "input_bytes" || u === "seconds";
+    return u === "input_seconds";
   };
 
-  const options = modelsForMode(active.id);
+  // API builds without `capabilities` fall back to the billing-unit heuristic;
+  // anything that does advertise them is filtered strictly by the task list.
+  const supportsTask = (m: any, def: ModeDef): boolean => {
+    if (Array.isArray(m?.capabilities)) return m.capabilities.includes(def.capability);
+    if (m?.type && m.type !== "audio") return false;
+    return legacySupports(m, def.id);
+  };
+
+  const modelsForMode = (def: ModeDef): any[] => {
+    if (apiPrefix !== "/v1") return [];
+    return models.filter((mod) => isReady(mod) && supportsTask(mod, def));
+  };
+
+  const options = modelsForMode(active);
   const selected = options.find((mod) => slug(mod) === model);
   const selectedUnit = selected ? billingUnit(selected) : "";
   const priceLabel = selected ? formatModelPrice(selected) : null;
@@ -216,6 +236,12 @@ export default function AudioPlayground({ session, apiBase, apiPrefix, models }:
         <p className={`${styles.muted} ${styles.tiny}`} style={{ margin: 0 }}>
           <code>POST {apiPrefix}{active.path}</code> &mdash; {active.blurb}
         </p>
+
+        {apiPrefix === "/v1" && options.length === 0 && (
+          <p className={`${styles.muted} ${styles.tiny}`} style={{ margin: 0 }}>
+            No model in the catalog supports this task yet.
+          </p>
+        )}
 
         {options.length > 0 && (
           <label>

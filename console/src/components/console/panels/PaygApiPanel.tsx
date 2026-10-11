@@ -292,6 +292,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
             <li><code>GET /v1/credits/ledger</code>: credit transaction history</li>
             <li><code>GET /POST /v1/lightning-api-keys</code>: API key management</li>
           </ul>
+          <p>Audio entries returned by <code>GET /v1/models</code> and <code>GET /v1/audio/models</code> include a <code>capabilities</code> array naming the audio tasks that model can serve: <code>music_sfx</code>, <code>tts</code>, <code>tts_timestamps</code>, <code>transcribe</code>, <code>voice_changer</code>, <code>voice_isolator</code>, <code>stem_separation</code>. Only call an audio endpoint with a model whose capabilities include that task.</p>
           <h3>Authentication</h3>
           <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
           <h3>3D generation</h3>
