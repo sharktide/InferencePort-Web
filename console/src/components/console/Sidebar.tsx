@@ -16,6 +16,7 @@ export const navTabs = [
   { id: "account", label: "Account management" },
   { id: "billing", label: "Billing" },
   { id: "models", label: "Models" },
+  { id: "playground", label: "Playground" },
   { id: "deploy", label: "Deploy (Featherless)" },
   { id: "agents", label: "Agents" },
   { id: "rewards", label: "Rewards" },
@@ -30,7 +31,7 @@ export const navTabs = [
 /* Presentation only: visual groups over the same ordered tabs, and one icon per tab. */
 const navGroups: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
-  { title: "Explore", ids: ["models", "deploy", "rewards"] },
+  { title: "Explore", ids: ["models", "playground", "deploy", "rewards"] },
   { title: "Build", ids: ["agents", "api-key", "usage", "gen-api", "payg-api", "shield"] },
   { title: "Access", ids: ["authorized-apps"] },
 ];
@@ -39,6 +40,7 @@ const navIcons: Record<string, IconName> = {
   account: "user-circle",
   billing: "credit-card",
   models: "cube",
+  playground: "sparkle",
   deploy: "gauge",
   agents: "chat-circle-text",
   rewards: "gift",

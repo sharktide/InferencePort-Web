@@ -1,0 +1,136 @@
+/* 3D studio. Layers on top of Playground.module.css (imported as `shared`) and uses the console tokens,
+   so light and dark themes and the brand colors carry through without extra overrides.
+   Minimal by design: few borders, no card backgrounds, generous spacing. */
+
+/* ---------- Rail ---------- */
+.generate { display: flex; flex-direction: column; gap: 0.6rem; }
+.fullBtn { width: 100%; white-space: nowrap; min-height: 40px; }
+.advancedStack { display: flex; flex-direction: column; gap: 1rem; }
+.check {
+  display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer;
+  font: 500 0.82rem var(--sans); color: var(--text-2);
+}
+.check input { margin: 0; accent-color: var(--brand); }
+.note { margin: 0; font: 400 0.75rem/1.5 var(--sans); color: var(--muted); }
+.urlPreview {
+  width: 100%; max-height: 140px; object-fit: contain;
+  border-radius: var(--r-1); background: var(--surface-2);
+}
+
+/* ---------- Viewer ---------- */
+.viewerCard { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.viewerHead { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.viewerTitle {
+  font-size: 0.95rem; font-weight: 600; color: var(--text);
+  min-width: 0; overflow-wrap: anywhere; letter-spacing: -0.01em;
+}
+.viewer {
+  display: block; width: 100%;
+  height: clamp(320px, 62vh, 580px);
+  border-radius: var(--r-1);
+  touch-action: pan-y;
+  --progress-bar-color: var(--brand);
+  --poster-color: transparent;
+}
+.viewerSkeleton { height: clamp(320px, 62vh, 580px); }
+.video {
+  display: block; width: 100%;
+  max-height: clamp(320px, 62vh, 580px);
+  border-radius: var(--r-1); background: #000;
+}
+
+/* Auto-rotate: one small icon toggle */
+.toggle {
+  flex: 0 0 auto; display: inline-grid; place-items: center;
+  width: 32px; height: 32px; min-height: 32px; padding: 0; margin-left: auto;
+  border: none; border-radius: var(--r-0); background: transparent; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+  transition: background var(--d-fast), color var(--d-fast);
+}
+.toggle:hover { background: var(--surface-2); color: var(--text); }
+.toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.toggleOn { color: var(--accent); background: var(--brand-dim); }
+
+.downloads { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.dl { min-height: 32px; padding: 0 0.7rem; white-space: nowrap; }
+.credits { margin-left: auto; font: 500 0.75rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* Viewer settings (inside Advanced) */
+.settings { display: flex; flex-direction: column; gap: 1rem; }
+.settingsRow { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+.settingsGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 1.5rem; }
+.swatches { display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center; min-height: 28px; }
+.swatch {
+  width: 26px; height: 26px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: none; box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+.swatch:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--brand); }
+.swatchAuto {
+  background: repeating-conic-gradient(var(--surface-2) 0 25%, var(--surface) 0 50%) 50% / 10px 10px;
+}
+
+/* ---------- Results strip ---------- */
+.strip { display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.2rem 0.15rem 0.4rem; scrollbar-width: thin; }
+.thumb {
+  flex: 0 0 auto; width: 132px;
+  display: flex; flex-direction: column; gap: 0.4rem;
+  padding: 0.3rem; border-radius: var(--r-1);
+  background: transparent; border: none;
+  cursor: pointer; text-align: left; color: var(--text-2);
+  transition: background var(--d-fast);
+}
+.thumb:hover { background: var(--surface-2); }
+.thumb:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.thumbOn { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--brand); }
+.thumbImg { width: 100%; height: 78px; object-fit: cover; border-radius: var(--r-0); background: var(--surface-2); }
+.thumbName { font: 600 0.72rem var(--sans); color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.thumbPrompt { font: 400 0.68rem var(--sans); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- Jobs ---------- */
+.jobs { display: flex; flex-direction: column; gap: 0.25rem; }
+.jobsTitle { margin: 0 0 0.25rem; font-size: 0.8rem; font-weight: 600; color: var(--text-2); }
+.job { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.75rem 0; border-top: 1px solid var(--border); }
+.jobHead { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
+.jobThumb {
+  width: 32px; height: 32px; object-fit: cover; flex-shrink: 0;
+  border-radius: var(--r-0); background: var(--surface-2);
+}
+.jobMeta { display: flex; flex-direction: column; min-width: 0; flex: 1; gap: 2px; }
+.jobTitle { font-size: 0.85rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jobStatus {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.statusDot { display: inline-block; flex: 0 0 auto; }
+.cancel {
+  flex: 0 0 auto; min-height: 30px; padding: 0 0.6rem;
+  border: none; border-radius: var(--r-0); background: transparent; color: var(--text-2);
+  font: 600 0.78rem var(--sans); cursor: pointer; white-space: nowrap;
+}
+.cancel:hover { background: var(--surface-2); color: var(--text); }
+.cancel:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.jobError { margin: 0; font-size: 0.8rem; font-weight: 600; color: var(--crit); overflow-wrap: anywhere; }
+.progress {
+  position: relative; height: 2px; border-radius: 1px;
+  background: var(--surface-2); overflow: hidden;
+}
+.progressBar {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 35%;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+  animation: sweep 1.3s ease-in-out infinite;
+}
+@keyframes sweep { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+
+/* ---------- Empty state ---------- */
+.emptyWrap { display: flex; flex-direction: column; flex: 1; }
+
+@media (max-width: 520px) {
+  .credits { margin-left: 0; width: 100%; }
+  .thumb { width: 116px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressBar { animation: none; }
+}

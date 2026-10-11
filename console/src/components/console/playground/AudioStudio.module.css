@@ -1,0 +1,191 @@
+/* AudioStudio: minimalist layout. Fields and buttons come from Playground.module.css (shared).
+   Everything here uses console tokens, so light and dark carry through. */
+
+@keyframes asPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+@keyframes asSpin { to { transform: rotate(360deg); } }
+
+.muted { font-size: 0.75rem; color: var(--muted); }
+.note { margin: 0; font-size: 0.8rem; color: var(--muted); line-height: 1.45; overflow-wrap: anywhere; }
+.notice { margin: 0; font-size: 0.82rem; color: var(--text-2); }
+.linkBtn { text-decoration: none; }
+
+/* ---------- Rail ---------- */
+.rail { display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+.advStack { display: flex; flex-direction: column; gap: 0.9rem; }
+
+/* Task chips: plain text, the active one gets a soft tint. */
+.chipRow { display: flex; flex-wrap: wrap; gap: 0.2rem; }
+.taskChip {
+  min-height: 0; padding: 0.3rem 0.6rem; border: none; border-radius: 999px;
+  background: transparent; color: var(--muted);
+  font: 600 0.8rem var(--sans); white-space: nowrap; cursor: pointer;
+  transition: color var(--d-fast), background var(--d-fast);
+}
+.taskChip:hover { color: var(--text); }
+.taskChip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.taskChipOn { color: var(--accent); background: var(--brand-dim); }
+
+/* Sample prompts and voice presets */
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chipBtn {
+  min-height: 0; max-width: 100%; padding: 0.25rem 0.6rem; border-radius: 999px;
+  border: none; background: var(--surface-2); color: var(--text-2);
+  font: 600 0.72rem var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+  transition: color var(--d-fast), background var(--d-fast);
+}
+.chipBtn:hover { color: var(--text); }
+.chipBtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.chipOn { color: var(--accent); background: var(--brand-dim); }
+
+.toggle {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.82rem; color: var(--text-2); cursor: pointer;
+}
+.toggle input { margin: 0; accent-color: var(--brand); }
+
+.runBtn { width: 100%; }
+
+/* ---------- Recorder ---------- */
+.recorder { display: flex; flex-direction: column; gap: 0.5rem; }
+.recRow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.recDot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--crit); flex-shrink: 0;
+  animation: asPulse 1.2s ease-in-out infinite;
+}
+.timer { font: 600 0.82rem var(--mono); color: var(--text); font-variant-numeric: tabular-nums; }
+.meter { height: 4px; border-radius: 2px; overflow: hidden; background: var(--surface-2); }
+.meterBar {
+  width: 100%; height: 100%;
+  background: linear-gradient(to right, var(--success), var(--gold));
+  transform-origin: left center; transform: scaleX(0);
+  transition: transform 80ms linear;
+}
+
+/* ---------- Input preview ---------- */
+.inputPreview { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+.inputCap { font-size: 0.72rem; color: var(--muted); overflow-wrap: anywhere; }
+.inAudio { width: 100%; height: 36px; }
+
+/* ---------- Stage ---------- */
+.empty {
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+  padding: 3rem 1rem; color: var(--muted); text-align: center;
+}
+.empty p { margin: 0; font-size: 0.85rem; }
+
+.outBody { display: flex; flex-direction: column; gap: 1rem; }
+.outHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.75rem; min-width: 0; }
+.outName {
+  flex: 1 1 120px; min-width: 0; font-size: 0.95rem; font-weight: 600; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.outMeta { font: 500 0.72rem var(--mono); color: var(--muted); white-space: nowrap; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.sectionHead {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  font-size: 0.78rem; font-weight: 600; color: var(--muted);
+}
+
+/* Waveform: tokens are read by the canvas through getComputedStyle. */
+.waveWrap {
+  --wave-on: var(--brand);
+  --wave-off: var(--border-strong);
+  --wave-head: var(--text);
+  position: relative; width: 100%; min-width: 0;
+  padding: 0.25rem 0; cursor: pointer;
+}
+.wave { display: block; width: 100%; }
+.waveOverlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  font-size: 0.78rem; color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  pointer-events: none;
+}
+.spinDot {
+  width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0;
+  border: 2px solid var(--brand); border-top-color: transparent;
+  animation: asSpin 0.7s linear infinite;
+}
+.waveNote { position: absolute; left: 0; bottom: 0; font-size: 0.72rem; color: var(--muted); }
+
+.playRow { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+.playBtn {
+  flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: none;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink);
+  transition: background var(--d-fast), transform var(--d-fast) var(--ease-spring);
+}
+.playBtn:hover { background: var(--accent-hover); }
+.playBtn:active { transform: scale(0.94); }
+.playBtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.seek { flex: 1 1 160px; min-width: 0; }
+.time { font: 500 0.72rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.moreBtn {
+  min-height: 0; min-width: 28px; padding: 0.2rem 0.4rem; border: none; border-radius: var(--r-1);
+  background: transparent; color: var(--muted);
+  font: 600 0.9rem var(--sans); line-height: 1; white-space: nowrap; cursor: pointer;
+}
+.moreBtn:hover, .moreBtn[aria-expanded="true"] { color: var(--text); background: var(--surface-2); }
+.moreBtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.speedRow { display: flex; justify-content: flex-end; }
+
+/* ---------- Transcripts ---------- */
+.transcriptBox { display: flex; flex-direction: column; gap: 0.5rem; }
+.tokens { font-size: 1rem; line-height: 1.9; color: var(--text-2); overflow-wrap: anywhere; max-height: 420px; overflow-y: auto; scrollbar-width: thin; }
+.token {
+  display: inline; margin: 0; padding: 0 0.08em; border: none; border-radius: 4px;
+  background: transparent; color: inherit; font: inherit; cursor: pointer;
+  transition: background var(--d-fast), color var(--d-fast);
+}
+.token:hover { background: var(--surface-2); color: var(--text); }
+.token:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.tokenOn { background: var(--brand-dim); color: var(--text); box-shadow: inset 0 -2px 0 var(--brand); }
+.prose { white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem; color: var(--text); overflow-wrap: anywhere; }
+.pre {
+  margin: 0; padding: 0.75rem 0.9rem; max-height: 360px; overflow: auto;
+  background: var(--surface-2); border-radius: var(--r-1);
+  font: 400 0.78rem/1.55 var(--mono); color: var(--text-2);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+
+/* ---------- Download card (stems / binary) ---------- */
+.dlCard { display: flex; align-items: center; gap: 0.9rem; flex-wrap: wrap; }
+.dlMeta { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.dlName { font-size: 0.9rem; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
+
+/* ---------- Busy ---------- */
+.busy { display: flex; flex-direction: column; gap: 0.75rem; }
+.busyBar { height: 48px; }
+
+/* ---------- History ---------- */
+.history {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 0.1rem;
+  max-height: 280px; overflow-y: auto; scrollbar-width: thin;
+}
+.histItem {
+  width: 100%; min-width: 0; min-height: 0;
+  display: flex; flex-direction: column; gap: 0.15rem;
+  padding: 0.45rem 0.6rem; border: none; border-radius: var(--r-1);
+  background: transparent; color: var(--text);
+  font: inherit; text-align: left; cursor: pointer;
+  transition: background var(--d-fast);
+}
+.histItem:hover { background: var(--surface-2); }
+.histItem:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.histOn { background: var(--brand-dim); }
+.histLabel {
+  font-size: 0.82rem; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.histMeta { font: 500 0.7rem var(--mono); color: var(--muted); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .taskChip, .playBtn, .token, .histItem, .chipBtn, .meterBar { transition: none; }
+  .playBtn:active { transform: none; }
+  .recDot, .spinDot { animation: none; }
+}

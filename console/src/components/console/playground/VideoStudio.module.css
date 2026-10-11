@@ -1,0 +1,109 @@
+/* Video studio: minimal rail and job cards. Layout primitives come from Playground.module.css. */
+
+.rail { display: flex; flex-direction: column; gap: 1rem; }
+.submit { width: 100%; }
+
+/* Advanced panel body */
+.advBody { display: flex; flex-direction: column; gap: 1rem; }
+
+.estimate { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.estimateValue { font: 600 0.9rem var(--mono); color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Recent prompts */
+.recent { display: flex; flex-direction: column; gap: 0.5rem; }
+.recentHead { display: flex; align-items: center; justify-content: space-between; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chipBtn {
+  min-height: 28px; max-width: 100%; padding: 0 0.6rem;
+  white-space: nowrap; cursor: pointer;
+  transition: color var(--d-fast);
+}
+.chipBtn:hover { color: var(--text); }
+.chipText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+.linkBtn {
+  min-height: 0; padding: 0; border: none; background: none; cursor: pointer;
+  white-space: nowrap; font: 600 0.72rem var(--sans); color: var(--muted);
+}
+.linkBtn:hover { color: var(--text); }
+
+/* Stage */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 1.5rem 1.25rem;
+  align-items: start;
+}
+
+/* Job card: no border or background of its own */
+.job {
+  display: flex; flex-direction: column; gap: 0.6rem; min-width: 0;
+  animation: jobIn var(--d-move) var(--ease-out) both;
+}
+@keyframes jobIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.prompt {
+  margin: 0;
+  font-size: 0.84rem; line-height: 1.45; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.media {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-1);
+  background: var(--surface-2);
+}
+.video {
+  width: 100%; aspect-ratio: 16 / 9; display: block;
+  border-radius: var(--r-1); background: #000; object-fit: contain;
+}
+
+/* Progress: slim bar */
+.progressTrack {
+  position: relative; height: 3px; border-radius: 2px; overflow: hidden;
+  background: var(--surface-2);
+}
+.progressFill {
+  height: 100%; width: var(--value, 0%);
+  background: var(--brand);
+  transition: width var(--d-move) var(--ease-out);
+}
+.indeterminate { position: absolute; inset: 0; }
+
+/* Status line: tiny and muted */
+.meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem;
+  font: 500 0.72rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.failText { color: var(--danger, var(--text)); }
+.elapsed { margin-left: auto; }
+
+.loop {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font: 500 0.72rem var(--sans); color: var(--muted); cursor: pointer; user-select: none;
+}
+.loop input { accent-color: var(--brand); width: 13px; height: 13px; margin: 0; }
+
+/* Actions: small icon buttons, revealed on hover or keyboard focus */
+.actions {
+  display: flex; align-items: center; gap: 0.25rem;
+  min-height: 28px;
+  opacity: 0; transition: opacity var(--d-fast);
+}
+.job:hover .actions,
+.job:focus-within .actions { opacity: 1; }
+@media (hover: none) {
+  .actions { opacity: 1; }
+}
+.iconAct, .iconAct:hover {
+  width: 28px; height: 28px; min-height: 28px; padding: 0;
+  border: none; background: none; box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .job { animation: none; }
+  .progressFill { transition: none; }
+  .actions { transition: none; }
+}
