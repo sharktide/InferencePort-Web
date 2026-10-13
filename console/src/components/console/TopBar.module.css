@@ -131,8 +131,9 @@
     display: none !important;
   }
 
-  /* The org context switcher lives in the side drawer on phones; it would crowd the top bar */
-  .switcher {
+  /* The org context switcher lives in the side drawer on phones; it would crowd the top bar.
+     Scoped under .topActions so it outranks ContextSwitcher's own .root { display: inline-flex }. */
+  .topActions .switcher {
     display: none;
   }
 
