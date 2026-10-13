@@ -189,7 +189,7 @@ export default function MembersTab({ api, org, onChanged, userId }: Props) {
       {members && members.length === 0 && <p className={styles.muted}>No members yet.</p>}
       {members && members.length > 0 && (
         <div className={shared.tableWrap}>
-          <table className={shared.table}>
+          <table className={`${shared.table} ${shared.tableWide}`}>
             <thead>
               <tr>
                 <th scope="col">Member</th>
@@ -208,11 +208,13 @@ export default function MembersTab({ api, org, onChanged, userId }: Props) {
                 const overBudget = m.monthly_credit_limit != null && m.month_spend >= m.monthly_credit_limit;
                 return (
                   <tr key={m.user_id}>
-                    <td className={shared.wrapAnywhere}>
-                      {memberName(m)}{" "}
-                      {m.user_id === userId && <Badge tone="brand">You</Badge>}
-                    </td>
                     <td>
+                      <div className={shared.memberCell}>
+                        <span className={shared.wrapAnywhere}>{memberName(m)}</span>
+                        {m.user_id === userId && <Badge tone="brand">You</Badge>}
+                      </div>
+                    </td>
+                    <td data-label="Role">
                       {canSetRole && manageable ? (
                         <select
                           aria-label={`Role for ${memberName(m)}`}
@@ -233,14 +235,14 @@ export default function MembersTab({ api, org, onChanged, userId }: Props) {
                         <Badge tone={m.role === "owner" ? "brand" : "neutral"}>{ROLE_LABELS[m.role]}</Badge>
                       )}
                     </td>
-                    <td>
+                    <td data-label="Status">
                       {m.suspended_at ? (
                         <span className={`${manage.chip} ${manage.chipCrit}`} title={formatDate(m.suspended_at, true)}>Suspended</span>
                       ) : (
                         <span className={`${manage.chip} ${manage.chipOk}`}>Active</span>
                       )}
                     </td>
-                    <td>
+                    <td data-label="Spend this month">
                       <div className={manage.progress}>
                         <span>
                           {fmtCredits(m.month_spend)} / {m.monthly_credit_limit != null ? fmtCredits(m.monthly_credit_limit) : "no limit"}
@@ -248,60 +250,62 @@ export default function MembersTab({ api, org, onChanged, userId }: Props) {
                         {overBudget && <span className={`${manage.chip} ${manage.chipWarn}`}>At limit</span>}
                       </div>
                     </td>
-                    <td><Badge>{SOURCE_LABELS[m.source] ?? m.source}</Badge></td>
-                    <td>{formatDate(m.created_at)}</td>
-                    <td className="actions">
-                      <div className={manage.rowActions}>
-                        {canLimits && manageable && (
-                          <button
-                            type="button"
-                            className="ghost"
-                            disabled={busyId === m.user_id}
-                            aria-label={`Edit limits for ${memberName(m)}`}
-                            onClick={() => setEditing(m)}
-                          >
-                            Limits
-                          </button>
+                    <td data-label="Source"><Badge>{SOURCE_LABELS[m.source] ?? m.source}</Badge></td>
+                    <td data-label="Joined">{formatDate(m.created_at)}</td>
+                    {manageable && (canLimits || canRemove) && (
+                      <td className="actions">
+                        <div className={manage.rowActions}>
+                          {canLimits && (
+                            <button
+                              type="button"
+                              className="ghost"
+                              disabled={busyId === m.user_id}
+                              aria-label={`Edit limits for ${memberName(m)}`}
+                              onClick={() => setEditing(m)}
+                            >
+                              Limits
+                            </button>
+                          )}
+                          {canLimits && m.suspended_at && (
+                            <button
+                              type="button"
+                              className="ghost"
+                              disabled={busyId === m.user_id}
+                              aria-label={`Unsuspend ${memberName(m)}`}
+                              onClick={() => unsuspend(m)}
+                            >
+                              Unsuspend
+                            </button>
+                          )}
+                          {canLimits && !m.suspended_at && (
+                            <button
+                              type="button"
+                              className="ghost"
+                              disabled={busyId === m.user_id || !ent.member_suspension}
+                              title={ent.member_suspension ? undefined : planHint("member_suspension")}
+                              aria-label={`Suspend ${memberName(m)}`}
+                              onClick={() => suspend(m)}
+                            >
+                              Suspend
+                            </button>
+                          )}
+                          {canRemove && (
+                            <button
+                              type="button"
+                              className={shared.danger}
+                              disabled={busyId === m.user_id}
+                              aria-label={`Remove ${memberName(m)}`}
+                              onClick={() => removeMember(m)}
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        {canLimits && !m.suspended_at && !ent.member_suspension && (
+                          <span className={`${manage.hintText} ${manage.cellHint}`}>Suspend: {planHint("member_suspension")}</span>
                         )}
-                        {canLimits && manageable && m.suspended_at && (
-                          <button
-                            type="button"
-                            className="ghost"
-                            disabled={busyId === m.user_id}
-                            aria-label={`Unsuspend ${memberName(m)}`}
-                            onClick={() => unsuspend(m)}
-                          >
-                            Unsuspend
-                          </button>
-                        )}
-                        {canLimits && manageable && !m.suspended_at && (
-                          <button
-                            type="button"
-                            className="ghost"
-                            disabled={busyId === m.user_id || !ent.member_suspension}
-                            title={ent.member_suspension ? undefined : planHint("member_suspension")}
-                            aria-label={`Suspend ${memberName(m)}`}
-                            onClick={() => suspend(m)}
-                          >
-                            Suspend
-                          </button>
-                        )}
-                        {canRemove && manageable && (
-                          <button
-                            type="button"
-                            className={shared.danger}
-                            disabled={busyId === m.user_id}
-                            aria-label={`Remove ${memberName(m)}`}
-                            onClick={() => removeMember(m)}
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                      {canLimits && manageable && !m.suspended_at && !ent.member_suspension && (
-                        <span className={manage.hintText}>Suspend: {planHint("member_suspension")}</span>
-                      )}
-                    </td>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -354,9 +358,9 @@ export default function MembersTab({ api, org, onChanged, userId }: Props) {
                     {invitations.map((inv) => (
                       <tr key={inv.id}>
                         <td className={shared.wrapAnywhere}>{inv.email}</td>
-                        <td>{ROLE_LABELS[inv.role]}</td>
-                        <td className={shared.wrapAnywhere}>{inv.invited_by_email ?? "—"}</td>
-                        <td>{formatDate(inv.expires_at)}</td>
+                        <td data-label="Role">{ROLE_LABELS[inv.role]}</td>
+                        <td data-label="Invited by" className={shared.wrapAnywhere}>{inv.invited_by_email ?? "—"}</td>
+                        <td data-label="Expires">{formatDate(inv.expires_at)}</td>
                         <td className="actions">
                           <div className={manage.rowActions}>
                             <button

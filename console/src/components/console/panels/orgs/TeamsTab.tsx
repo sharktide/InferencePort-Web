@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import styles from "../Panel.module.css";
 import shared from "./orgs.module.css";
+import manage from "./manage.module.css";
 import { useModal } from "../../../Modal";
 import type { OrgApi, OrgDetail, OrgMember, OrgTeam } from "../../../../lib/orgs";
 import { Callout, Locked, errorText, formatDate } from "./shared";
@@ -225,17 +226,19 @@ function TeamRow({
           <div className={`${shared.mono} ${styles.muted}`}>{team.slug}</div>
           {team.description && <div className={`${styles.muted} ${styles.tiny}`}>{team.description}</div>}
         </td>
-        <td>{team.member_count}</td>
-        <td>{formatDate(team.created_at)}</td>
+        <td data-label="Members">{team.member_count}</td>
+        <td data-label="Created">{formatDate(team.created_at)}</td>
         <td className="actions">
-          <button type="button" className="ghost" aria-expanded={open} onClick={onToggle}>
-            {open ? "Hide members" : "Members"}
-          </button>{" "}
-          {canManage && (
-            <button type="button" className={shared.danger} disabled={busy} aria-label={`Delete team ${team.name}`} onClick={onDelete}>
-              Delete
+          <div className={manage.rowActions}>
+            <button type="button" className="ghost" aria-expanded={open} onClick={onToggle}>
+              {open ? "Hide members" : "Members"}
             </button>
-          )}
+            {canManage && (
+              <button type="button" className={shared.danger} disabled={busy} aria-label={`Delete team ${team.name}`} onClick={onDelete}>
+                Delete
+              </button>
+            )}
+          </div>
         </td>
       </tr>
       {open && (

@@ -48,9 +48,9 @@
 .total { font-size: 0.9375rem; color: var(--text); font-variant-numeric: tabular-nums; }
 .total strong { font-weight: 600; }
 
-/* Data tables: horizontal scroll on phones, never wrapping the whole page */
+/* Data tables: wide enough to stay readable, stacked into labelled cards on phones */
 .tableWrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface); -webkit-overflow-scrolling: touch; }
-.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 560px; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 760px; }
 .table th { text-align: left; font-weight: 600; font-size: 0.8125rem; color: var(--text-2); background: var(--surface-2); padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
 .table td { padding: 0.65rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text); overflow-wrap: anywhere; }
 .table tr:last-child td { border-bottom: none; }
@@ -116,11 +116,24 @@
 
 .bannerClose { margin-left: auto; }
 
+/* Phones and portrait tablets: rows stack into cards with their column labels (data-label attrs) */
+@media (max-width: 960px) {
+  .tableWrap { overflow-x: visible; }
+  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+  .table { min-width: 0; }
+  .table thead { display: none; }
+  .table tr { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); }
+  .table tbody tr:last-child { border-bottom: none; }
+  .table td { border-bottom: none; padding: 0.3rem 0; text-align: left; }
+  .table td:first-child:not([colspan]) { padding-top: 0; margin-bottom: 0.35rem; }
+  .table td[data-label]::before { content: attr(data-label); display: block; font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-bottom: 0.1rem; }
+  .table td[colspan] { font-weight: normal; font-size: inherit; padding-top: 0.5rem; }
+}
+
 @media (max-width: 680px) {
   .fieldNarrow { width: 100%; }
   .copyRow { flex-direction: column; }
   .copyRow button { width: 100%; }
   .formRow > * { flex: 1 1 100%; }
   .formRow > .actions { width: 100%; }
-  .table { min-width: 520px; }
 }

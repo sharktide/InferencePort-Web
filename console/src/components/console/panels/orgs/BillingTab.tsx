@@ -562,7 +562,7 @@ export default function BillingTab({ api, org, onChanged }: Props) {
         {ledger && ledger.length === 0 && <p className={s.hint}>No ledger entries yet.</p>}
         {ledger && ledger.length > 0 && (
           <div className={shared.tableWrap}>
-            <table className={shared.table}>
+            <table className={`${shared.table} ${shared.tableWide}`}>
               <caption className={s.hint} style={{ textAlign: "left", padding: "0.6rem 0.85rem" }}>
                 Most recent {ledger.length} entries
               </caption>
@@ -581,17 +581,17 @@ export default function BillingTab({ api, org, onChanged }: Props) {
                 {ledger.map((e) => (
                   <tr key={e.id}>
                     <td className={shared.mono}>{fmtDateTime(e.created_at)}</td>
-                    <td>
+                    <td data-label="Type">
                       {e.entry_type}
                       {(e.usage_kind ?? e.source) && <span className={s.hint}> {e.usage_kind ?? e.source}</span>}
                     </td>
-                    <td className={shared.mono}>{e.model ?? "—"}</td>
-                    <td>{e.actor_email ?? "System"}</td>
-                    <td className={shared.mono}>{e.key_prefix ? `${e.key_prefix}…` : "Console"}</td>
-                    <td className={shared.mono} style={{ color: e.delta_credits < 0 ? "var(--crit)" : "var(--success-ink)" }}>
+                    <td data-label="Model" className={shared.mono}>{e.model ?? "—"}</td>
+                    <td data-label="Member">{e.actor_email ?? "System"}</td>
+                    <td data-label="Key" className={shared.mono}>{e.key_prefix ? `${e.key_prefix}…` : "Console"}</td>
+                    <td data-label="Credits" className={shared.mono} style={{ color: e.delta_credits < 0 ? "var(--crit)" : "var(--success-ink)" }}>
                       {e.delta_credits > 0 ? "+" : ""}{fmtCredits(e.delta_credits)}
                     </td>
-                    <td className={shared.mono}>{fmtCredits(e.balance_after)}</td>
+                    <td data-label="Balance after" className={shared.mono}>{fmtCredits(e.balance_after)}</td>
                   </tr>
                 ))}
               </tbody>

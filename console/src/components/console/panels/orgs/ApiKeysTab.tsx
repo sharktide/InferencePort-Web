@@ -139,7 +139,7 @@ export default function ApiKeysTab({ api, org, onChanged, userId, apiBase }: Pro
       {keys && keys.length === 0 && <p className={`${styles.muted} ${styles.tiny}`}>No organization API keys yet.</p>}
       {keys && keys.length > 0 && (
         <div className={shared.tableWrap}>
-          <table className={shared.table}>
+          <table className={`${shared.table} ${shared.tableWide}`}>
             <thead>
               <tr>
                 <th scope="col">Name</th>
@@ -166,39 +166,41 @@ export default function ApiKeysTab({ api, org, onChanged, userId, apiBase }: Pro
                       <div className={shared.wrapAnywhere}>{k.name}</div>
                       {k.description && <div className={`${styles.muted} ${styles.tiny} ${shared.wrapAnywhere}`}>{k.description}</div>}
                     </td>
-                    <td className={shared.mono}>{k.key_prefix}…</td>
-                    <td>
+                    <td data-label="Key" className={shared.mono}>{k.key_prefix}…</td>
+                    <td data-label="Restrictions">
                       <div className={manage.restrictions}>
                         {labels.length === 0
                           ? <span className={manage.chip}>Unrestricted</span>
                           : labels.map((l) => <span key={l} className={manage.chip}>{l}</span>)}
                       </div>
                     </td>
-                    <td>
+                    <td data-label="Spend this month">
                       <div className={manage.progress}>
                         <span>
                           {fmtCredits(k.month_spend)} / {k.monthly_credit_limit != null ? fmtCredits(k.monthly_credit_limit) : "no limit"}
                         </span>
                       </div>
                     </td>
-                    <td className={shared.wrapAnywhere}>{k.created_by_email ?? "—"}</td>
-                    <td>{formatDate(k.last_used_at, true)}</td>
-                    <td>{k.expires_at ? formatDate(k.expires_at) : "Never"}</td>
-                    <td><Badge tone={status.tone === "ok" ? "ok" : status.tone === "warn" ? "warn" : "neutral"}>{status.label}</Badge></td>
-                    <td className="actions">
-                      <div className={manage.rowActions}>
-                        {canEdit && (
-                          <button type="button" className="ghost" disabled={busy} aria-label={`Edit ${k.name}`} onClick={() => setDialog({ mode: "edit", key: k })}>
-                            Edit
-                          </button>
-                        )}
-                        {canRevoke && (
-                          <button type="button" className={shared.danger} disabled={busy} aria-label={`Revoke ${k.name}`} onClick={() => revoke(k)}>
-                            Revoke
-                          </button>
-                        )}
-                      </div>
-                    </td>
+                    <td data-label="Created by" className={shared.wrapAnywhere}>{k.created_by_email ?? "—"}</td>
+                    <td data-label="Last used">{formatDate(k.last_used_at, true)}</td>
+                    <td data-label="Expires">{k.expires_at ? formatDate(k.expires_at) : "Never"}</td>
+                    <td data-label="Status"><Badge tone={status.tone === "ok" ? "ok" : status.tone === "warn" ? "warn" : "neutral"}>{status.label}</Badge></td>
+                    {(canEdit || canRevoke) && (
+                      <td className="actions">
+                        <div className={manage.rowActions}>
+                          {canEdit && (
+                            <button type="button" className="ghost" disabled={busy} aria-label={`Edit ${k.name}`} onClick={() => setDialog({ mode: "edit", key: k })}>
+                              Edit
+                            </button>
+                          )}
+                          {canRevoke && (
+                            <button type="button" className={shared.danger} disabled={busy} aria-label={`Revoke ${k.name}`} onClick={() => revoke(k)}>
+                              Revoke
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}

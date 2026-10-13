@@ -4,7 +4,7 @@
 .orgButton { width: 100%; min-height: 60px; display: flex; justify-content: space-between; align-items: center; gap: 1rem; text-align: left; padding: 0.9rem 1.05rem; background: var(--surface-2); color: var(--text); border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; font-family: var(--sans); transition: border-color var(--d-fast); }
 .orgButton:hover { border-color: var(--border-strong); }
 .orgButton:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
-.orgMain { min-width: 0; display: grid; gap: 0.2rem; }
+.orgMain { min-width: 0; display: grid; gap: 0.3rem; }
 .orgName { font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
 .orgSlug { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); overflow-wrap: anywhere; }
 .orgMeta { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; flex-shrink: 0; }

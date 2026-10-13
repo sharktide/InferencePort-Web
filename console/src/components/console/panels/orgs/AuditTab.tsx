@@ -225,11 +225,11 @@ export default function AuditTab({ api, org }: Props) {
                       <Fragment key={ev.id}>
                         <tr>
                           <td className={s.mono}>{when(ev.created_at)}</td>
-                          <td>{ev.actor_email ?? ev.actor_type}<span className={s.cellSub}>{ev.actor_type}</span></td>
-                          <td className={s.mono}>{ev.action}</td>
-                          <td>{ev.target_type ?? "None"}{ev.target_id && <span className={`${s.cellSub} ${s.mono}`}>{ev.target_id}</span>}</td>
-                          <td className={s.mono}>{ev.ip ?? "None"}</td>
-                          <td>
+                          <td data-label="Actor">{ev.actor_email ?? ev.actor_type}<span className={s.cellSub}>{ev.actor_type}</span></td>
+                          <td data-label="Action" className={s.mono}>{ev.action}</td>
+                          <td data-label="Target">{ev.target_type ?? "None"}{ev.target_id && <span className={`${s.cellSub} ${s.mono}`}>{ev.target_id}</span>}</td>
+                          <td data-label="IP" className={s.mono}>{ev.ip ?? "None"}</td>
+                          <td data-label="Details">
                             <button className="ghost" style={{ minHeight: 0, padding: "0.15rem 0.5rem", fontSize: "0.75rem" }}
                               aria-expanded={open} aria-controls={`audit-detail-${ev.id}`} onClick={() => toggle(ev.id)}>
                               {open ? "Hide" : "Show"}

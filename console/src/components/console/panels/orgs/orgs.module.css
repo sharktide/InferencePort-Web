@@ -6,16 +6,47 @@
 .badgeWarn { border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); background: color-mix(in srgb, var(--warn) 10%, transparent); }
 .badgeCrit { border-color: color-mix(in srgb, var(--crit) 45%, var(--border)); color: var(--crit); }
 
-/* Tables scroll horizontally inside their wrapper on narrow screens */
+/* Tables scroll horizontally inside their wrapper instead of squeezing columns */
 .tableWrap { width: 100%; overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-1); -webkit-overflow-scrolling: touch; }
-.table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 0.875rem; }
-.table th, .table td { text-align: left; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 0.875rem; }
+.table th, .table td { text-align: left; padding: 0.8rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
 .table th { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); background: var(--surface-2); white-space: nowrap; }
 .table td { color: var(--text); }
 .table tbody tr:last-child td { border-bottom: none; }
-.table td.actions { text-align: right; white-space: nowrap; }
+.table :global(td.actions) { text-align: right; white-space: nowrap; }
+/* Dense tables keep a readable minimum width and scroll rather than wrapping every cell */
+.tableWide { min-width: 960px; }
+/* Member cell: name and its badges need room between them */
+.memberCell { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.6rem; min-width: 0; }
 .mono { font-family: var(--mono); font-size: 0.8125rem; }
 .wrapAnywhere { overflow-wrap: anywhere; word-break: break-word; }
+
+/* Phones and portrait tablets (<=960px): each row becomes a card with its column labels,
+   instead of seven columns crushed into one screen. Labels come from data-label attributes. */
+@media (max-width: 960px) {
+  .tableWrap { overflow-x: visible; }
+  .table, .table tbody, .table tr, .table td { display: block; width: 100%; }
+  .table { min-width: 0; }
+  .table thead { display: none; }
+  .table tr { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); }
+  .table tbody tr:last-child { border-bottom: none; }
+  .table td { border-bottom: none; padding: 0.3rem 0; text-align: left; white-space: normal; }
+  .table td:first-child:not([colspan]) { padding-top: 0; margin-bottom: 0.35rem; }
+  .table td[data-label]::before { content: attr(data-label); display: block; font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-bottom: 0.1rem; }
+  .table td[colspan] { font-weight: normal; font-size: inherit; padding-top: 0.5rem; }
+  .table :global(td.actions) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin-top: 0.55rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--border);
+    text-align: left;
+    white-space: normal;
+  }
+  .table select { width: 100%; }
+}
 
 /* Inline status messages */
 .callout { display: grid; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: var(--r-1); border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 0.875rem; line-height: 1.5; overflow-wrap: anywhere; }

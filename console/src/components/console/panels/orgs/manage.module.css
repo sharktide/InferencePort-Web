@@ -58,14 +58,22 @@
 
 .scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .nowrap { white-space: nowrap; }
-.rowActions { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: flex-end; }
+/* In-table actions stay on one line; the table scrolls or stacks instead of wrapping buttons */
+.rowActions { display: flex; flex-wrap: nowrap; gap: 0.4rem; justify-content: flex-end; }
+.rowActions > * { flex: none; }
+/* Plan-gating note under an action button: hugs the right edge, never stretches the row */
+.cellHint { display: block; margin-top: 0.4rem; margin-left: auto; max-width: 17rem; text-align: right; white-space: normal; }
 
 .dialogActions { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
+
+@media (max-width: 960px) {
+  .rowActions { flex-wrap: wrap; justify-content: flex-start; }
+  .cellHint { margin-left: 0; text-align: left; max-width: none; }
+}
 
 @media (max-width: 640px) {
   .barRow { grid-template-columns: minmax(0, 1fr) auto; }
   .barRow .barTrack { grid-column: 1 / -1; grid-row: 2; }
   .toolbarGroup { width: 100%; }
   .toolbarGroup > * { flex: 1 1 100%; }
-  .rowActions { justify-content: flex-start; }
 }

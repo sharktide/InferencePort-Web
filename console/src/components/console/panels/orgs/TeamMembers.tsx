@@ -92,10 +92,13 @@ export default function TeamMembers({ api, slug, team, orgMembers, canManage, us
             <tbody>
               {members.map((m) => (
                 <tr key={m.user_id}>
-                  <td className={shared.wrapAnywhere}>
-                    {memberName(m)} {m.user_id === userId && <Badge tone="brand">You</Badge>}
-                  </td>
                   <td>
+                    <div className={shared.memberCell}>
+                      <span className={shared.wrapAnywhere}>{memberName(m)}</span>
+                      {m.user_id === userId && <Badge tone="brand">You</Badge>}
+                    </div>
+                  </td>
+                  <td data-label="Team role">
                     {canManage ? (
                       <select
                         aria-label={`Team role for ${memberName(m)}`}
@@ -110,8 +113,8 @@ export default function TeamMembers({ api, slug, team, orgMembers, canManage, us
                       <Badge>{m.role === "maintainer" ? "Maintainer" : "Member"}</Badge>
                     )}
                   </td>
-                  <td className="actions">
-                    {canManage && (
+                  {canManage && (
+                    <td className="actions">
                       <button
                         type="button"
                         className={shared.danger}
@@ -121,8 +124,8 @@ export default function TeamMembers({ api, slug, team, orgMembers, canManage, us
                       >
                         Remove
                       </button>
-                    )}
-                  </td>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

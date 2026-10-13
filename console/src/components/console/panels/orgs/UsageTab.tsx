@@ -188,9 +188,9 @@ export default function UsageTab({ api, org }: Props) {
                     {buckets.map((b) => (
                       <tr key={b.key}>
                         <td className={shared.wrapAnywhere}>{b.label}</td>
-                        <td>{fmtCredits(b.credits)}</td>
-                        <td>{b.requests.toLocaleString()}</td>
-                        <td>{pct(b.credits, total)}%</td>
+                        <td data-label="Credits">{fmtCredits(b.credits)}</td>
+                        <td data-label="Requests">{b.requests.toLocaleString()}</td>
+                        <td data-label="Share">{pct(b.credits, total)}%</td>
                       </tr>
                     ))}
                   </tbody>

@@ -131,6 +131,11 @@
     display: none !important;
   }
 
+  /* The org context switcher lives in the side drawer on phones; it would crowd the top bar */
+  .switcher {
+    display: none;
+  }
+
   .brandEmphasis {
     display: none !important;
   }
