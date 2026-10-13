@@ -2,6 +2,7 @@
 
 import styles from "./TopBar.module.css";
 import Icon from "../Icon";
+import ContextSwitcher from "./ContextSwitcher";
 
 interface TopBarProps {
   user: any;
@@ -52,6 +53,7 @@ export default function TopBar({
         </button>
         <a id="home-link" href={homeUrl} target="_blank" rel="noreferrer" className={styles.desktopOnly}>Home</a>
         <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.desktopOnly}>Docs</a>
+        <ContextSwitcher variant="topbar" className={styles.switcher} />
         <button
           id="theme-toggle"
           className={`${styles.ghost} ${styles.iconBtn}`}

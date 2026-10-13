@@ -4,9 +4,11 @@ import { useState, useCallback } from "react";
 import styles from "./Panel.module.css";
 import accountStyles from "./AccountPanel.module.css";
 import { useModal } from "../../Modal";
+import { createOrgApi } from "../../../lib/orgs";
 
 type AuthMode = "signin" | "signup" | "forgot";
-
+const FALLBACK_API_BASE = "https://us-east-2.api.inferenceport.ai";
+const STAGING_API_BASE = "https://staging-api.inferenceport.ai";
 interface AccountPanelProps { config: any; session: any; supabase: any; }
 
 const PROVIDER_SVG: Record<string, JSX.Element> = {
@@ -52,7 +54,7 @@ export default function AccountPanel({ config, session, supabase }: AccountPanel
   const modal = useModal();
   const [notices] = useState<any[]>(config?.notices || []);
   const [authMode, setAuthMode] = useState<AuthMode>("signin");
-
+  const staging = new URLSearchParams(window.location.search).get("staging") === "true";
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
@@ -77,6 +79,22 @@ export default function AccountPanel({ config, session, supabase }: AccountPanel
   const handleOAuth = async (p: string) => {
     if (!supabase) { await modal.alert("Authentication is not available. Please try again later."); return; }
     try { await supabase.auth.signInWithOAuth({ provider: p as any, options: { redirectTo: window.location.href } }); } catch (err: any) { await modal.alert(err.message || "OAuth sign-in failed."); }
+  };
+
+  const handleSSO = async () => {
+    if (!supabase) { await modal.alert("Authentication is not available. Please try again later."); return; }
+    const typed = (document.getElementById("email-input") as HTMLInputElement | null)?.value?.trim();
+    const email = typed || (await modal.prompt("Enter your work email to continue with single sign-on.", "", "Single sign-on"))?.trim();
+    if (!email) return;
+    try {
+      const base = staging ? STAGING_API_BASE : String(config?.dashboard?.apiBaseUrl || FALLBACK_API_BASE).replace(/\/$/, "");
+      const d = await createOrgApi(base, () => undefined).ssoDiscover(email);
+      if (!d.sso) { await modal.alert("No single sign-on is configured for this email domain."); return; }
+      const { error } = await supabase.auth.signInWithSSO(
+        d.provider_id ? { providerId: d.provider_id, options: { redirectTo: window.location.origin + window.location.pathname } } : { domain: d.domain as string, options: { redirectTo: window.location.origin + window.location.pathname } },
+      );
+      if (error) throw error;
+    } catch (err: any) { await modal.alert(err.message || "Single sign-on failed."); }
   };
 
   const handleForgot = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -222,6 +240,10 @@ export default function AccountPanel({ config, session, supabase }: AccountPanel
               🤗&nbsp;&nbsp;Hugging Face
           </button>
         </div>
+
+        <button data-auth className={accountStyles.socialBtn} type="button" onClick={handleSSO} style={{ width: "100%", marginTop: "0.5rem" }}>
+          Single sign-on (SSO)
+        </button>
 
         <div className={accountStyles.divider}><span>OR</span></div>
 

@@ -70,6 +70,9 @@
 
 .hidden { display: none; }
 
+/* Context switcher sits left of the theme toggle; keeps its own tap target on phones */
+.switcher { margin-right: 0.35rem; }
+
 .topActions a {
   font-size: 0.875rem;
   font-weight: 500;

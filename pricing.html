@@ -207,6 +207,181 @@
 				color: var(--success);
 			}
 
+					/* ── Organizations section ── */
+			:root {
+				--muted: #636b78;
+				--success-ink: #047857;
+			}
+			.org-hero-link {
+				text-align: center;
+				font-size: 0.9rem;
+				margin: 14px 0 0;
+			}
+			.org-section {
+				border-top: 1px solid var(--border-light);
+			}
+			.org-head {
+				text-align: center;
+				max-width: 640px;
+				margin: 0 auto 40px;
+			}
+			.org-title {
+				font-size: clamp(1.5rem, 3vw, 2.2rem);
+				font-weight: 800;
+				letter-spacing: -0.03em;
+				line-height: 1.15;
+				color: var(--text);
+				margin: 0;
+			}
+			.org-sub {
+				color: var(--text-body);
+				font-size: 0.95rem;
+				line-height: 1.65;
+				max-width: 520px;
+				margin: 12px auto 0;
+			}
+			.org-plan .plan-price.org-price-text {
+				font-size: 1.5rem;
+				padding-top: 6px;
+			}
+			.org-features {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.org-features .plan-feature {
+				align-items: flex-start;
+			}
+			.org-check {
+				color: var(--success-ink);
+				font-weight: 700;
+				line-height: 1.5;
+			}
+			.org-btn-primary {
+				display: block;
+				background: #3b6ae0;
+				color: #fff;
+				border: none;
+				border-radius: 8px;
+				padding: 10px;
+				font-weight: 600;
+				font-size: 0.84rem;
+				text-align: center;
+				text-decoration: none;
+				width: 100%;
+				margin-top: auto;
+				transition: opacity 0.2s;
+			}
+			.org-btn-primary:hover {
+				opacity: 0.88;
+				color: #fff;
+			}
+			.org-plan .btn-plan-outline {
+				display: block;
+				text-align: center;
+				text-decoration: none;
+			}
+			.org-note {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				padding: 26px 30px;
+				max-width: 760px;
+				margin: 0 auto;
+			}
+			.org-note-title {
+				font-weight: 800;
+				font-size: 1.05rem;
+				color: var(--text);
+				margin: 0 0 8px;
+			}
+			.org-note p,
+			.org-note li {
+				font-size: 0.9rem;
+				color: var(--text-body);
+				line-height: 1.65;
+			}
+			.org-note p {
+				margin: 0 0 8px;
+			}
+			.org-note ul {
+				margin: 0;
+				padding-left: 1.2rem;
+			}
+			.org-table-wrap {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 14px;
+			}
+			.org-table {
+				min-width: 560px;
+				margin: 0;
+				color: var(--text-body);
+			}
+			.org-table caption {
+				caption-side: top;
+				text-align: left;
+				padding: 16px 14px 10px;
+				font-weight: 700;
+				font-size: 0.95rem;
+				color: var(--text);
+			}
+			.org-table tbody th {
+				font-size: 0.84rem;
+				font-weight: 600;
+				color: var(--text);
+				padding: 12px 14px;
+				text-align: left;
+				border-bottom: 1px solid var(--border-light);
+			}
+			.org-table thead th:not(:first-child),
+			.org-table tbody td {
+				text-align: left;
+			}
+			.org-table td.org-yes {
+				color: var(--success-ink);
+				font-weight: 700;
+			}
+			.org-table td.org-no {
+				color: var(--text-muted);
+			}
+			.org-terms {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+				gap: 8px 24px;
+				list-style: none;
+				padding: 0;
+				margin: 0 0 20px;
+			}
+			.org-terms li {
+				font-size: 0.88rem;
+				color: var(--text-body);
+				display: flex;
+				gap: 8px;
+			}
+			.org-cta {
+				display: inline-block;
+				background: #3b6ae0;
+				color: #fff;
+				border-radius: 8px;
+				padding: 11px 24px;
+				font-weight: 600;
+				font-size: 0.9rem;
+				text-decoration: none;
+			}
+			.org-cta:hover {
+				background: #2f5bc7;
+				color: #fff;
+			}
+			@media (max-width: 576px) {
+				.org-note {
+					padding: 22px 18px;
+				}
+				.org-cta {
+					display: block;
+					text-align: center;
+				}
+			}
 		</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -222,6 +397,9 @@
 				<p class="page-sub">
 					Every plan includes unlimited local chat. Upgrade to unlock
 					cloud generation at scale.
+					</p>
+					<p class="org-hero-link">
+						<a href="#organizations">Teams? See Organization plans &darr;</a>
 				</p>
 			</div>
 		</div>
@@ -612,6 +790,264 @@
 						</tr>
 						</tbody>
 					</table>
+				</div>
+			</div>
+		</section>
+
+		<section class="py-5 org-section" id="organizations" aria-labelledby="org-heading">
+			<div class="container">
+				<div class="org-head">
+					<div class="section-tag">Organizations</div>
+					<h2 class="org-title" id="org-heading">
+						One credit wallet for <span class="accent">your whole team</span>
+					</h2>
+					<p class="org-sub">
+						Share credits across members and API keys, set budgets per
+						member and per key, and pay per seat. Start free with up to 3
+						members.
+					</p>
+				</div>
+
+				<div class="row g-3 align-items-stretch">
+					<div class="col-md-6 col-xl-3">
+						<article class="plan-card org-plan" aria-labelledby="org-free-name">
+							<h3 class="plan-name" id="org-free-name">Free</h3>
+							<div class="plan-desc">Try organizations with a small group.</div>
+							<div class="plan-price">$0</div>
+							<div class="plan-period">forever</div>
+							<hr class="plan-hr" />
+							<ul class="org-features">
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Up to 3 members</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Shared org credit wallet</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>2 org API keys</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>7-day audit log</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Org-billed usage in the playground</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Invite by link or email</span></li>
+							</ul>
+							<a href="https://console.inferenceport.ai/" class="btn btn-plan-outline mt-3">Create a free organization</a>
+						</article>
+					</div>
+
+					<div class="col-md-6 col-xl-3">
+						<article class="plan-card org-plan" aria-labelledby="org-starter-name">
+							<h3 class="plan-name" id="org-starter-name">Starter</h3>
+							<div class="plan-desc">Shared credits with real controls: per-member and per-key limits.</div>
+							<div class="plan-price"><sup>$</sup>7.99</div>
+							<div class="plan-period">per seat / month</div>
+							<hr class="plan-hr" />
+							<ul class="org-features">
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Up to 25 members, 5 teams, 20 org API keys</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Per-member monthly credit budgets</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Per-API-key budgets, model/modality limits and rate limits</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Org-wide model &amp; modality policy</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>API key hygiene: required expiry, max lifetime</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Suspend members instantly</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Org monthly spend limit</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Budget &amp; low-balance email alerts</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>30-day audit log with CSV/JSON export</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Usage analytics by member, key and model with CSV export</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Verified domains &amp; invite domain restrictions</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Email support</span></li>
+							</ul>
+							<a href="https://console.inferenceport.ai/" class="btn org-btn-primary mt-3">Start with Starter</a>
+						</article>
+					</div>
+
+					<div class="col-md-6 col-xl-3">
+						<article class="plan-card popular org-plan" aria-labelledby="org-team-name">
+							<div class="popular-pill">Most popular</div>
+							<h3 class="plan-name" id="org-team-name">Team</h3>
+							<div class="plan-desc">Everything for secure rollout: SSO, IP allowlists, audit streaming and more.</div>
+							<div class="plan-price"><sup>$</sup>20</div>
+							<div class="plan-period">per seat / month</div>
+							<hr class="plan-hr" />
+							<ul class="org-features">
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Everything in Starter</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>SAML single sign-on with just-in-time provisioning</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Enforce SSO for the whole org</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>IP allowlist for the org and per API key</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Audit log streaming to your SIEM (signed webhooks)</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Read-only Auditor role</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>365-day audit retention</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Up to 1,000 members, 200 teams, unlimited org API keys</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Usage reports emailed on demand</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Priority email support</span></li>
+							</ul>
+							<a href="https://console.inferenceport.ai/" class="btn org-btn-primary mt-3">Start with Team</a>
+						</article>
+					</div>
+
+					<div class="col-md-6 col-xl-3">
+						<article class="plan-card org-plan" aria-labelledby="org-enterprise-name">
+							<h3 class="plan-name" id="org-enterprise-name">Enterprise</h3>
+							<div class="plan-desc">Team, plus the commercial and compliance terms large organizations need.</div>
+							<div class="plan-price org-price-text">Contact sales</div>
+							<div class="plan-period">arranged with our team</div>
+							<hr class="plan-hr" />
+							<ul class="org-features">
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Everything in Team</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Unlimited members, teams and API keys</span></li>
+								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Audit retention up to 7 years</span></li>
+							</ul>
+							<a href="mailto:inferenceportai@gmail.com?subject=InferencePort%20Enterprise" class="btn btn-plan-outline mt-3">Contact sales</a>
+						</article>
+					</div>
+				</div>
+
+				<div class="org-note mt-5">
+					<h3 class="org-note-title">How billing works</h3>
+					<p>
+						Paid plans bill per seat, per month: Starter is $7.99 and Team is $20 for each seat.
+					</p>
+					<ul>
+						<li>Seats follow your member list automatically. When someone joins, the partial month for their seat is charged right away; when someone leaves, you get a prorated credit. Every renewal is exactly seats × price.</li>
+						<li>The Free plan covers up to 3 members.</li>
+					</ul>
+				</div>
+
+				<div class="mt-5">
+					<div class="table-responsive org-table-wrap" tabindex="0" role="region" aria-labelledby="org-compare-caption">
+						<table class="org-table">
+							<caption id="org-compare-caption">Organization plans: limits and features</caption>
+							<thead>
+								<tr>
+									<th scope="col">Feature</th>
+									<th scope="col">Free</th>
+									<th scope="col">Starter</th>
+									<th scope="col">Team</th>
+									<th scope="col">Enterprise</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th scope="row">Members</th>
+									<td>3</td>
+									<td>25</td>
+									<td>1,000</td>
+									<td>Unlimited</td>
+								</tr>
+								<tr>
+									<th scope="row">Teams</th>
+									<td>None</td>
+									<td>5</td>
+									<td>200</td>
+									<td>Unlimited</td>
+								</tr>
+								<tr>
+									<th scope="row">Org API keys</th>
+									<td>2</td>
+									<td>20</td>
+									<td>Unlimited</td>
+									<td>Unlimited</td>
+								</tr>
+								<tr>
+									<th scope="row">Audit log retention</th>
+									<td>7 days</td>
+									<td>30 days</td>
+									<td>365 days</td>
+									<td>Up to 7 years</td>
+								</tr>
+								<tr>
+									<th scope="row">Audit log export (CSV/JSON)</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Audit log streaming (signed webhooks)</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">SAML single sign-on</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Enforce SSO</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">IP allowlist (org and per key)</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Per-member monthly budgets</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Per-key limits (budget, models, rate limit)</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Org-wide model &amp; modality policy</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Usage export (CSV)</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Usage reports emailed on demand</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Read-only Auditor role</th>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-no"><span aria-hidden="true">—</span><span class="visually-hidden">Not included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+									<td class="org-yes"><span aria-hidden="true">✓</span><span class="visually-hidden">Included</span></td>
+								</tr>
+								<tr>
+									<th scope="row">Support</th>
+									<td>Community</td>
+									<td>Email</td>
+									<td>Priority email</td>
+									<td>Dedicated + SLA</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="org-note mt-5">
+					<h3 class="org-note-title">Enterprise terms</h3>
+					<p>Arranged with our sales team for larger organizations:</p>
+					<ul class="org-terms">
+						<li><span class="org-check" aria-hidden="true">✓</span><span>99.9% uptime SLA</span></li>
+						<li><span class="org-check" aria-hidden="true">✓</span><span>Invoice / purchase-order billing</span></li>
+						<li><span class="org-check" aria-hidden="true">✓</span><span>Custom data-processing agreement (DPA)</span></li>
+						<li><span class="org-check" aria-hidden="true">✓</span><span>Dedicated support and onboarding</span></li>
+						<li><span class="org-check" aria-hidden="true">✓</span><span>Custom seat and credit contracts</span></li>
+						<li><span class="org-check" aria-hidden="true">✓</span><span>Security questionnaire support</span></li>
+					</ul>
+					<a href="mailto:inferenceportai@gmail.com?subject=InferencePort%20Enterprise" class="org-cta">Contact sales</a>
 				</div>
 			</div>
 		</section>
