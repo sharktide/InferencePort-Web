@@ -3,6 +3,12 @@
 import Icon from "../../Icon";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
+import AudioPlayground from "./AudioPlayground";
+import {
+  formatDiscountedPrice,
+  formatModelPrice,
+  formatPricing,
+} from "../../../lib/modelPricing";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
 
@@ -20,6 +26,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const [selectedModel, setSelectedModel] = useState("");
   const [selectedDetailModel, setSelectedDetailModel] = useState<any | null>(null);
   const [tab, setTab] = useState("text");
+  const [modelSearch, setModelSearch] = useState("");
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
   const [fixedPrices, setFixedPrices] = useState<Record<string, number>>({});
@@ -37,9 +44,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const [videoStatusText, setVideoStatusText] = useState("");
   const [videoError, setVideoError] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
-  const [audioPrompt, setAudioPrompt] = useState("");
-  const [audioDur, setAudioDur] = useState(10);
-  const [audioOutput, setAudioOutput] = useState("");
   const [threeModel, setThreeModel] = useState("tripoSR");
   const [threeResolution, setThreeResolution] = useState<"low" | "medium" | "high">("low");
   const [threePrompt, setThreePrompt] = useState("");
@@ -53,29 +57,18 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
   const modelType = (m: any) => { if (m.type) return m.type; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; if (o.includes("image")) return "image"; if (o.includes("video")) return "video"; if (o.includes("audio")) return "audio"; if (o.includes("3d")) return "3d"; return "text"; };
+  const modelDisplayName = (m: any) => {
+    const name = m?.name || m?.id || "Unnamed model";
+    if ((m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by) return `@${m.owned_by}/${name}`;
+    return name;
+  };
   const modalities = (m: any) => { const arr = Array.isArray(m?.input_modalities) ? m.input_modalities : []; return arr.length ? arr.map((v: string) => v.toUpperCase()).join(" / ") : "Configured model"; };
   const configPillClass = (m: any) => {
     const t = modelType(m);
     if (t === "image") return styles.isConfigImage;
     if (t === "3d" || t === "3D") return styles.isConfig3d;
+    if (t === "audio") return styles.isConfigAudio;
     return styles.isConfigVideo;
-  };
-
-  const formatPricing = (m: any) => {
-    const p = m?.pricing || {};
-    if (p.token_pricing) {
-      const tp = p.token_pricing;
-      const parts: string[] = [];
-      if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${(parseFloat(tp.text_in)).toFixed(2)}/M`);
-      if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${(parseFloat(tp.image_in)).toFixed(2)}/M`);
-      if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${(parseFloat(tp.image_out)).toFixed(2)}/M`);
-      if (parts.length > 0) return parts.join(" · ");
-    }
-    if (p.prompt != null && p.completion != null) {
-      const perMillion = (v: number) => (v * 1_000_000).toFixed(2);
-      return `In: $${perMillion(p.prompt)}/M \u00b7 Out: $${perMillion(p.completion)}/M`;
-    }
-    return "Pricing unavailable";
   };
 
   const modelImageUrl = (m: any) => {
@@ -89,6 +82,12 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
     if (publisherUrl === "inferenceport.ai") return "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png";
     const themeParam = theme === "dark" ? "&theme=dark" : "";
     return `https://cdn.brandfetch.io/${encodeURIComponent(publisherUrl)}?c=1idhv9JFxNDhJr50XTx${themeParam}`;
+  };
+
+  const modelLogoUrl = (m: any) => {
+    const explicit = typeof m?.logo === "string" ? m.logo.trim() : "";
+    if (explicit) return explicit;
+    return publisherLogoUrl(m?.publisher_url);
   };
 
   const textModels = useCallback(() => {
@@ -108,81 +107,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const videoConfigModels = useCallback(() => {
     return allModels.filter((m: any) => m.output_modalities?.includes("video") && m.is_ready !== false);
   }, [allModels]);
-
-  const formatModelPrice = (m: any) => {
-    const pricing = m?.pricing;
-    if (!pricing) return null;
-    const type = modelType(m);
-    if (type === "image") {
-      if (pricing.token_pricing) {
-        const tp = pricing.token_pricing;
-        const parts: string[] = [];
-        if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${(parseFloat(tp.text_in)).toFixed(2)}/M`);
-        if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${(parseFloat(tp.image_in)).toFixed(2)}/M`);
-        if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${(parseFloat(tp.image_out)).toFixed(2)}/M`);
-        if (parts.length > 0) return parts.join(" · ");
-      }
-      if (pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
-    }
-    if (type === "3d" || type === "3D") {
-      if (m.price_tiers) {
-        const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v));
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
-        return `$${min.toFixed(4)}/model`;
-      }
-      if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
-    }
-    if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
-    if (pricing.prompt != null && pricing.completion != null && (parseFloat(pricing.prompt) !== 0 || parseFloat(pricing.completion) !== 0)) {
-      const perMillion = (v: string) => (parseFloat(v) * 1_000_000).toFixed(2);
-      return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
-    }
-    return null;
-  };
-
-  const formatDiscountedPrice = (m: any, discount: { type: string; percent: number; fixedPrice: number }) => {
-    if (discount.type === "fixed") {
-      return `$${discount.fixedPrice.toFixed(2)}/M tokens`;
-    }
-    if (discount.type !== "percent" || discount.percent <= 0) return null;
-    const pricing = m?.pricing;
-    if (!pricing) return null;
-    const pct = 1 - discount.percent / 100;
-    const type = modelType(m);
-    if (type === "image") {
-      if (pricing.token_pricing) {
-        const tp = pricing.token_pricing;
-        const parts: string[] = [];
-        if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${(parseFloat(tp.text_in) * pct).toFixed(2)}/M`);
-        if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${(parseFloat(tp.image_in) * pct).toFixed(2)}/M`);
-        if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${(parseFloat(tp.image_out) * pct).toFixed(2)}/M`);
-        if (parts.length > 0) return parts.join(" · ");
-      }
-      if (pricing.image && pricing.image !== "0") {
-        return `$${(parseFloat(pricing.image) * pct).toFixed(4)}/gen`;
-      }
-    }
-    if (type === "3d" || type === "3D") {
-      if (m.price_tiers) {
-        const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v) * pct);
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
-        return `$${min.toFixed(4)}/model`;
-      }
-      if (pricing.request && pricing.request !== "0") return `$${(parseFloat(pricing.request) * pct).toFixed(4)}/model`;
-    }
-    if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") {
-      return `$${(parseFloat(pricing.request) * pct).toFixed(4)}/sec`;
-    }
-    if (pricing.prompt != null && pricing.completion != null && (parseFloat(pricing.prompt) !== 0 || parseFloat(pricing.completion) !== 0)) {
-      const perMillion = (v: string) => (parseFloat(v) * 1_000_000 * pct).toFixed(2);
-      return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
-    }
-    return null;
-  };
 
   const getModelDiscount = (m: any) => {
     const id = m?.id || "";
@@ -265,7 +189,18 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedDetailModel]);
 
-  const displayModels = source === "p2g" ? textModels() : genModels;
+  const query = modelSearch.trim().toLowerCase();
+  const matchesSearch = (m: any) => {
+    if (!query) return true;
+    const haystack = [m?.name, m?.id, m?.upstream_id, m?.description, m?.publisher_url, modelType(m), (m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by ? `@${m.owned_by}` : ""]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(query);
+  };
+  const displayModels = (source === "p2g" ? textModels() : genModels).filter(matchesSearch);
+  const configModels = source === "p2g" ? nonTextConfigModels().filter(matchesSearch) : [];
+  const visibleCount = displayModels.length + configModels.length;
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
   const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) { const errMsg = d.detail || (typeof d.error === "object" ? d.error?.message : d.error) || `HTTP ${r.status}`; throw new Error(errMsg); } return d; };
   const sb = (k: string, v: boolean) => setBusy((p) => ({ ...p, [k]: v }));
@@ -343,8 +278,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
       sb("video", false);
     }
   };
-  const runAudio = async () => { if (!session) return alert("Sign in required"); sb("audio", true); setAudioOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/audio/generations" : "/gen/audio/generations"; const r = await fetch(`${apiBase}${path}`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: audioPrompt || "Energetic electronic beat", duration_seconds: Number(audioDur) }) }); if (!r.ok) throw new Error("Audio generation failed"); setAudioOutput(URL.createObjectURL(await r.blob())); } catch (e: any) { setAudioOutput(e.message); } sb("audio", false); };
-
   const run3d = async () => {
     if (!session) return alert("Sign in required");
     if (source === "gen") { setThreeError("3D generation is only available via the P2G API."); return; }
@@ -449,18 +382,38 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
           <button className={`playground-tab ${styles.playgroundTab} ${source === "p2g" ? styles.active : ""}`} onClick={() => setSource("p2g")}>P2G API</button>
           <button className={`playground-tab ${styles.playgroundTab} ${source === "gen" ? styles.active : ""}`} onClick={() => setSource("gen")}>Gen API</button>
         </div>
+        <input
+          type="search"
+          placeholder="Search models by name, slug or publisher..."
+          aria-label="Search models"
+          value={modelSearch}
+          onChange={(e) => setModelSearch(e.target.value)}
+          style={{
+            width: "100%", padding: "10px 14px", border: "1px solid var(--border)",
+            borderRadius: "8px", background: "var(--surface)", color: "var(--text)",
+            fontSize: "14px", fontFamily: "var(--mono)", marginBottom: "12px",
+          }}
+        />
+        <div className={styles.muted} style={{ marginBottom: "12px", fontSize: "12px" }}>
+          {query ? `${visibleCount} model${visibleCount === 1 ? "" : "s"} match "${modelSearch.trim()}"` : `${visibleCount} models`}
+        </div>
         <div className={styles.modelsGrid}>
+          {visibleCount === 0 && (
+            <p className={styles.muted} style={{ gridColumn: "1 / -1" }}>
+              {query ? `No models match "${modelSearch.trim()}".` : "No models available."}
+            </p>
+          )}
           {displayModels.map((m: any, i: number) => {
             const dynamicPrice = formatModelPrice(m);
-            const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m);
+            const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m) || "Pricing unavailable";
             const disc = getModelDiscount(m);
             const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
-                {m.publisher_url && (
+                {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
-                      src={publisherLogoUrl(m.publisher_url)}
+                      src={modelLogoUrl(m)}
                       alt=""
                       style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
                       loading="lazy"
@@ -469,7 +422,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                   </div>
                 )}
                 <div className={styles.modelCardTop}>
-                  <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
+                  <span className={styles.modelCardName}>{modelDisplayName(m)}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
                     {m.model_state && (
                       <span className={`${styles.modelPill}`} style={{
@@ -503,16 +456,16 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
               </div>
             );
           })}
-          {source === "p2g" && nonTextConfigModels().map((m: any, i: number) => {
+          {source === "p2g" && configModels.map((m: any, i: number) => {
             const label = formatModelPrice(m) || "Existing configuration";
             const disc = getModelDiscount(m);
             const discountedLabel = formatDiscountedPrice(m, disc);
             return (
               <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
-                {m.publisher_url && (
+                {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
-                      src={publisherLogoUrl(m.publisher_url)}
+                      src={modelLogoUrl(m)}
                       alt=""
                       style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
                       loading="lazy"
@@ -521,7 +474,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                   </div>
                 )}
                 <div className={styles.modelCardTop}>
-                  <span className={styles.modelCardName}>{m.name || m.id || "Unnamed model"}</span>
+                  <span className={styles.modelCardName}>{modelDisplayName(m)}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
                     <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
                   </div>
@@ -558,7 +511,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
           {(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
         </div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{m.name}</option>)}</select></label>
+          <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{modelDisplayName(m)}</option>)}</select></label>
           <textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} />
           <button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button>
           <pre className={styles.output}>{textOutput}</pre>
@@ -566,7 +519,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}>
             <option value="">Default</option>
-            {imageConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
+            {imageConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
           </select></label>
           <textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} />
           <button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>
@@ -575,7 +528,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>Video model<select value={videoModel} onChange={(e) => setVideoModel(e.target.value)}>
             <option value="">Default</option>
-            {videoConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
+            {videoConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
           </select></label>
           <textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} />
           <label>Duration
@@ -604,16 +557,18 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             <p className={`${styles.muted} ${styles.tiny}`}>Video generation complete. Use the asset CDN endpoint to retrieve the result.</p>
           )}
         </div>}
-        {tab === "audio" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <textarea rows={4} placeholder="Describe audio / music / sfx..." value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} />
-          <label>Charge duration estimate (seconds)<input type="number" min={1} max={90} value={audioDur} onChange={(e) => setAudioDur(Number(e.target.value))} /></label>
-          <button onClick={runAudio} disabled={busy.audio}>{busy.audio ? "Generating\u2026" : "Generate audio"}</button>
-          {audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}
-        </div>}
+        {tab === "audio" && (
+          <AudioPlayground
+            session={session}
+            apiBase={apiBase}
+            apiPrefix={source === "p2g" ? "/v1" : "/gen"}
+            models={source === "p2g" ? allModels : []}
+          />
+        )}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
             {allModels.filter((m: any) => m.type === "3d" || m.output_modalities?.includes("3d")).map((m: any) => (
-              <option key={m.id} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
+              <option key={m.id} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
             ))}
           </select></label>
           {threeModel === "trellis2" && (
@@ -687,19 +642,19 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
               <img
                 className={styles.modelDetailImage}
                 src={modelImageUrl(selectedDetailModel)}
-                alt={selectedDetailModel.name || ""}
+                alt={modelDisplayName(selectedDetailModel)}
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 onLoad={(e) => { const img = e.target as HTMLImageElement; img.classList.add(styles.loaded); const ph = img.nextElementSibling as HTMLElement; if (ph) ph.style.display = "none"; }}
               />
               <div className={styles.modelDetailImagePlaceholder}>
-                {selectedDetailModel.name || selectedDetailModel.id || "?"}
+                {modelDisplayName(selectedDetailModel)}
               </div>
             </div>
             <div className={styles.modelDetailContent}>
-              {selectedDetailModel.publisher_url && (
+              {modelLogoUrl(selectedDetailModel) && (
                 <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "0.25rem" }}>
                   <img
-                    src={publisherLogoUrl(selectedDetailModel.publisher_url)}
+                    src={modelLogoUrl(selectedDetailModel)}
                     alt=""
                     style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
                     loading="lazy"
@@ -708,7 +663,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                 </div>
               )}
               <div className={styles.modelDetailHeader}>
-                <span className={styles.modelDetailName}>{selectedDetailModel.name || selectedDetailModel.id || "Unnamed model"}</span>
+                <span className={styles.modelDetailName}>{modelDisplayName(selectedDetailModel)}</span>
                 <span className={`${styles.modelPill} ${isTextModel(selectedDetailModel) ? styles.isText : styles.isConfig}`}>
                   {String(modelType(selectedDetailModel)).toUpperCase()}
                 </span>

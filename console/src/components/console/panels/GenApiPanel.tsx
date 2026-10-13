@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
+import AudioPlayground from "./AudioPlayground";
+import { formatModelPrice } from "../../../lib/modelPricing";
 
 interface Props { session: any; config: any; apiBase: string; }
 
@@ -11,51 +13,8 @@ function isTextModel(m: any) {
   return i.includes("text") && o.includes("text");
 }
 
-function modelType(m: any) {
-  if (m.type) return m.type;
-  const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
-  if (o.includes("image")) return "image";
-  if (o.includes("video")) return "video";
-  if (o.includes("audio")) return "audio";
-  if (o.includes("3d")) return "3d";
-  return "text";
-}
-
 function slug(m: any) {
   return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
-}
-
-function formatModelPrice(m: any) {
-  const pricing = m?.pricing;
-  if (!pricing) return null;
-  const type = modelType(m);
-  if (type === "image") {
-    if (pricing.token_pricing) {
-      const tp = pricing.token_pricing;
-      const parts: string[] = [];
-      if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${(parseFloat(tp.text_in)).toFixed(2)}/M`);
-      if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${(parseFloat(tp.image_in)).toFixed(2)}/M`);
-      if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${(parseFloat(tp.image_out)).toFixed(2)}/M`);
-      if (parts.length > 0) return parts.join(" · ");
-    }
-    if (pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
-  }
-  if (type === "3d" || type === "3D") {
-    if (m.price_tiers) {
-      const values = Object.values(m.price_tiers).map((v: any) => parseFloat(v));
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
-      return `$${min.toFixed(4)}/model`;
-    }
-    if (pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/model`;
-  }
-  if ((type === "video" || type === "audio") && pricing.request && pricing.request !== "0") return `$${parseFloat(pricing.request).toFixed(4)}/sec`;
-  if (pricing.prompt != null && pricing.completion != null && (parseFloat(pricing.prompt) !== 0 || parseFloat(pricing.completion) !== 0)) {
-    const perMillion = (v: string) => (parseFloat(v) * 1_000_000).toFixed(2);
-    return `In: $${perMillion(pricing.prompt)}/M · Out: $${perMillion(pricing.completion)}/M`;
-  }
-  return null;
 }
 
 function getVideoModels(allModels: any[]) {
@@ -86,9 +45,6 @@ export default function GenApiPanel({ session, config, apiBase }: Props) {
   const [videoStatusText, setVideoStatusText] = useState("");
   const [videoError, setVideoError] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
-  const [audioPrompt, setAudioPrompt] = useState("");
-  const [audioDur, setAudioDur] = useState(10);
-  const [audioOutput, setAudioOutput] = useState("");
 
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
   const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) { const errMsg = d.detail || (typeof d.error === "object" ? d.error?.message : d.error) || `HTTP ${r.status}`; throw new Error(errMsg); } return d; };
@@ -187,8 +143,6 @@ export default function GenApiPanel({ session, config, apiBase }: Props) {
       sb("video", false);
     }
   };
-  const runAudio = async () => { if (!session) return alert("Sign in required"); sb("audio", true); setAudioOutput("Generating\u2026"); try { const r = await fetch(`${apiBase}/gen/audio/generations`, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: audioPrompt || "Energetic electronic beat", duration_seconds: Number(audioDur) }) }); if (!r.ok) { const p = await r.json().catch(() => ({})); throw new Error(p.detail || p.error || "Audio generation failed"); } const blob = await r.blob(); setAudioOutput(URL.createObjectURL(blob)); } catch (e: any) { setAudioOutput(e.message); } sb("audio", false); };
-
   if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to test the Subscription API.</div></div>;
 
   return (
@@ -203,9 +157,16 @@ export default function GenApiPanel({ session, config, apiBase }: Props) {
             <li><code>POST /gen/images/generations</code>: image generation</li>
             <li><code>POST /gen/videos/generations</code>: video generation</li>
             <li><code>POST /gen/audio/generations</code>: audio/music generation</li>
+            <li><code>POST /gen/audio/speech</code>: text-to-speech (OpenAI compatible)</li>
+            <li><code>POST /gen/audio/speech/with-timestamps</code>: text-to-speech with character timings</li>
+            <li><code>POST /gen/audio/transcriptions</code>: speech-to-text</li>
+            <li><code>POST /gen/audio/voice-changer</code>: speech-to-speech voice conversion</li>
+            <li><code>POST /gen/audio/voice-isolator</code>: background noise removal</li>
+            <li><code>POST /gen/audio/stem-separation</code>: split audio into stems</li>
             <li><code>POST /gen/3d/generations</code>: 3D generation <span className={`${styles.muted} ${styles.tiny}`}>(P2G API only)</span></li>
             <li><code>GET /gen/models</code>: available model listing</li>
           </ul>
+          <p className={`${styles.muted} ${styles.tiny}`}>Audio endpoints accept the lightning router models; credit-metered named audio models (Whisper, ElevenLabs, TTS) are exposed through the P2G <code>/v1/audio/*</code> routes.</p>
           <h3>Authentication</h3>
           <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
           <h3>Rate limits</h3>
@@ -251,7 +212,9 @@ export default function GenApiPanel({ session, config, apiBase }: Props) {
             <p className={`${styles.muted} ${styles.tiny}`}>Video generation complete. Use the asset CDN endpoint to retrieve the result.</p>
           )}
         </div>}
-        {tab === "audio" && <div className={`${styles.playgroundPanel} ${styles.active}`}><textarea rows={4} placeholder="Describe audio / music / sfx..." value={audioPrompt} onChange={(e) => setAudioPrompt(e.target.value)} /><label>Charge duration estimate (seconds)<input type="number" min={1} max={90} value={audioDur} onChange={(e) => setAudioDur(Number(e.target.value))} /></label><button onClick={runAudio} disabled={busy.audio}>{busy.audio ? "Generating\u2026" : "Generate audio"}</button>{audioOutput?.startsWith("blob:") ? <audio controls src={audioOutput} style={{ width: "100%" }} /> : <div className={styles.output}>{audioOutput}</div>}</div>}
+        {tab === "audio" && (
+          <AudioPlayground session={session} apiBase={apiBase} apiPrefix="/gen" models={allRemoteModels} />
+        )}
       </section>
     </div>
   );

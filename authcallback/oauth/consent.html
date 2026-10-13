@@ -972,8 +972,12 @@
 
       // 2. Initialize the Supabase client from remote config.
       let supabase;
+      let apibase = "https://us-east-2.api.inferenceport.ai";
+      if (urlParams.get('staging') == "true") {
+        apibase = "https://staging-api.inferenceport.ai";
+      }
       try {
-        const configRes = await fetch("https://sharktide-lightning.hf.space/v1/config");
+        const configRes = await fetch(`${apibase}/v1/config`);
         if (!configRes.ok) throw new Error("Config request failed");
         const config = await configRes.json();
         const url = config?.supabase?.url;

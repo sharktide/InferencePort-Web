@@ -15,10 +15,13 @@ import PaygApiPanel from "./panels/PaygApiPanel";
 import ShieldPanel from "./panels/ShieldPanel";
 import AuthorizedAppsPanel from "./panels/AuthorizedAppsPanel";
 import DeployPanel from "./panels/DeployPanel";
+import PlaygroundPanel from "./panels/PlaygroundPanel";
+import AgentsPanel from "./panels/AgentsPanel";
 import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
-const FALLBACK_API_BASE = "https://sharktide-lightning.hf.space";
+const FALLBACK_API_BASE = "https://us-east-2.api.inferenceport.ai";
+const STAGING_API_BASE = "https://staging-api.inferenceport.ai";
 
 export default function ConsoleLayout() {
   const router = useRouter();
@@ -29,6 +32,7 @@ export default function ConsoleLayout() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window === "undefined") return "account";
+    if (new URLSearchParams(window.location.search).has("invite")) return "agents";
     return localStorage.getItem("console-active-tab") || "account";
   });
 
@@ -74,13 +78,19 @@ export default function ConsoleLayout() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${FALLBACK_API_BASE}/v1/config`);
+        const staging = new URLSearchParams(window.location.search).get("staging") === "true";
+        const bootstrapBase = staging ? STAGING_API_BASE : FALLBACK_API_BASE;
+        const res = await fetch(`${bootstrapBase}/v1/config`);
         const cfg = await res.json();
         if (cancelled) return;
         setConfig(cfg);
 
         const configuredBase = String(cfg?.dashboard?.apiBaseUrl || "").trim();
-        const base = configuredBase.startsWith("https://") ? configuredBase.replace(/\/$/, "") : FALLBACK_API_BASE;
+        const base = staging
+          ? STAGING_API_BASE
+          : configuredBase.startsWith("https://")
+            ? configuredBase.replace(/\/$/, "")
+            : FALLBACK_API_BASE;
         setApiBase(base);
 
         const url = cfg?.supabase?.url;
@@ -137,7 +147,9 @@ export default function ConsoleLayout() {
     account: <AccountPanel config={config} session={session} supabase={supabase} />,
     billing: <BillingPanel config={config} session={session} apiBase={apiBase} />,
     models: <ModelsPanel config={config} session={session} apiBase={apiBase} theme={theme} />,
+    playground: <PlaygroundPanel config={config} session={session} apiBase={apiBase} theme={theme} />,
     deploy: <DeployPanel session={session} apiBase={apiBase} config={config} theme={theme} />,
+    agents: <AgentsPanel session={session} apiBase={apiBase} />,
     rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
     "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
     usage: <UsagePanel session={session} apiBase={apiBase} />,

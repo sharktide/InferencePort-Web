@@ -7,7 +7,6 @@ import { useModal } from "../../Modal";
 
 interface BillingPanelProps { config: any; session: any; apiBase: string; }
 
-const TIER_CONFIG_URL = "https://sharktide-lightning.hf.space/tier-config";
 const STRIPE_BILLING_PORTAL = "https://billing.stripe.com/p/login/5kQdR9aIM3ts4steyabbG00";
 const PRICING_URL = "https://inferenceport.ai/pricing.html";
 
@@ -45,7 +44,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
         fj("/v1/me", { headers: authH() }),
         fj("/v1/credits/ledger?limit=100", { headers: authH() }),
         fj("/subscription", { headers: authH() }).catch(() => null),
-        fetch(TIER_CONFIG_URL).then(r => r.json()).catch(() => null),
+        fetch(`${apiBase}/tier-config`).then(r => r.json()).catch(() => null),
         fj("/v1/deploy", { headers: authH() }).catch(() => ({ data: [] })),
       ]);
       setWallet(me.wallet || {});
