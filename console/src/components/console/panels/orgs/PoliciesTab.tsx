@@ -171,7 +171,7 @@ export default function PoliciesTab({ api, org, onChanged }: Props) {
           <textarea
             id="policy-models"
             rows={3}
-            placeholder={"openai/*\nanthropic/claude-sonnet"}
+            placeholder={"flux\nlightning-*"}
             value={form.models}
             disabled={readOnly || !!locks.models}
             aria-describedby="policy-models-hint"
@@ -183,8 +183,8 @@ export default function PoliciesTab({ api, org, onChanged }: Props) {
         </span>
       </div>
 
-      <fieldset className={manage.policyRow} disabled={readOnly || !!locks.modalities}>
-        <legend className={manage.policyTitle}>Allowed modalities</legend>
+      <fieldset className={manage.policyFieldset} disabled={readOnly || !!locks.modalities}>
+        <legend className={`${manage.policyTitle} ${manage.policyLegend}`}>Allowed modalities</legend>
         {locks.modalities && <span className={manage.lockHint}>{locks.modalities}</span>}
         <div className={manage.checkGrid}>
           {MODALITIES.map((m) => (

@@ -80,7 +80,7 @@ export function parseDraft(d: LimitsDraft, fields: FieldKey[]): { value: ParsedL
   if (has("models")) {
     const models = Array.from(new Set(splitList(d.models)));
     const bad = models.find((m) => !MODEL_RE.test(m));
-    if (bad) return { error: `"${bad}" is not a valid model pattern. Use a model id, or end it with * (for example openai/*).` };
+    if (bad) return { error: `"${bad}" is not a valid model pattern. Use a model id, or end it with * (for example lightning-*).` };
     value.allowed_models = models.length > 0 ? models : null;
   }
   if (has("modalities")) {
@@ -179,14 +179,14 @@ export default function LimitsEditor({ idPrefix, draft, onChange, fields, locks 
             <textarea
               id={`${idPrefix}-models`}
               rows={3}
-              placeholder={"openai/*\nanthropic/claude-sonnet"}
+              placeholder={"flux\nlightning-*"}
               value={draft.models}
               disabled={isDisabled("models")}
               onChange={(e) => set({ models: e.target.value })}
             />
           </label>
           <span className={styles.hintText}>
-            One per line or comma-separated. End a pattern with * to match a prefix (for example openai/*). Leave blank to allow every model.
+            One per line or comma-separated. End a pattern with * to match a prefix (for example lightning-*). Leave blank to allow every model.
           </span>
           {hintNode("models")}
         </div>

@@ -190,7 +190,7 @@ export default function OrganizationsPanel({ session }: Props) {
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Organizations</div>
-        <p className={`${styles.muted} ${styles.tiny}`}>
+        <p className={`${styles.muted} ${styles.tiny}`} style={{ margin: "0 0 1rem" }}>
           Share agents, API keys and wallet credits with your team. Choose an organization to work in it: the playground,
           models and agents then bill to that organization.
         </p>
