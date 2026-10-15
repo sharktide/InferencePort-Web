@@ -38,6 +38,9 @@ export interface Entitlements {
   auditor_role: boolean;
   email_notifications: boolean;
   budget_alerts: boolean;
+  desktop_policy: boolean;           // desktop app controls (Lightning vs local, pullable models, hosting)
+  desktop_server_presets: boolean;   // 1-click server access lists built from members / teams
+  unlimited_verifications: boolean;  // unlimited token verifications for members in the desktop app
 }
 export interface PlanCatalogEntry extends Entitlements {
   key: OrgPlan;
@@ -62,6 +65,20 @@ export interface OrgPolicies {
   require_key_expiry: boolean;
   max_key_lifetime_days: number | null;
   default_member_monthly_limit: number | null; // credits per member per month, null = unlimited
+}
+
+/** What members may do in the InferencePort desktop app. Needs no credits: it works for orgs that never buy any. */
+export interface DesktopPolicy {
+  lightning: "allow" | "local_only";
+  lightning_billing: "personal" | "org";
+  pull_mode: "any" | "allowlist" | "blocked";
+  pull_models: string[] | null;
+  allow_model_import: boolean;
+  allow_custom_tools: boolean;
+  server_hosting: "any" | "admins" | "disabled";
+  server_access: "manual" | "org" | "teams";
+  server_team_ids: string[];
+  unlimited_verifications: boolean;
 }
 
 export interface NotificationSettings {
@@ -350,6 +367,8 @@ export function createOrgApi(apiBase: string, getToken: () => string | undefined
 
     policies: (slug: string) => call<{ policies: OrgPolicies }>("GET", `${o(slug)}/policies`),
     setPolicies: (slug: string, b: Partial<OrgPolicies>) => call<{ policies: OrgPolicies }>("PUT", `${o(slug)}/policies`, b),
+    desktopPolicy: (slug: string) => call<{ desktop: DesktopPolicy }>("GET", `${o(slug)}/desktop-policy`),
+    setDesktopPolicy: (slug: string, b: Partial<DesktopPolicy>) => call<{ desktop: DesktopPolicy }>("PUT", `${o(slug)}/desktop-policy`, b),
     usage: (slug: string, q: { days?: number; by?: UsageDimension } = {}) => call<UsageBreakdown>("GET", `${o(slug)}/usage/breakdown${qs({ days: q.days ?? 30, by: q.by ?? "user" })}`),
     usageExport: (slug: string, days = 30, format: "csv" | "json" = "csv") => call<string>("GET", `${o(slug)}/usage/export${qs({ days, format })}`, undefined, true),
     sendUsageReport: (slug: string, b: { days?: number; to?: string } = {}) => call<{ success: true; sent_to: string }>("POST", `${o(slug)}/usage/report`, b),
@@ -412,6 +431,6 @@ export const CAP_LABELS: Record<string, string> = {
   "keys.revoke_any": "Revoke any API key", "keys.restrict_any": "Restrict any API key",
   "billing.manage": "Manage billing", "audit.read": "View audit log", "audit.export": "Export audit log",
   "sso.manage": "Manage SSO", "domains.manage": "Manage domains", "security.manage": "Manage security settings",
-  "policies.manage": "Manage usage policies", "notifications.manage": "Manage notifications",
+  "policies.manage": "Manage usage and desktop policies", "notifications.manage": "Manage notifications",
   "usage.read_all": "View org usage", "usage.export": "Export usage",
 };

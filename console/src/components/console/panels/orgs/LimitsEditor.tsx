@@ -255,7 +255,7 @@ export default function LimitsEditor({ idPrefix, draft, onChange, fields, locks 
 }
 
 /** Minimum plan that unlocks a feature flag (mirrors helper/orgs/plans.py ENTITLEMENTS). */
-const TEAM_ONLY_FLAGS = new Set(["key_ip_allowlist", "auditor_role", "usage_reports", "ip_allowlist", "sso_saml", "enforce_sso", "audit_webhook"]);
+const TEAM_ONLY_FLAGS = new Set(["key_ip_allowlist", "auditor_role", "usage_reports", "ip_allowlist", "sso_saml", "enforce_sso", "audit_webhook", "unlimited_verifications"]);
 
 /** Hint shown next to a locked control. Never compare plan names in feature code; this is copy only. */
 export function planHint(flag: string): string {

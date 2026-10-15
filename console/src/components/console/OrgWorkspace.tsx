@@ -15,6 +15,7 @@ import UsageTab from "./panels/orgs/UsageTab";
 import BillingTab from "./panels/orgs/BillingTab";
 import InvoicesTab from "./panels/orgs/InvoicesTab";
 import PoliciesTab from "./panels/orgs/PoliciesTab";
+import DesktopTab from "./panels/orgs/DesktopTab";
 import AuditTab from "./panels/orgs/AuditTab";
 import SecurityTab from "./panels/orgs/SecurityTab";
 import NotificationsTab from "./panels/orgs/NotificationsTab";
@@ -30,6 +31,7 @@ export type OrgSectionId =
   | "org-billing"
   | "org-invoices"
   | "org-policies"
+  | "org-desktop"
   | "org-audit"
   | "org-security"
   | "org-notifications";
@@ -45,6 +47,7 @@ export const ORG_SECTION_META: Record<OrgSectionId, { label: string; icon: IconN
   "org-billing": { label: "Billing", icon: "credit-card", roles: ["owner", "admin", "billing_manager", "auditor"] },
   "org-invoices": { label: "Invoices", icon: "credit-card", roles: ["owner", "admin", "billing_manager", "auditor"] },
   "org-policies": { label: "Policies", icon: "shield-check", roles: ["owner", "admin"] },
+  "org-desktop": { label: "Desktop app", icon: "plugs-connected", roles: ["owner", "admin"] },
   "org-audit": { label: "Audit log", icon: "clock-countdown", roles: ["owner", "admin", "auditor"] },
   "org-security": { label: "Security", icon: "lock-simple", roles: ["owner", "admin"] },
   "org-notifications": { label: "Notifications", icon: "warning-circle", roles: ["owner", "admin", "billing_manager"] },
@@ -83,6 +86,7 @@ function renderSection(
     case "org-billing": return <BillingTab {...common} />;
     case "org-invoices": return <InvoicesTab {...common} />;
     case "org-policies": return <PoliciesTab {...common} />;
+    case "org-desktop": return <DesktopTab {...common} />;
     case "org-audit": return <AuditTab {...common} />;
     case "org-security": return <SecurityTab {...common} />;
     case "org-notifications": return <NotificationsTab {...common} />;
