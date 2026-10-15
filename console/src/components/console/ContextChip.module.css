@@ -1,0 +1,7 @@
+/* Placement only: the pill itself is styled by ContextSwitcher.module.css (variant "chip"). */
+
+.wrap {
+  flex: none;
+  max-width: 100%;
+  align-self: flex-start;
+}

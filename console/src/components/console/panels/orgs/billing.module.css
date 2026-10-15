@@ -1,0 +1,292 @@
+/* Billing, plans, notifications and overview layouts for organizations (U2). Shared primitives live in orgs.module.css. */
+
+.page { display: grid; gap: 1.25rem; min-width: 0; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.lead { margin: 0; font-size: 0.875rem; line-height: 1.55; color: var(--text-2); }
+.hint { margin: 0; font-size: 0.8125rem; line-height: 1.5; color: var(--muted); }
+.muted { color: var(--text-2); }
+.mono { font-family: var(--mono); font-size: 0.8125rem; }
+.actions { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; }
+.grow { flex: 1 1 auto; }
+
+.explainer {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--brand);
+  background: var(--brand-dim);
+  border-radius: var(--r-1);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; }
+
+.stat {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  padding: 0.85rem 1rem;
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  align-content: start;
+}
+
+.statLabel { font-size: 0.75rem; font-weight: 600; color: var(--text-2); }
+.statValue {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.statHint { font-size: 0.75rem; color: var(--muted); }
+
+/* Plan chooser */
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.85rem; }
+
+.plan {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.planCurrent { border-color: var(--brand); box-shadow: inset 0 0 0 1px var(--brand); }
+.planName { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.planPrice {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.planPriceSub { font-size: 0.8125rem; color: var(--text-2); margin-top: -0.4rem; }
+.planTagline { margin: 0; font-size: 0.8125rem; color: var(--text-2); line-height: 1.45; }
+
+.features { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; font-size: 0.8125rem; color: var(--text); }
+.features li { display: flex; gap: 0.45rem; line-height: 1.4; }
+.features li::before { content: "\2713"; color: var(--success-ink); font-weight: 700; flex: none; }
+
+.lostBox {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--warn) 45%, var(--border));
+  background: color-mix(in srgb, var(--warn) 9%, transparent);
+  border-radius: var(--r-1);
+  padding: 0.55rem 0.7rem;
+}
+
+.planFoot { margin-top: auto; display: grid; gap: 0.5rem; padding-top: 0.4rem; }
+
+/* Locked or read-only notes */
+.lock {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-1);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Forms */
+.fieldGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.9rem; align-items: start; }
+.readonly {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  padding: 0.55rem 0.7rem;
+  overflow-wrap: anywhere;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+}
+.label { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); }
+.narrowField { max-width: 220px; }
+
+/* Progress bar for spend against a limit */
+.progress { display: block; height: 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.progressFill { display: block; height: 100%; background: var(--accent); }
+.progressWarn { background: var(--warn); }
+
+/* Credit packs */
+.packs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.75rem; }
+.pack {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.3rem;
+  align-content: start;
+  min-width: 0;
+}
+.packTitle { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+.packPrice { font-size: 1.2rem; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Chips (alert percents, recipients) */
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  padding: 0.22rem 0.35rem 0.22rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.chipRemove {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 0 0.25rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+.chipRemove:hover { color: var(--text); }
+
+/* Notification toggles */
+.toggles { display: grid; gap: 0.6rem; }
+.toggle {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.2rem 0.75rem;
+  align-items: start;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--surface);
+}
+.toggle input { width: 18px; height: 18px; accent-color: var(--brand); margin-top: 0.15rem; }
+.toggle input:disabled { cursor: not-allowed; }
+.toggleTitle { font-weight: 600; font-size: 0.9rem; color: var(--text); }
+.toggleDesc { grid-column: 2; font-size: 0.8125rem; line-height: 1.5; color: var(--text-2); }
+.toggleOff { opacity: 0.6; }
+
+/* Danger zone: a tinted container; the buttons themselves use shared .danger */
+.dangerZone {
+  border: 1px solid color-mix(in srgb, var(--crit) 40%, var(--border));
+  background: color-mix(in srgb, var(--crit) 5%, transparent);
+  border-radius: var(--r-2);
+  padding: 1rem 1.1rem;
+  display: grid;
+  gap: 0.9rem;
+  min-width: 0;
+}
+.dangerRow { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem 1rem; flex-wrap: wrap; }
+.dangerTitle { font-weight: 600; font-size: 0.9rem; color: var(--text); }
+
+/* Spinner */
+.loading { display: flex; align-items: center; gap: 0.6rem; color: var(--text-2); font-size: 0.9rem; padding: 1.5rem 0; }
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: billingSpin 0.8s linear infinite;
+  flex: none;
+}
+@keyframes billingSpin { to { transform: rotate(360deg); } }
+
+.linkBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Plan comparison dialog */
+.compareGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+.compareCol {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 0;
+}
+.ctaLink {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 1rem;
+  border-radius: var(--r-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+.ctaLink:hover { border-color: var(--text-2); text-decoration: none; }
+
+/* Overview */
+.meters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; }
+.meter { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-1); padding: 0.85rem 1rem; display: grid; gap: 0.35rem; min-width: 0; }
+.meterWarn { border-color: color-mix(in srgb, var(--warn) 55%, var(--border)); }
+.meterTrack { display: block; height: 6px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); overflow: hidden; }
+.meterFill { display: block; height: 100%; background: var(--accent); }
+.capList { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+
+@media (max-width: 1100px) {
+  .compareGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .card { padding: 1rem; }
+  .compareGrid { grid-template-columns: 1fr; }
+  .narrowField { max-width: none; }
+  .actions > * { flex: 1 1 100%; }
+  .dangerRow > * { flex: 1 1 100%; }
+}

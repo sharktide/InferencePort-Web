@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
 import agentStyles from "./AgentsPanel.module.css";
+import ContextChip from "../ContextChip";
 
 interface Props { session: any; apiBase: string; }
 
@@ -911,6 +912,7 @@ export default function AgentsPanel({ session, apiBase }: Props) {
               <code>agent/&lt;username&gt;/&lt;agent-id&gt;</code>.
             </p>
           </div>
+          <ContextChip />
           {profile.has_username && (
             <span className={agentStyles.usernamePill}>@{profile.username}</span>
           )}

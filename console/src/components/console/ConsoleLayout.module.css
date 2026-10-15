@@ -46,6 +46,16 @@
 /* Grid children must be allowed to shrink so wide tables and code scroll inside themselves */
 .consoleContent > * { min-width: 0; }
 
+/* Context wrapper: transparent to the grid so panels lay out exactly as before */
+.contextFrame {
+  display: contents;
+}
+
+.waiting {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
 @media (max-width: 960px) {
   .consoleShell {
     grid-template-columns: 1fr;

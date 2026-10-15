@@ -1,0 +1,179 @@
+/* Context switcher: one control in three placements (top bar, sidebar header, work-page chip) sharing one menu. */
+
+.root {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.sidebar {
+  display: flex;
+  width: 100%;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 36px;
+  max-width: 100%;
+  padding: 0 0.7rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-1);
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--d-fast), background-color var(--d-fast);
+}
+
+.trigger:hover { border-color: var(--text-2); background: var(--surface-2); }
+.trigger:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.trigger[aria-expanded="true"] { border-color: var(--brand); }
+.trigger.isOrg { border-color: var(--brand-border); background: var(--brand-dim); }
+
+.leadIcon { flex: none; color: var(--muted); }
+.trigger.isOrg .leadIcon { color: var(--brand); }
+
+.kicker {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.name {
+  min-width: 0;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.caret {
+  flex: none;
+  width: 0;
+  height: 0;
+  margin-left: 0.15rem;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  opacity: 0.7;
+}
+
+/* Top bar: compact, right-aligned menu */
+.topbar .name { max-width: 150px; }
+
+/* Sidebar header: full width, two lines */
+.sidebar .trigger {
+  width: 100%;
+  min-height: 60px;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  justify-content: flex-start;
+}
+.sideText {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1;
+  text-align: left;
+}
+.sideText .name { max-width: none; font-size: 0.9375rem; }
+.sidebar .caret { margin-left: auto; }
+
+.tags { display: flex; gap: 0.3rem; flex-wrap: wrap; min-width: 0; }
+.meta { font-size: 0.75rem; font-weight: 500; color: var(--muted); }
+
+/* Work-page chip: small pill */
+.chip .trigger {
+  min-height: 32px;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.8125rem;
+}
+.chip .trigger.isOrg {
+  background: var(--brand-dim);
+  border-color: var(--brand-border);
+  color: var(--accent);
+}
+.chip .kicker { color: var(--text-2); font-weight: 500; }
+
+/* Menu */
+.menu {
+  position: absolute;
+  z-index: 300;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 280px;
+  max-width: min(340px, calc(100vw - 2rem));
+  max-height: min(70vh, 480px);
+  overflow-y: auto;
+  padding: 0.4rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  box-shadow: var(--shadow-lg);
+}
+.topbar .menu { left: auto; right: 0; }
+.sidebar .menu { left: 0; right: 0; max-width: none; }
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.6rem;
+  background: transparent;
+  color: var(--text);
+  border: 0;
+  border-radius: var(--r-1);
+  font-family: var(--sans);
+  text-align: left;
+  cursor: pointer;
+}
+.item:hover { background: var(--surface-2); }
+.item:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--focus); }
+.item[aria-checked="true"] { background: var(--brand-dim); }
+.footerItem { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); }
+
+.itemIcon { flex: none; color: var(--muted); }
+.itemMain { display: grid; gap: 0.3rem; min-width: 0; flex: 1; }
+.itemName { font-size: 0.875rem; font-weight: 600; overflow-wrap: anywhere; }
+.itemMeta { font-size: 0.75rem; color: var(--muted); }
+.check { flex: none; color: var(--brand); }
+
+.tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.tagBrand { color: var(--accent); border-color: var(--brand-border); background: var(--brand-dim); }
+
+.groupLabel {
+  padding: 0.45rem 0.6rem 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.divider { height: 1px; margin: 0.35rem 0.2rem; background: var(--border); }
+.note { margin: 0; padding: 0.5rem 0.6rem; font-size: 0.8125rem; color: var(--muted); }
+
+/* The top bar switcher is hidden on phones (see TopBar.module.css); the sidebar keeps it. */
+@media (max-width: 960px) {
+  .trigger { min-height: 44px; }
+  .item { min-height: 44px; }
+  .topbar .menu { max-width: calc(100vw - 2rem); }
+}

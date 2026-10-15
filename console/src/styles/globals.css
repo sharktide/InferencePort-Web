@@ -43,6 +43,9 @@
   --crit: #be185d;            /* status: revoked by error, failed, block */
   --ok: #4b5563;              /* status: active, allow (neutral + check icon) */
   --danger-ink: #ffffff;      /* text on --danger fills: 6.1:1 */
+  --danger-solid: #b42318;    /* destructive button fill; white text 6.6:1, fill vs surface 6.6:1 */
+  --danger-solid-hover: #9f1d14; /* hover fill; white text 7.9:1 */
+  --danger-solid-ink: #ffffff;
   --overlay: rgba(17, 24, 39, 0.45);
 
   --r-0: 8px;                 /* chips */
@@ -98,6 +101,9 @@
   --crit: #e0527e;
   --ok: #a7adb8;
   --danger-ink: #111113;
+  --danger-solid: #d6335a;    /* destructive button fill; white text 4.7:1, fill vs surface 3.7:1, vs page 4.0:1 */
+  --danger-solid-hover: #c92b50; /* hover fill; white text 5.3:1 */
+  --danger-solid-ink: #ffffff;
   --overlay: rgba(0, 0, 0, 0.6);
   color-scheme: dark;
 }
@@ -244,7 +250,35 @@ button.text-btn {
   font-weight: 600;
 }
 button.text-btn:hover { color: var(--accent); }
-button.danger { color: var(--danger) !important; }
+/* Destructive actions: solid fill with white text, readable in both themes.
+   button.danger (confirmed actions) and .danger-btn share one style; button.danger.ghost
+   is neutral (border + text) until hover, then fills solid, for in-row actions. */
+button.danger,
+.danger-btn {
+  background: var(--danger-solid);
+  color: var(--danger-solid-ink);
+  border: 1px solid var(--danger-solid);
+}
+button.danger:hover:not(:disabled),
+.danger-btn:hover:not(:disabled) {
+  background: var(--danger-solid-hover);
+  border-color: var(--danger-solid-hover);
+  color: var(--danger-solid-ink);
+}
+button.danger:disabled,
+.danger-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+button.danger.ghost,
+button.ghost.danger {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+}
+button.danger.ghost:hover:not(:disabled),
+button.ghost.danger:hover:not(:disabled) {
+  background: var(--danger-solid);
+  border-color: var(--danger-solid);
+  color: var(--danger-solid-ink);
+}
 
 /* Empty or locked state: quiet box with a lock icon */
 .locked-overlay {

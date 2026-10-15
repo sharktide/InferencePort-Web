@@ -8,6 +8,7 @@ import styles from "./PlaygroundPanel.module.css";
 import shared from "../playground/Playground.module.css";
 import { Segmented, cx } from "../playground/ui";
 import type { ApiPrefix, StudioProps } from "../playground/types";
+import ContextChip from "../ContextChip";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
 
@@ -125,6 +126,7 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
           </h1>
           <p className={styles.sub}>{active.blurb}</p>
         </div>
+        <ContextChip />
         <div className={styles.sourceWrap}>
           <Segmented
             value={source}

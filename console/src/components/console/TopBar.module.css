@@ -70,6 +70,9 @@
 
 .hidden { display: none; }
 
+/* Context switcher sits left of the theme toggle; keeps its own tap target on phones */
+.switcher { margin-right: 0.35rem; }
+
 .topActions a {
   font-size: 0.875rem;
   font-weight: 500;
@@ -126,6 +129,12 @@
 
   .desktopOnly {
     display: none !important;
+  }
+
+  /* The org context switcher lives in the side drawer on phones; it would crowd the top bar.
+     Scoped under .topActions so it outranks ContextSwitcher's own .root { display: inline-flex }. */
+  .topActions .switcher {
+    display: none;
   }
 
   .brandEmphasis {

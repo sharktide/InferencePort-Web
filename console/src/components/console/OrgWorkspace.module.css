@@ -1,0 +1,84 @@
+/* Organization workspace header and frame. Section content styles live with each tab. */
+
+.workspace {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.head {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  min-width: 0;
+}
+
+.crumbOrg { overflow-wrap: anywhere; }
+.crumbSep { opacity: 0.6; }
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.body {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.body > * { min-width: 0; }
+
+.muted { color: var(--muted); font-size: 0.9375rem; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.ssoBox {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.25rem;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--r-2);
+}
+
+.ssoTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ssoText {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+@media (max-width: 960px) {
+  .title { font-size: 1.2rem; }
+}
