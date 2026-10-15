@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Panel.module.css";
 import { useOptionalOrgContext } from "../OrgContext";
 import { navigateConsole } from "../ContextSwitcher";
@@ -25,6 +25,21 @@ const TOOLS: { name: string; text: string }[] = [
 
 /* Inline text-link look for in-sentence navigation buttons */
 const LINK_BTN = { display: "inline", minHeight: 0, padding: 0, border: "none", background: "none", textDecoration: "underline", font: "inherit", color: "var(--brand)", cursor: "pointer" } as const;
+
+/* Production API console config falls back to this regional host; the public MCP endpoint is on api.inferenceport.ai. */
+const REGIONAL_PROD_BASE = "https://us-east-2.api.inferenceport.ai";
+const PUBLIC_API_BASE = "https://api.inferenceport.ai";
+const TEST_TIMEOUT_MS = 15000;
+
+/* The initialize reply is JSON or a single SSE "data:" event. Returns the JSON-RPC message, or null if unparseable. */
+function parseRpc(body: string): any | null {
+  const text = body.trim();
+  const candidates = text.startsWith("{") ? [text] : text.split("\n").filter((l) => l.startsWith("data:")).map((l) => l.slice(5).trim());
+  for (const c of candidates) {
+    try { const m = JSON.parse(c); if (m && typeof m === "object") return m; } catch { /* try next */ }
+  }
+  return null;
+}
 
 const KEY_PLACEHOLDER = "ipa_live_YOUR_KEY";
 
@@ -59,24 +74,50 @@ function buildSnippet(client: Client, auth: Auth, url: string, orgSlug: string |
 }
 
 export default function McpPanel({ session, apiBase }: Props) {
-  const org = useOptionalOrgContext()?.activeOrg ?? null;
+  const orgCtx = useOptionalOrgContext();
+  const org = orgCtx?.activeOrg ?? null;
+  /* While the organization list loads (or failed to load) we cannot tell personal from org billing, so we must not
+     show or test anything billing-sensitive. A signed-out visitor has no org context to wait for. */
+  const orgUnresolved = !!session && !!orgCtx && orgCtx.orgs === null;
   const [auth, setAuth] = useState<Auth>("oauth");
   const [client, setClient] = useState<Client>("claude-code");
   const [copied, setCopied] = useState("");
   const [test, setTest] = useState<{ state: "idle" | "running" | "ok" | "error"; text: string }>({ state: "idle", text: "" });
 
-  const url = useMemo(() => `${apiBase.replace(/\/$/, "")}/mcp/council/`, [apiBase]);
+  const url = useMemo(() => {
+    const base = apiBase.replace(/\/$/, "");
+    return `${base === REGIONAL_PROD_BASE ? PUBLIC_API_BASE : base}/mcp/council/`;
+  }, [apiBase]);
   const snippet = useMemo(() => buildSnippet(client, auth, url, org?.slug ?? null), [client, auth, url, org]);
   const canSpend = !org || ["owner", "admin", "member"].includes(org.role);
+  const switchToPersonal = () => { orgCtx?.setActiveSlug(null); navigateConsole("authorized-apps"); };
   const billedTo = org ? org.name : "your personal wallet";
 
   const copy = async (label: string, text: string) => {
     try { await navigator.clipboard.writeText(text); setCopied(label); setTimeout(() => setCopied(""), 1800); } catch { setCopied(""); }
   };
 
+  /* Each test gets an id and an abort signal. A context change (sign-out, other org) aborts the in-flight request
+     and clears the result, so a reply for the previous context can never be shown. */
+  const testRun = useRef(0);
+  const testAbort = useRef<AbortController | null>(null);
+  const contextKey = `${session?.user?.id ?? ""}|${org?.slug ?? ""}`;
+  useEffect(() => {
+    testRun.current += 1;
+    testAbort.current?.abort();
+    setTest({ state: "idle", text: "" });
+  }, [contextKey]);
+  useEffect(() => () => testAbort.current?.abort(), []);
+
   /* Sends the MCP "initialize" handshake with your current sign-in, exactly as an MCP client would. */
   const runTest = async () => {
-    if (!session?.access_token) return;
+    if (!session?.access_token || orgUnresolved) return;
+    const runId = ++testRun.current;
+    testAbort.current?.abort();
+    const ctl = new AbortController();
+    testAbort.current = ctl;
+    const timer = setTimeout(() => ctl.abort(), TEST_TIMEOUT_MS);
+    const current = () => runId === testRun.current;
     setTest({ state: "running", text: "Connecting…" });
     try {
       const headers: Record<string, string> = {
@@ -87,16 +128,24 @@ export default function McpPanel({ session, apiBase }: Props) {
       if (org) headers["X-InferencePort-Org"] = org.slug;
       const res = await fetch(url, {
         method: "POST",
+        signal: ctl.signal,
         headers,
         body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-03-26", capabilities: {}, clientInfo: { name: "inferenceport-console", version: "1.0.0" } } }),
       });
       const body = await res.text();
       if (res.status === 401) throw new Error("The server rejected your sign-in (401). Sign out and back in, then retry.");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const name = /"name"\s*:\s*"([^"]+)"/.exec(body.slice(body.indexOf("serverInfo")))?.[1] ?? "council-of-llms";
-      setTest({ state: "ok", text: `Connected to ${name}. Authenticated as ${session.user?.email ?? "you"}${org ? `, working as ${org.name}` : ""}.` });
+      const msg = parseRpc(body);
+      if (msg?.error) throw new Error(`The server rejected the handshake: ${msg.error.message || "unknown error"}`);
+      if (!msg?.result?.serverInfo) throw new Error("The server replied, but not with a valid MCP handshake.");
+      if (!current()) return;
+      setTest({ state: "ok", text: `Connected to ${msg.result.serverInfo.name || "the MCP server"}. Authenticated as ${session.user?.email ?? "you"}${org ? `, working as ${org.name}` : ""}.` });
     } catch (e: any) {
-      setTest({ state: "error", text: e?.message || "Could not reach the MCP server." });
+      if (!current()) return;
+      const text = e?.name === "AbortError" ? `No response after ${TEST_TIMEOUT_MS / 1000}s. Check your connection and try again.` : e?.message || "Could not reach the MCP server.";
+      setTest({ state: "error", text });
+    } finally {
+      clearTimeout(timer);
     }
   };
 
@@ -125,7 +174,14 @@ export default function McpPanel({ session, apiBase }: Props) {
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>{org ? `Billing: ${org.name}` : "Billing"}</div>
+        <div className={styles.heading}>{orgUnresolved ? "Billing" : org ? `Billing: ${org.name}` : "Billing"}</div>
+        {orgUnresolved ? (
+          <p className={styles.muted} role="status">
+            {orgCtx?.listError
+              ? <>Could not load your organizations ({orgCtx.listError}), so we can't tell which wallet will be billed. <button type="button" style={LINK_BTN} onClick={() => { void orgCtx.refresh(); }}>Retry</button></>
+              : "Loading your organization context…"}
+          </p>
+        ) : (<>
         <p className={styles.muted}>
           Each council member and judge call is billed per token, plus a flat council surcharge, all to <strong>{billedTo}</strong>.
           {org
@@ -143,8 +199,10 @@ export default function McpPanel({ session, apiBase }: Props) {
             <li className={styles.rateListItem}><strong>OAuth sign-in:</strong> add the header <code>X-InferencePort-Org: {org.slug}</code> (included in the snippets below) to bill {org.name}. Without it you are billed personally.</li>
           </ul>
         )}
+        </>)}
       </section>
 
+      {!orgUnresolved && (<>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Connect a client</div>
         <div className={styles.tabs} role="tablist" aria-label="Authentication method">
@@ -154,7 +212,8 @@ export default function McpPanel({ session, apiBase }: Props) {
         {auth === "oauth" ? (
           <p className={`${styles.muted} ${styles.tiny}`}>
             The client opens a browser window, you sign in to InferencePort and approve access. Nothing to copy or store. Approved clients appear under{" "}
-            <button type="button" style={LINK_BTN} onClick={() => navigateConsole("authorized-apps")}>Authorized Applications</button>, where you can revoke them.
+            <button type="button" style={LINK_BTN} onClick={() => (org ? switchToPersonal() : navigateConsole("authorized-apps"))}>Authorized Applications</button>
+            {org ? " (a personal page: this switches you to your personal account)" : ""}, where you can revoke them.
           </p>
         ) : (
           <p className={`${styles.muted} ${styles.tiny}`}>
@@ -187,6 +246,7 @@ export default function McpPanel({ session, apiBase }: Props) {
           <p className={test.state === "error" ? styles.threeError : `${styles.muted} ${styles.tiny}`} role="status" style={{ marginTop: "0.75rem" }}>{test.text}</p>
         )}
       </section>
+      </>)}
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Tools</div>
