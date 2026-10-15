@@ -88,7 +88,7 @@ export default function Sidebar({
           title: activeOrg.name,
           items: ORG_SECTION_ORDER.filter((id) => orgSectionAllowed(id, activeOrg.role)).map(item),
         },
-        { key: "build", title: "Build", items: ORG_BUILD_IDS.map(item) },
+        ...(SPENDING_ROLES.includes(activeOrg.role) ? [{ key: "build", title: "Build", items: ORG_BUILD_IDS.map(item) }] : []),
         { key: "account", title: "Account", items: ORG_ACCOUNT_IDS.map(item) },
       ]
     : PERSONAL_GROUPS.map((g) => ({ key: g.title, title: g.title, items: g.ids.map(item) }));

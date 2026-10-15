@@ -1,0 +1,123 @@
+/* Invoices & receipts and billing details (V3). Cards, stats and form primitives come from billing.module.css; tables, badges and callouts from orgs.module.css. */
+
+.stack { display: grid; gap: 1.25rem; min-width: 0; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; justify-content: space-between; }
+.toolbarGroup { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; min-width: 0; }
+
+/* Touch targets: every control a person taps is at least 44px tall. */
+.touch { min-width: 0; }
+.touch input,
+.touch select,
+.touch textarea { min-height: 44px; }
+.touch textarea { min-height: 96px; }
+.control { min-height: 44px; }
+
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sub { display: block; margin-top: 0.2rem; font-size: 0.75rem; line-height: 1.4; color: var(--text-2); overflow-wrap: anywhere; }
+.rowNotice { display: block; margin-top: 0.3rem; font-size: 0.8125rem; color: var(--success-ink, var(--text)); overflow-wrap: anywhere; }
+.rowError { display: block; margin-top: 0.3rem; font-size: 0.8125rem; color: var(--crit); overflow-wrap: anywhere; }
+
+.rowActions { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: flex-end; align-items: center; }
+.rowActions > * { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+
+.actionLink {
+  padding: 0 0.75rem;
+  border-radius: var(--r-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+.actionLink:hover { border-color: var(--text-2); background: var(--surface-2); text-decoration: none; }
+
+.payLink {
+  padding: 0 1rem;
+  border-radius: var(--r-1);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+.payLink:hover { background: var(--accent-hover); color: var(--accent-ink); text-decoration: none; }
+
+.openBox { display: grid; gap: 0.6rem; }
+.openRow { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem 0.9rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--text); }
+
+.tableCaption { text-align: left; padding: 0.6rem 0.85rem; }
+
+.moreRow { display: flex; justify-content: center; padding-top: 0.25rem; }
+
+.empty {
+  padding: 1.25rem 1rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-1);
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Upcoming invoice */
+.lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text);
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.4rem;
+  overflow-wrap: anywhere;
+}
+.lineAmount { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.totalLine { font-weight: 700; }
+
+/* Billing details form */
+.fullSpan { grid-column: 1 / -1; }
+.addressGroup {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  padding: 0.75rem 0.9rem 0.9rem;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.addressGroup legend { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); padding: 0 0.3rem; }
+.addressWide { grid-column: 1 / -1; }
+.formActions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+
+/* Tax IDs */
+.taxList { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.taxRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--surface-2);
+  min-width: 0;
+}
+.taxType { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); }
+.taxValue { flex: 1 1 160px; font-family: var(--mono); font-size: 0.875rem; color: var(--text); overflow-wrap: anywhere; min-width: 0; }
+.addRow { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; }
+.addRow > label { flex: 1 1 180px; min-width: 0; }
+
+@media (max-width: 640px) {
+  .toolbarGroup,
+  .addRow { width: 100%; }
+  .toolbarGroup > *,
+  .addRow > * { flex: 1 1 100%; }
+  .rowActions { justify-content: flex-start; }
+  .addressGroup { grid-template-columns: 1fr; }
+  .formActions > * { flex: 1 1 100%; }
+  .taxRow > button { width: 100%; }
+}

@@ -13,6 +13,7 @@ import TeamsTab from "./panels/orgs/TeamsTab";
 import ApiKeysTab from "./panels/orgs/ApiKeysTab";
 import UsageTab from "./panels/orgs/UsageTab";
 import BillingTab from "./panels/orgs/BillingTab";
+import InvoicesTab from "./panels/orgs/InvoicesTab";
 import PoliciesTab from "./panels/orgs/PoliciesTab";
 import AuditTab from "./panels/orgs/AuditTab";
 import SecurityTab from "./panels/orgs/SecurityTab";
@@ -27,6 +28,7 @@ export type OrgSectionId =
   | "org-keys"
   | "org-usage"
   | "org-billing"
+  | "org-invoices"
   | "org-policies"
   | "org-audit"
   | "org-security"
@@ -41,6 +43,7 @@ export const ORG_SECTION_META: Record<OrgSectionId, { label: string; icon: IconN
   "org-keys": { label: "API keys", icon: "key", roles: ALL_ROLES },
   "org-usage": { label: "Usage", icon: "chart-bar", roles: ALL_ROLES },
   "org-billing": { label: "Billing", icon: "credit-card", roles: ["owner", "admin", "billing_manager", "auditor"] },
+  "org-invoices": { label: "Invoices", icon: "credit-card", roles: ["owner", "admin", "billing_manager", "auditor"] },
   "org-policies": { label: "Policies", icon: "shield-check", roles: ["owner", "admin"] },
   "org-audit": { label: "Audit log", icon: "clock-countdown", roles: ["owner", "admin", "auditor"] },
   "org-security": { label: "Security", icon: "lock-simple", roles: ["owner", "admin"] },
@@ -66,15 +69,19 @@ interface OrgWorkspaceProps {
   supabase: SupabaseClient<any, any, any> | null;
 }
 
-function renderSection(section: OrgSectionId, api: OrgApi, org: OrgDetail, onChanged: () => void, userId: string | null): ReactNode {
+function renderSection(
+  section: OrgSectionId, api: OrgApi, org: OrgDetail, onChanged: () => void, userId: string | null,
+  extras: { onNavigate: (tab: string) => void; onExit: () => void },
+): ReactNode {
   const common = { api, org, onChanged, userId: userId ?? undefined };
   switch (section) {
-    case "org-overview": return <OverviewTab {...common} />;
+    case "org-overview": return <OverviewTab {...common} onNavigate={extras.onNavigate} onExit={extras.onExit} />;
     case "org-members": return <MembersTab {...common} />;
     case "org-teams": return <TeamsTab {...common} />;
     case "org-keys": return <ApiKeysTab {...common} />;
     case "org-usage": return <UsageTab {...common} />;
     case "org-billing": return <BillingTab {...common} />;
+    case "org-invoices": return <InvoicesTab {...common} />;
     case "org-policies": return <PoliciesTab {...common} />;
     case "org-audit": return <AuditTab {...common} />;
     case "org-security": return <SecurityTab {...common} />;
@@ -88,7 +95,7 @@ export const SPENDING_ROLES = ["owner", "admin", "member"];
 
 /* Renders one organization section for the active org. Keyed by the parent on activeSlug so nothing stale stays on screen. */
 export default function OrgWorkspace({ section, session }: OrgWorkspaceProps) {
-  const { api, activeSlug, activeOrg, refresh } = useOrgContext();
+  const { api, activeSlug, activeOrg, refresh, setActiveSlug } = useOrgContext();
   const userId = session?.user?.id ?? null;
   const [reloadToken, setReloadToken] = useState(0);
   const [loaded, setLoaded] = useState<{ slug: string; org: OrgDetail } | null>(null);
@@ -115,6 +122,13 @@ export default function OrgWorkspace({ section, session }: OrgWorkspaceProps) {
     setReloadToken((n) => n + 1);
     void refresh();
   }, [refresh]);
+
+  /* After leaving or deleting the org: drop the saved context first so nothing refetches a now-forbidden org. */
+  const onExit = () => {
+    setActiveSlug(null);
+    navigateConsole("models");
+    void refresh();
+  };
 
   if (!activeSlug || !activeOrg) return <p className={styles.muted}>Loading organization…</p>;
 
@@ -174,7 +188,7 @@ export default function OrgWorkspace({ section, session }: OrgWorkspaceProps) {
         </div>
       </header>
       <div key={section} id="org-section" className={styles.body}>
-        {renderSection(section, api, org, onChanged, userId)}
+        {renderSection(section, api, org, onChanged, userId, { onNavigate: navigateConsole, onExit })}
       </div>
     </section>
   );

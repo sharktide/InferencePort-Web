@@ -284,7 +284,7 @@ export default function OrganizationsPanel({ session }: Props) {
       </section>
 
       {plansOpen && (
-        <PlansModal api={api} currentPlan={activeOrg?.effective_plan ?? "free"} onClose={() => setPlansOpen(false)} />
+        <PlansModal api={api} currentPlan={activeOrg?.effective_plan ?? null} onClose={() => setPlansOpen(false)} />
       )}
       {inviteDialog}
     </div>

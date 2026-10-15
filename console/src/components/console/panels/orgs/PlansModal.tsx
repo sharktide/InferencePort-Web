@@ -17,7 +17,7 @@ interface Props {
   salesContact?: string;
 }
 
-const DEFAULT_SALES = "inferenceportai@gmail.com";
+const DEFAULT_SALES = "support@inferenceport.ai";
 const ORDER: OrgPlan[] = ["free", "starter", "team", "enterprise"];
 
 const limit = (v: number | null) => (v === null ? "Unlimited" : String(v));

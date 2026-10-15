@@ -60,6 +60,7 @@ export default function ApiKeysTab({ api, org, onChanged, userId, apiBase }: Pro
   const canRestrictAny = org.caps.includes("keys.restrict_any");
   const ent = org.entitlements;
   const atLimit = ent.max_api_keys !== null && org.counts.api_keys >= ent.max_api_keys;
+  const canCreate = org.caps.includes("keys.create");
 
   const [keys, setKeys] = useState<OrgApiKey[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -215,7 +216,7 @@ export default function ApiKeysTab({ api, org, onChanged, userId, apiBase }: Pro
             ? `Your plan allows ${ent.max_api_keys} keys. Revoke one to create another.`
             : "Keys can be limited by budget, models, modalities, rate and IP range."}
         </span>
-        <button type="button" disabled={busy || atLimit} onClick={() => setDialog({ mode: "create" })}>
+        <button type="button" disabled={busy || atLimit || !canCreate} title={canCreate ? undefined : "Your role cannot create API keys"} onClick={() => setDialog({ mode: "create" })}>
           Create API key
         </button>
       </div>

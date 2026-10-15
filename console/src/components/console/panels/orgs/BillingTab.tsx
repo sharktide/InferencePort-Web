@@ -14,6 +14,7 @@ import {
 import shared from "./orgs.module.css";
 import s from "./billing.module.css";
 import { Badge, Callout, PLAN_LABELS } from "./shared";
+import { navigateConsole } from "../../ContextSwitcher";
 
 interface Props {
   api: OrgApi;
@@ -75,6 +76,7 @@ export default function BillingTab({ api, org, onChanged }: Props) {
   const [banner, setBanner] = useState<{ tone: "ok" | "info"; text: string } | null>(null);
 
   const [emailDraft, setEmailDraft] = useState("");
+  const [promoCode, setPromoCode] = useState("");
   const [emailNotice, setEmailNotice] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
   const [spendDraft, setSpendDraft] = useState("");
   const [salesMessage, setSalesMessage] = useState("");
@@ -197,6 +199,13 @@ export default function BillingTab({ api, org, onChanged }: Props) {
     await refresh();
   });
 
+  const redeemPromo = () => run(async () => {
+    const { discount } = await api.redeemPromo(slug, promoCode.trim());
+    setPromoCode("");
+    setBanner({ tone: "ok", text: `Promotion code applied: ${discount.description}.` });
+    await load();
+  });
+
   const openPortal = () => run(async () => {
     const { url } = await api.portal(slug);
     window.location.href = url;
@@ -252,7 +261,8 @@ export default function BillingTab({ api, org, onChanged }: Props) {
   };
 
   const renderPlanCard = (p: PlanCatalogEntry) => {
-    const isCurrent = p.key === plan;
+    // A lapsed subscription keeps its plan name but is not current: offer to resubscribe instead of a dead button.
+    const isCurrent = p.key === plan && (hasPaidSub || plan === "enterprise");
     const isEnterprise = p.key === "enterprise";
     const fits = p.max_members == null || seats <= p.max_members;
     const monthly = p.seat_price_usd == null ? null : seats * p.seat_price_usd;
@@ -367,9 +377,17 @@ export default function BillingTab({ api, org, onChanged }: Props) {
             <span className={s.statHint}>Seats follow your member list</span>
           </div>
           <div className={s.stat}>
-            <span className={s.statLabel}>Monthly estimate</span>
-            <span className={s.statValue}>{billing.monthly_estimate_usd == null ? "—" : fmtUsd(billing.monthly_estimate_usd)}</span>
-            <span className={s.statHint}>Every renewal invoice</span>
+            <span className={s.statLabel}>{billing.discount ? "Next invoice" : "Monthly estimate"}</span>
+            <span className={s.statValue}>
+              {(billing.discount ? billing.next_invoice_usd ?? billing.monthly_estimate_usd : billing.monthly_estimate_usd) == null
+                ? "—"
+                : fmtUsd((billing.discount ? billing.next_invoice_usd ?? billing.monthly_estimate_usd : billing.monthly_estimate_usd) as number)}
+            </span>
+            <span className={s.statHint}>
+              {billing.discount && billing.monthly_estimate_usd != null
+                ? `After discount (list price ${fmtUsd(billing.monthly_estimate_usd)})`
+                : "Every renewal invoice"}
+            </span>
           </div>
           <div className={s.stat}>
             <span className={s.statLabel}>Next renewal</span>
@@ -379,17 +397,56 @@ export default function BillingTab({ api, org, onChanged }: Props) {
 
         <p className={s.explainer}>{seatExplainer}</p>
 
+        {billing.discount && (
+          <Callout tone="ok">
+            <strong>Discount applied:</strong> {billing.discount.description}
+            {billing.discount.name ? ` (${billing.discount.name})` : ""}.
+          </Callout>
+        )}
+        {billing.discount && billing.discount.ends_at && billing.has_payment_method === false && (
+          <Callout tone="warn">
+            This discount ends on {fmtDate(billing.discount.ends_at)} and there is no payment method on file. Add one
+            with <strong>Update payment method</strong> before then, or the next invoice will fail to collect.
+          </Callout>
+        )}
+        {canManage && !billing.discount && (
+          hasPaidSub ? (
+            <form
+              className={s.actions}
+              onSubmit={(e) => { e.preventDefault(); if (promoCode.trim()) void redeemPromo(); }}
+              aria-label="Apply a promotion code"
+            >
+              <label className={shared.field} style={{ minWidth: "14rem" }}>
+                Promotion code
+                <input
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value)}
+                  maxLength={64}
+                  autoComplete="off"
+                  spellCheck={false}
+                  placeholder="e.g. STARTUP200"
+                  disabled={busy}
+                />
+              </label>
+              <button type="submit" disabled={busy || !promoCode.trim()}>Apply code</button>
+            </form>
+          ) : (
+            <p className={s.hint}>Have a promotion code? Enter it at checkout when you choose a plan.</p>
+          )
+        )}
+
         {billing.cancel_at_period_end && (
           <Callout tone="warn">
             Your subscription is set to end on {fmtDate(billing.current_period_end)}. Open the payment portal to resume it.
           </Callout>
         )}
 
-        {canManage && billing.has_billing_account && (
-          <div className={s.actions}>
-            <button className="ghost" disabled={busy} onClick={openPortal}>Manage payment method and invoices</button>
-          </div>
-        )}
+        <div className={s.actions}>
+          {canManage && billing.has_billing_account && (
+            <button className="ghost" disabled={busy} onClick={openPortal}>Update payment method</button>
+          )}
+          <button className="ghost" onClick={() => navigateConsole("org-invoices")}>Invoices &amp; receipts</button>
+        </div>
       </section>
 
       {/* Plans */}

@@ -164,10 +164,10 @@ export default function MembersTab({ api, org, onChanged, userId }: Props) {
   const full = cap !== null && used >= cap;
   const upgradeHint =
     org.effective_plan === "free"
-      ? "Upgrade to the Team plan to add more seats."
-      : org.effective_plan === "team"
-        ? "Ask a billing manager to add seats."
-        : "Contact sales to raise your seat limit.";
+      ? "Upgrade in Billing to add more members (Starter allows 25, Team 1,000)."
+      : org.effective_plan === "starter"
+        ? "Switch to the Team plan in Billing to add more members."
+        : "Contact sales to raise your member limit.";
   const limitsLocked = !ent.member_budgets && !ent.model_policy;
 
   return (
@@ -461,14 +461,14 @@ function LimitsDialog({
   };
 
   return (
-    <div className={shared.overlay} role="presentation" onClick={onClose}>
+    <div className={shared.overlay} role="presentation" onClick={() => { if (!busy) onClose(); }}>
       <div
         className={`${shared.dialog} ${shared.dialogWide}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="member-limits-title"
         onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => { if (e.key === "Escape") onClose(); }}
+        onKeyDown={(e) => { if (e.key === "Escape" && !busy) onClose(); }}
       >
         <h2 id="member-limits-title" className={shared.dialogTitle}>Limits for {memberName(member)}</h2>
         <p className={manage.dialogIntro}>

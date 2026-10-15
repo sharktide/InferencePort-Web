@@ -99,7 +99,7 @@ export default function ConfirmPage() {
         <a href="/console/" className={styles.btnLink}>Return to dashboard</a>
         <a href="https://docs.inferenceport.ai" className={`${styles.btnLink} ${styles.btnLinkDocs}`}>View docs</a>
       </div>
-      <p style={{ color: "var(--muted)", marginTop: 30, fontSize: 12 }}>Contact us at <a href="mailto:inferenceportai@gmail.com">inferenceportai@gmail.com</a></p>
+      <p style={{ color: "var(--muted)", marginTop: 30, fontSize: 12 }}>Contact us at <a href="mailto:billing@inferenceport.ai">billing@inferenceport.ai</a></p>
       <p style={{ color: "var(--muted)", marginTop: 15, fontSize: 10 }}>InferencePort AI partners with Stripe to provide invoicing and payment processing.</p>
       <p style={{ color: "var(--muted)", fontSize: 10 }}>&copy; 2026 InferencePort AI. <a href="https://inferenceport.ai/security.html">Terms</a>, <a href="https://inferenceport.ai/security.html">Privacy</a></p>
     </div>

@@ -51,7 +51,7 @@ export function assignableRoles(callerRole: OrgRole): AssignableRole[] {
 export function canManageMember(callerRole: OrgRole, target: OrgMember, selfId: string | null): boolean {
   if (target.role === "owner" || (selfId !== null && target.user_id === selfId)) return false;
   if (callerRole === "owner") return true;
-  return callerRole === "admin" && (target.role === "member" || target.role === "billing_manager");
+  return callerRole === "admin" && (target.role === "member" || target.role === "billing_manager" || target.role === "auditor");
 }
 
 export function memberName(m: { email: string | null; username: string | null; user_id: string }): string {

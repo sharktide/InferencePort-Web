@@ -279,6 +279,11 @@ function WebhookCard({ api, org, onChanged, canSecurity }: { api: OrgApi; org: O
       setError("Enter an https:// URL that the server can reach.");
       return;
     }
+    // The server needs a signing secret (16-256 characters) the first time, and rejects bad lengths any time one is sent.
+    if ((secret || !hook?.has_secret) && (secret.length < 16 || secret.length > 256)) {
+      setError("Enter a signing secret of 16 to 256 characters so receivers can verify each delivery.");
+      return;
+    }
     setBusy(true);
     try {
       await api.setAuditWebhook(org.slug, secret ? { url: url.trim(), secret } : { url: url.trim() });
@@ -338,7 +343,7 @@ function WebhookCard({ api, org, onChanged, canSecurity }: { api: OrgApi; org: O
           </div>
           <div className={s.formRow}>
             <label className={`${s.field} ${s.fieldWide}`}>
-              Signing secret (optional)
+              Signing secret (16–256 characters; leave empty to keep the current one)
               <input type="password" autoComplete="new-password" value={secret} disabled={!canSecurity}
                 onChange={(e) => setSecret(e.target.value)} />
               <span className={s.hint}>Used to compute the HMAC signature. It is write-only and never shown again.</span>

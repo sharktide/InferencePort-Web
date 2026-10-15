@@ -65,7 +65,7 @@ export default function UsageTab({ api, org }: Props) {
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 10_000); // revoking immediately can cancel the download in Safari/Firefox
       setNotice({ tone: "ok", text: `Exported the last ${days} days as CSV.` });
     } catch (e) {
       setNotice({ tone: "error", text: errorText(e) });

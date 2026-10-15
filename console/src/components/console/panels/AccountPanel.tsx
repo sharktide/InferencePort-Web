@@ -91,7 +91,7 @@ export default function AccountPanel({ config, session, supabase }: AccountPanel
       const d = await createOrgApi(base, () => undefined).ssoDiscover(email);
       if (!d.sso) { await modal.alert("No single sign-on is configured for this email domain."); return; }
       const { error } = await supabase.auth.signInWithSSO(
-        d.provider_id ? { providerId: d.provider_id, options: { redirectTo: window.location.origin + window.location.pathname } } : { domain: d.domain as string, options: { redirectTo: window.location.origin + window.location.pathname } },
+        d.provider_id ? { providerId: d.provider_id, options: { redirectTo: window.location.href.split("#")[0] } } : { domain: d.domain as string, options: { redirectTo: window.location.href.split("#")[0] } },
       );
       if (error) throw error;
     } catch (err: any) { await modal.alert(err.message || "Single sign-on failed."); }

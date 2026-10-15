@@ -22,7 +22,12 @@ type Result =
 
 export default function InviteForm({ api, org, teams, roles, onInvited }: Props) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<AssignableRole | "">(roles[0] ?? "");
+  const [role, setRole] = useState<AssignableRole | "">(() => {
+    // Default to the org's default role, else the least privileged option (never silently the most privileged).
+    const preferred = org.settings.default_member_role;
+    if (preferred && roles.includes(preferred)) return preferred;
+    return roles.includes("member") ? "member" : (roles[0] ?? "");
+  });
   const [teamIds, setTeamIds] = useState<string[]>([]);
   const [sendEmail, setSendEmail] = useState(true);
   const [busy, setBusy] = useState(false);

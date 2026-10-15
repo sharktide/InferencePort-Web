@@ -18,13 +18,14 @@ type Flags = {
   security_alerts: boolean;
   billing_alerts: boolean;
   budget_alerts: boolean;
+  receipts: boolean;
 };
 
 const MAX_PERCENTS = 5;
 const MAX_RECIPIENTS = 5;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const TOGGLES: { key: keyof Flags; title: string; description: string; gate?: "budget" }[] = [
+const TOGGLES: { key: keyof Flags; title: string; description: string; gate?: "budget"; alwaysAvailable?: boolean }[] = [
   {
     key: "member_changes",
     title: "Member changes",
@@ -46,6 +47,12 @@ const TOGGLES: { key: keyof Flags; title: string; description: string; gate?: "b
     description: "Spend crossing the set percentages of the monthly limit, and a low credit balance, go to the billing email and extra recipients. Each alert is sent once per period.",
     gate: "budget",
   },
+  {
+    key: "receipts",
+    title: "Payment receipts",
+    description: "Email a receipt when a payment succeeds, with links to the invoice and receipt, to the billing email and extra recipients. Not limited by plan.",
+    alwaysAvailable: true,
+  },
 ];
 
 function parsePercent(text: string): number | null {
@@ -62,7 +69,7 @@ export default function NotificationsTab({ api, org }: Props) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saved, setSaved] = useState<NotificationSettings | null>(null);
-  const [flags, setFlags] = useState<Flags>({ member_changes: true, security_alerts: true, billing_alerts: true, budget_alerts: true });
+  const [flags, setFlags] = useState<Flags>({ member_changes: true, security_alerts: true, billing_alerts: true, budget_alerts: true, receipts: true });
   const [percents, setPercents] = useState<number[]>([80, 100]);
   const [thresholdText, setThresholdText] = useState("");
   const [recipients, setRecipients] = useState<string[]>([]);
@@ -81,6 +88,7 @@ export default function NotificationsTab({ api, org }: Props) {
       security_alerts: n.security_alerts,
       billing_alerts: n.billing_alerts,
       budget_alerts: n.budget_alerts,
+      receipts: n.receipts,
     });
     setPercents([...n.budget_alert_percents].sort((a, b) => a - b));
     setThresholdText(n.low_balance_threshold == null ? "" : String(n.low_balance_threshold));
@@ -120,11 +128,14 @@ export default function NotificationsTab({ api, org }: Props) {
     security_alerts: saved.security_alerts,
     billing_alerts: saved.billing_alerts,
     budget_alerts: saved.budget_alerts,
+    receipts: saved.receipts,
     budget_alert_percents: [...saved.budget_alert_percents].sort((a, b) => a - b),
     low_balance_threshold: saved.low_balance_threshold,
     extra_recipients: saved.extra_recipients,
   };
   const dirty = !!savedPayload && JSON.stringify(payload) !== JSON.stringify(savedPayload);
+  // Receipts are never plan-gated, so a receipts-only change may be saved on any plan.
+  const gatedChanged = !!savedPayload && JSON.stringify({ ...payload, receipts: null }) !== JSON.stringify({ ...savedPayload, receipts: null });
   const editable = canManage && emailEntitled;
 
   const addPercent = () => {
@@ -217,7 +228,7 @@ export default function NotificationsTab({ api, org }: Props) {
         <div className={s.toggles}>
           {TOGGLES.map((t) => {
             const gatedOff = t.gate === "budget" && !budgetEntitled;
-            const disabled = !editable || gatedOff;
+            const disabled = (t.alwaysAvailable ? !canManage : !editable) || gatedOff;
             return (
               <label key={t.key} className={`${s.toggle} ${gatedOff ? s.toggleOff : ""}`}>
                 <input
@@ -349,8 +360,12 @@ export default function NotificationsTab({ api, org }: Props) {
       {notice && <Callout tone={notice.tone === "ok" ? "ok" : "error"}>{notice.text}</Callout>}
 
       <div className={s.actions}>
-        {editable && (
-          <button type="button" disabled={busy || !dirty || !thresholdValid} onClick={save}>
+        {canManage && (
+          <button
+            type="button"
+            disabled={busy || !dirty || !thresholdValid || (!emailEntitled && gatedChanged)}
+            onClick={save}
+          >
             {busy ? "Saving…" : "Save notification settings"}
           </button>
         )}
@@ -358,7 +373,7 @@ export default function NotificationsTab({ api, org }: Props) {
           <button
             type="button"
             className="ghost"
-            disabled={testing || !saved.email_configured || !emailEntitled}
+            disabled={testing || !saved.email_configured}
             onClick={sendTest}
             title={saved.email_configured ? undefined : "Email is not configured on this server"}
           >

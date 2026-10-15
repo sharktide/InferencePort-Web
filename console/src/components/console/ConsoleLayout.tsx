@@ -5,7 +5,7 @@ import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import TopBar from "./TopBar";
 import Sidebar from "./Sidebar";
-import { OrgProvider, useOrgContext } from "./OrgContext";
+import { ORGS_CHANGED_EVENT, OrgProvider, useOrgContext } from "./OrgContext";
 import OrgWorkspace, { isOrgSection, orgSectionAllowed, SPENDING_ROLES } from "./OrgWorkspace";
 import { CONSOLE_NAVIGATE_EVENT } from "./ContextSwitcher";
 import type { OrgSummary } from "../../lib/orgs";
@@ -43,7 +43,11 @@ function initialTab(): string {
   if (params.has("invite")) return "agents";
   if (params.has("org_invite")) return "organizations";
   if (params.has("org")) return params.has("billing") ? "org-billing" : "org-overview";
-  return localStorage.getItem("console-active-tab") || "account";
+  try {
+    return localStorage.getItem("console-active-tab") || "account";
+  } catch {
+    return "account";
+  }
 }
 
 /* Whether a section can be shown in the current context (personal, or the active organization). */
@@ -161,8 +165,10 @@ export default function ConsoleLayout() {
             if (cancelled) return;
             setSession(s);
             /* First SSO sign-in: let the server add the user to their organization (idempotent, never blocks sign-in) */
-            if (_event === "SIGNED_IN" && s?.user?.app_metadata?.provider === "sso") {
-              fetch(`${base}/v1/orgs/sso/jit`, { method: "POST", headers: { Authorization: `Bearer ${s.access_token}`, "Content-Type": "application/json" }, body: "{}" }).catch(() => {});
+            if (_event === "SIGNED_IN" && s && String(s.user?.app_metadata?.provider ?? "").startsWith("sso")) {
+              fetch(`${base}/v1/orgs/sso/jit`, { method: "POST", headers: { Authorization: `Bearer ${s.access_token}`, "Content-Type": "application/json" }, body: "{}" })
+                .then(() => window.dispatchEvent(new Event(ORGS_CHANGED_EVENT)))
+                .catch(() => {});
             }
             if (s) {
               /* Token refreshes and repeated SIGNED_IN events (e.g. returning to the browser tab) must not reset the tab */
@@ -255,7 +261,7 @@ function ConsoleFrame({
   unclaimedRewards,
   setUnclaimedRewards,
 }: FrameProps) {
-  const { orgs, activeSlug, activeOrg, setActiveSlug } = useOrgContext();
+  const { orgs, activeSlug, activeOrg, listError, refresh, setActiveSlug } = useOrgContext();
 
   /* ?org=<slug> from a link: switch to that organization, then drop the param so a reload does not re-apply it */
   useEffect(() => {
@@ -270,15 +276,27 @@ function ConsoleFrame({
 
   /* Wait for the organization list before judging a section: a stored org tab is valid only if that org is active */
   useEffect(() => {
+    if (!session) {
+      /* Org pages need a session: a deep link or saved tab while signed out lands on the sign-in page */
+      if (isOrgSection(activeTab) || activeTab === "organizations") setActiveTab("account");
+      return;
+    }
     if (!orgs) return;
     if (!tabAvailable(activeTab, activeOrg)) setActiveTab(defaultTab(activeOrg));
-  }, [orgs, activeOrg, activeTab, setActiveTab]);
+  }, [session, orgs, activeOrg, activeTab, setActiveTab]);
 
   const renderSection = (tab: string): ReactNode => {
     if (isOrgSection(tab)) {
-      return activeOrg
-        ? <OrgWorkspace section={tab} session={session} apiBase={apiBase} config={config} supabase={supabase} />
-        : <p className={styles.waiting}>Loading organization…</p>;
+      if (activeOrg) return <OrgWorkspace section={tab} session={session} apiBase={apiBase} config={config} supabase={supabase} />;
+      if (listError) {
+        return (
+          <p className={styles.waiting} role="alert">
+            Could not load your organizations: {listError}{" "}
+            <button type="button" onClick={() => { void refresh(); }}>Retry</button>
+          </p>
+        );
+      }
+      return <p className={styles.waiting}>Loading organization…</p>;
     }
     const panelMap: Record<string, ReactNode> = {
       account: <AccountPanel config={config} session={session} supabase={supabase} />,
@@ -323,7 +341,7 @@ function ConsoleFrame({
         <main className={styles.consoleContent}>
           {/* Org pages are keyed by org so no data from another org stays on screen. Work tabs (playground etc.) are NOT
               remounted on a context switch: the org header changes per request, and people keep their prompt. */}
-          <div key={WORK_TABS.has(activeTab) ? "work" : (activeSlug ?? "personal")} className={styles.contextFrame}>
+          <div key={WORK_TABS.has(activeTab) ? "work" : (orgs === null ? "init" : (activeSlug ?? "personal"))} className={styles.contextFrame}>
             {renderSection(activeTab)}
           </div>
         </main>

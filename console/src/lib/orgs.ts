@@ -69,6 +69,7 @@ export interface NotificationSettings {
   security_alerts: boolean;    // SSO / IP allowlist / domain / webhook changes -> owners
   billing_alerts: boolean;     // payment failed, seat changes, plan changes -> billing email
   budget_alerts: boolean;      // org spend limit and low balance -> billing email
+  receipts: boolean;           // an email with the invoice/receipt links each time a payment succeeds -> billing recipients
   budget_alert_percents: number[];      // e.g. [80, 100]
   low_balance_threshold: number | null; // credits
   extra_recipients: string[];  // additional emails (max 5) that receive billing & budget alerts
@@ -152,6 +153,20 @@ export interface ApiKeyRestrictions {
   rate_limit_rpm?: number | null;
 }
 
+/** A coupon / promotion code active on the org's subscription (or on its Stripe customer). */
+export interface OrgDiscount {
+  name: string | null;
+  percent_off: number | null;
+  amount_off: number | null;           // major units, per invoice
+  currency: string;
+  duration: "forever" | "once" | "repeating" | string;
+  duration_in_months: number | null;
+  started_at: string | null;
+  ends_at: string | null;              // only for repeating coupons
+  source: "subscription" | "customer";
+  description: string;                 // e.g. "100% off forever", "$200.00 off for 6 months (until Apr 02, 2027)"
+}
+
 export interface OrgBilling {
   plan: OrgPlan;
   effective_plan: OrgPlan;
@@ -162,7 +177,10 @@ export interface OrgBilling {
   owner_email: string | null;
   seats: number;                        // == member count; billed seats follow membership automatically
   seat_price_usd: number | null;        // for the current paid plan
-  monthly_estimate_usd: number | null;  // seats * seat price (next full invoice, excluding prorations)
+  monthly_estimate_usd: number | null;  // list price: seats * seat price
+  next_invoice_usd: number | null;      // what the next renewal will actually charge, after discounts
+  discount: OrgDiscount | null;
+  has_payment_method: boolean | null;   // false for e.g. a 100%-off subscription that started without a card
   has_billing_account: boolean;         // a Stripe customer exists (portal available)
   wallet: { balance_credits: number; paid_credits: number; promotional_credits: number; lifetime_credits_purchased: number };
   monthly_spend_limit: number | null;
@@ -201,9 +219,71 @@ export interface OrgSso {
 }
 export interface SsoDiscovery { sso: boolean; provider_id?: string; domain?: string; org_name?: string }
 
+
+/* ---- invoices, receipts & billing details (amounts are in MAJOR units, e.g. dollars, never cents) ---- */
+export type InvoiceStatus = "draft" | "open" | "paid" | "void" | "uncollectible";
+export interface OrgInvoice {
+  id: string;                              // Stripe invoice id (in_...)
+  number: string | null;                   // human invoice number, null while draft
+  status: InvoiceStatus;
+  kind: "subscription" | "credits" | "other";
+  description: string;                     // e.g. "Team seats x 3" or "Credit pack"
+  seats: number | null;                    // seat quantity for subscription invoices
+  currency: string;                        // upper-case ISO code
+  subtotal: number; discount: number; tax: number; total: number; amount_paid: number; amount_due: number;
+  created: string;                         // ISO
+  due_date: string | null;
+  period_start: string | null; period_end: string | null;
+  paid_at: string | null;
+  billing_reason: string | null;           // subscription_create | subscription_update | subscription_cycle | manual | ...
+  receipt_number: string | null;
+  hosted_invoice_url: string | null;       // Stripe-hosted page: view, pay, download
+  invoice_pdf: string | null;
+}
+export interface InvoicePage { invoices: OrgInvoice[]; has_more: boolean; next_cursor: string | null }
+export interface UpcomingInvoice {
+  total: number; discount: number; currency: string;
+  next_billing_date: string | null;
+  seats: number | null;
+  lines: { description: string; amount: number; quantity: number | null }[];
+}
+export interface BillingAddress { line1: string; line2: string | null; city: string | null; state: string | null; postal_code: string | null; country: string }
+export interface BillingTaxId { id: string; type: string; value: string; verification: string | null }
+export interface PaymentMethodSummary { brand: string | null; last4: string | null; exp_month: number | null; exp_year: number | null }
+export interface BillingDetails {
+  has_billing_account: boolean;            // false until the org subscribes or buys credits
+  company_name: string | null;             // legal name printed on invoices
+  billing_email: string | null;            // where invoices & receipts are emailed (read-only here; edit in Billing)
+  address: BillingAddress | null;
+  tax_ids: BillingTaxId[];
+  po_number: string | null;                // printed on every invoice as "PO number"
+  invoice_footer: string | null;           // free text printed on invoices (e.g. VAT notice, bank reference)
+  payment_method: PaymentMethodSummary | null;
+}
+export interface BillingDetailsInput {
+  company_name?: string | null;
+  address?: BillingAddress | null;
+  po_number?: string | null;
+  invoice_footer?: string | null;
+  add_tax_id?: { type: string; value: string };
+  remove_tax_id?: string;
+}
+
 export class OrgApiError extends Error {
   status: number;
   constructor(message: string, status: number) { super(message); this.status = status; }
+}
+
+/** FastAPI sends `detail` as a string, or as a list of {msg, loc} objects for 422 validation errors. */
+function errorDetail(data: any): string {
+  const d = data?.detail ?? data?.error;
+  if (typeof d === "string") return d;
+  if (Array.isArray(d)) {
+    const first = d[0];
+    const where = Array.isArray(first?.loc) ? String(first.loc[first.loc.length - 1]) : "";
+    return first?.msg ? (where ? `${where}: ${first.msg}` : String(first.msg)) : "The request was not valid";
+  }
+  return d ? JSON.stringify(d) : "";
 }
 
 export function createOrgApi(apiBase: string, getToken: () => string | undefined) {
@@ -217,12 +297,12 @@ export function createOrgApi(apiBase: string, getToken: () => string | undefined
     if (raw) {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new OrgApiError(data.detail || `HTTP ${res.status}`, res.status);
+        throw new OrgApiError(errorDetail(data) || `HTTP ${res.status}`, res.status);
       }
       return (await res.text()) as unknown as T;
     }
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new OrgApiError(data.detail || data.error || `HTTP ${res.status}`, res.status);
+    if (!res.ok) throw new OrgApiError(errorDetail(data) || `HTTP ${res.status}`, res.status);
     return data as T;
   }
   const o = (slug: string) => `/${encodeURIComponent(slug)}`;
@@ -278,9 +358,18 @@ export function createOrgApi(apiBase: string, getToken: () => string | undefined
     ledger: (slug: string, limit = 100) => call<{ entries: OrgLedgerEntry[] }>("GET", `${o(slug)}/billing/ledger?limit=${limit}`),
     subscribe: (slug: string, plan: SelfServePlan) => call<{ url: string }>("POST", `${o(slug)}/billing/checkout`, { plan }),
     changePlan: (slug: string, plan: SelfServePlan) => call<{ plan: OrgPlan }>("POST", `${o(slug)}/billing/plan`, { plan }),
+    redeemPromo: (slug: string, code: string) => call<{ discount: OrgDiscount }>("POST", `${o(slug)}/billing/promo`, { code }),
     portal: (slug: string) => call<{ url: string }>("POST", `${o(slug)}/billing/portal`, {}),
     buyCredits: (slug: string, pack_id: string) => call<{ url: string }>("POST", `${o(slug)}/billing/credits/checkout`, { pack_id }),
     setSpendLimit: (slug: string, monthly_spend_limit: number | null) => call<{ success: true }>("PATCH", `${o(slug)}/billing`, { monthly_spend_limit }),
+    invoices: (slug: string, q: { limit?: number; cursor?: string | null; status?: InvoiceStatus } = {}) =>
+      call<InvoicePage>("GET", `${o(slug)}/billing/invoices${qs(q)}`),
+    upcomingInvoice: (slug: string) => call<{ upcoming: UpcomingInvoice | null }>("GET", `${o(slug)}/billing/invoices/upcoming`),
+    invoicesExport: (slug: string) => call<string>("GET", `${o(slug)}/billing/invoices/export?format=csv`, undefined, true),
+    receiptUrl: (slug: string, invoiceId: string) => call<{ receipt_url: string | null }>("GET", `${o(slug)}/billing/invoices/${invoiceId}/receipt`),
+    emailInvoice: (slug: string, invoiceId: string, to?: string) => call<{ success: true; sent_to: string }>("POST", `${o(slug)}/billing/invoices/${invoiceId}/send`, { to }),
+    billingDetails: (slug: string) => call<{ details: BillingDetails }>("GET", `${o(slug)}/billing/details`),
+    saveBillingDetails: (slug: string, b: BillingDetailsInput) => call<{ details: BillingDetails }>("PUT", `${o(slug)}/billing/details`, b),
     contactSales: (slug: string, message?: string) => call<{ success: true; mailto: string }>("POST", `${o(slug)}/billing/contact-sales`, { message }),
 
     notifications: (slug: string) => call<{ notifications: NotificationSettings }>("GET", `${o(slug)}/notifications`),

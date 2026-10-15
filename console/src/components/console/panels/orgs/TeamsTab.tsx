@@ -61,8 +61,8 @@ export default function TeamsTab({ api, org, onChanged, userId }: OwnTabProps) {
   if (locked) {
     return (
       <Locked>
-        Teams are available on the Team plan.
-        <span className={`${styles.muted} ${styles.tiny}`}>Upgrade from the Overview tab to group members and share access by team.</span>
+        Teams are available on the Starter plan and above.
+        <span className={`${styles.muted} ${styles.tiny}`}>Upgrade in Billing to group members into teams.</span>
       </Locked>
     );
   }

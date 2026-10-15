@@ -8,14 +8,19 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { createOrgApi, ORG_HEADER, type OrgApi, type OrgSummary } from "../../lib/orgs";
 
 const STORAGE_KEY = "console-org";
-/* Server ignores the header on these too; skipping it here avoids needless CORS preflights. */
-const PERSONAL_ONLY = /^\/(v1\/(orgs|rewards|lightning-api-keys|stripe|deploy)|subscription|usage)(\/|\?|$)/;
+/* The header only matters where usage is billed or the org wallet is shown. Read-only lookups (models, agents) stay
+   header-free so an exhausted org budget or a role that cannot spend never breaks them. */
+const ORG_BILLED = /^\/v1\/(chat|images|videos|audio|3d|me|credits)(\/|\?|$)/;
+/* Server-side refresh trigger, e.g. after a first SSO sign-in joined the user to an organization. */
+export const ORGS_CHANGED_EVENT = "console:orgs-changed";
 
 export interface OrgContextValue {
   /** null until loaded (or while signed out) */
   orgs: OrgSummary[] | null;
   activeSlug: string | null;
   activeOrg: OrgSummary | null;
+  /** Set when the organization list could not be loaded; call refresh() to retry. */
+  listError: string | null;
   /** Switch context. Pass null for the personal account. */
   setActiveSlug: (slug: string | null) => void;
   refresh: () => Promise<void>;
@@ -51,19 +56,31 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   const [orgs, setOrgs] = useState<OrgSummary[] | null>(null);
   const [requested, setRequested] = useState<string | null>(() => (typeof window === "undefined" ? null : readStored()));
 
+  const [listError, setListError] = useState<string | null>(null);
+
   const refresh = useCallback(async () => {
-    if (!tokenRef.current) { setOrgs(null); return; }
+    const started = tokenRef.current;
+    if (!started) { setOrgs(null); setListError(null); return; }
     try {
       const { orgs: list } = await api.list();
+      if (tokenRef.current !== started) return; /* signed out or switched account while loading */
       setOrgs(list);
-    } catch {
-      /* keep the previous list; the Organizations page shows its own error */
+      setListError(null);
+    } catch (e) {
+      if (tokenRef.current !== started) return;
+      setListError(e instanceof Error ? e.message : "Could not load your organizations");
     }
   }, [api]);
 
+  useEffect(() => {
+    const onChanged = () => { void refresh(); };
+    window.addEventListener(ORGS_CHANGED_EVENT, onChanged);
+    return () => window.removeEventListener(ORGS_CHANGED_EVENT, onChanged);
+  }, [refresh]);
+
   const signedIn = !!token;
   useEffect(() => {
-    if (!signedIn) { setOrgs(null); return; }
+    if (!signedIn) { setOrgs(null); setListError(null); return; }
     void refresh();
   }, [signedIn, refresh]);
 
@@ -87,7 +104,7 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
     window.fetch = function patchedFetch(input: RequestInfo | URL, init?: RequestInit) {
       try {
         const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-        if (url.startsWith(base) && !PERSONAL_ONLY.test(url.slice(base.length))) {
+        if (url.startsWith(base) && ORG_BILLED.test(url.slice(base.length))) {
           const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
           if (!headers.has(ORG_HEADER)) headers.set(ORG_HEADER, activeSlug);
           return original.call(window, input, { ...init, headers });
@@ -99,8 +116,8 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   }, [activeSlug, apiBase]);
 
   const value = useMemo<OrgContextValue>(
-    () => ({ orgs, activeSlug, activeOrg, setActiveSlug, refresh, api }),
-    [orgs, activeSlug, activeOrg, setActiveSlug, refresh, api],
+    () => ({ orgs, activeSlug, activeOrg, listError, setActiveSlug, refresh, api }),
+    [orgs, activeSlug, activeOrg, listError, setActiveSlug, refresh, api],
   );
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 }
