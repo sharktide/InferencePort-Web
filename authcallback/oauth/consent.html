@@ -973,7 +973,7 @@
       // 2. Initialize the Supabase client from remote config.
       let supabase;
       let apibase = "https://us-east-2.api.inferenceport.ai";
-      if (urlParams.get('staging') == "true") {
+      if (params.get('staging') == "true") {
         apibase = "https://staging-api.inferenceport.ai";
       }
       try {
