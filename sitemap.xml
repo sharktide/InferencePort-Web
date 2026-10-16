@@ -7,6 +7,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://inferenceport.ai/platform.html</loc>
+    <lastmod>2026-10-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://inferenceport.ai/install.html</loc>
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
@@ -41,12 +47,6 @@
     <lastmod>2026-07-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://inferenceport.ai/solutions.html</loc>
-    <lastmod>2026-07-29</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://inferenceport.ai/tools.html</loc>

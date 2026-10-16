@@ -5,6 +5,16 @@
   "installCommand": "echo 'Using root buildCommand instead'",
   "redirects": [
     {
+      "source": "/solutions.html",
+      "destination": "/platform.html",
+      "permanent": true
+    },
+    {
+      "source": "/solutions",
+      "destination": "/platform.html",
+      "permanent": true
+    },
+    {
       "source": "/chat",
       "destination": "https://sharktide-chat.hf.space",
       "permanent": false

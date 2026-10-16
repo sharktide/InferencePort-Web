@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>InferencePort AI — Cloud & Local AI Models, API, Self-Hosting & Fraud Detection</title>
+		<title>InferencePort AI — Run, rent and govern AI from one account</title>
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
 		<meta name="description" content="InferencePort AI gives you cloud & local AI models through the Cloud Platform and the Self-Hosted Platform. Chat with Lightning at 1,000 words/sec, self-host models for your team, use the Pay-to-Go API, and detect fraud with AI Shield. Open-source and cross-platform." />
 		<meta name="keywords" content="AI API, cloud AI models, local AI, self-hosted AI, Ollama, Lightning AI, text generation, image generation, video generation, AI fraud detection, AI Shield, open source AI, InferencePort" />
@@ -60,1703 +60,330 @@
 		}
 		</script>
 
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+		
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
+		<link rel="stylesheet" href="styles/site.css" />
 		<script src="components/ip-navbar.js"></script>
 		<script src="components/ip-footer.js"></script>
-		<script src="scripts/animations.js"></script>
-		<style>
-			/* ── Hero ── */
-			.hero-section {
-				padding: 100px 0 80px;
-				text-align: center;
-				background: linear-gradient(180deg, rgba(79, 124, 255, 0.04) 0%, transparent 100%);
-				position: relative;
-				overflow: hidden;
-			}
-			.hero-section::before {
-				content: "";
-				position: absolute;
-				top: -200px;
-				left: 50%;
-				transform: translateX(-50%);
-				width: 800px;
-				height: 600px;
-				background: radial-gradient(ellipse, rgba(79, 124, 255, 0.08) 0%, transparent 70%);
-				pointer-events: none;
-			}
-			.hero-eyebrow {
-				display: inline-flex;
-				align-items: center;
-				gap: 8px;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.72rem;
-				font-weight: 500;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
-				color: var(--brand);
-				background: var(--brand-dim);
-				border: 1px solid var(--brand-border);
-				border-radius: 50px;
-				padding: 6px 16px;
-				margin-bottom: 24px;
-			}
-			.pulse {
-				width: 7px;
-				height: 7px;
-				background: var(--brand);
-				border-radius: 50%;
-				animation: pulse 2s ease infinite;
-			}
-			@keyframes pulse {
-				0%, 100% { opacity: 1; transform: scale(1); }
-				50% { opacity: 0.4; transform: scale(0.8); }
-			}
-			.hero-title {
-				font-size: clamp(2.2rem, 5vw, 3.8rem);
-				font-weight: 800;
-				letter-spacing: -0.04em;
-				line-height: 1.08;
-				color: var(--text);
-			}
-			.hero-title .accent { color: var(--brand); }
-			.hero-subtitle {
-				font-size: 1.05rem;
-				color: var(--text-muted);
-				max-width: 480px;
-				margin: 18px auto 0;
-				line-height: 1.65;
-			}
-			.stat-num {
-				font-size: 2rem;
-				font-weight: 800;
-				color: var(--text);
-				letter-spacing: -0.04em;
-			}
-			.stat-label {
-				font-size: 0.78rem;
-				color: var(--text-muted);
-				margin-top: 2px;
-			}
-			.stats-divider {
-				border-top: 1px solid var(--border);
-				margin-top: 3rem;
-				padding-top: 2.5rem;
-			}
-			.counter-animate { display: inline-block; min-width: 80px; }
-
-			/* ── 3-Pillars Strip ── */
-			.pillars-strip {
-				background: var(--bg-alt);
-				border-top: 1px solid var(--border);
-				border-bottom: 1px solid var(--border);
-				padding: 32px 0;
-			}
-			.pillars-grid {
-				display: grid;
-				grid-template-columns: 1fr 1fr 1fr;
-				gap: 28px 0;
-			}
-			.pillar {
-				text-align: center;
-				padding: 8px 20px;
-				position: relative;
-				transition: transform 0.2s var(--ease);
-			}
-			.pillar:hover { transform: translateY(-2px); }
-			.pillar:not(:nth-child(3n))::after {
-				content: "";
-				position: absolute;
-				right: 0;
-				top: 10%;
-				height: 80%;
-				width: 1px;
-				background: var(--border);
-			}
-			.pillar-icon {
-				font-size: 1.6rem;
-				margin-bottom: 8px;
-			}
-			.pillar-name {
-				font-weight: 700;
-				font-size: 0.92rem;
-				color: var(--text);
-				margin-bottom: 4px;
-			}
-			.pillar-desc {
-				font-size: 0.78rem;
-				color: var(--text-muted);
-				line-height: 1.5;
-				margin-bottom: 8px;
-			}
-			.pillar-link {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.7rem;
-				font-weight: 600;
-				letter-spacing: 0.04em;
-				text-transform: uppercase;
-				text-decoration: none;
-				transition: color 0.15s var(--ease);
-			}
-			.pillar-link-app { color: var(--brand); }
-			.pillar-link-api { color: var(--purple); }
-			.pillar-link-shield { color: var(--danger); }
-			.pillar-link-lightning { color: #b45309; }
-			.pillar-link:hover { text-decoration: underline; }
-			@media (max-width: 767.98px) {
-				.pillars-grid { grid-template-columns: 1fr; gap: 16px; }
-				.pillar:not(:nth-child(3n))::after { display: none; }
-			}
-
-			/* ── Section Headers ── */
-			.section-header {
-				text-align: center;
-				margin-bottom: 40px;
-			}
-			.section-eyebrow {
-				display: inline-flex;
-				align-items: center;
-				gap: 8px;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.72rem;
-				font-weight: 500;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
-				border-radius: 50px;
-				padding: 6px 16px;
-				margin-bottom: 14px;
-			}
-			.eyebrow-blue { color: var(--brand); background: var(--brand-dim); border: 1px solid var(--brand-border); }
-			.eyebrow-green { color: var(--success); background: var(--success-dim); border: 1px solid var(--success-border); }
-			.eyebrow-purple { color: var(--purple); background: var(--purple-dim); border: 1px solid var(--purple-border); }
-			.eyebrow-red { color: var(--danger); background: var(--danger-dim); border: 1px solid var(--danger-border); }
-			.section-title-lg {
-				font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-				font-weight: 800;
-				letter-spacing: -0.04em;
-				line-height: 1.1;
-				color: var(--text);
-			}
-			.section-sub-lg {
-				font-size: 0.95rem;
-				color: var(--text-muted);
-				max-width: 520px;
-				margin: 12px auto 0;
-				line-height: 1.65;
-			}
-
-			/* ── Carousel ── */
-			.carousel-wrap {
-				overflow: hidden;
-				position: relative;
-				margin: 0 -16px;
-				padding: 0 16px;
-			}
-			.carousel-wrap::before,
-			.carousel-wrap::after {
-				content: "";
-				position: absolute;
-				top: 0;
-				bottom: 0;
-				width: 80px;
-				z-index: 2;
-				pointer-events: none;
-			}
-			.carousel-wrap::before {
-				left: 0;
-				background: linear-gradient(90deg, var(--bg) 0%, transparent 100%);
-			}
-			.carousel-wrap::after {
-				right: 0;
-				background: linear-gradient(-90deg, var(--bg) 0%, transparent 100%);
-			}
-			.carousel-wrap.alt-bg::before { background: linear-gradient(90deg, var(--bg-alt) 0%, transparent 100%); }
-			.carousel-wrap.alt-bg::after { background: linear-gradient(-90deg, var(--bg-alt) 0%, transparent 100%); }
-			.carousel-track {
-				display: flex;
-				gap: 16px;
-				width: max-content;
-			}
-			.carousel-track.scroll-left {
-				animation: scrollLeft var(--scroll-duration, 40s) linear infinite;
-			}
-			.carousel-track.scroll-right {
-				animation: scrollRight var(--scroll-duration, 40s) linear infinite;
-			}
-			.carousel-track:hover {
-				animation-play-state: paused;
-			}
-			@keyframes scrollLeft {
-				0% { transform: translateX(0); }
-				100% { transform: translateX(-50%); }
-			}
-			@keyframes scrollRight {
-				0% { transform: translateX(-50%); }
-				100% { transform: translateX(0); }
-			}
-
-			/* Feature cards in carousel */
-			.carousel-card {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-lg);
-				padding: 24px;
-				width: 320px;
-				min-width: 320px;
-				flex-shrink: 0;
-				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
-			}
-			.carousel-card:hover {
-				border-color: var(--brand-border);
-				transform: translateY(-2px);
-				box-shadow: var(--shadow-md);
-			}
-			.carousel-card-icon { font-size: 1.5rem; margin-bottom: 12px; }
-			.carousel-card-title { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 6px; }
-			.carousel-card-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; }
-
-			/* ── Marketplace-style Model Cards (compact) ── */
-			.model-card {
-				background: var(--surface);
-				border: 1.5px solid var(--border);
-				border-radius: 12px;
-				padding: 0;
-				display: flex;
-				flex-direction: column;
-				gap: 0;
-				transition: border-color 0.15s, transform 0.15s;
-				overflow: hidden;
-				width: 260px;
-				min-width: 260px;
-				flex-shrink: 0;
-			}
-			.model-card:hover {
-				border-color: var(--brand-border);
-				transform: translateY(-2px);
-				box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
-			}
-			.model-card-image {
-				width: 100%;
-				display: block;
-				background: rgba(255, 255, 255, 0.04);
-				flex-shrink: 0;
-			}
-			.model-card-image-placeholder {
-				width: 100%;
-				aspect-ratio: 16 / 9;
-				background: linear-gradient(135deg, rgba(79, 124, 255, 0.08), rgba(124, 58, 237, 0.08));
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				color: var(--muted);
-				font-size: 0.75rem;
-				font-weight: 600;
-				flex-shrink: 0;
-			}
-			.model-card-content {
-				padding: 0.85rem 1rem;
-				display: grid;
-				gap: 0.55rem;
-			}
-			.model-card-top {
-				display: flex;
-				justify-content: space-between;
-				align-items: start;
-				gap: 6px;
-			}
-			.model-card-name {
-				font-size: 0.82rem;
-				font-weight: 600;
-				color: var(--text);
-				letter-spacing: -0.01em;
-			}
-			.model-pill {
-				font-size: 0.6rem;
-				font-weight: 700;
-				text-transform: uppercase;
-				padding: 0.22rem 0.45rem;
-				border-radius: 999px;
-				border: 1px solid transparent;
-				white-space: nowrap;
-				flex-shrink: 0;
-			}
-			.pill-text { color: #0f766e; background: rgba(20, 184, 166, 0.12); }
-			.pill-image { color: #b45309; background: rgba(245, 158, 11, 0.10); }
-			.pill-video, .pill-audio { color: #7c3aed; background: rgba(124, 58, 237, 0.10); }
-			.pill-3d { color: #1a6bff; background: rgba(26, 107, 255, 0.10); }
-			.pill-p2g { color: #7c3aed; background: rgba(124, 58, 237, 0.12); }
-			.pill-local { color: #0891b2; background: rgba(8, 145, 178, 0.12); }
-			.pill-embedding { color: #6366f1; background: rgba(99, 102, 241, 0.12); }
-			.pill-thinking { color: #a855f7; background: rgba(168, 85, 247, 0.12); }
-			.pill-tools { color: #16a34a; background: rgba(22, 163, 74, 0.12); }
-			.pill-vision { color: #eab308; background: rgba(234, 179, 8, 0.12); }
-			.pill-new { color: #16a34a; background: rgba(22, 163, 74, 0.12); border: 1px solid rgba(22, 163, 74, 0.25); }
-			.model-meta {
-				display: flex;
-				flex-direction: column;
-				gap: 0.2rem;
-			}
-			.model-key {
-				font-size: 0.6rem;
-				font-weight: 700;
-				text-transform: uppercase;
-				color: var(--muted);
-				letter-spacing: 0.04em;
-			}
-			.model-value {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.68rem;
-				color: var(--text);
-			}
-
-			/* ── Shield Section ── */
-			.shield-hero {
-				text-align: center;
-				position: relative;
-				overflow: hidden;
-			}
-			.shield-hero::before {
-				content: "";
-				position: absolute;
-				inset: 0;
-				background: linear-gradient(180deg, rgba(239,68,68,0.03) 0%, transparent 100%);
-				pointer-events: none;
-			}
-			.shield-stats {
-				display: flex;
-				justify-content: center;
-				gap: 32px;
-				margin-top: 24px;
-				flex-wrap: wrap;
-			}
-			.shield-stat { text-align: center; }
-			.shield-stat-num {
-				font-size: 1.8rem;
-				font-weight: 800;
-				color: var(--danger);
-				letter-spacing: -0.04em;
-			}
-			.shield-stat-label {
-				font-size: 0.78rem;
-				color: var(--text-muted);
-				margin-top: 4px;
-			}
-			.shield-modules {
-				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-				gap: 14px;
-			}
-			.shield-module {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-lg);
-				padding: 20px 20px;
-				border-left: 3px solid var(--danger);
-				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
-			}
-			.shield-module:hover {
-				border-color: var(--danger);
-				transform: translateY(-3px);
-				box-shadow: var(--shadow-md);
-			}
-			.shield-module-icon { font-size: 1.6rem; margin-bottom: 12px; }
-			.shield-module-title { font-weight: 700; font-size: 1.05rem; color: var(--text); margin-bottom: 8px; }
-			.shield-module-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
-			.shield-module-list { list-style: none; padding: 0; margin: 0; }
-			.shield-module-list li {
-				font-size: 0.82rem;
-				color: var(--text-body);
-				padding: 4px 0;
-				display: flex;
-				align-items: flex-start;
-				gap: 8px;
-			}
-			.shield-module-list li::before {
-				content: "\2713";
-				color: var(--danger);
-				font-weight: 700;
-				flex-shrink: 0;
-			}
-			.shield-api-box {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-xl);
-				overflow: hidden;
-				margin-top: 40px;
-			}
-			.shield-api-header {
-				padding: 20px 28px;
-				border-bottom: 1px solid var(--border);
-				display: flex;
-				align-items: center;
-				gap: 10px;
-			}
-			.shield-api-method {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.75rem;
-				font-weight: 700;
-				color: var(--success);
-				background: var(--success-dim);
-				border: 1px solid var(--success-border);
-				padding: 4px 10px;
-				border-radius: 6px;
-			}
-			.shield-api-endpoint {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.85rem;
-				color: var(--text);
-				font-weight: 500;
-			}
-			.shield-api-body { padding: 24px 28px; }
-			.shield-api-body pre {
-				background: var(--bg-alt);
-				border: 1px solid var(--border);
-				border-radius: 10px;
-				padding: 18px;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.78rem;
-				line-height: 1.6;
-				color: var(--text-body);
-				overflow-x: auto;
-				margin: 0;
-			}
-			.shield-decisions {
-				display: flex;
-				justify-content: center;
-				gap: 12px;
-				flex-wrap: wrap;
-				margin-top: 32px;
-			}
-			.shield-decision {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 10px;
-				padding: 12px 20px;
-				text-align: center;
-				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
-			}
-			.shield-decision:hover { border-color: var(--brand-border); transform: translateY(-2px); }
-			.shield-decision-icon { font-size: 1.5rem; margin-bottom: 6px; }
-			.shield-decision-name {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.78rem;
-				font-weight: 600;
-				color: var(--text);
-			}
-			.shield-decision-desc { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
-
-			/* ── Compare Box ── */
-			.compare-box {
-				background: var(--bg-alt);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-xl);
-				overflow: hidden;
-				position: relative;
-			}
-			.compare-box::before {
-				content: "";
-				position: absolute;
-				top: 0; left: 0; right: 0;
-				height: 3px;
-				background: linear-gradient(90deg, var(--brand), var(--purple), var(--cyan));
-			}
-			.compare-list { list-style: none; padding: 0; margin: 0; }
-			.compare-list li {
-				display: flex;
-				align-items: center;
-				gap: 9px;
-				padding: 10px 0;
-				border-bottom: 1px solid var(--border-light);
-				font-size: 0.86rem;
-				color: var(--text-body);
-			}
-			.compare-list li:last-child { border-bottom: none; }
-			.col-label {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.7rem;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
-				margin-bottom: 14px;
-				color: var(--text);
-				font-weight: 600;
-			}
-			.col-dot {
-				display: inline-block;
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				margin-right: 6px;
-			}
-			.dot-cloud { background: var(--brand); }
-			.dot-local { background: var(--success); }
-
-			/* ── Plan Cards ── */
-			.plan-card {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-lg);
-				padding: 26px 20px;
-				display: flex;
-				flex-direction: column;
-				height: 100%;
-				position: relative;
-				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
-			}
-			.plan-card:hover { transform: translateY(-4px); border-color: var(--brand-border); box-shadow: var(--shadow-md); }
-			.plan-card.popular { border-color: var(--brand); background: rgba(79, 124, 255, 0.03); }
-			.popular-pill {
-				position: absolute;
-				top: -11px; left: 50%;
-				transform: translateX(-50%);
-				background: var(--brand);
-				color: #fff;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.6rem;
-				font-weight: 500;
-				padding: 3px 12px;
-				border-radius: 50px;
-				letter-spacing: 0.08em;
-				text-transform: uppercase;
-				white-space: nowrap;
-			}
-			.plan-name { font-weight: 800; font-size: 0.95rem; color: var(--text); }
-			.plan-price {
-				font-size: 2.1rem;
-				font-weight: 800;
-				color: var(--text);
-				letter-spacing: -0.04em;
-				line-height: 1;
-				margin: 16px 0 2px;
-			}
-			.plan-price sup { font-size: 0.95rem; vertical-align: super; font-weight: 600; }
-			.plan-period { font-size: 0.76rem; color: var(--text-muted); margin-bottom: 16px; }
-			.plan-hr { border-color: var(--border-light); margin: 14px 0; }
-			.plan-section {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.62rem;
-				color: var(--brand);
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin-bottom: 8px;
-				font-weight: 500;
-			}
-			.plan-feature {
-				font-size: 0.82rem;
-				color: var(--text-muted);
-				display: flex;
-				align-items: center;
-				gap: 7px;
-				margin-bottom: 7px;
-			}
-			.plan-feature.hi { color: var(--text-body); font-weight: 500; }
-			.btn-plan-primary {
-				background: var(--brand);
-				color: #fff;
-				border: none;
-				border-radius: 8px;
-				padding: 10px;
-				font-weight: 600;
-				font-size: 0.85rem;
-				width: 100%;
-				margin-top: auto;
-				transition: background 0.15s var(--ease), transform 0.15s var(--ease);
-			}
-			.btn-plan-primary:hover { background: var(--brand-hover); color: #fff; transform: translateY(-1px); }
-			.btn-plan-outline {
-				background: var(--bg);
-				color: var(--text-body);
-				border: 1px solid var(--border);
-				border-radius: 8px;
-				padding: 10px;
-				font-size: 0.85rem;
-				width: 100%;
-				margin-top: auto;
-				transition: background 0.15s var(--ease), border-color 0.15s var(--ease), transform 0.15s var(--ease);
-			}
-			.btn-plan-outline:hover { background: var(--bg-alt); border-color: #d1d5db; color: var(--text); transform: translateY(-1px); }
-
-			/* ── Timeline ── */
-			.timeline {
-				display: flex;
-				align-items: flex-start;
-				justify-content: space-between;
-				position: relative;
-				max-width: 800px;
-				margin: 0 auto;
-			}
-			.timeline-line {
-				position: absolute;
-				top: 22px; left: 40px; right: 40px;
-				height: 2px;
-				background: var(--border);
-			}
-			.timeline-step { flex: 1; text-align: center; position: relative; z-index: 1; }
-			.timeline-dot {
-				width: 44px; height: 44px;
-				border-radius: 50%;
-				background: var(--brand);
-				color: #fff;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.85rem;
-				font-weight: 700;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				margin: 0 auto 14px;
-				box-shadow: 0 0 0 5px var(--bg), 0 0 0 6px var(--brand-border);
-			}
-			.timeline-label { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; }
-			.timeline-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; max-width: 200px; margin: 0 auto; }
-
-			/* ── Open Source ── */
-			.oss-card { display: flex; align-items: center; gap: 16px; text-decoration: none; color: inherit; }
-			.oss-icon {
-				font-size: 1.8rem;
-				width: 52px; height: 52px;
-				background: var(--bg-alt);
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				flex-shrink: 0;
-				transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
-			}
-			.oss-card:hover .oss-icon { border-color: var(--brand-border); transform: translateY(-2px); }
-			.oss-title { font-weight: 700; font-size: 0.97rem; color: var(--text); margin-bottom: 3px; }
-			.oss-desc { font-size: 0.83rem; color: var(--text-muted); }
-
-			/* ── Interactive Delighters ── */
-		@property --streak-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
-
-
-		.carousel-card, .plan-card, .model-card { position: relative; }
-		.carousel-card::after,
-		.plan-card::after {
-			content: "";
-			position: absolute;
-			inset: 0;
-			border-radius: inherit;
-			background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(79, 124, 255, 0.13), transparent 62%);
-			opacity: 0;
-			transition: opacity 0.25s var(--ease);
-			pointer-events: none;
-		}
-		.carousel-card:hover::after,
-		.plan-card:hover::after { opacity: 1; }
-
-		.streak-card::before {
-			content: "";
-			position: absolute;
-			inset: 0;
-			border-radius: inherit;
-			padding: 1.5px;
-			background: conic-gradient(from var(--streak-angle), transparent 0deg, transparent 275deg, rgba(79, 124, 255, 0.95) 330deg, rgba(251, 191, 36, 0.95) 355deg, transparent 360deg);
-			-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-			-webkit-mask-composite: xor;
-			mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-			mask-composite: exclude;
-			opacity: 0;
-			transition: opacity 0.3s ease;
-			animation: streak-spin 2.6s linear infinite;
-			pointer-events: none;
-			z-index: 3;
-		}
-		.streak-card:hover::before { opacity: 1; }
-		@keyframes streak-spin { to { --streak-angle: 360deg; } }
-
-		.compare-glow {
-			position: absolute;
-			inset: 0;
-			pointer-events: none;
-			opacity: 0.2;
-			transition: opacity 0.45s var(--ease);
-		}
-		.glow-cloud { background: radial-gradient(55% 85% at 22% 50%, rgba(79, 124, 255, 0.2), transparent 70%); }
-		.glow-local { background: radial-gradient(55% 85% at 78% 50%, rgba(16, 185, 129, 0.18), transparent 70%); }
-		.compare-box.focus-cloud .glow-cloud { opacity: 1; }
-		.compare-box.focus-cloud .glow-local { opacity: 0.08; }
-		.compare-box.focus-local .glow-local { opacity: 1; }
-		.compare-box.focus-local .glow-cloud { opacity: 0.08; }
-		.compare-box .row { position: relative; z-index: 1; }
-
-		.timeline-progress {
-			height: 100%;
-			width: 0%;
-			background: linear-gradient(90deg, var(--brand), var(--purple));
-			border-radius: 2px;
-			transition: width 0.2s linear;
-		}
-
-		@media (prefers-reduced-motion: reduce) {
-			.streak-card::before { animation: none; opacity: 0; }
-		}
-
-		/* ── Theme: Lightning (gold) + Shield (red) buttons ── */
-		.eyebrow-gold { color: #92400e; background: rgba(251, 191, 36, 0.16); border: 1px solid rgba(251, 191, 36, 0.5); }
-		.btn-gold {
-			background: rgba(251, 191, 36, 0.16);
-			color: #92400e;
-			border: 1px solid rgba(251, 191, 36, 0.5);
-			border-radius: var(--radius);
-			padding: 11px 26px;
-			font-weight: 600;
-			font-size: 0.9rem;
-			transition: background 0.15s var(--ease), transform 0.15s var(--ease);
-		}
-		.btn-gold:hover { background: rgba(251, 191, 36, 0.26); color: #78350f; transform: translateY(-1px); }
-		.btn-shield {
-			background: var(--danger);
-			color: #fff;
-			border: none;
-			border-radius: var(--radius);
-			padding: 11px 26px;
-			font-weight: 600;
-			font-size: 0.9rem;
-			transition: background 0.15s var(--ease), transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
-			box-shadow: 0 1px 3px rgba(239, 68, 68, 0.25);
-		}
-		.btn-shield:hover { background: #dc2626; color: #fff; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
-
-		/* ── Solutions list ── */
-		.solution-kicker {
-			display: inline-block;
-			font-family: "JetBrains Mono", monospace;
-			font-size: 0.63rem;
-			font-weight: 600;
-			color: #4b5563;
-			background: #f3f4f6;
-			border: 1px solid #e5e7eb;
-			border-radius: 50px;
-			padding: 4px 11px;
-			letter-spacing: 0.08em;
-			text-transform: uppercase;
-			margin-bottom: 12px;
-		}
-		.kicker-lightning { color: #92400e; background: rgba(251, 191, 36, 0.18); border-color: rgba(251, 191, 36, 0.55); }
-		.kicker-cloud { color: #6d28d9; background: rgba(139, 92, 246, 0.14); border-color: rgba(139, 92, 246, 0.45); }
-		.kicker-selfhosted { color: #1d4ed8; background: rgba(79, 124, 255, 0.14); border-color: rgba(79, 124, 255, 0.45); }
-		.kicker-shield { color: #b91c1c; background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.4); }
-		.sol-card {
-			width: 100%;
-			min-width: 0;
-			height: 100%;
-			display: block;
-			text-decoration: none;
-			color: inherit;
-		}
-
-		/* ── Stats band (relocated below product sections on mobile) ── */
-		.stats-divider.stats-band {
-			margin-top: 0;
-			padding-top: 32px;
-			padding-bottom: 32px;
-			background: var(--bg-alt);
-			border-bottom: 1px solid var(--border);
-		}
-
-		/* ── Responsive ── */
-			@media (max-width: 767.98px) {
-				.carousel-card { width: 280px; min-width: 280px; }
-				.model-card { width: 240px; min-width: 240px; }
-				.carousel-wrap::before, .carousel-wrap::after { width: 40px; }
-			}
-		</style>
-	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+		<script src="scripts/animations.js" defer></script>
 	</head>
 	<body>
-		<ip-navbar active="home" show-solutions></ip-navbar>
+		<ip-navbar active="home"></ip-navbar>
 
 		<main>
-
-		<!-- ── Hero ── -->
-		<section class="hero-section">
-			<div class="container position-relative">
-				<h1 class="hero-title reveal reveal-delay-1">
-					AI solutions, for everyone <br><span class="accent">and everything</span>
-				</h1>
-				<p class="hero-subtitle reveal reveal-delay-2">
-					InferencePort has the full stack - from hosting, routing, and scaling AI models on the Cloud Platform, and to running them locally on your own hardware through the Self-Hosted Platform. Lightning-fast, cost-effective, and open-source.
-				</p>
-				<div class="hero-cta-group d-flex justify-content-center gap-3 mt-4 flex-wrap reveal reveal-delay-3">
-					<a href="/console" class="btn btn-hero-console">Open Developer Console</a>
-					<a href="solutions.html" class="btn btn-hero-solutions">See Solutions &rarr;</a>
+		<!-- ═════════ HERO ═════════ -->
+		<section class="h-hero">
+			<div class="wrap">
+				<div class="h-hero-grid">
+					<div>
+						<div class="h-kicker">AI infrastructure &middot; local, cloud, governed</div>
+						<h1 class="h-title">Run it. Rent it. <em>Govern it.</em></h1>
+						<p class="h-lede">InferencePort puts open-source models on your own hardware, a production API in our cloud, and the controls that let a whole organization use both &mdash; under one account, with one set of keys and one audit trail.</p>
+						<div class="h-cta">
+							<a class="btn-brand" href="install.html#install">Download the desktop app</a>
+							<a class="btn-ghost" href="platform.html">See how it fits together &rarr;</a>
+						</div>
+					</div>
+					<div class="spec reveal" aria-label="Example API request">
+						<div class="spec-bar"><span>POST /v1/chat/completions</span><span>OpenAI-compatible</span></div>
+<pre><span class="c"># Same SDKs. Different base URL.</span>
+<span class="k">curl</span> <span class="u">https://api.inferenceport.ai/v1/chat/completions</span> \
+  -H <span class="s">"Authorization: Bearer $IP_API_KEY"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "messages": [
+      {"role":"user","content":"Hello"}
+    ],
+    "stream": true
+  }'</span></pre>
+						<div class="spec-foot">
+							<div><b>Key</b>from the Console</div>
+							<div><b>Billing</b>credit wallet</div>
+							<div><b>Models</b>5 modalities</div>
+						</div>
+					</div>
 				</div>
-				<div class="stats-divider reveal reveal-delay-4">
-					<div class="row justify-content-center g-4">
-						<div class="col-auto text-center">
-							<div class="stat-num"><span class="counter-animate" data-target="10000" data-suffix="+" data-duration="2000">0</span></div>
-							<div class="stat-label">requests / week</div>
-						</div>
-						<div class="col-auto text-center">
-							<div class="stat-num">1,000</div>
-							<div class="stat-label">words / sec (cloud)</div>
-						</div>
-						<div class="col-auto text-center">
-							<div class="stat-num">45,000+</div>
-							<div class="stat-label">open-source models</div>
-						</div>
-						<div class="col-auto text-center">
-							<div class="stat-num">3</div>
-							<div class="stat-label">platforms supported</div>
-						</div>
-						<div class="col-auto text-center">
-							<div class="stat-num">Free</div>
-							<div class="stat-label">to start</div>
-						</div>
+				<div class="h-strip">
+					<div><b>45,000+</b>open-source models runnable locally</div>
+					<div><b>1,000 w/s</b>Lightning cloud text streaming</div>
+					<div><b>3 OS</b>Windows, macOS, Linux</div>
+					<div><b>$0</b>to start &mdash; local chat is always free</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ 01 THE MAP ═════════ -->
+		<section class="sec" id="map">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">01 &mdash; The map</div>
+					<div>
+						<h2>One account. Three places to work from.</h2>
+						<p>InferencePort is not one app with many tabs. It is a desktop app you run, a web console you operate, and an organization layer that governs both. Each has one job.</p>
+					</div>
+				</div>
+
+				<div class="map reveal">
+					<div class="map-acct"><span>One InferencePort account</span><span>same sign-in &middot; app &middot; web chat &middot; console</span></div>
+					<div class="map-cols">
+						<article class="surf surf-app">
+							<div class="surf-label">Desktop app</div>
+							<h3>Where you use AI</h3>
+							<p>Chat with local models, host a server for your team, install community tools, and switch to Lightning cloud models when you want speed.</p>
+							<dl>
+								<div><dt>Runs on</dt><dd>Your machine &mdash; Windows, macOS, Linux</dd></div>
+								<div><dt>Used by</dt><dd>Everyone</dd></div>
+								<div><dt>Data</dt><dd>Local chats stay on-device</dd></div>
+								<div><dt>Cost</dt><dd>Free. Cloud tiers optional.</dd></div>
+							</dl>
+						</article>
+
+						<article class="surf surf-chat">
+							<div class="surf-label">Lightning chat</div>
+							<h3>Hosted chat, instantly</h3>
+							<p>The fast cloud path &mdash; up to 1,000 words per second. Available inside the app and in any browser at <span class="mono">/chat</span>.</p>
+							<dl>
+								<div><dt>Runs on</dt><dd>InferencePort cloud</dd></div>
+								<div><dt>Used by</dt><dd>Anyone with an account</dd></div>
+								<div><dt>Data</dt><dd>Plan quotas, no setup</dd></div>
+								<div><dt>Cost</dt><dd>Free tier, then monthly plans</dd></div>
+							</dl>
+						</article>
+
+						<article class="surf surf-console">
+							<div class="surf-label">Developer console</div>
+							<h3>Where you operate AI</h3>
+							<p>Create API keys, fund the Pay-to-Go wallet, read usage, try models in the playground, wire up Shield and MCP.</p>
+							<dl>
+								<div><dt>Runs on</dt><dd>Web &mdash; <span class="mono">/console</span></dd></div>
+								<div><dt>Used by</dt><dd>Developers, admins</dd></div>
+								<div><dt>Data</dt><dd>Keys, credits, usage, logs</dd></div>
+								<div><dt>Cost</dt><dd>Credits, pay per request</dd></div>
+							</dl>
+
+						</article>
+					</div>
+					<div class="map-org" id="org-inset">
+						<div class="surf-label">Organizations &middot; a workspace inside the console</div>
+						<div class="map-org-body"><b>Where a team is governed.</b> Shared wallet, member budgets, policies, SSO and audit &mdash; billed per seat. It sits on top of the console and reaches down into every member&rsquo;s app.</div>
+					</div>
+					<div class="map-bridge">
+						<span><b>Organization policy</b>set once in the console</span>
+						<svg viewBox="0 0 56 14" fill="none" aria-hidden="true"><path d="M56 7H2M8 1L2 7l6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+						<span><b>Every member&rsquo;s desktop app</b>picks it up within minutes</span>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- ── 6 Solutions Strip ── -->
-		<div class="pillars-strip reveal">
-			<div class="container">
-				<div class="pillars-grid">
-					<div class="pillar">
-						<div class="pillar-icon">&#9889;</div>
-						<div class="pillar-name">Lightning Subscriptions</div>
-						<div class="pillar-desc">Chat with Lightning Router models at up to 1,000 words/sec.</div>
-						<a href="#lightning-section" class="pillar-link pillar-link-lightning">Explore &darr;</a>
-					</div>
-					<div class="pillar">
-						<div class="pillar-icon">&#128268;</div>
-						<div class="pillar-name">Pay-to-Go Cloud Platform</div>
-						<div class="pillar-desc">Text + Image + Video + Audio + 3D &mdash; one OpenAI-compatible endpoint, billed per request.</div>
-						<a href="#api-section" class="pillar-link pillar-link-api">Explore &darr;</a>
-					</div>
-					<div class="pillar">
-						<div class="pillar-icon">&#128172;</div>
-						<div class="pillar-name">Local + Cloud Chat</div>
-						<div class="pillar-desc">Chat privately on-device or in the cloud from the desktop app.</div>
-						<a href="#app-section" class="pillar-link pillar-link-app">Explore &darr;</a>
-					</div>
-					<div class="pillar">
-						<div class="pillar-icon">&#127760;</div>
-						<div class="pillar-name">InferencePort AI Server</div>
-						<div class="pillar-desc">Self-host local LLMs and share access with your team by email or API key.</div>
-						<a href="#app-section" class="pillar-link pillar-link-app">Explore &darr;</a>
-					</div>
-					<div class="pillar">
-						<div class="pillar-icon">&#128230;</div>
-						<div class="pillar-name">InferencePort Tool Registry</div>
-						<div class="pillar-desc">Upload custom tools, then download and run community tools anywhere.</div>
-						<a href="tools.html" class="pillar-link pillar-link-lightning">Explore &rarr;</a>
-					</div>
-					<div class="pillar">
-						<div class="pillar-icon">&#128737;</div>
-						<div class="pillar-name">AI Shield</div>
-						<div class="pillar-desc">Real-time fraud detection, bot protection, and abuse prevention. One call. Five decisions.</div>
-						<a href="#shield-section" class="pillar-link pillar-link-shield">Explore &darr;</a>
+		<!-- ═════════ 02 HOW THEY CONNECT ═════════ -->
+		<section class="sec paper" id="bridge">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">02 &mdash; The bridges</div>
+					<div>
+						<h2>What actually flows between them.</h2>
+						<p>No hand-waving. Four concrete links connect the app, the console and your organization.</p>
 					</div>
 				</div>
-			</div>
-		</div>
-
-		<!-- ═══════════════════════════════════════════════════
-		     CLOUD PLATFORM — Full Feature Breakdown (Carousel)
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="api-section">
-			<div class="container">
-				<div class="section-header">
-					<div class="section-eyebrow eyebrow-purple reveal">&#128268; Pay-to-Go Cloud Platform</div>
-					<h2 class="section-title-lg reveal reveal-delay-1">One API. Every modality.</h2>
-					<p class="section-sub-lg reveal reveal-delay-2">The Pay-to-Go Cloud Platform API for production workloads. Text, image, video, audio, and 3D &mdash; all through a single OpenAI-compatible endpoint.</p>
-				</div>
-			</div>
-			<div class="carousel-wrap reveal">
-				<div class="carousel-track scroll-left" style="--scroll-duration:55s;">
-					<div class="carousel-card"><div class="carousel-card-icon">&#128268;</div><div class="carousel-card-title">OpenAI-Compatible Endpoint</div><div class="carousel-card-desc">Drop-in replacement for existing OpenAI integrations. Use your current SDK, libraries, and tools with zero code changes.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#9998;</div><div class="carousel-card-title">Text Generation</div><div class="carousel-card-desc">Access frontier text models including Lightning at up to 1,000 words/sec. Supports streaming, function calling, and multi-turn conversations.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127912;</div><div class="carousel-card-title">Image Generation</div><div class="carousel-card-desc">Generate images from text prompts. Support for multiple aspect ratios, styles, and quality levels. Batch generation for production use.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127909;</div><div class="carousel-card-title">Video Generation</div><div class="carousel-card-desc">Create videos from text descriptions. Configurable duration, resolution, and frame rate. Ideal for content creation and media pipelines.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127925;</div><div class="carousel-card-title">Audio Generation</div><div class="carousel-card-desc">Text-to-speech and audio synthesis from prompts. Multiple voice options, configurable speed, and high-fidelity output.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128302;</div><div class="carousel-card-title">3D Generation</div><div class="carousel-card-desc">Generate 3D models and assets from text or image inputs. Export in standard formats for games, simulations, and 3D printing.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128176;</div><div class="carousel-card-title">Pay-to-Go Billing</div><div class="carousel-card-desc">Wallet-based billing with a separate ledger. Pay only for what you use. Pre-paid credits with transparent per-request pricing.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Usage Analytics</div><div class="carousel-card-desc">Real-time dashboard with per-model usage breakdowns, cost tracking, and performance metrics. Export logs for billing and compliance.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128737;</div><div class="carousel-card-title">Rate Limiting &amp; Quotas</div><div class="carousel-card-desc">Configurable rate limits per API key. Set spending caps, request quotas, and model-specific limits. Automatic throttling.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128272;</div><div class="carousel-card-title">Enterprise &amp; Production</div><div class="carousel-card-desc">Built for production workloads. 99.9% uptime SLA, priority support, dedicated infrastructure options, and custom deployments.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Model Marketplace API</div><div class="carousel-card-desc">Programmatic access to the full model catalog. Discover, list, and select models via API. Filter by type, provider, and capability.</div></div>
-					<!-- duplicate set -->
-					<div class="carousel-card"><div class="carousel-card-icon">&#128268;</div><div class="carousel-card-title">OpenAI-Compatible Endpoint</div><div class="carousel-card-desc">Drop-in replacement for existing OpenAI integrations. Use your current SDK, libraries, and tools with zero code changes.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#9998;</div><div class="carousel-card-title">Text Generation</div><div class="carousel-card-desc">Access frontier text models including Lightning at up to 1,000 words/sec. Supports streaming, function calling, and multi-turn conversations.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127912;</div><div class="carousel-card-title">Image Generation</div><div class="carousel-card-desc">Generate images from text prompts. Support for multiple aspect ratios, styles, and quality levels. Batch generation for production use.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127909;</div><div class="carousel-card-title">Video Generation</div><div class="carousel-card-desc">Create videos from text descriptions. Configurable duration, resolution, and frame rate. Ideal for content creation and media pipelines.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127925;</div><div class="carousel-card-title">Audio Generation</div><div class="carousel-card-desc">Text-to-speech and audio synthesis from prompts. Multiple voice options, configurable speed, and high-fidelity output.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128302;</div><div class="carousel-card-title">3D Generation</div><div class="carousel-card-desc">Generate 3D models and assets from text or image inputs. Export in standard formats for games, simulations, and 3D printing.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128176;</div><div class="carousel-card-title">Pay-to-Go Billing</div><div class="carousel-card-desc">Wallet-based billing with a separate ledger. Pay only for what you use. Pre-paid credits with transparent per-request pricing.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Usage Analytics</div><div class="carousel-card-desc">Real-time dashboard with per-model usage breakdowns, cost tracking, and performance metrics. Export logs for billing and compliance.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128737;</div><div class="carousel-card-title">Rate Limiting &amp; Quotas</div><div class="carousel-card-desc">Configurable rate limits per API key. Set spending caps, request quotas, and model-specific limits. Automatic throttling.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128272;</div><div class="carousel-card-title">Enterprise &amp; Production</div><div class="carousel-card-desc">Built for production workloads. 99.9% uptime SLA, priority support, dedicated infrastructure options, and custom deployments.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Model Marketplace API</div><div class="carousel-card-desc">Programmatic access to the full model catalog. Discover, list, and select models via API. Filter by type, provider, and capability.</div></div>
-				</div>
-			</div>
-			<div class="container">
-				<div class="d-flex justify-content-center mt-4 reveal">
-					<a href="/console" class="btn btn-brand">Open Developer Console &rarr;</a>
-				</div>
-			</div>
-		</section>
-		<!-- ═══════════════════════════════════════════════════
-		     SELF-HOSTED PLATFORM — Chat, Self-Host, Manage Models (Carousel)
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="app-section">
-			<div class="container">
-				<div class="section-header">
-					<div class="section-eyebrow eyebrow-blue reveal">&#128187; Self-Hosted Platform</div>
-					<h2 class="section-title-lg reveal reveal-delay-1">Chat. Self-Host. Manage.</h2>
-					<p class="section-sub-lg reveal reveal-delay-2">The all-in-one desktop app for end users and teams. Chat with Lightning-speed models, self-host your own AI server, and manage 45,000+ open-source models from Hugging Face.</p>
-				</div>
-			</div>
-			<div class="carousel-wrap reveal">
-				<div class="carousel-track scroll-right" style="--scroll-duration:50s;">
-					<!-- cards duplicated for seamless loop -->
-					<div class="carousel-card"><div class="carousel-card-icon">&#9889;</div><div class="carousel-card-title">Chat with Lightning Models</div><div class="carousel-card-desc">Talk to our Lightning-powered models at up to 1,000 words per second. Optimized for speed with smart provider routing that selects the best backend for every response.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128172;</div><div class="carousel-card-title">Lightning Subscriptions</div><div class="carousel-card-desc">The default cloud chat path. Uses your subscription plan quotas with an OpenAI-compatible endpoint. Optimized for everyday chatting with access to all frontier models.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Self-Hosted AI Server</div><div class="carousel-card-desc">Run local LLMs on your own hardware and invite your entire team by email. Authenticate via accounts or custom API keys. Keep all data on-premise.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128230;</div><div class="carousel-card-title">Model Marketplace</div><div class="carousel-card-desc">Browse, download, and run community models and tools directly from the built-in marketplace. Filter by type, size, and capability. One-click install.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128187;</div><div class="carousel-card-title">Local Models (Ollama)</div><div class="carousel-card-desc">100% on-device, fully offline AI. Full Ollama compatibility with access to thousands of open-source models. Unlimited local chat with zero data leaving your machine.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127919;</div><div class="carousel-card-title">45,000+ Hugging Face Models</div><div class="carousel-card-desc">Chat with any one of the compatible 45,000+ open-source models on Hugging Face. Requires compatible model metadata and local hardware support.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128101;</div><div class="carousel-card-title">Team Management</div><div class="carousel-card-desc">Invite team members via email, assign roles, and manage access to self-hosted servers. Custom API keys for programmatic access. Monitor usage across your org.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128640;</div><div class="carousel-card-title">Remote Server Connection</div><div class="carousel-card-desc">Connect to remote Ollama servers and self-hosted instances from anywhere. Manage multiple server endpoints and switch between them on the fly.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Hugging Face Spaces</div><div class="carousel-card-desc">Access and run Hugging Face Spaces directly from the app. Deploy demos, experiment with community models, and run interactive ML applications.</div></div>
-					<!-- duplicate set for seamless loop -->
-					<div class="carousel-card"><div class="carousel-card-icon">&#9889;</div><div class="carousel-card-title">Chat with Lightning Models</div><div class="carousel-card-desc">Talk to our Lightning-powered models at up to 1,000 words per second. Optimized for speed with smart provider routing that selects the best backend for every response.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128172;</div><div class="carousel-card-title">Lightning Subscriptions</div><div class="carousel-card-desc">The default cloud chat path. Uses your subscription plan quotas with an OpenAI-compatible endpoint. Optimized for everyday chatting with access to all frontier models.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Self-Hosted AI Server</div><div class="carousel-card-desc">Run local LLMs on your own hardware and invite your entire team by email. Authenticate via accounts or custom API keys. Keep all data on-premise.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128230;</div><div class="carousel-card-title">Model Marketplace</div><div class="carousel-card-desc">Browse, download, and run community models and tools directly from the built-in marketplace. Filter by type, size, and capability. One-click install.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128187;</div><div class="carousel-card-title">Local Models (Ollama)</div><div class="carousel-card-desc">100% on-device, fully offline AI. Full Ollama compatibility with access to thousands of open-source models. Unlimited local chat with zero data leaving your machine.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127919;</div><div class="carousel-card-title">45,000+ Hugging Face Models</div><div class="carousel-card-desc">Chat with any one of the compatible 45,000+ open-source models on Hugging Face. Requires compatible model metadata and local hardware support.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128101;</div><div class="carousel-card-title">Team Management</div><div class="carousel-card-desc">Invite team members via email, assign roles, and manage access to self-hosted servers. Custom API keys for programmatic access. Monitor usage across your org.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128640;</div><div class="carousel-card-title">Remote Server Connection</div><div class="carousel-card-desc">Connect to remote Ollama servers and self-hosted instances from anywhere. Manage multiple server endpoints and switch between them on the fly.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Hugging Face Spaces</div><div class="carousel-card-desc">Access and run Hugging Face Spaces directly from the app. Deploy demos, experiment with community models, and run interactive ML applications.</div></div>
-				</div>
-			</div>
-			<div class="container">
-				<div class="d-flex justify-content-center mt-4 reveal">
-					<a href="install.html" class="btn btn-brand">Download Self-Hosted Platform</a>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     LIGHTNING ROUTER — Models
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="lightning-section">
-			<div class="container">
-				<div class="section-header">
-					<div class="section-eyebrow eyebrow-gold reveal">&#9889; Lightning Subscriptions</div>
-					<h2 class="section-title-lg reveal reveal-delay-1">Lightning Router models.</h2>
-					<p class="section-sub-lg reveal reveal-delay-2">Our fastest tier of routed models, streaming at up to 1,000 words/sec. Available through InferencePort subscriptions or through the Cloud Platform &mdash; no extra setup either way.</p>
-				</div>
-				<div class="row g-3 justify-content-center">
-					<div class="col-md-5 col-sm reveal">
-						<div class="carousel-card streak-card" style="width:100%;min-width:0;">
-							<div class="carousel-card-icon">&#9889;</div>
-							<div class="carousel-card-title">Lightning Text v2</div>
-							<div class="carousel-card-desc">The flagship text generation router model. Up to 1,000 words/sec with smart provider routing that picks the best backend for every response.</div>
-						</div>
+				<div class="ledger">
+					<div class="ledger-row reveal">
+						<div class="n">01</div>
+						<h3>One identity everywhere</h3>
+						<p>Sign in once with your InferencePort account. The same account opens the desktop app, web chat and the console, and it is the identity organizations invite, budget and audit.</p>
+						<div class="flow"><span class="a">App</span><i>&harr;</i><span class="g">Chat</span><i>&harr;</i><span class="c">Console</span></div>
 					</div>
-					<div class="col-md-5 col-sm reveal">
-						<div class="carousel-card streak-card" style="width:100%;min-width:0;">
-							<div class="carousel-card-icon">&#9889;</div>
-							<div class="carousel-card-title">Lightning Image Turbo</div>
-							<div class="carousel-card-desc">Studio quality generation for images, at a fraction of the price, optimized for speed and quality with smart provider routing.</div>
-						</div>
+					<div class="ledger-row reveal">
+						<div class="n">02</div>
+						<h3>Keys and credits come from the console</h3>
+						<p>You mint API keys and fund the Pay-to-Go wallet in the console. Your code calls the OpenAI-compatible endpoint with that key; each request debits the wallet. Lightning subscriptions are separate &mdash; they draw on plan quotas, not credits.</p>
+						<div class="flow"><span class="c">Console</span><i>&rarr; key &rarr;</i><span>Your code</span><i>&rarr; debit &rarr;</i><span class="c">Wallet</span></div>
 					</div>
-					<div class="col-md-5 col-sm reveal reveal-delay-1">
-						<div class="carousel-card streak-card" style="width:100%;min-width:0;">
-							<div class="carousel-card-icon">&#128172;</div>
-							<div class="carousel-card-title">Via InferencePort Subscriptions</div>
-							<div class="carousel-card-desc">Chat quotas are included in every paid plan (AI Light, AI Core, AI Professional) and the Free tier's daily allowance. Unlimited chat on paid tiers.</div>
-						</div>
+					<div class="ledger-row reveal">
+						<div class="n">03</div>
+						<h3>Organization policy governs the app</h3>
+						<p>Admins choose, in the console, whether members may use cloud models or stay local-only, which models can be pulled, whether custom tools and imports are allowed, and who may host a server. Members&rsquo; desktop apps pick the policy up within a few minutes or on restart. Lightning usage can bill to the organization instead of the member.</p>
+						<div class="flow"><span class="o">Org policy</span><i>&rarr; sync &rarr;</i><span class="a">Member apps</span></div>
 					</div>
-					<div class="col-md-5 col-sm reveal reveal-delay-2">
-						<div class="carousel-card streak-card" style="width:100%;min-width:0;">
-							<div class="carousel-card-icon">&#128268;</div>
-							<div class="carousel-card-title">Via the Pay-to-Go Cloud Platform</div>
-							<div class="carousel-card-desc">Call the same Lightning Router models through the Cloud Platform's OpenAI-compatible Pay-to-Go API for production workloads.</div>
-						</div>
-					</div>
-				</div>
-				<div class="d-flex justify-content-center mt-4 reveal">
-					<a href="https://chat.inferenceport.ai" class="btn btn-gold">Try Lightning &rarr;</a>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     AI SHIELD
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="shield-section">
-			<div class="container">
-				<div class="section-header">
-					<div class="section-eyebrow eyebrow-red reveal">&#128737; AI Shield</div>
-					<h2 class="section-title-lg reveal reveal-delay-1">The trust layer for modern apps.</h2>
-					<p class="section-sub-lg reveal reveal-delay-2">Real-time fraud detection, bot protection, and abuse prevention. One API call. Five decisions. Sub-second response.</p>
-				</div>
-			</div>
-			<div class="carousel-wrap reveal">
-				<div class="carousel-track scroll-left" style="--scroll-duration:50s;">
-					<div class="carousel-card"><div class="carousel-card-icon">&#128683;</div><div class="carousel-card-title">Shield Signup</div><div class="carousel-card-desc">Stop bots, fake accounts, and multi-account abuse before they happen. Protect free trials and account creation flows.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128100;</div><div class="carousel-card-title">Shield Identity</div><div class="carousel-card-desc">Detect duplicate accounts, ban evasion, and identity farming. Link suspicious accounts automatically.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Shield Content</div><div class="carousel-card-desc">Identify spam, scams, and automated content in real-time. Protect your platform's integrity and user experience.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#9888;</div><div class="carousel-card-title">Shield Prompt</div><div class="carousel-card-desc">Detect prompt injection, jailbreak attempts, and system prompt extraction. Protect AI models from adversarial attacks.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128274;</div><div class="carousel-card-title">Shield Data</div><div class="carousel-card-desc">Prevent data exfiltration, bulk scraping, and credential harvesting. Monitor for unusual data access patterns.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Trust Scoring</div><div class="carousel-card-desc">Real-time risk scores with confidence levels. Combine signals for accurate fraud assessment across all touchpoints.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Shared Abuse Graph</div><div class="carousel-card-desc">Cross-customer intelligence network. Known bad actors flagged across the entire platform ecosystem.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Human Explanations</div><div class="carousel-card-desc">Every decision comes with a clear explanation. No black boxes &mdash; understand why each request was flagged.</div></div>
-					<!-- duplicate set -->
-					<div class="carousel-card"><div class="carousel-card-icon">&#128683;</div><div class="carousel-card-title">Shield Signup</div><div class="carousel-card-desc">Stop bots, fake accounts, and multi-account abuse before they happen. Protect free trials and account creation flows.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128100;</div><div class="carousel-card-title">Shield Identity</div><div class="carousel-card-desc">Detect duplicate accounts, ban evasion, and identity farming. Link suspicious accounts automatically.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Shield Content</div><div class="carousel-card-desc">Identify spam, scams, and automated content in real-time. Protect your platform's integrity and user experience.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#9888;</div><div class="carousel-card-title">Shield Prompt</div><div class="carousel-card-desc">Detect prompt injection, jailbreak attempts, and system prompt extraction. Protect AI models from adversarial attacks.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128274;</div><div class="carousel-card-title">Shield Data</div><div class="carousel-card-desc">Prevent data exfiltration, bulk scraping, and credential harvesting. Monitor for unusual data access patterns.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128200;</div><div class="carousel-card-title">Trust Scoring</div><div class="carousel-card-desc">Real-time risk scores with confidence levels. Combine signals for accurate fraud assessment across all touchpoints.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#127760;</div><div class="carousel-card-title">Shared Abuse Graph</div><div class="carousel-card-desc">Cross-customer intelligence network. Known bad actors flagged across the entire platform ecosystem.</div></div>
-					<div class="carousel-card"><div class="carousel-card-icon">&#128196;</div><div class="carousel-card-title">Human Explanations</div><div class="carousel-card-desc">Every decision comes with a clear explanation. No black boxes &mdash; understand why each request was flagged.</div></div>
-				</div>
-			</div>
-			<div class="container">
-				<div class="d-flex justify-content-center gap-3 mt-4 reveal">
-					<a href="shield.html" class="btn btn-shield">Learn More &rarr;</a>
-					<a href="/console" class="btn btn-ghost">Open Developer Console</a>
-				</div>
-			</div>
-		</section>
-
-		<!-- ── All Solutions ── -->
-		<section class="py-5" id="solutions-section">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag reveal">Solutions</div>
-					<h2 class="section-title reveal reveal-delay-1">Every solution, <span class="accent">in one place.</span></h2>
-					<p class="section-sub mx-auto mt-2 reveal reveal-delay-2">The full InferencePort stack &mdash; chat, APIs, self-hosting, and fraud detection.</p>
-				</div>
-				<div class="row g-3">
-					<div class="col-md-6 col-lg-4 reveal">
-						<a href="solutions.html" class="carousel-card sol-card">
-							<div class="solution-kicker kicker-lightning">Lightning Router</div>
-							<div class="carousel-card-icon">&#9889;</div>
-							<div class="carousel-card-title">Lightning Subscriptions</div>
-							<div class="carousel-card-desc">Chat with Lightning Router models at up to 1,000 words/sec. Included with every InferencePort subscription.</div>
-						</a>
-					</div>
-					<div class="col-md-6 col-lg-4 reveal reveal-delay-1">
-						<a href="solutions.html" class="carousel-card sol-card">
-							<div class="solution-kicker kicker-cloud">Cloud Platform</div>
-							<div class="carousel-card-icon">&#128268;</div>
-							<div class="carousel-card-title">Pay-to-Go Cloud Platform</div>
-							<div class="carousel-card-desc">One OpenAI-compatible endpoint for text, image, video, audio, and 3D. Metered per request against wallet credits.</div>
-						</a>
-					</div>
-					<div class="col-md-6 col-lg-4 reveal reveal-delay-2">
-						<a href="solutions.html" class="carousel-card sol-card">
-							<div class="solution-kicker kicker-selfhosted">Self-Hosted Platform</div>
-							<div class="carousel-card-icon">&#128172;</div>
-							<div class="carousel-card-title">Local + Cloud Chat</div>
-							<div class="carousel-card-desc">Chat privately on-device or in the cloud from the desktop app, with optional sync across your machines.</div>
-						</a>
-					</div>
-					<div class="col-md-6 col-lg-4 reveal">
-						<a href="solutions.html" class="carousel-card sol-card">
-							<div class="solution-kicker kicker-selfhosted">Self-Hosted Platform</div>
-							<div class="carousel-card-icon">&#127760;</div>
-							<div class="carousel-card-title">InferencePort AI Server</div>
-							<div class="carousel-card-desc">Self-host local LLMs and marketplace models, then share access with your team via email invites or custom API keys.</div>
-						</a>
-					</div>
-					<div class="col-md-6 col-lg-4 reveal reveal-delay-1">
-						<a href="solutions.html" class="carousel-card sol-card">
-							<div class="solution-kicker">Tool Marketplace</div>
-							<div class="carousel-card-icon">&#128230;</div>
-							<div class="carousel-card-title">InferencePort Tool Registry</div>
-							<div class="carousel-card-desc">Upload custom tools in minutes, then download and run community tools from anywhere in the platform.</div>
-						</a>
-					</div>
-					<div class="col-md-6 col-lg-4 reveal reveal-delay-2">
-						<a href="solutions.html" class="carousel-card sol-card">
-							<div class="solution-kicker kicker-shield">Fraud Detection</div>
-							<div class="carousel-card-icon">&#128737;</div>
-							<div class="carousel-card-title">AI Shield</div>
-							<div class="carousel-card-desc">Real-time abuse and fraud detection for sign-ups, logins, and API traffic. One call, five decisions.</div>
-						</a>
+					<div class="ledger-row reveal">
+						<div class="n">04</div>
+						<h3>Spend and activity roll back up</h3>
+						<p>API-key and playground usage billed to the org lands on one shared wallet, broken down by member, key and model, with budgets, alerts and an audit log you can export or stream to your SIEM.</p>
+						<div class="flow"><span class="c">Keys + playground</span><i>&rarr;</i><span class="o">Org wallet</span><i>&rarr;</i><span class="o">Usage &middot; Audit</span></div>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- ── Cloud vs Local ── -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag reveal">Your Choice</div>
-					<h2 class="section-title reveal reveal-delay-1">Cloud or Local &mdash; <span class="accent">you decide.</span></h2>
-				</div>
-				<div class="compare-box p-4 p-md-5 reveal">
-					<div class="compare-glow glow-cloud"></div>
-					<div class="compare-glow glow-local"></div>
-					<div class="row g-4">
-						<div class="col-md-5">
-							<div class="col-label"><span class="col-dot dot-cloud"></span>Cloud Models</div>
-							<ul class="compare-list">
-								<li>&#10022; No GPU or hardware required</li>
-								<li>&#10022; Instant access to frontier models</li>
-								<li>&#10022; Up to 1,000 words/sec throughput</li>
-								<li>&#10022; Auto-updated &mdash; always latest models</li>
-								<li>&#10022; Image, video, audio &amp; 3D generation</li>
-							</ul>
-						</div>
-						<div class="col-md-2 d-none d-md-flex align-items-center justify-content-center">
-							<span style="font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--text-muted);font-weight:500;">vs</span>
-						</div>
-						<div class="col-md-5">
-							<div class="col-label"><span class="col-dot dot-local"></span>Local Models</div>
-							<ul class="compare-list">
-								<li>&#10022; 100% private &mdash; nothing leaves your device</li>
-								<li>&#10022; Works fully offline</li>
-								<li>&#10022; Unlimited local chat</li>
-								<li>&#10022; Full Ollama model compatibility</li>
-								<li>&#10022; 45,000+ Hugging Face models supported</li>
-							</ul>
-						</div>
+		<!-- ═════════ 03 WHICH ONE ═════════ -->
+		<section class="sec" id="which">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">03 &mdash; Choose</div>
+					<div>
+						<h2>Which one do I use?</h2>
+						<p>Start from what you are trying to do.</p>
 					</div>
+				</div>
+				<table class="dtable">
+					<thead><tr><th>I want to&hellip;</th><th>Use</th><th>Because</th></tr></thead>
+					<tbody>
+						<tr><td>Chat privately, offline, on my own hardware</td><td><span class="pill app">Desktop app</span></td><td>Local models via Ollama. Nothing leaves your machine.</td></tr>
+						<tr><td>Chat fast without installing anything</td><td><span class="pill chat">Lightning chat</span></td><td>Hosted models at up to 1,000 words/sec, bounded by plan quotas.</td></tr>
+						<tr><td>Share local models with my team or customers</td><td><span class="pill app">Desktop app</span></td><td>Host an InferencePort server and invite users by email, or issue custom API keys.</td></tr>
+						<tr><td>Call models from production code</td><td><span class="pill console">Developer console</span></td><td>Create a key, fund the wallet, hit <span class="mono">/v1</span>. Separate ledger, predictable spend.</td></tr>
+						<tr><td>Give a team shared credits, budgets and SSO</td><td><span class="pill org">Organizations</span></td><td>One wallet, per-member and per-key limits, SAML, IP allowlists, audit log.</td></tr>
+						<tr><td>Control what employees can do in the app</td><td><span class="pill org">Organizations</span></td><td>Desktop policy: cloud on/off, model pulls, tools, server hosting.</td></tr>
+						<tr><td>Detect fraud, bots and abuse in my product</td><td><span class="pill shield">AI Shield</span></td><td>Send signals in one call, get a decision with reasoning. Managed from the console.</td></tr>
+					</tbody>
+				</table>
+				<p style="margin-top:28px"><a href="platform.html" class="btn-ghost">Read the full guide to all three &rarr;</a></p>
+			</div>
+		</section>
+
+		<!-- ═════════ 04 LIGHTNING ═════════ -->
+		<section class="sec night" id="lightning">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">04 &mdash; Lightning</div>
+					<div>
+						<h2>Cloud inference at the speed of reading.</h2>
+						<p>Lightning Text v2 streams at up to 1,000 words per second, and Lightning Image Turbo is the default image model. Both are available on every plan, including free.</p>
+					</div>
+				</div>
+				<div class="split">
+					<div class="bignum">1,000<small>words / sec</small></div>
+					<ul class="idx-list">
+						<li><b>Text</b><span>Lightning Text v2 &mdash; low-latency decoding with smooth streaming for chat, code and long-form writing.</span></li>
+						<li><b>Image</b><span>Lightning Image Turbo &mdash; cinematic, photoreal output, faster than the previous default.</span></li>
+						<li><b>Where</b><span>Desktop app, <span class="mono">/chat</span> in any browser, or the API.</span></li>
+						<li><b>Cost</b><span>Included in every plan. No credit card for the free tier.</span></li>
+					</ul>
+				</div>
+				<p style="margin-top:40px"><a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="lightning.html">About Lightning &rarr;</a></p>
+			</div>
+		</section>
+
+		<!-- ═════════ 05 API ═════════ -->
+		<section class="sec" id="api">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">05 &mdash; Pay-to-Go API</div>
+					<div>
+						<h2>One endpoint. Every modality.</h2>
+						<p>A drop-in OpenAI-compatible API on its own credit ledger &mdash; built for production services, not chat quotas.</p>
+					</div>
+				</div>
+				<div class="caps">
+					<div class="cap"><div class="k">Text</div><h3>Chat &amp; completions</h3><p>Streaming, function calling and multi-turn conversations, including Lightning models.</p></div>
+					<div class="cap"><div class="k">Image</div><h3>Generation</h3><p>Prompt to image with multiple aspect ratios and styles, including batch use.</p></div>
+					<div class="cap"><div class="k">Video</div><h3>Generation</h3><p>Text to video with configurable duration for content and media pipelines.</p></div>
+					<div class="cap"><div class="k">Audio</div><h3>Speech &amp; synthesis</h3><p>Text-to-speech with voice options and adjustable speed.</p></div>
+					<div class="cap"><div class="k">3D</div><h3>Models &amp; assets</h3><p>Generate 3D assets from text or images for games, simulation and printing.</p></div>
+					<div class="cap"><div class="k">Catalog</div><h3>Model discovery</h3><p>List and select models programmatically, filtered by type and capability.</p></div>
+				</div>
+				<p style="margin-top:32px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn-brand" href="/console">Open the console</a><a class="btn-ghost" href="marketplace.html">Browse models</a></p>
+			</div>
+		</section>
+
+		<!-- ═════════ 06 SELF-HOSTED ═════════ -->
+		<section class="sec paper" id="selfhost">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">06 &mdash; Self-hosting</div>
+					<div>
+						<h2>Your hardware. Your data. Their access.</h2>
+						<p>Turn any machine running the desktop app into an AI server. Invite people by email, or hand out API keys. Inference runs on your hardware.</p>
+					</div>
+				</div>
+				<div class="split">
+					<ul class="idx-list">
+						<li><b>Host</b><span>Run local LLMs and marketplace models from the app in minutes.</span></li>
+						<li><b>Authenticate</b><span>InferencePort accounts, or custom API keys for programmatic access.</span></li>
+						<li><b>Invite</b><span>Add users by email. Organizations can fill the list from their directory in one click.</span></li>
+						<li><b>Free</b><span>100 free token verifications per day on every server.</span></li>
+					</ul>
+					<ul class="idx-list">
+						<li><b>Models</b><span>Ollama-compatible, plus 45,000+ Hugging Face models with compatible metadata.</span></li>
+						<li><b>Tools</b><span>Install community tools from the registry, or publish your own.</span></li>
+						<li><b>Remote</b><span>Connect to other Ollama and InferencePort servers and switch between them.</span></li>
+						<li><b>Spaces</b><span>Launch Hugging Face Spaces directly from the app.</span></li>
+					</ul>
 				</div>
 			</div>
 		</section>
 
-		<!-- ── Getting Started ── -->
-		<section class="py-5" style="background:var(--bg-alt);">
-			<div class="container">
-				<div class="text-center mb-5">
-					<div class="section-tag reveal">Getting Started</div>
-					<h2 class="section-title reveal reveal-delay-1">Ship in three steps.</h2>
-				</div>
-				<div class="timeline reveal">
-					<div class="timeline-line"><div class="timeline-progress"></div></div>
-					<div class="timeline-step">
-						<div class="timeline-dot">1</div>
-						<div class="timeline-content">
-							<div class="timeline-label">Sign in</div>
-							<p class="timeline-desc">Open the Developer Console to view your wallet, plan, usage, and API keys.</p>
-						</div>
-					</div>
-					<div class="timeline-step">
-						<div class="timeline-dot">2</div>
-						<div class="timeline-content">
-							<div class="timeline-label">Choose your path</div>
-							<p class="timeline-desc">Cloud APIs for hosted workloads, or launch an AI Server for local models.</p>
-						</div>
-					</div>
-					<div class="timeline-step">
-						<div class="timeline-dot">3</div>
-						<div class="timeline-content">
-							<div class="timeline-label">Ship it</div>
-							<p class="timeline-desc">Chat traffic on subscriptions, production on the Pay-to-Go API. Scale when ready.</p>
-						</div>
+		<!-- ═════════ 07 ORGANIZATIONS ═════════ -->
+		<section class="sec" id="organizations">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">07 &mdash; Organizations</div>
+					<div>
+						<h2>Seats, policy and proof.</h2>
+						<p>Billed per seat. Start free with three members; add SSO, IP allowlists and long-retention audit when rollout gets serious.</p>
 					</div>
 				</div>
+				<div class="ladder">
+					<div class="rung">
+						<div class="tier">Free</div><h3>Pilot</h3>
+						<div class="price">$0 <small>forever</small></div>
+						<ul><li>Up to 3 members</li><li>Shared credit wallet</li><li>2 org API keys</li><li>7-day audit log</li></ul>
+					</div>
+					<div class="rung">
+						<div class="tier">Starter</div><h3>Controls</h3>
+						<div class="price">$7.99 <small>/ seat / mo</small></div>
+						<ul><li>25 members, 5 teams</li><li>Per-member and per-key budgets</li><li>Org-wide model policy</li><li>30-day audit, CSV/JSON export</li></ul>
+					</div>
+					<div class="rung hl">
+						<div class="tier">Team &middot; most popular</div><h3>Secure rollout</h3>
+						<div class="price">$20 <small>/ seat / mo</small></div>
+						<ul><li>SAML SSO, enforced</li><li>IP allowlists</li><li>Audit streaming to your SIEM</li><li>Auditor role, 365-day retention</li></ul>
+					</div>
+					<div class="rung">
+						<div class="tier">Enterprise</div><h3>Commercial terms</h3>
+						<div class="price">Custom</div>
+						<ul><li>Unlimited seats and keys</li><li>Up to 7-year audit retention</li><li>99.9% uptime SLA, custom DPA</li><li>Dedicated onboarding</li></ul>
+					</div>
+				</div>
+				<p style="margin-top:32px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn-brand" href="pricing.html#organizations">Compare organization plans</a><a class="btn-ghost" href="platform.html#organizations">How organizations work</a></p>
 			</div>
 		</section>
 
-		<!-- ── Pricing ── -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-5">
-					<div class="section-tag reveal">Plans</div>
-					<h2 class="section-title reveal reveal-delay-1">Scale when you're ready.</h2>
-					<p class="section-sub mx-auto mt-2 reveal reveal-delay-2">Start free with generous limits. Upgrade for unlimited cloud generation.</p>
-				</div>
-			<div class="row g-3">
-				<div class="col-md reveal">
-					<div class="plan-card">
-						<div class="plan-name">Free</div>
-						<div class="plan-price">$0</div>
-						<div class="plan-period">forever</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Cloud Platform</div>
-						<div class="plan-feature hi">50 Cloud Chats / day</div>
-						<div class="plan-feature">10 Images / day</div>
-						<div class="plan-feature">3 Videos / day</div>
-						<div class="plan-feature">1 Audio / week</div>
-						<div class="plan-feature">🛡️ 2 AI Shield / day</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Self-Hosted Platform</div>
-						<div class="plan-feature hi">Unlimited Local Chat</div>
-						<div class="plan-feature hi">Marketplace Access</div>
-						<div class="plan-feature hi">HuggingFace Spaces</div>
-						<div class="plan-feature hi">Remote Server</div>
-						<a href="install.html" class="btn btn-plan-outline mt-3">Get Started</a>
+		<!-- ═════════ 08 SHIELD ═════════ -->
+		<section class="sec paper" id="shield">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">08 &mdash; AI Shield</div>
+					<div>
+						<h2>One call. One decision.</h2>
+						<p>Send everything you know about a sign-up, login or request &mdash; email, phone, IP, username, device &mdash; and get back a risk score, confidence, reasoning and a recommended action in under a second.</p>
 					</div>
 				</div>
-				<div class="col-md reveal reveal-delay-1">
-					<div class="plan-card">
-						<div class="plan-name">AI Light</div>
-						<div class="plan-price"><sup>$</sup>9.99</div>
-						<div class="plan-period">per month</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Cloud Platform</div>
-						<div class="plan-feature hi">Unlimited Cloud Chat</div>
-						<div class="plan-feature">50 Images / day</div>
-						<div class="plan-feature">10 Videos / day</div>
-						<div class="plan-feature">5 Audio / week</div>
-						<div class="plan-feature">🛡️ 10 AI Shield / day</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Self-Hosted Platform</div>
-						<div class="plan-feature hi">Unlimited Local Chat</div>
-						<div class="plan-feature hi">Marketplace Access</div>
-						<div class="plan-feature hi">HuggingFace Spaces</div>
-						<div class="plan-feature hi">Remote Server</div>
-						<a href="pricing.html" class="btn btn-plan-outline mt-3">Subscribe</a>
-					</div>
+				<div class="h-strip" style="border-top:1px solid var(--ink)">
+					<div><b>1</b>endpoint to learn</div>
+					<div><b>19</b>analysis features</div>
+					<div><b>5</b>possible decisions</div>
+					<div><b>&lt;1s</b>response time</div>
 				</div>
-				<div class="col-md reveal reveal-delay-2">
-					<div class="plan-card popular">
-						<div class="popular-pill">Most Popular</div>
-						<div class="plan-name">AI Core</div>
-						<div class="plan-price"><sup>$</sup>15.99</div>
-						<div class="plan-period">per month</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Cloud Platform</div>
-						<div class="plan-feature hi">Unlimited Cloud Chat</div>
-						<div class="plan-feature hi">150 Images / day</div>
-						<div class="plan-feature">30 Videos / day</div>
-						<div class="plan-feature">25 Audio / week</div>
-						<div class="plan-feature">🛡️ 50 AI Shield / day</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Self-Hosted Platform</div>
-						<div class="plan-feature hi">Unlimited Local Chat</div>
-						<div class="plan-feature hi">Marketplace Access</div>
-						<div class="plan-feature hi">HuggingFace Spaces</div>
-						<div class="plan-feature hi">Remote Server</div>
-						<a href="pricing.html" class="btn btn-plan-primary mt-3">Subscribe</a>
-					</div>
-				</div>
-				<div class="col-md reveal reveal-delay-3">
-					<div class="plan-card">
-						<div class="plan-name">AI Professional</div>
-						<div class="plan-price"><sup>$</sup>99.99</div>
-						<div class="plan-period">per month</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Cloud Platform</div>
-						<div class="plan-feature hi">Unlimited Cloud Chat</div>
-						<div class="plan-feature hi">Unlimited Images</div>
-						<div class="plan-feature hi">Unlimited Videos</div>
-						<div class="plan-feature">75 Audio / week</div>
-						<div class="plan-feature">🛡️ 500 AI Shield / day</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Self-Hosted Platform</div>
-						<div class="plan-feature hi">Unlimited Local Chat</div>
-						<div class="plan-feature hi">Marketplace Access</div>
-						<div class="plan-feature hi">HuggingFace Spaces</div>
-						<div class="plan-feature hi">Remote Server</div>
-						<a href="pricing.html" class="btn btn-plan-outline mt-3">Subscribe</a>
-					</div>
-				</div>
-				<div class="col-md reveal reveal-delay-3">
-					<div class="plan-card">
-						<div class="plan-name">Pay-to-Go</div>
-						<div class="plan-price" style="font-size:1.4rem;">Credit Packs</div>
-						<div class="plan-period">billed by usage</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Cloud Platform</div>
-						<div class="plan-feature hi">OpenAI-Compatible Endpoint</div>
-						<div class="plan-feature hi">Pay-per-token Text</div>
-						<div class="plan-feature hi">Per-Image Pricing</div>
-						<div class="plan-feature hi">Per-Video Pricing</div>
-						<div class="plan-feature hi">🧊 3D Generation</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">Self-Hosted Platform</div>
-						<div class="plan-feature hi">Unlimited Local Chat</div>
-						<div class="plan-feature hi">Marketplace Access</div>
-						<div class="plan-feature hi">HuggingFace Spaces</div>
-						<div class="plan-feature hi">Remote Server</div>
-						<a href="marketplace.html" class="btn btn-plan-outline mt-3">View Per-Model Pricing</a>
-					</div>
-				</div>
-			</div>
+				<p style="margin-top:32px"><a class="btn-ghost" href="shield.html">Explore Shield &rarr;</a></p>
 			</div>
 		</section>
-
-		<!-- ── Open Source ── -->
-		<section class="py-5" style="background:var(--bg-alt);">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag reveal">Open Source</div>
-					<h2 class="section-title reveal reveal-delay-1">Join the Community</h2>
-					<p class="section-sub mx-auto mt-2 reveal reveal-delay-2">Collaborate, contribute, and explore new possibilities with developers worldwide.</p>
-				</div>
-				<div class="row justify-content-center g-3">
-					<div class="col-md-5 reveal">
-						<a href="https://github.com/sharktide/InferencePort-ai" class="ip-card d-block text-decoration-none oss-card">
-							<div class="oss-icon">&#128230;</div>
-							<div>
-								<div class="oss-title">Self-Hosted Platform</div>
-								<div class="oss-desc">The desktop application &mdash; open source on GitHub.</div>
-							</div>
-						</a>
-					</div>
-					<div class="col-md-5 reveal reveal-delay-1">
-						<a href="https://github.com/sharktide/InferencePort-web" class="ip-card d-block text-decoration-none oss-card">
-							<div class="oss-icon">&#127760;</div>
-							<div>
-								<div class="oss-title">InferencePort Web</div>
-								<div class="oss-desc">This website's source &mdash; contribute on GitHub.</div>
-							</div>
-						</a>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ── New API Additions ── -->
-		<section class="py-5">
-			<div class="container">
-				<div class="section-header" style="margin-bottom:24px;">
-					<div class="section-eyebrow eyebrow-green reveal">&#10024; New This Week</div>
-					<h2 class="section-title-lg reveal reveal-delay-1" style="font-size:clamp(1.3rem,2.5vw,1.8rem);">New API Additions</h2>
-					<p class="section-sub-lg reveal reveal-delay-2" style="font-size:0.88rem;">Freshly added models now available on the Cloud Platform.</p>
-				</div>
-				<div class="carousel-wrap reveal">
-					<div class="carousel-track scroll-right" style="--scroll-duration:50s;" id="new-models-track">
-						<!-- populated by JS, then duplicated -->
-					</div>
-				</div>
-			</div>
-		</section>
-
 		</main>
 
+		<!-- ═════════ CLOSER ═════════ -->
+		<section class="closer">
+			<div class="wrap">
+				<h2>Start local. Scale when you need to.</h2>
+				<p>Install the app and chat for free in minutes. When you are ready to ship, the console and your organization are one sign-in away.</p>
+				<div class="h-cta">
+					<a class="btn-brand" href="install.html#install">Download the desktop app</a>
+					<a class="btn-ghost" href="/console">Open the console</a>
+					<a class="btn-ghost" href="platform.html">Read the platform guide</a>
+				</div>
+			</div>
+		</section>
+
 		<ip-footer></ip-footer>
-
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-		<script>
-		/* ── Animated Counter ── */
-		(function() {
-			const counters = document.querySelectorAll('.counter-animate');
-			if (!counters.length) return;
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						const el = entry.target;
-						const target = parseInt(el.dataset.target);
-						const suffix = el.dataset.suffix || '';
-						const duration = parseInt(el.dataset.duration) || 2000;
-						const start = performance.now();
-						function update(now) {
-							const elapsed = now - start;
-							const progress = Math.min(elapsed / duration, 1);
-							const eased = 1 - Math.pow(1 - progress, 3);
-							const current = Math.floor(eased * target);
-							el.textContent = current.toLocaleString() + suffix;
-							if (progress < 1) requestAnimationFrame(update);
-						}
-						requestAnimationFrame(update);
-						observer.unobserve(el);
-					}
-				});
-			}, { threshold: 0.5 });
-			counters.forEach(c => observer.observe(c));
-		})();
-
-		/* ── New API Additions (marketplace-exact cards) ── */
-		(function() {
-			const track = document.getElementById('new-models-track');
-			if (!track) return;
-
-			const MODEL_IDS = [
-				"elevenlabs-eleven-v4",
-				"elevenlabs-eleven-v4-turbo",
-				"qwen3-tts-flash",
-				"whisper-large-v3",
-				"elevenlabs-scribe-v2",
-				"elevenlabs-stem-separation",
-				"elevenlabs-voice-isolator",
-				"elevenlabs-text-to-sound-v2",
-				"gpt-6.1-sol",
-				"trellis2",
-				"gpt-image-2.5-flare",
-				"kimi-k3",
-				"gpt-image-2.5-sunburst",
-				"nemotron-3-ultra",
-				"flux-2-dev",
-				"ideogram-v4-turbo",
-				"lightning-texture-quality",
-				"ideogram-v4-balanced",
-				"ideogram-v4-quality",
-				"flux-2-pro",
-				"imagen-4-preview",
-				"lightning-image-turbo",
-				"lightning",
-				"flux-3",
-				"pixverse-v5"
-			];
-
-			function escapeHtml(str) {
-				const d = document.createElement("div");
-				d.textContent = str;
-				return d.innerHTML;
-			}
-
-			function modelType(m) {
-				if (m.type) return m.type;
-				const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
-				const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
-				if (i.includes("text") && o.includes("text")) return "text";
-				if (o.includes("image")) return "image";
-				if (o.includes("video")) return "video";
-				if (o.includes("audio")) return "audio";
-				return "text";
-			}
-
-			function pillClass(type) {
-				switch (type) {
-					case "text": return "pill-text";
-					case "image": return "pill-image";
-					case "video": return "pill-video";
-					case "audio": return "pill-audio";
-					case "3D":
-					case "3d": return "pill-3d";
-					default: return "pill-text";
-				}
-			}
-
-			function slug(m) {
-				return m?.id || m?.upstream_id || m?.openrouter?.slug || "";
-			}
-
-			function num(v) {
-				if (v == null || v === "") return null;
-				const n = typeof v === "number" ? v : parseFloat(v);
-				return Number.isFinite(n) ? n : null;
-			}
-
-			function fmtRate(v) {
-				const s = v.toFixed(6);
-				return s.includes(".") ? s.replace(/0+$/, "").replace(/\.$/, "") : s;
-			}
-
-			function billingUnit(m) {
-				if (typeof m?.billing_unit === "string" && m.billing_unit) return m.billing_unit;
-				if (num(m?.price_per_1k_chars) != null) return "input_chars";
-				if (num(m?.price_per_million_bytes) != null) return "input_bytes";
-				if (num(m?.input_price_per_second) != null) return "input_seconds";
-				if (num(m?.price_per_second) != null) return "seconds";
-				return "";
-			}
-
-			function formatAudioPrice(m) {
-				const pricing = m?.pricing || {};
-				const unit = billingUnit(m);
-				const chars = num(m?.price_per_1k_chars);
-				const bytes = num(m?.price_per_million_bytes);
-				const inputSec = num(m?.input_price_per_second);
-				const outputSec = num(m?.price_per_second);
-				const request = num(pricing.request);
-				const input = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
-
-				if (unit === "input_chars" && chars != null) return "$" + fmtRate(chars) + "/1k chars";
-				if (unit === "input_bytes" && bytes != null) return "$" + fmtRate(bytes) + "/M bytes";
-				if (unit === "input_seconds") {
-					const rate = inputSec != null ? inputSec : request;
-					if (rate != null) return "$" + fmtRate(rate) + "/input sec";
-				}
-				if (unit === "seconds") {
-					const rate = outputSec != null ? outputSec : request;
-					if (rate != null) return "$" + fmtRate(rate) + "/sec";
-				}
-				if (chars != null) return "$" + fmtRate(chars) + "/1k chars";
-				if (bytes != null) return "$" + fmtRate(bytes) + "/M bytes";
-				if (inputSec != null && outputSec == null) return "$" + fmtRate(inputSec) + "/input sec";
-				if (outputSec != null) return "$" + fmtRate(outputSec) + "/sec";
-				if (request != null && request !== 0) return "$" + fmtRate(request) + (input.includes("audio") ? "/input sec" : "/sec");
-				return null;
-			}
-
-			function formatModelPrice(m) {
-				const pricing = m?.pricing;
-				if (!pricing) return null;
-				const type = modelType(m);
-				if (type === "audio") {
-					const audio = formatAudioPrice(m);
-					if (audio) return audio;
-				}
-				if (type === "image" && pricing.image && pricing.image !== "0") return "$" + parseFloat(pricing.image).toFixed(4) + "/gen";
-				if (type === "3d" || type === "3D") {
-					if (m.price_tiers) {
-						const values = Object.values(m.price_tiers).map(v => parseFloat(v));
-						const min = Math.min(...values);
-						const max = Math.max(...values);
-						if (min !== max) return "$" + min.toFixed(2) + "-$" + max.toFixed(2);
-						return "$" + min.toFixed(4) + "/model";
-					}
-					if (pricing.request && pricing.request !== "0") return "$" + parseFloat(pricing.request).toFixed(4) + "/model";
-				}
-				if (type === "video" && pricing.request && pricing.request !== "0") return "$" + parseFloat(pricing.request).toFixed(4) + "/sec";
-				if (pricing.prompt != null && pricing.completion != null && (parseFloat(pricing.prompt) !== 0 || parseFloat(pricing.completion) !== 0)) {
-					const perMillion = v => (parseFloat(v) * 1000000).toFixed(2);
-					return "In: $" + perMillion(pricing.prompt) + "/M \u00b7 Out: $" + perMillion(pricing.completion) + "/M";
-				}
-				return null;
-			}
-
-			function formatPricing(m) {
-				if (modelType(m) === "audio") return formatAudioPrice(m);
-				const p = m?.pricing || {};
-				if (p.prompt != null && p.completion != null) {
-					const perMillion = v => (v * 1000000).toFixed(2);
-					return "In: $" + perMillion(p.prompt) + "/M \u00b7 Out: $" + perMillion(p.completion) + "/M";
-				}
-				return null;
-			}
-
-			function formatPrice(m) {
-				return formatModelPrice(m) || formatPricing(m) || "Pay-to-Go";
-			}
-
-			function renderCard(m) {
-				const id = slug(m) || m.name || "unknown";
-				const name = m.name || id.split("/").pop();
-				const displaySlug = slug(m) || "\u2014";
-				const type = modelType(m);
-				const price = formatPrice(m);
-				const modelId = (slug(m) || name).toLowerCase().replace(/\//g, "_");
-				const imgUrl = "https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/" + encodeURIComponent(modelId) + ".webp?download=true";
-
-				const card = document.createElement("div");
-				card.className = "model-card";
-				card.innerHTML =
-					'<img class="model-card-image" src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(name) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
-					'<div class="model-card-image-placeholder" style="display:none;">' + escapeHtml(name) + '</div>' +
-					'<div class="model-card-content">' +
-						'<div class="model-card-top">' +
-							'<span class="model-card-name">' + escapeHtml(name) + '</span>' +
-							'<div>' +
-								'<span class="model-pill pill-new">NEW</span> ' +
-								'<span class="model-pill ' + pillClass(type) + '">' + (m.type || type).toUpperCase() + '</span>' +
-							'</div>' +
-						'</div>' +
-						'<div class="model-meta">' +
-							'<span class="model-key">Slug</span>' +
-							'<span class="model-value">' + escapeHtml(displaySlug) + '</span>' +
-						'</div>' +
-						'<div class="model-meta">' +
-							'<span class="model-key">Pricing</span>' +
-							'<span class="model-value">' + escapeHtml(price) + '</span>' +
-						'</div>' +
-						'<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" style="display:block;width:100%;text-align:center;padding:0.55rem 1rem;border-radius:9px;font-size:0.8rem;font-weight:600;background:rgba(79,124,255,0.08);color:var(--brand);border:1px solid rgba(79,124,255,0.2);text-decoration:none;margin-top:auto;">Open Developer Console</a>' +
-					'</div>';
-				return card;
-			}
-			const urlParams = new URLSearchParams(window.location.search);
-			let apibase = "https://us-east-2.api.inferenceport.ai";
-			if (urlParams.get('staging') == "true") {
-				apibase = "https://staging-api.inferenceport.ai";
-			}
-			fetch(`${apibase}/v1/models`)
-				.then(r => r.json())
-				.then(data => {
-					const models = Array.isArray(data) ? data : (data.data || []);
-					const modelMap = {};
-					models.forEach(m => { modelMap[m.id] = m; });
-
-					let found = MODEL_IDS.filter(id => modelMap[id]);
-					if (!found.length) found = models.slice(0, 10).map(m => m.id);
-					const cards = found.map(id => renderCard(modelMap[id]));
-
-					/* Append first set */
-					cards.forEach(c => track.appendChild(c));
-					/* Duplicate for seamless loop */
-					cards.forEach(c => track.appendChild(c.cloneNode(true)));
-				})
-				.catch(() => {});
-		})();
-
-		/* ── Card tilt + cursor glow ── */
-		(function() {
-			if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-			const SELECTOR = '.carousel-card:not(.streak-card), .plan-card, .model-card';
-
-			function bind(el) {
-				if (el.dataset.tiltBound) return;
-				el.dataset.tiltBound = '1';
-				el.addEventListener('pointermove', (e) => {
-					const r = el.getBoundingClientRect();
-					const px = (e.clientX - r.left) / r.width;
-					const py = (e.clientY - r.top) / r.height;
-					el.style.setProperty('--mx', (px * 100).toFixed(1) + '%');
-					el.style.setProperty('--my', (py * 100).toFixed(1) + '%');
-					el.style.transform = 'perspective(900px) rotateX(' + ((0.5 - py) * 7).toFixed(2) + 'deg) rotateY(' + ((px - 0.5) * 7).toFixed(2) + 'deg) translateY(-3px)';
-				});
-				el.addEventListener('pointerleave', () => {
-					el.style.transform = '';
-					el.style.removeProperty('--mx');
-					el.style.removeProperty('--my');
-				});
-			}
-			function scan() { document.querySelectorAll(SELECTOR).forEach(bind); }
-			scan();
-			let t = null;
-			new MutationObserver(() => {
-				clearTimeout(t);
-				t = setTimeout(scan, 60);
-			}).observe(document.body, { childList: true, subtree: true });
-		})();
-
-		/* ── Cloud vs Local focus shift ── */
-		(function() {
-			const box = document.querySelector('.compare-box');
-			if (!box) return;
-			box.addEventListener('pointermove', (e) => {
-				const r = box.getBoundingClientRect();
-				const left = (e.clientX - r.left) / r.width < 0.5;
-				box.classList.toggle('focus-cloud', left);
-				box.classList.toggle('focus-local', !left);
-			});
-			box.addEventListener('pointerleave', () => {
-				box.classList.remove('focus-cloud');
-				box.classList.remove('focus-local');
-			});
-		})();
-
-		/* ── Timeline scroll progress ── */
-		(function() {
-			const timeline = document.querySelector('.timeline');
-			const fill = document.querySelector('.timeline-progress');
-			if (!timeline || !fill) return;
-			function update() {
-				const r = timeline.getBoundingClientRect();
-				const p = Math.max(0, Math.min(1, (window.innerHeight * 0.85 - r.top) / (r.height + window.innerHeight * 0.35)));
-				fill.style.width = (p * 100).toFixed(1) + '%';
-			}
-			update();
-			window.addEventListener('scroll', update, { passive: true });
-			window.addEventListener('resize', update);
-		})();
-
-		/* ── Mobile: move hero stats below the product sections ── */
-		(function() {
-			const stats = document.querySelector('.stats-divider');
-			const anchor = document.getElementById('lightning-section');
-			if (!stats || !anchor) return;
-			const heroContainer = stats.parentElement;
-			const mq = window.matchMedia('(max-width: 767.98px)');
-			function place() {
-				if (mq.matches) {
-					stats.classList.add('container', 'stats-band');
-					anchor.insertAdjacentElement('afterend', stats);
-				} else {
-					stats.classList.remove('container', 'stats-band');
-					heroContainer.appendChild(stats);
-				}
-			}
-			place();
-			if (mq.addEventListener) mq.addEventListener('change', place);
-			else if (mq.addListener) mq.addListener(place);
-		})();
-		</script>
-		<script src="scripts/hero-canvas.js"></script>
 	</body>
 </html>
