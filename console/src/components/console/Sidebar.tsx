@@ -56,7 +56,7 @@ const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
 
 /* Work tabs run billed to whichever context is active (the org header is set globally). */
 const WORK_IDS = ["models", "playground", "agents"];
-const ORG_BUILD_IDS = ["gen-api", "payg-api", "mcp", "shield"];
+const ORG_BUILD_IDS = ["deploy", "gen-api", "payg-api", "mcp", "shield"];
 const ORG_ACCOUNT_IDS = ["account", "organizations"];
 
 function item(id: string): NavItem {

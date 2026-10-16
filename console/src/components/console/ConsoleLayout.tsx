@@ -27,7 +27,7 @@ import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
 /* Personal-only sections. In organization mode the org sections (and the work tabs) replace them. */
-const PERSONAL_ONLY_TABS = new Set(["billing", "rewards", "api-key", "usage", "deploy", "authorized-apps"]);
+const PERSONAL_ONLY_TABS = new Set(["billing", "rewards", "api-key", "usage", "authorized-apps"]);
 const SLUG_RE = /^[a-z0-9-]{1,40}$/i;
 
 /* Invitation and organization deep links must not be overridden by the models redirect below */
