@@ -41,6 +41,7 @@ const PERSONAL_ITEMS: Record<string, { label: string; icon: IconName }> = {
   usage: { label: "Usage", icon: "chart-bar" },
   "gen-api": { label: "Generation (Subscription)", icon: "chat-circle-text" },
   "payg-api": { label: "P2G API", icon: "coins" },
+  mcp: { label: "MCP (Council)", icon: "link" },
   shield: { label: "Shield", icon: "shield-check" },
   "authorized-apps": { label: "Authorized Applications", icon: "plugs-connected" },
 };
@@ -49,13 +50,13 @@ const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
   { title: "Organization", ids: ["organizations"] },
   { title: "Explore", ids: ["models", "playground", "deploy", "rewards"] },
-  { title: "Build", ids: ["agents", "api-key", "usage", "gen-api", "payg-api", "shield"] },
+  { title: "Build", ids: ["agents", "api-key", "usage", "gen-api", "payg-api", "mcp", "shield"] },
   { title: "Access", ids: ["authorized-apps"] },
 ];
 
 /* Work tabs run billed to whichever context is active (the org header is set globally). */
 const WORK_IDS = ["models", "playground", "agents"];
-const ORG_BUILD_IDS = ["gen-api", "payg-api", "shield"];
+const ORG_BUILD_IDS = ["gen-api", "payg-api", "mcp", "shield"];
 const ORG_ACCOUNT_IDS = ["account", "organizations"];
 
 function item(id: string): NavItem {

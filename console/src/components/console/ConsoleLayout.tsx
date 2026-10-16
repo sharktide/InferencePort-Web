@@ -21,6 +21,7 @@ import AuthorizedAppsPanel from "./panels/AuthorizedAppsPanel";
 import DeployPanel from "./panels/DeployPanel";
 import PlaygroundPanel from "./panels/PlaygroundPanel";
 import AgentsPanel from "./panels/AgentsPanel";
+import McpPanel from "./panels/McpPanel";
 import OrganizationsPanel from "./panels/OrganizationsPanel";
 import RewardsPanel from "./RewardsPanel";
 import styles from "./ConsoleLayout.module.css";
@@ -52,7 +53,7 @@ function initialTab(): string {
 
 /* Whether a section can be shown in the current context (personal, or the active organization). */
 /* Work tabs (models, playground, agents) bill the org wallet, so they need a role that may spend org credits. */
-const WORK_TABS = new Set(["models", "playground", "agents"]);
+const WORK_TABS = new Set(["models", "playground", "agents", "mcp"]);
 
 function tabAvailable(tab: string, org: OrgSummary | null): boolean {
   if (isOrgSection(tab)) return !!org && orgSectionAllowed(tab, org.role);
@@ -310,6 +311,7 @@ function ConsoleFrame({
       "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
       usage: <UsagePanel session={session} apiBase={apiBase} />,
       "gen-api": <GenApiPanel session={session} config={config} apiBase={apiBase} />,
+      mcp: <McpPanel session={session} config={config} apiBase={apiBase} />,
       "payg-api": <PaygApiPanel session={session} config={config} apiBase={apiBase} />,
       shield: <ShieldPanel session={session} config={config} apiBase={apiBase} />,
       "authorized-apps": <AuthorizedAppsPanel session={session} config={config} apiBase={apiBase} supabase={supabase} />,
