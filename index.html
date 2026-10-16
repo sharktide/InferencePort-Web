@@ -77,18 +77,25 @@
 			<div class="wrap">
 				<div class="hx-grid">
 					<div>
-						<span class="eyebrow"><svg viewBox="170 30 320 565" fill="#FCD704" stroke="#0b0f1a" stroke-width="20" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg>The AI platform for models, apps and teams</span>
-						<h1>Run AI models on your hardware <em>or ours.</em></h1>
-						<p class="sub">InferencePort is a desktop app for private, local AI; a fast hosted chat; one OpenAI-compatible API for text, image, video, audio and 3D; and the console and team controls to manage all of it.</p>
-						<div class="cta">
-							<a class="btn-brand" href="install.html#install">Download for free</a>
-							<a class="btn-ghost" href="/console">Open the developer console</a>
-						</div>
-						<div class="proof"><span><b>45,000+</b> models</span><span><b>1,000</b> words/sec</span><span><b>Windows, macOS, Linux</b></span><span><b>Free</b> to start</span></div>
+						<span class="eyebrow"><svg viewBox="170 30 320 565" fill="#FCD704" stroke="#0b0f1a" stroke-width="20" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg>The AI platform for builders and teams</span>
+						<h1>Build, deploy and secure AI. <em>One platform.</em></h1>
+						<p class="sub">An OpenAI-compatible API, managed agents, a council of models, on-demand model deployments, fraud and abuse protection, a CLI and team controls &mdash; plus apps to run models locally or in our cloud.</p>
+						<div class="cta"><a class="btn-brand" href="/console">Get started free</a><a class="btn-ghost" href="install.html#install">Download the app</a></div>
+						<div class="proof"><span><b>OpenAI-compatible</b> API</span><span><b>5</b> modalities</span><span><b>SSO</b> &amp; audit</span><span><b>Free</b> to start</span></div>
 					</div>
-					<div class="win">
-						<div class="win-bar"><i></i><i></i><i></i><span>InferencePort AI &mdash; desktop app</span></div>
-						<img src="img/examples/cucumber.png" alt="The InferencePort desktop app answering a question in chat" />
+					<div class="panel" style="--c:var(--gold)">
+						<div class="panel-h"><span>One API key. Every capability.</span><span>shell</span></div>
+<pre><span class="c"># Models, agents and councils behind one endpoint</span>
+<span class="k">curl</span> <span class="u">https://api.inferenceport.ai/v1/chat/completions</span> \
+  -H <span class="s">"Authorization: Bearer $IP_API_KEY"</span> \
+  -d <span class="s">'{
+    "model": "agent/acme/support-bot",
+    "messages": [{"role":"user","content":"Where is my order?"}]
+  }'</span>
+
+<span class="c"># ...or from your terminal</span>
+<span class="k">ipx</span> mcp council reason <span class="s">"Is this migration safe?"</span></pre>
+						<div class="chips"><span class="chip y">API</span><span class="chip y">Agents</span><span class="chip y">Council</span><span class="chip y">Deployments</span><span class="chip y">Shield</span><span class="chip y">CLI</span></div>
 					</div>
 				</div>
 			</div>
@@ -98,104 +105,35 @@
 		<section class="blk alt" id="products">
 			<div class="wrap">
 				<div class="sh">
-					<div class="k">What we offer</div>
-					<h2>Six products. One account.</h2>
-					<p>Use one on its own or all together. Everything signs in with the same InferencePort account.</p>
+					<div class="k">The platform</div>
+					<h2>Everything you need to ship AI &mdash; and run it responsibly.</h2>
+					<p>Eleven products on one account, one wallet and one set of keys. Start with one; add the rest as you grow.</p>
 				</div>
+				<div class="grp">Build</div>
 				<div class="pgrid">
-					<a class="pc c-app" href="#app">
-						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="12"/><path d="M8 20h8M12 16v4"/></svg></div>
-						<span class="tagline">Desktop app</span><h3>Run models locally</h3>
-						<p>Chat with open-source models offline, host a server for your team, and install tools &mdash; on Windows, macOS or Linux.</p>
-						<span class="more">Explore the app &rarr;</span>
-					</a>
-					<a class="pc c-chat" href="#lightning">
-						<div class="ic"><svg viewBox="170 30 320 565" fill="#FCD704" stroke="#0b0f1a" stroke-width="22" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg></div>
-						<span class="tagline">Lightning chat</span><h3>Instant hosted AI</h3>
-						<p>Our fastest cloud models, streaming up to 1,000 words per second. In the app or any browser, free on every plan.</p>
-						<span class="more">See Lightning &rarr;</span>
-					</a>
-					<a class="pc c-api" href="#api">
-						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></div>
-						<span class="tagline">Pay-to-Go API</span><h3>One API, every modality</h3>
-						<p>An OpenAI-compatible endpoint for text, image, video, audio and 3D, billed per request from a credit wallet.</p>
-						<span class="more">View the API &rarr;</span>
-					</a>
-					<a class="pc c-console" href="#console">
-						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18"/><path d="M9 3v18M13 9h5M13 14h5"/></svg></div>
-						<span class="tagline">Developer console</span><h3>Operate it all</h3>
-						<p>Create API keys, buy credits, watch usage, try models in the playground, and build agents &mdash; in the browser.</p>
-						<span class="more">Tour the console &rarr;</span>
-					</a>
-					<a class="pc c-org" href="#organizations">
-						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 5.5a3 3 0 010 5.8M18 14.5c1.9.8 3 2.8 3 5.5"/></svg></div>
-						<span class="tagline">Organizations</span><h3>Manage your team</h3>
-						<p>A shared wallet, member budgets, SSO, audit logs and policies that apply to everyone&rsquo;s desktop app.</p>
-						<span class="more">See team controls &rarr;</span>
-					</a>
-					<a class="pc c-shield" href="#shield">
-						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
-						<span class="tagline">AI Shield</span><h3>Stop fraud and abuse</h3>
-						<p>Send signals in one call, get a risk score and a decision &mdash; allow, challenge, review, rate-limit or block.</p>
-						<span class="more">Explore Shield &rarr;</span>
-					</a>
+					<a class="pc c-api" href="#api"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></div><span class="tagline">Pay-to-Go API</span><h3>One API, every modality</h3><p>OpenAI-compatible endpoint for text, image, video, audio and 3D. Pay per request.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-console" href="#agents"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="8" width="16" height="11"/><path d="M12 4v4M9 13h.01M15 13h.01M9 16h6"/></svg></div><span class="tagline">Managed agents</span><h3>Ship agents, not infrastructure</h3><p>Host agents on a model, prompt and MCP tools. Call them like any model.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-console" href="#council"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="6" r="2.6"/><circle cx="5.5" cy="17" r="2.6"/><circle cx="18.5" cy="17" r="2.6"/><path d="M10.6 8.4L7 14.5M13.4 8.4L17 14.5M8.2 17h7.6"/></svg></div><span class="tagline">Council MCP</span><h3>Many models, one answer</h3><p>Give any assistant a council that cross-reviews and returns one synthesized answer.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-api" href="ipx.html"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16"/><path d="M7 9l3 3-3 3M12 15h5"/></svg></div><span class="tagline">ipx CLI</span><h3>Automate from the terminal</h3><p>One binary for chat, generation, orgs, agents, deployments and Shield.</p><span class="more">Learn more &rarr;</span></a>
 				</div>
-				<p class="alsoline">Plus the <a href="marketplace.html">model catalog</a> and the <a href="tools.html">Tool Registry</a>, covered <a href="#catalog">below</a>.</p>
-			</div>
-		</section>
-
-		<!-- ═════════ DESKTOP APP ═════════ -->
-		<section class="blk" id="app">
-			<div class="wrap">
-				<div class="frow c-app">
-					<div class="ftext">
-						<div class="pill-l">Desktop app</div>
-						<h2>Private AI that runs on your own computer.</h2>
-						<p>Download InferencePort, pick a model, and start chatting &mdash; no coding, no account needed. Local chats stay on your device.</p>
-						<ul class="checks">
-							<li><b>Local chat, offline.</b> Run open-source models through Ollama with streaming replies.</li>
-							<li><b>45,000+ models.</b> Download from the built-in marketplace or Hugging Face, or import your own GGUF or Modelfile.</li>
-							<li><b>Sessions you control.</b> Save, rename, favorite, and edit, regenerate or delete responses.</li>
-							<li><b>Custom tools.</b> Build tools and run code in chat, or install community tools from the registry.</li>
-							<li><b>Host a server.</b> Share your models with teammates by email or API key, and connect to remote servers.</li>
-							<li><b>Spaces and sync.</b> Open Hugging Face Spaces in-app; sign in to sync chats across devices.</li>
-						</ul>
-						<div class="flinks"><a class="btn-brand" href="install.html#install">Download the app</a><a class="btn-ghost" href="platform.html#app">Learn more</a></div>
-					</div>
-					<div class="win">
-						<div class="win-bar"><i></i><i></i><i></i><span>Local model &middot; offline</span></div>
-						<img src="img/examples/cucumber.png" alt="Chat in the InferencePort desktop app" />
-					</div>
+				<div class="grp">Deploy &amp; run</div>
+				<div class="pgrid">
+					<a class="pc c-org" href="#deploy"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="6"/><rect x="3" y="14" width="18" height="6"/><path d="M7 7h.01M7 17h.01"/></svg></div><span class="tagline">Model deployments</span><h3>Any open model, on demand</h3><p>Deploy models from a large open catalog in a click and use them from the API.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-chat" href="#lightning"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/></svg></div><span class="tagline">Lightning chat</span><h3>Instant hosted AI</h3><p>Our fastest cloud models at up to 1,000 words per second, free on every plan.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-app" href="#app"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="12"/><path d="M8 20h8M12 16v4"/></svg></div><span class="tagline">Desktop app</span><h3>Private, local AI</h3><p>Run open-source models on your hardware, host servers and install tools.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-app" href="#catalog"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/></svg></div><span class="tagline">Model &amp; tool catalog</span><h3>Find what to run</h3><p>Browse cloud and local models and share tools in the registry.</p><span class="more">Learn more &rarr;</span></a>
 				</div>
-			</div>
-		</section>
-
-		<!-- ═════════ LIGHTNING ═════════ -->
-		<section class="blk dark" id="lightning">
-			<div class="wrap">
-				<div class="frow rev c-chat">
-					<div class="ftext">
-						<div class="pill-l" style="color:var(--gold)">Lightning chat</div>
-						<h2>Cloud AI that answers as fast as you can read.</h2>
-						<p>Lightning is our hosted model family. Use it from the desktop app, or open it in any browser &mdash; nothing to install, nothing to configure.</p>
-						<ul class="checks">
-							<li><b>Lightning Text v2.</b> Up to 1,000 words per second with smooth streaming, for chat, code and long writing.</li>
-							<li><b>Lightning Image Turbo.</b> Our default image model: photoreal and cinematic, faster than before.</li>
-							<li><b>Free on every plan.</b> No credit card for the free tier; paid plans raise image, video and audio limits.</li>
-							<li><b>Synced.</b> Browser chats sync to your account.</li>
-						</ul>
-						<div class="flinks"><a class="btn-brand" href="chat/">Try Lightning now</a><a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="lightning.html">About Lightning</a></div>
-					</div>
-					<div class="big-stat">
-						<div class="n">1,000<small>words per second</small></div>
-						<div class="stream"><span class="u">Lightning Text v2</span>Streaming a long answer token by token, without the wait<span class="caret"></span></div>
-					</div>
+				<div class="grp">Protect &amp; manage</div>
+				<div class="pgrid">
+					<a class="pc c-shield" href="#shield"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div><span class="tagline">AI Shield</span><h3>Stop fraud and abuse</h3><p>Risk scores and decisions for sign-ups, content, prompts and requests in one call.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-org" href="#organizations"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 5.5a3 3 0 010 5.8M18 14.5c1.9.8 3 2.8 3 5.5"/></svg></div><span class="tagline">Organizations</span><h3>Run AI for a whole team</h3><p>Shared wallet, budgets, roles, SSO, audit and app policy.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-console" href="#console"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18"/><path d="M9 3v18M13 9h5M13 14h5"/></svg></div><span class="tagline">Developer console</span><h3>The control room</h3><p>Keys, credits, usage, playground and agents in the browser.</p><span class="more">Learn more &rarr;</span></a>
 				</div>
 			</div>
 		</section>
 
 		<!-- ═════════ API ═════════ -->
-		<section class="blk" id="api">
+		<section class="blk alt" id="api">
 			<div class="wrap">
 				<div class="frow c-api">
 					<div class="ftext">
@@ -224,6 +162,150 @@
     "stream": true
   }'</span></pre>
 						<div class="chips"><span class="chip y">Text</span><span class="chip y">Image</span><span class="chip y">Video</span><span class="chip y">Audio</span><span class="chip y">3D</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ═════════ AGENTS ═════════ -->
+		<section class="blk" id="agents">
+			<div class="wrap">
+				<div class="frow rev c-console">
+					<div class="ftext">
+						<div class="pill-l">Managed agents</div>
+						<h2>Launch AI agents without running any infrastructure.</h2>
+						<p>Define an agent once &mdash; a model, instructions and the tools it can use &mdash; and InferencePort hosts it. Your app calls it through the same API as any model.</p>
+						<ul class="checks">
+							<li><b>Hosted for you.</b> Pick a backing model, write a system prompt, and attach MCP servers for tools.</li>
+							<li><b>Call it like a model.</b> Use <span class="mono">agent/&lt;username&gt;/&lt;agent-id&gt;</span> with the chat completions API.</li>
+							<li><b>Share or keep private.</b> Publish to the registry, list it as unlisted, or keep it to yourself.</li>
+							<li><b>You choose who pays.</b> Callers pay for their own usage, or you cover it as the owner.</li>
+							<li><b>Built for teams.</b> Invite collaborators and run agents under your organization&rsquo;s wallet and policies.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="/console">Create an agent</a><a class="btn-ghost" href="ipx.html">Manage with ipx</a></div>
+					</div>
+					<div class="panel" style="--c:var(--purple)">
+						<div class="panel-h"><span>Agent &middot; support-bot</span><span>Published</span></div>
+						<div class="krow"><span>Backing model</span><span class="sel">Lightning Text v2</span></div>
+						<div class="krow"><span>System prompt</span><small>&ldquo;You are Acme&rsquo;s support agent&hellip;&rdquo;</small></div>
+						<div class="krow"><span>MCP servers</span><span class="sel">2 connected</span></div>
+						<div class="krow"><span>Visibility</span><span class="sel">Public &middot; Published</span></div>
+						<div class="krow"><span>Who pays</span><span class="sel">Caller pays</span></div>
+						<div class="chips"><span class="chip y">model: agent/acme/support-bot</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ COUNCIL ═════════ -->
+		<section class="blk alt" id="council">
+			<div class="wrap">
+				<div class="frow c-console">
+					<div class="ftext">
+						<div class="pill-l">Council MCP server</div>
+						<h2>Give any AI assistant a council of models.</h2>
+						<p>One tool call sends a hard problem to many models. They answer in parallel, critique each other, and a panel of judges returns a single, stronger answer &mdash; right inside the tools you already use.</p>
+						<ul class="checks">
+							<li><b>Works with your client.</b> Claude Code, Cursor, VS Code, Claude Desktop, or your own MCP agent.</li>
+							<li><b>Tiers.</b> Choose how many and how strong the models and judges are, with 1&ndash;3 review rounds or your own picks.</li>
+							<li><b>Sign in your way.</b> OAuth, or an API key as a Bearer token.</li>
+							<li><b>Clear billing.</b> Per-token usage plus a flat surcharge, billed to you or your organization under its policies.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="/console">Connect the council</a><a class="btn-ghost" href="ipx.html">Try it from ipx</a></div>
+					</div>
+					<div class="panel" style="--c:var(--purple)">
+						<div class="panel-h"><span>council_reason</span><span>MCP tool</span></div>
+						<div class="krow"><span>Your assistant</span><small>&ldquo;Is this migration safe?&rdquo;</small></div>
+						<div class="krow"><span>1 &middot; Models answer</span><small>in parallel</small></div>
+						<div class="krow"><span>2 &middot; Models review each other</span><small>1&ndash;3 rounds</small></div>
+						<div class="krow"><span>3 &middot; Judges synthesize</span><small>one answer</small></div>
+						<div class="chips"><span class="chip y">claude mcp add --transport http council &hellip;</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ DEPLOYMENTS ═════════ -->
+		<section class="blk" id="deploy">
+			<div class="wrap">
+				<div class="frow rev c-org">
+					<div class="ftext">
+						<div class="pill-l">Model deployments</div>
+						<h2>Deploy any open model in a click.</h2>
+						<p>Need a specific model? Search a large catalog of open models, deploy it on demand, and call it from the same API &mdash; for yourself or your whole organization.</p>
+						<ul class="checks">
+							<li><b>Search and deploy.</b> Find Llama, Qwen, DeepSeek and more; see context length and whether a model is warm before you commit.</li>
+						<li><b>Simple pricing.</b> $0.50 per month per deployment, plus per-token usage.</li>
+							<li><b>Org-ready.</b> Deployments are shared with the whole organization and billed to its wallet; owners and admins control them.</li>
+							<li><b>Fully managed.</b> No GPUs to provision, no servers to patch.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="/console">Browse deployable models</a><a class="btn-ghost" href="pricing.html">See pricing</a></div>
+					</div>
+					<div class="panel" style="--c:var(--cyan)">
+						<div class="panel-h"><span>Deploy a model</span><span>Search: qwen</span></div>
+						<div class="krow"><span>Qwen/Qwen2.5-7B-Instruct</span><span class="sel">Warm &middot; Deploy</span></div>
+						<div class="krow"><span>meta-llama/Llama-3.1-8B-Instruct</span><span class="sel">Warm &middot; Deploy</span></div>
+						<div class="krow"><span>deepseek-ai/DeepSeek-R1-Distill</span><span class="sel">Loading &middot; Deploy</span></div>
+						<div class="krow"><span>Your deployments</span><small>$0.50 / month each</small></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ SHIELD ═════════ -->
+		<section class="blk alt" id="shield">
+			<div class="wrap">
+				<div class="frow rev c-shield">
+					<div class="ftext">
+						<div class="pill-l" style="color:#b91c1c">AI Shield</div>
+						<h2>Know who you can trust, in one API call.</h2>
+						<p>Send whatever you know about a sign-up, login or message. Shield returns a risk score, a confidence level, plain-English reasons and a recommended action in under a second.</p>
+						<ul class="checks">
+							<li><b>Signup protection.</b> Bots, fake accounts, trial farming and referral abuse.</li>
+							<li><b>Identity.</b> Linked accounts, duplicates and ban evasion.</li>
+							<li><b>Content.</b> Spam, scams and malicious messages.</li>
+							<li><b>Prompt protection.</b> Injection, jailbreaks and tool or agent abuse in your AI product.</li>
+							<li><b>No rules to tune.</b> One endpoint; send any mix of email, IP, phone, username, device or text.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="shield.html">Explore Shield</a><a class="btn-ghost" href="/console">Get started</a></div>
+					</div>
+					<div class="panel" style="--c:#ef4444">
+						<div class="panel-h"><span>POST /ai-shield/analyze</span><span>Response</span></div>
+<pre>{
+  <span class="u">"risk_score"</span>: 91,
+  <span class="u">"confidence"</span>: 0.97,
+  <span class="u">"decision"</span>: <span class="s">"block"</span>,
+  <span class="u">"reasons"</span>: [
+    <span class="s">"Device associated with previous abuse"</span>,
+    <span class="s">"Disposable email indicators detected"</span>
+  ]
+}</pre>
+						<div class="dec"><span class="a">Allow</span><span class="ch">Challenge</span><span class="r">Review</span><span class="rl">Rate limit</span><span class="b">Block</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- ═════════ CLI ═════════ -->
+		<section class="blk" id="cli">
+			<div class="wrap">
+				<div class="frow c-api">
+					<div class="ftext">
+						<div class="pill-l">ipx command line</div>
+						<h2>The whole platform, scriptable.</h2>
+						<p>ipx is one native binary for your terminal, servers and CI. Anything you can do in the console or the app, you can automate.</p>
+						<ul class="checks">
+							<li><b>Everything covered.</b> Chat and media generation, Pay-to-Go, organizations, agents, Council, deployments, local models and Shield.</li>
+							<li><b>Made for CI.</b> <span class="mono">--json</span> on every command, stdin support and exit codes that gate pipelines.</li>
+							<li><b>Easy install.</b> pip, npm, cargo, a shell script, or a prebuilt binary.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="ipx.html">Explore ipx</a><a class="btn-ghost" href="https://github.com/inferenceport-ai/cli" target="_blank" rel="noopener">GitHub</a></div>
+					</div>
+					<div class="term">
+						<div class="term-bar"><i></i><i></i><i></i><span>ipx</span></div>
+<pre><span class="p">$</span> npm install -g @inferenceport-ai/ipx
+<span class="p">$</span> ipx auth login
+<span class="p">$</span> ipx org keys create ci --monthly-limit 25
+<span class="p">$</span> ipx agent chat acme-bot/support
+<span class="p">$</span> git diff | ipx shield scan --fail-on review</pre>
 					</div>
 				</div>
 			</div>
@@ -264,7 +346,6 @@
 				</div>
 			</div>
 		</section>
-
 		<!-- ═════════ ORGANIZATIONS ═════════ -->
 		<section class="blk" id="organizations">
 			<div class="wrap">
@@ -293,41 +374,54 @@
 				</div>
 			</div>
 		</section>
-
-		<!-- ═════════ SHIELD ═════════ -->
-		<section class="blk alt" id="shield">
+		<!-- ═════════ DESKTOP APP ═════════ -->
+		<section class="blk alt" id="app">
 			<div class="wrap">
-				<div class="frow rev c-shield">
+				<div class="frow c-app">
 					<div class="ftext">
-						<div class="pill-l" style="color:#b91c1c">AI Shield</div>
-						<h2>Know who you can trust, in one API call.</h2>
-						<p>Send whatever you know about a sign-up, login or message. Shield returns a risk score, a confidence level, plain-English reasons and a recommended action in under a second.</p>
+						<div class="pill-l">Desktop app</div>
+						<h2>Private AI that runs on your own computer.</h2>
+						<p>Download InferencePort, pick a model, and start chatting &mdash; no coding, no account needed. Local chats stay on your device.</p>
 						<ul class="checks">
-							<li><b>Signup protection.</b> Bots, fake accounts, trial farming and referral abuse.</li>
-							<li><b>Identity.</b> Linked accounts, duplicates and ban evasion.</li>
-							<li><b>Content.</b> Spam, scams and malicious messages.</li>
-							<li><b>Prompt protection.</b> Injection, jailbreaks and tool or agent abuse in your AI product.</li>
-							<li><b>No rules to tune.</b> One endpoint; send any mix of email, IP, phone, username, device or text.</li>
+							<li><b>Local chat, offline.</b> Run open-source models through Ollama with streaming replies.</li>
+							<li><b>45,000+ models.</b> Download from the built-in marketplace or Hugging Face, or import your own GGUF or Modelfile.</li>
+							<li><b>Sessions you control.</b> Save, rename, favorite, and edit, regenerate or delete responses.</li>
+							<li><b>Custom tools.</b> Build tools and run code in chat, or install community tools from the registry.</li>
+							<li><b>Host a server.</b> Share your models with teammates by email or API key, and connect to remote servers.</li>
+							<li><b>Spaces and sync.</b> Open Hugging Face Spaces in-app; sign in to sync chats across devices.</li>
 						</ul>
-						<div class="flinks"><a class="btn-brand" href="shield.html">Explore Shield</a><a class="btn-ghost" href="/console">Get started</a></div>
+						<div class="flinks"><a class="btn-brand" href="install.html#install">Download the app</a><a class="btn-ghost" href="platform.html#app">Learn more</a></div>
 					</div>
-					<div class="panel" style="--c:#ef4444">
-						<div class="panel-h"><span>POST /ai-shield/analyze</span><span>Response</span></div>
-<pre>{
-  <span class="u">"risk_score"</span>: 91,
-  <span class="u">"confidence"</span>: 0.97,
-  <span class="u">"decision"</span>: <span class="s">"block"</span>,
-  <span class="u">"reasons"</span>: [
-    <span class="s">"Device associated with previous abuse"</span>,
-    <span class="s">"Disposable email indicators detected"</span>
-  ]
-}</pre>
-						<div class="dec"><span class="a">Allow</span><span class="ch">Challenge</span><span class="r">Review</span><span class="rl">Rate limit</span><span class="b">Block</span></div>
+					<div class="win">
+						<div class="win-bar"><i></i><i></i><i></i><span>Local model &middot; offline</span></div>
+						<img src="img/examples/cucumber.png" alt="Chat in the InferencePort desktop app" />
 					</div>
 				</div>
 			</div>
 		</section>
-
+		<!-- ═════════ LIGHTNING ═════════ -->
+		<section class="blk dark" id="lightning">
+			<div class="wrap">
+				<div class="frow rev c-chat">
+					<div class="ftext">
+						<div class="pill-l" style="color:var(--gold)">Lightning chat</div>
+						<h2>Cloud AI that answers as fast as you can read.</h2>
+						<p>Lightning is our hosted model family. Use it from the desktop app, or open it in any browser &mdash; nothing to install, nothing to configure.</p>
+						<ul class="checks">
+							<li><b>Lightning Text v2.</b> Up to 1,000 words per second with smooth streaming, for chat, code and long writing.</li>
+							<li><b>Lightning Image Turbo.</b> Our default image model: photoreal and cinematic, faster than before.</li>
+							<li><b>Free on every plan.</b> No credit card for the free tier; paid plans raise image, video and audio limits.</li>
+							<li><b>Synced.</b> Browser chats sync to your account.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="chat/">Try Lightning now</a><a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="lightning.html">About Lightning</a></div>
+					</div>
+					<div class="big-stat">
+						<div class="n">1,000<small>words per second</small></div>
+						<div class="stream"><span class="u">Lightning Text v2</span>Streaming a long answer token by token, without the wait<span class="caret"></span></div>
+					</div>
+				</div>
+			</div>
+		</section>
 		<!-- ═════════ CATALOG ═════════ -->
 		<section class="blk" id="catalog">
 			<div class="wrap">
@@ -351,7 +445,6 @@
 				</div>
 			</div>
 		</section>
-
 		<!-- ═════════ HOW THEY CONNECT ═════════ -->
 		<section class="blk alt" id="connect">
 			<div class="wrap">
@@ -371,7 +464,6 @@
 				<p style="margin-top:28px"><a class="btn-ghost" href="platform.html">Read the full platform guide &rarr;</a></p>
 			</div>
 		</section>
-
 		<!-- ═════════ PRICING ═════════ -->
 		<section class="blk" id="pricing">
 			<div class="wrap">

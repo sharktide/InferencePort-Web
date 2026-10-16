@@ -8,27 +8,31 @@ class IpFooter extends HTMLElement {
 			<p class="ipf-blurb">Run models on your hardware, in our cloud, or both — governed from a single account and a single console.</p>
 		</div>
 		<div>
-			<h4>Surfaces</h4>
+			<h4>Build</h4>
 			<ul>
-				<li><a href="/platform.html">How it fits together</a></li>
-				<li><a href="/install.html">Desktop App</a></li>
-				<li><a href="/lightning.html">Lightning Chat</a></li>
+				<li><a href="/index.html#api">Pay-to-Go API</a></li>
+				<li><a href="/index.html#agents">Managed Agents</a></li>
+				<li><a href="/index.html#council">Council MCP</a></li>
+				<li><a href="/ipx.html">ipx CLI</a></li>
 				<li><a href="/console">Developer Console</a></li>
-				<li><a href="/platform.html#organizations">Organizations</a></li>
 			</ul>
 		</div>
 		<div>
-			<h4>Products</h4>
+			<h4>Run &amp; protect</h4>
 			<ul>
+				<li><a href="/index.html#deploy">Model Deployments</a></li>
+				<li><a href="/install.html">Desktop App</a></li>
+				<li><a href="/lightning.html">Lightning Chat</a></li>
 				<li><a href="/shield.html">AI Shield</a></li>
-				<li><a href="/marketplace.html">Model catalog</a></li>
-				<li><a href="/tools.html">Tool Registry</a></li>
+				<li><a href="/platform.html#organizations">Organizations</a></li>
 			</ul>
 		</div>
 		<div>
 			<h4>Company</h4>
 			<ul>
 				<li><a href="/pricing.html">Pricing</a></li>
+				<li><a href="/marketplace.html">Model catalog</a></li>
+				<li><a href="/platform.html">Platform guide</a></li>
 				<li><a href="/security.html">Security</a></li>
 				<li><a href="/security.html">Privacy &amp; Terms</a></li>
 				<li><a href="mailto:feedback@inferenceport.ai">Contact</a></li>

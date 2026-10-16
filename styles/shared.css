@@ -312,3 +312,26 @@ html, body { overflow-x: clip; }
 /* yellow theme on legacy heroes */
 .hero-title .accent, .page-hero h1 .accent { color: var(--ink) !important; background: linear-gradient(transparent 62%, var(--gold) 62%); }
 .ip-card.featured { box-shadow: 4px 4px 0 var(--gold); }
+
+/* ═════════ Mega menu ═════════ */
+.ipn-item { position: static !important; }
+.ipn-menu { left: 0 !important; right: 0; width: auto !important; border: 0 !important; border-bottom: 1px solid var(--ink) !important; box-shadow: 0 30px 40px -28px rgba(11,15,26,.35) !important; padding: 0 !important; }
+.ipn-mega { max-width: 1240px; margin: 0 auto; padding: 28px 24px 30px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 32px; }
+.ipn-col h5 { font-family: var(--mono); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 10px 12px; font-weight: 500; }
+.ipn-m { grid-template-columns: 40px minmax(0, 1fr) !important; gap: 0 14px !important; align-items: start; padding: 10px 12px !important; }
+.ipn-ic { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--c-line, var(--border)); background: var(--c-dim, var(--bg-alt)); color: var(--c-ink, var(--ink)); }
+.ipn-ic svg { width: 20px; height: 20px; }
+.ipn-m.c-api { --c-dim: rgba(11,15,26,.05); --c-ink: var(--ink); --c-line: var(--border); }
+.ipn-m.c-app { --c-dim: var(--brand-dim); --c-ink: var(--brand-ink); --c-line: var(--brand-border); }
+.ipn-m.c-chat { --c-dim: var(--gold-dim); --c-ink: var(--gold-ink); --c-line: var(--gold-border); }
+.ipn-m.c-console { --c-dim: var(--purple-dim); --c-ink: var(--purple-ink); --c-line: var(--purple-border); }
+.ipn-m.c-org { --c-dim: var(--cyan-dim); --c-ink: var(--cyan-ink); --c-line: var(--cyan-border); }
+.ipn-m.c-shield { --c-dim: var(--danger-dim); --c-ink: #b91c1c; --c-line: var(--danger-border); }
+.ipn-m b { font-size: .9rem !important; }
+.ipn-all { display: inline-block; margin: 8px 0 0 12px; font-size: .84rem; font-weight: 650; color: var(--ink); border-bottom: 2px solid var(--gold); }
+@media (max-width: 991px) {
+  .ipn-menu { border-bottom: 0 !important; box-shadow: none !important; }
+  .ipn-mega { grid-template-columns: minmax(0, 1fr); padding: 0 0 8px; gap: 4px; }
+  .ipn-col h5 { margin: 14px 0 4px; }
+  .ipn-m { padding: 8px 0 !important; }
+}
