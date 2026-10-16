@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://inferenceport.ai/schemas/shield/check-request-v1.json",
+  "title": "ShieldCheckRequest",
+  "description": "POST /ai-shield/check \u2014 one indicator type, one value or up to 500 values",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "email",
+        "domain",
+        "url",
+        "ip",
+        "phone",
+        "username",
+        "user_agent",
+        "wallet",
+        "jwt",
+        "hash",
+        "secret"
+      ],
+      "description": "Indicator type (aliases such as disposable, host, link, cidr, token, digest also accepted)"
+    },
+    "value": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "values": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "external_lookups": {
+          "type": "boolean",
+          "description": "Allow third-party reputation lookups (default: only when \u2264 10 values)"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "type"
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "value"
+      ]
+    },
+    {
+      "required": [
+        "values"
+      ]
+    }
+  ]
+}
