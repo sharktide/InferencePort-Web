@@ -26,6 +26,8 @@ const KIND_COLORS: Record<string, string> = {
   video: s.badgeVideo,
   audio: s.badgeAudio,
   model3d: s.badge3d,
+  embedding: s.badgeEmbedding,
+  realtime: s.badgeRealtime,
 };
 
 function fmtDate(iso?: string) {

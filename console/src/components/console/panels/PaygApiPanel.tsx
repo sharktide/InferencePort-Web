@@ -17,7 +17,7 @@ interface ThreeJobResult {
 function isTextModel(m: any) {
   const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
   const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
-  return i.includes("text") && o.includes("text");
+  return !["embedding", "realtime"].includes(m?.type) && i.includes("text") && o.includes("text");
 }
 
 function slug(m: any) {

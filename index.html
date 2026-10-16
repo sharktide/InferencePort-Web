@@ -139,11 +139,12 @@
 					<div class="ftext">
 						<div class="pill-l">Pay-to-Go API</div>
 						<h2>One endpoint for every kind of AI.</h2>
-						<p>Point your existing OpenAI SDK at InferencePort and call text, image, video, audio and 3D models. You pay per request from a prepaid credit wallet &mdash; separate from any chat subscription.</p>
+						<p>Point your existing OpenAI SDK at InferencePort and call text, image, video, audio, 3D, embedding and realtime voice models. You pay per request from a prepaid credit wallet &mdash; separate from any chat subscription.</p>
 						<ul class="checks">
 							<li><b>OpenAI-compatible.</b> Same SDKs and tools; change the base URL and key.</li>
 							<li><b>Text with streaming</b> and function calling, including Lightning models.</li>
 							<li><b>Image, video, audio and 3D</b> generation through the same account.</li>
+							<li><b>Embeddings and realtime.</b> <span class="mono">/v1/embeddings</span> for vectors and a <span class="mono">/v1/realtime</span> WebSocket for live voice and transcription.</li>
 							<li><b>Predictable spend.</b> Buy credit packs; usage and cost are visible per model in the console.</li>
 							<li><b>Model catalog API.</b> List models programmatically by type and capability.</li>
 						</ul>
@@ -161,7 +162,7 @@
     ],
     "stream": true
   }'</span></pre>
-						<div class="chips"><span class="chip y">Text</span><span class="chip y">Image</span><span class="chip y">Video</span><span class="chip y">Audio</span><span class="chip y">3D</span></div>
+						<div class="chips"><span class="chip y">Text</span><span class="chip y">Image</span><span class="chip y">Video</span><span class="chip y">Audio</span><span class="chip y">3D</span><span class="chip y">Embeddings</span><span class="chip y">Realtime</span></div>
 					</div>
 				</div>
 			</div>
@@ -321,7 +322,7 @@
 						<p>The console is a web dashboard at <span class="mono">/console</span>. It is where you get set up, build, and keep an eye on usage and spend.</p>
 						<ul class="checks">
 							<li><b>API keys and credits.</b> Create keys, buy credit packs, manage billing and receipts.</li>
-							<li><b>Playground.</b> Try text, image, video and audio models before you write code.</li>
+							<li><b>Playground.</b> Try text, image, video, audio, embedding and realtime models before you write code.</li>
 							<li><b>Usage.</b> Per-model usage and cost over time.</li>
 							<li><b>Agents and MCP.</b> Build agents with a model, prompt and MCP servers; keep them private or publish them.</li>
 							<li><b>Shield and more.</b> Manage AI Shield, authorized apps, and rewards.</li>
@@ -433,7 +434,7 @@
 					<a class="pc c-app" href="marketplace.html">
 						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/></svg></div>
 						<span class="tagline">Model catalog</span><h3>Browse every model</h3>
-						<p>Cloud and local models across text, image, video, audio and 3D, filterable by type and capability. Hugging Face models run locally; hosted models run on Pay-to-Go.</p>
+						<p>Cloud and local models across text, image, video, audio, 3D, embeddings and realtime, filterable by type and capability. Hugging Face models run locally; hosted models run on Pay-to-Go.</p>
 						<span class="more">Browse models &rarr;</span>
 					</a>
 					<a class="pc c-chat" href="tools.html">

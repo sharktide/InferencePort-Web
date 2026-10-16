@@ -12,7 +12,7 @@ import ContextChip from "../ContextChip";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
 
-type Mode = "text" | "image" | "video" | "audio" | "3d";
+type Mode = "text" | "image" | "video" | "audio" | "3d" | "embedding" | "realtime";
 
 function StudioLoading() {
   return (
@@ -31,6 +31,8 @@ const ImageStudio = load(() => import("../playground/ImageStudio"));
 const VideoStudio = load(() => import("../playground/VideoStudio"));
 const AudioStudio = load(() => import("../playground/AudioStudio"));
 const ThreeDStudio = load(() => import("../playground/ThreeDStudio"));
+const EmbeddingStudio = load(() => import("../playground/EmbeddingStudio"));
+const RealtimeStudio = load(() => import("../playground/RealtimeStudio"));
 
 const MODES: { id: Mode; label: string; icon: IconName; blurb: string; p2gOnly?: boolean }[] = [
   { id: "text", label: "Text", icon: "chat-circle-text", blurb: "Chat with streaming, vision and reasoning" },
@@ -38,6 +40,8 @@ const MODES: { id: Mode; label: string; icon: IconName; blurb: string; p2gOnly?:
   { id: "video", label: "Video", icon: "video", blurb: "Text and image to video", p2gOnly: true },
   { id: "audio", label: "Audio", icon: "music", blurb: "Music, speech, transcription and voice tools" },
   { id: "3d", label: "3D", icon: "cube", blurb: "Image to 3D models", p2gOnly: true },
+  { id: "embedding", label: "Embeddings", icon: "list", blurb: "Turn text into vectors for search and similarity", p2gOnly: true },
+  { id: "realtime", label: "Realtime", icon: "mic", blurb: "Live voice conversations and transcription", p2gOnly: true },
 ];
 
 const STUDIOS: Record<Mode, ComponentType<StudioProps>> = {
@@ -46,7 +50,12 @@ const STUDIOS: Record<Mode, ComponentType<StudioProps>> = {
   video: VideoStudio,
   audio: AudioStudio,
   "3d": ThreeDStudio,
+  embedding: EmbeddingStudio,
+  realtime: RealtimeStudio,
 };
+
+const ALL_MODES: readonly Mode[] = ["text", "image", "video", "audio", "3d", "embedding", "realtime"];
+const P2G_ONLY: readonly Mode[] = ["video", "3d", "embedding", "realtime"];
 
 const readPref = <T extends string>(key: string, allowed: readonly T[], fallback: T): T => {
   try {
@@ -65,10 +74,10 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
 
   /* Restore the last-used source and mode after hydration (localStorage is client-only) */
   useEffect(() => {
-    const m = readPref<Mode>("playground-mode", ["text", "image", "video", "audio", "3d"], "text");
+    const m = readPref<Mode>("playground-mode", ALL_MODES, "text");
     const s = readPref<"p2g" | "gen">("playground-source", ["p2g", "gen"], "p2g");
     setSource(s);
-    setMode(s === "gen" && (m === "video" || m === "3d") ? "text" : m);
+    setMode(s === "gen" && P2G_ONLY.includes(m) ? "text" : m);
     setVisited([m]);
   }, []);
 
@@ -100,7 +109,7 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
   const chooseSource = (next: "p2g" | "gen") => {
     setSource(next);
     try { localStorage.setItem("playground-source", next); } catch { /* ignore */ }
-    if (next === "gen" && (mode === "video" || mode === "3d")) choose("text");
+    if (next === "gen" && P2G_ONLY.includes(mode)) choose("text");
   };
 
   const active = MODES.find((m) => m.id === mode)!;
