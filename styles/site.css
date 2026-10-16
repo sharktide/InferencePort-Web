@@ -87,7 +87,7 @@
 .map-bridge span:first-child { text-align: right; }
 .map-bridge b { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cyan-ink); display: block; margin-bottom: 2px; font-weight: 500; }
 @media (max-width: 960px) {
-  .map-cols { grid-template-columns: minmax(0, 1fr); }
+  .map-cols, .map-cols.two { grid-template-columns: minmax(0, 1fr); }
   .surf { border-right: 0; border-bottom: 1px solid var(--border); }
   .map-bridge { grid-template-columns: 1fr; text-align: left; }
   .map-bridge span:first-child { text-align: left; }
@@ -215,3 +215,8 @@
 .map-org-body b { color: var(--ink); }
 @media (max-width: 960px) { .map-org { grid-template-columns: minmax(0, 1fr); } }
 .bignum small { display: block; margin: 16px 0 0; }
+
+.map-cols.two { grid-template-columns: 1fr 1fr; }
+@media (max-width: 960px) { .map-cols.two { grid-template-columns: minmax(0, 1fr); } }
+.night .h-kicker::before { background: #6b7487; }
+.bignum small { margin-top: 30px; }

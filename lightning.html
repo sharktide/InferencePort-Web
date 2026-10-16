@@ -5,370 +5,101 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Lightning Models — InferencePort AI</title>
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-			rel="stylesheet"
-		/>
+		<meta name="description" content="Lightning Text v2 streams up to 1,000 words per second and Lightning Image Turbo is the default image model. Free on every plan, in the desktop app or any browser." />
+		<link rel="canonical" href="https://inferenceport.ai/lightning.html" />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
+		<link rel="stylesheet" href="styles/site.css" />
 		<script src="components/ip-navbar.js"></script>
-		<style>
-			.hero-section {
-				padding: 110px 0 72px;
-				text-align: center;
-				background: radial-gradient(
-					ellipse 65% 40% at 50% 0%,
-					rgba(251, 191, 36, 0.04) 0%,
-					transparent 60%
-				);
-			}
-			.hero-eyebrow {
-				display: inline-flex;
-				align-items: center;
-				gap: 7px;
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.7rem;
-				font-weight: 500;
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				color: var(--gold);
-				background: rgba(251, 191, 36, 0.08);
-				border: 1px solid rgba(251, 191, 36, 0.22);
-				border-radius: 50px;
-				padding: 5px 14px;
-				margin-bottom: 22px;
-			}
-			.hero-title {
-				font-size: clamp(2rem, 5vw, 3.6rem);
-				font-weight: 800;
-				letter-spacing: -0.04em;
-				line-height: 1.1;
-				color: var(--text);
-			}
-			.hero-title .accent {
-				color: var(--gold);
-			}
-			.hero-subtitle {
-				font-size: 1rem;
-				color: var(--muted);
-				max-width: 420px;
-				margin: 16px auto 0;
-				line-height: 1.65;
-			}
-			.speed-display {
-				display: inline-flex;
-				align-items: center;
-				gap: 16px;
-				background: rgba(251, 191, 36, 0.04);
-				border: 1px solid rgba(251, 191, 36, 0.25);
-				border-radius: 14px;
-				padding: 20px 32px;
-				margin: 32px auto 0;
-			}
-			.speed-num {
-				font-size: 3.2rem;
-				font-weight: 800;
-				color: var(--gold);
-				letter-spacing: -0.06em;
-				line-height: 1;
-			}
-			.speed-meta .top {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.68rem;
-				color: var(--muted);
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-			}
-			.speed-meta .bottom {
-				font-size: 0.85rem;
-				color: var(--text-body);
-				margin-top: 3px;
-			}
-
-			.model-block {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 14px;
-				padding: 32px;
-				height: 100%;
-				position: relative;
-				overflow: hidden;
-				transition:
-					border-color 0.2s,
-					transform 0.2s;
-			}
-			.model-block:hover {
-				border-color: rgba(251, 191, 36, 0.3);
-				transform: translateY(-3px);
-			}
-			.model-block::before {
-				content: "";
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				height: 3px;
-				background: linear-gradient(90deg, var(--gold), #f59e0b);
-			}
-			.model-block.image-block::before {
-				background: linear-gradient(90deg, var(--brand), #06b6d4);
-			}
-			.model-tag {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.66rem;
-				color: var(--gold);
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin-bottom: 10px;
-			}
-			.model-tag.img {
-				color: #06b6d4;
-			}
-			.model-name {
-				font-size: 1.3rem;
-				font-weight: 800;
-				color: var(--text);
-				letter-spacing: -0.03em;
-				margin-bottom: 10px;
-			}
-			.model-desc {
-				font-size: 0.88rem;
-				color: var(--muted);
-				line-height: 1.65;
-				margin-bottom: 22px;
-			}
-			.spec {
-				display: flex;
-				align-items: center;
-				gap: 9px;
-				font-size: 0.83rem;
-				margin-bottom: 8px;
-			}
-			.spec .s-icon {
-				font-size: 0.88rem;
-			}
-			.spec .s-text {
-				color: var(--muted);
-			}
-			.spec .s-text strong {
-				color: var(--text-body);
-				font-weight: 500;
-			}
-
-			.terminal-box {
-				background: #f9fafb;
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				padding: 24px;
-			}
-			.terminal-bar {
-				display: flex;
-				gap: 6px;
-				margin-bottom: 18px;
-			}
-			.t-dot {
-				width: 10px;
-				height: 10px;
-				border-radius: 50%;
-			}
-			.terminal-line {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.78rem;
-				line-height: 1.8;
-				color: #4b5563;
-			}
-			.terminal-line.active {
-				color: var(--text-body);
-			}
-			.terminal-line.gold {
-				color: var(--gold);
-			}
-			.cursor {
-				display: inline-block;
-				width: 2px;
-				height: 13px;
-				background: var(--gold);
-				vertical-align: middle;
-				animation: blink 1s step-end infinite;
-				margin-left: 2px;
-			}
-			@keyframes blink {
-				0%,
-				100% {
-					opacity: 1;
-				}
-				50% {
-					opacity: 0;
-				}
-			}
-
-			.cta-band {
-				background: var(--surface);
-				border-top: 1px solid var(--border);
-				border-bottom: 1px solid var(--border);
-			}
-
-		</style>
-	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-</head>
-	<body>
-		<ip-navbar active="lightning" show-solutions></ip-navbar>
-
-		<section class="hero-section">
-			<div class="container">
-				<div class="hero-eyebrow">⚡ Lightning Models</div>
-				<h1 class="hero-title">
-					AI at <span class="accent">Superhuman</span> Speed.
-				</h1>
-				<p class="hero-subtitle">
-					Lightning Text v2 and Lightning Image Turbo are
-					purpose-built for maximum cloud throughput — no compromise
-					on quality.
-				</p>
-				<div class="speed-display">
-					<div class="speed-num">1,000</div>
-					<div class="speed-meta">
-						<div class="top">Cloud inference</div>
-						<div class="bottom">words per second</div>
-					</div>
-				</div>
-				<div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-					<a href="install.html" class="btn btn-brand"
-						>Try Lightning Now</a
-					>
-					<a href="pricing.html" class="btn btn-ghost">See Plans</a>
-				</div>
-			</div>
-		</section>
-
-		<section class="py-5">
-			<div class="container">
-				<div class="section-tag">⚡ Lightning Suite</div>
-				<h2 class="section-title mb-4">
-					Two models. <span class="accent">Zero compromises.</span>
-				</h2>
-				<div class="row g-4">
-					<div class="col-md-6">
-						<div class="model-block h-100">
-							<div class="model-tag">Text Generation</div>
-							<div class="model-name">Lightning Text v2</div>
-							<p class="model-desc">
-								Built for speed and smooth streaming. Generate
-								instant responses for chat, coding, or long-form
-								writing — with optimized caching and decoding
-								that keeps latency near zero.
-							</p>
-							<div class="spec">
-								<span class="s-icon">⚡</span
-								><span class="s-text"
-									><strong>Up to 1,000 words/sec</strong>
-									streaming</span
-								>
-							</div>
-							<div class="spec">
-								<span class="s-icon">🔄</span
-								><span class="s-text"
-									>Low-latency
-									<strong>optimized decoding</strong></span
-								>
-							</div>
-							<div class="spec">
-								<span class="s-icon">💬</span
-								><span class="s-text"
-									>Perfect for
-									<strong
-										>chat, code & documents</strong
-									></span
-								>
-							</div>
-							<div class="spec">
-								<span class="s-icon">☁️</span
-								><span class="s-text"
-									>Cloud-native,
-									<strong>no local GPU needed</strong></span
-								>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="model-block image-block h-100">
-							<div class="model-tag img">Image Generation</div>
-							<div class="model-name">Lightning Image Turbo</div>
-							<p class="model-desc">
-								Ultra-realistic images with exceptional detail —
-								cinematic, sci-fi, or photorealistic. The new
-								default image model with sharper lighting
-								effects and faster generation than ever before.
-							</p>
-							<div class="spec">
-								<span class="s-icon">🎨</span
-								><span class="s-text"
-									><strong>Ultra-realistic</strong>
-									rendering</span
-								>
-							</div>
-							<div class="spec">
-								<span class="s-icon">🚀</span
-								><span class="s-text"
-									><strong>Faster</strong> than previous
-									models</span
-								>
-							</div>
-							<div class="spec">
-								<span class="s-icon">🌌</span
-								><span class="s-text"
-									>Exceptional
-									<strong>sci-fi & cinematic</strong>
-									output</span
-								>
-							</div>
-							<div class="spec">
-								<span class="s-icon">✨</span
-								><span class="s-text"
-									><strong>Sharper</strong> detail & lighting
-									effects</span
-								>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<div class="cta-band py-5 mt-5">
-			<div class="container text-center">
-				<div style="max-width: 440px; margin: 0 auto">
-					<div class="section-tag">Free on All Plans</div>
-					<h2 class="section-title mb-3">
-						Lightning is free<br />for everyone.
-					</h2>
-					<p
-						style="
-							color: var(--muted);
-							font-size: 0.9rem;
-							margin-bottom: 28px;
-						"
-					>
-						Lightning models are available on every plan, including
-						the free tier. Install InferencePort and start
-						generating at 1,000 words/sec today — no credit card
-						needed.
-					</p>
-					<a href="install.html" class="btn btn-brand"
-						>Install InferencePort Free</a
-					>
-				</div>
-			</div>
-		</div>
-
-		<ip-footer></ip-footer>
-
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="components/ip-footer.js"></script>
-		<script src="scripts/animations.js"></script>
-	<script src="scripts/hero-canvas.js"></script>
+		<script src="scripts/animations.js" defer></script>
+	</head>
+	<body>
+		<ip-navbar active="lightning"></ip-navbar>
+		<main>
+			<section class="sec night" style="border-top:0;padding:88px 0 96px">
+				<div class="wrap">
+					<div class="h-kicker" style="color:#6b7487">Lightning &middot; hosted chat</div>
+					<div class="split" style="align-items:end">
+						<div>
+							<h1 class="h-title" style="color:#fff">AI at the speed of reading.</h1>
+							<p class="h-lede" style="color:#9aa3b5">Lightning Text v2 and Lightning Image Turbo are built for cloud throughput. Both are free on every plan &mdash; in the desktop app, or in any browser.</p>
+							<div class="h-cta">
+								<a class="btn-brand" style="background:#fff;color:var(--ink);border-color:#fff" href="chat/">Try Lightning in the browser</a>
+								<a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="install.html#install">Use it in the app</a>
+							</div>
+						</div>
+						<div class="bignum">1,000<small>words / sec</small></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="sec">
+				<div class="wrap">
+					<div class="sec-head">
+						<div class="sec-idx">01 &mdash; The suite</div>
+						<div><h2>Two models, one job: be fast.</h2></div>
+					</div>
+					<div class="map" style="--x:1">
+						<div class="map-cols two">
+							<article class="surf surf-chat">
+								<div class="surf-label">Text generation</div>
+								<h3>Lightning Text v2</h3>
+								<p>Built for speed and smooth streaming. Optimized caching and decoding keep latency near zero for chat, coding and long-form writing.</p>
+								<dl>
+									<div><dt>Speed</dt><dd>Up to 1,000 words/sec streaming</dd></div>
+									<div><dt>Best for</dt><dd>Chat, code, documents</dd></div>
+									<div><dt>Runs on</dt><dd>Cloud &mdash; no local GPU needed</dd></div>
+								</dl>
+							</article>
+							<article class="surf surf-chat">
+								<div class="surf-label">Image generation</div>
+								<h3>Lightning Image Turbo</h3>
+								<p>Ultra-realistic images with exceptional detail &mdash; cinematic, sci-fi or photoreal. The default image model, with sharper lighting and faster generation.</p>
+								<dl>
+									<div><dt>Look</dt><dd>Ultra-realistic, cinematic</dd></div>
+									<div><dt>Speed</dt><dd>Faster than previous models</dd></div>
+									<div><dt>Runs on</dt><dd>Cloud &mdash; no local GPU needed</dd></div>
+								</dl>
+							</article>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="sec paper">
+				<div class="wrap">
+					<div class="sec-head">
+						<div class="sec-idx">02 &mdash; Where it fits</div>
+						<div>
+							<h2>Lightning is for chatting. The API is for shipping.</h2>
+							<p>Lightning draws on your plan&rsquo;s quotas &mdash; ideal for day-to-day use, bounded by plan limits. For production services, use the Pay-to-Go API from the Developer Console, which bills a separate credit wallet.</p>
+						</div>
+					</div>
+					<table class="dtable">
+						<thead><tr><th>You want&hellip;</th><th>Use</th><th>Billed by</th></tr></thead>
+						<tbody>
+							<tr><td>Fast everyday chat</td><td><span class="pill chat">Lightning chat</span></td><td>Plan quotas &mdash; free tier included</td></tr>
+							<tr><td>Models inside your product</td><td><span class="pill console">Pay-to-Go API</span></td><td>Credits, per request</td></tr>
+							<tr><td>Lightning for a whole team</td><td><span class="pill org">Organizations</span></td><td>Org policy can bill Lightning to the organization</td></tr>
+						</tbody>
+					</table>
+					<p style="margin-top:28px"><a class="btn-ghost" href="platform.html">How the pieces fit together &rarr;</a></p>
+				</div>
+			</section>
+		</main>
+
+		<section class="closer">
+			<div class="wrap">
+				<h2>Free on every plan.</h2>
+				<p>No credit card for the free tier. Open it in a browser now, or install the app.</p>
+				<div class="h-cta">
+					<a class="btn-brand" href="chat/">Try Lightning</a>
+					<a class="btn-ghost" href="install.html#install">Install InferencePort</a>
+					<a class="btn-ghost" href="pricing.html">See plans</a>
+				</div>
+			</div>
+		</section>
+		<ip-footer></ip-footer>
 	</body>
 </html>

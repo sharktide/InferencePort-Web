@@ -292,3 +292,17 @@ ip-footer { display: block; background: var(--night); color: #9aa3b5; }
   .hero-cta-group { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; padding: 0 10px; }
   .hero-cta-group .btn { width: 100%; text-align: center; }
 }
+
+/* ═════════ Harmonization for pages not yet rebuilt in the editorial system ═════════
+   (pricing, shield, security, marketplace, install, tools keep their markup;
+   these rules align their hero and surfaces with the new look.) */
+.hero-canvas { display: none !important; }
+.hero-section, .page-hero, .hero { background: none !important; border-bottom: 1px solid var(--ink); }
+.hero-eyebrow, .pulse-badge {
+  border-radius: 2px !important; background: transparent !important;
+  border: 1px solid var(--ink) !important; color: var(--ink) !important;
+}
+.hero-title, .page-hero h1, .hero h1 { letter-spacing: -0.05em !important; }
+[class*="card"]:not(.carousel-card) { border-radius: 6px !important; }
+.popular-pill, .model-pill, .decision-badge, .gpu-badge { border-radius: 2px !important; }
+html, body { overflow-x: clip; }
