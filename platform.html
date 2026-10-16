@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Platform guide — App, Console &amp; Organizations | InferencePort AI</title>
+		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+		<meta name="description" content="How the InferencePort desktop app, Developer Console and Organization management fit together: who each is for, what flows between them, and which one to use." />
+		
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href="https://inferenceport.ai/platform.html" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://inferenceport.ai/platform.html" />
+		<meta property="og:title" content="InferencePort platform guide — App, Console &amp; Organizations" />
+		<meta property="og:description" content="One account, three surfaces: the desktop app, the Developer Console and Organization management — and exactly how they connect." />
+		<meta property="og:image" content="https://inferenceport.ai/og-image.png" />
+		<meta property="og:site_name" content="InferencePort AI" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="InferencePort platform guide — App, Console &amp; Organizations" />
+		<meta name="twitter:description" content="One account, three surfaces: the desktop app, the Developer Console and Organization management — and exactly how they connect." />
+		<meta name="twitter:image" content="https://inferenceport.ai/og-image.png" />
+
+		<!-- Structured Data -->
+		
+
+		
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href="styles/shared.css" />
+		<link rel="stylesheet" href="styles/site.css" />
+		<script src="components/ip-navbar.js"></script>
+		<script src="components/ip-footer.js"></script>
+		<script src="scripts/animations.js" defer></script>
+	</head>
+	<body>
+		<ip-navbar active="platform"></ip-navbar>
+
+		<main>
+		<section class="h-hero" style="padding-bottom:72px">
+			<div class="wrap">
+				<div class="h-kicker">Platform guide</div>
+				<h1 class="h-title" style="max-width:14ch">The app. The console. The organization.</h1>
+				<p class="h-lede">Three surfaces, one account. This page explains what each one is, who it is for, and exactly how they connect &mdash; so you can stop guessing which tab you need.</p>
+			</div>
+		</section>
+
+		<nav class="subnav" aria-label="On this page">
+			<div class="wrap">
+				<a href="#overview" style="--c:var(--ink)">Overview</a>
+				<a href="#app" style="--c:var(--brand)">Desktop app</a>
+				<a href="#chat" style="--c:var(--gold)">Lightning chat</a>
+				<a href="#console" style="--c:var(--purple)">Developer console</a>
+				<a href="#organizations" style="--c:var(--cyan)">Organizations</a>
+				<a href="#journeys" style="--c:var(--ink)">Setups</a>
+			</div>
+		</nav>
+
+		<!-- ═════════ OVERVIEW ═════════ -->
+		<section class="sec anchor" id="overview" style="border-top:0">
+			<div class="wrap">
+				<div class="sec-head">
+					<div class="sec-idx">Overview</div>
+					<div>
+						<h2>Where you work, where you operate, where you govern.</h2>
+						<p>A useful rule: the <b>app</b> is for <em>using</em> models, the <b>console</b> is for <em>operating</em> them, and <b>organizations</b> are for <em>governing</em> both for a team.</p>
+					</div>
+				</div>
+
+				<div class="map">
+					<div class="map-acct"><span>One InferencePort account</span><span>the same sign-in opens all of it</span></div>
+					<div class="map-cols">
+						<article class="surf surf-app">
+							<div class="surf-label">Desktop app</div>
+							<h3>Use</h3>
+							<p>Chat, host servers, run tools, pull models. Local-first.</p>
+							<p style="margin:0"><a href="#app">Jump to the app &darr;</a></p>
+						</article>
+						<article class="surf surf-console">
+							<div class="surf-label">Developer console</div>
+							<h3>Operate</h3>
+							<p>Keys, wallet, usage, playground, Shield. Web-based.</p>
+							<p style="margin:0"><a href="#console">Jump to the console &darr;</a></p>
+						</article>
+						<article class="surf surf-org">
+							<div class="surf-label">Organizations</div>
+							<h3>Govern</h3>
+							<p>Seats, budgets, policy, SSO, audit. A workspace in the console.</p>
+							<p style="margin:0"><a href="#organizations">Jump to organizations &darr;</a></p>
+						</article>
+					</div>
+					<div class="map-bridge">
+						<span><b>Console &rarr; App</b>Org desktop policy syncs to members</span>
+						<svg viewBox="0 0 56 14" fill="none" aria-hidden="true"><path d="M56 7H2M8 1L2 7l6 6" stroke="currentColor" stroke-width="1.5"/></svg>
+						<span><b>App &rarr; Console</b>Org-billed usage lands in the shared wallet</span>
+					</div>
+				</div>
+
+				<div class="callout" style="--c:var(--cyan)"><b>Common confusion:</b> Organizations is not a separate product or login. It is a workspace inside the Developer Console, reached from the context switcher and the &ldquo;Organizations&rdquo; entry in the sidebar. Switching to an organization changes whose wallet, keys and limits you are looking at.</div>
+			</div>
+		</section>
+
+		<!-- ═════════ DESKTOP APP ═════════ -->
+		<div class="wrap">
+		<section class="chapter anchor" id="app">
+			<div class="side">
+				<div class="surf-label surf-app" style="color:var(--brand-ink)"><span style="width:8px;height:8px;background:var(--brand);display:inline-block"></span>Desktop app</div>
+				<div class="where"><b>Where</b>Installed on Windows, macOS or Linux<b style="margin-top:12px">For</b>Everyone<b style="margin-top:12px">Pay with</b>Nothing for local. Plans for cloud.</div>
+				<p style="margin-top:20px"><a class="btn-brand" href="install.html#install">Download</a></p>
+			</div>
+			<div>
+				<h2>The place AI actually gets used.</h2>
+				<p class="lead">The desktop app is a clean interface for local models, hosted models and the tools around them. It is local-first: chats and sessions are stored on your device, and local inference keeps prompts on your machine.</p>
+				<h4>What you can do</h4>
+				<ul class="idx-list">
+					<li><b>Local chat</b><span>Run open-source models through Ollama, fully offline. Unlimited and free on every plan.</span></li>
+					<li><b>Cloud models</b><span>Switch to Lightning (or other hosted models) for speed, image, video and audio generation, within your plan.</span></li>
+					<li><b>Host a server</b><span>Share the models on your machine with teammates or customers via accounts or custom API keys.</span></li>
+					<li><b>Tools</b><span>Create custom tools, or install community tools from the registry and run them in chat.</span></li>
+					<li><b>Models</b><span>Browse and pull from the marketplace and Hugging Face; launch Spaces from inside the app.</span></li>
+				</ul>
+				<h4>How it connects</h4>
+				<ul class="idx-list">
+					<li><b>Account</b><span>Sign in with your InferencePort account to unlock cloud features and sync.</span></li>
+					<li><b>Org policy</b><span>If you belong to an organization, its admins can limit cloud use, model pulls, imports, tools and server hosting. The app refreshes the policy within a few minutes or on restart.</span></li>
+				</ul>
+			</div>
+		</section>
+
+		<!-- ═════════ LIGHTNING CHAT ═════════ -->
+		<section class="chapter anchor" id="chat">
+			<div class="side">
+				<div class="surf-label" style="color:var(--gold-ink)"><span style="width:8px;height:8px;background:var(--gold);display:inline-block"></span>Lightning chat</div>
+				<div class="where"><b>Where</b>In the app, or <span class="mono">/chat</span> in a browser<b style="margin-top:12px">For</b>Anyone with an account<b style="margin-top:12px">Pay with</b>Plan quotas</div>
+				<p style="margin-top:20px"><a class="btn-ghost" href="chat/">Try Lightning</a></p>
+			</div>
+			<div>
+				<h2>The fast path, with nothing to set up.</h2>
+				<p class="lead">Lightning is the hosted chat experience: Lightning Text v2 streams up to 1,000 words per second and Lightning Image Turbo is the default image model. It runs on your subscription&rsquo;s quotas, so there is no wallet to fund.</p>
+				<div class="callout" style="--c:var(--gold)"><b>Lightning vs the API.</b> Lightning subscriptions are tuned for everyday chatting and bounded by plan limits. For production services, use the Pay-to-Go API from the console &mdash; it bills a separate credit wallet instead of consuming plan quotas.</div>
+			</div>
+		</section>
+
+		<!-- ═════════ CONSOLE ═════════ -->
+		<section class="chapter anchor" id="console">
+			<div class="side">
+				<div class="surf-label" style="color:var(--purple-ink)"><span style="width:8px;height:8px;background:var(--purple);display:inline-block"></span>Developer console</div>
+				<div class="where"><b>Where</b><span class="mono">/console</span> in any browser<b style="margin-top:12px">For</b>Developers and admins<b style="margin-top:12px">Pay with</b>Pay-to-Go credits</div>
+				<p style="margin-top:20px"><a class="btn-brand" href="/console">Open the console</a></p>
+			</div>
+			<div>
+				<h2>The control room for everything you build.</h2>
+				<p class="lead">The console is a web dashboard for the cloud side of InferencePort. It is where API keys are created, credits are bought, usage is measured and models are tried before they ship.</p>
+				<h4>Build</h4>
+				<ul class="idx-list">
+					<li><b>API keys</b><span>Create and revoke keys for the OpenAI-compatible endpoint.</span></li>
+					<li><b>Pay-to-Go API</b><span>Text, image, video, audio and 3D, billed per request from a credit wallet on its own ledger.</span></li>
+					<li><b>Playground</b><span>Try models and prompts before wiring them into code.</span></li>
+					<li><b>Subscription generation</b><span>Try text, image, video and audio generation against your plan&rsquo;s quota, signed in as yourself &mdash; no credits drawn.</span></li>
+					<li><b>Models</b><span>Browse the catalog of available models.</span></li>
+					<li><b>Managed agents</b><span>Create agents with a model, system prompt and MCP servers; call them as <span class="mono">agent/&lt;user&gt;/&lt;id&gt;</span>, keep them private or publish them.</span></li>
+					<li><b>Council MCP</b><span>Connect a council of models to Claude Code, Cursor, VS Code or Claude Desktop as an MCP server.</span></li>
+					<li><b>Model deployments</b><span>Deploy any open model on demand, personally or for an organization.</span></li>
+					<li><b>ipx CLI</b><span>Do all of this from your terminal and CI with <a href="ipx.html">ipx</a>.</span></li>
+					<li><b>Shield</b><span>Manage AI Shield, the one-call fraud and abuse decision API.</span></li>
+				</ul>
+				<h4>Account</h4>
+				<ul class="idx-list">
+					<li><b>Billing</b><span>Subscriptions, credit packs and receipts.</span></li>
+					<li><b>Usage</b><span>Per-model usage and cost, over time.</span></li>
+					<li><b>Authorized apps</b><span>Review which third-party applications can act for your account.</span></li>
+				</ul>
+				<h4>Quick start</h4>
+				<div class="spec" style="margin-top:12px">
+					<div class="spec-bar"><span>Call the API with a console key</span><span>shell</span></div>
+<pre><span class="k">curl</span> <span class="u">https://api.inferenceport.ai/v1/chat/completions</span> \
+  -H <span class="s">"Authorization: Bearer $IP_API_KEY"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{"messages":[{"role":"user","content":"Hello"}]}'</span></pre>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ ORGANIZATIONS ═════════ -->
+		<section class="chapter anchor" id="organizations">
+			<div class="side">
+				<div class="surf-label" style="color:var(--cyan-ink)"><span style="width:8px;height:8px;background:var(--cyan);display:inline-block"></span>Organizations</div>
+				<div class="where"><b>Where</b>A workspace inside the console<b style="margin-top:12px">For</b>Owners, admins, finance, auditors<b style="margin-top:12px">Pay with</b>Per seat, per month</div>
+				<p style="margin-top:20px"><a class="btn-brand" href="pricing.html#organizations">Organization plans</a></p>
+			</div>
+			<div>
+				<h2>One wallet. Real controls. A record of everything.</h2>
+				<p class="lead">An organization turns individual accounts into a managed team. Members share one credit wallet, admins set budgets and policies, and every action is recorded. It reaches into the desktop app, so policy applies where people actually work.</p>
+				<h4>Manage</h4>
+				<ul class="idx-list">
+					<li><b>Members &amp; teams</b><span>Invite by email or link, assign roles, group people into teams, suspend instantly.</span></li>
+					<li><b>API keys</b><span>Org-owned keys with budgets, model and modality limits, rate limits, required expiry and IP allowlists.</span></li>
+					<li><b>Budgets</b><span>Per-member monthly credit budgets, per-key budgets and an org-wide monthly spend limit, with alerts.</span></li>
+					<li><b>Policies</b><span>Allow-list the models and modalities the whole org can use.</span></li>
+					<li><b>Desktop app</b><span>Choose cloud or local-only, control model pulls, imports, custom tools, server hosting and one-click server access, and whether Lightning bills the member or the org.</span></li>
+					<li><b>Security</b><span>SAML single sign-on with just-in-time provisioning, enforced SSO, verified domains, IP allowlists.</span></li>
+					<li><b>Audit &amp; usage</b><span>Searchable audit log with CSV/JSON export and signed-webhook streaming to your SIEM. Usage by member, key and model.</span></li>
+					<li><b>Billing</b><span>Seat-based plans, invoices, receipts and notification rules.</span></li>
+				</ul>
+				<h4>Who can see what</h4>
+				<div class="mscroll" style="margin-top:12px">
+				<table class="matrix">
+					<thead><tr><th>Section</th><th>Owner</th><th>Admin</th><th>Billing</th><th>Auditor</th><th>Member</th></tr></thead>
+					<tbody>
+						<tr><td>Overview, members, teams, keys, usage</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td></tr>
+						<tr><td>Billing &amp; invoices</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="n">&mdash;</td></tr>
+						<tr><td>Policies, desktop app, security</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="n">&mdash;</td><td class="n">&mdash;</td><td class="n">&mdash;</td></tr>
+						<tr><td>Audit log</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="n">&mdash;</td><td class="y">&#10003;</td><td class="n">&mdash;</td></tr>
+						<tr><td>Notifications</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="y">&#10003;</td><td class="n">&mdash;</td><td class="n">&mdash;</td></tr>
+					</tbody>
+				</table>
+				</div>
+				<p style="font-size:.82rem;color:var(--text-muted);margin-top:12px">Auditors and billing managers can read, but cannot spend credits. Members use the org wallet and create their own keys inside the org&rsquo;s limits.</p>
+			</div>
+		</section>
+
+		<!-- ═════════ JOURNEYS ═════════ -->
+		<section class="chapter anchor" id="journeys">
+			<div class="side">
+				<div class="surf-label" style="color:var(--ink)"><span style="width:8px;height:8px;background:var(--ink);display:inline-block"></span>Typical setups</div>
+			</div>
+			<div>
+				<h2>How teams actually combine them.</h2>
+				<p class="lead">Most people start with the app and add surfaces as the work grows.</p>
+				<table class="dtable">
+					<thead><tr><th>You are&hellip;</th><th>You use</th><th>The flow</th></tr></thead>
+					<tbody>
+						<tr><td>An individual who wants private AI</td><td><span class="pill app">Desktop app</span></td><td>Install, pull a model, chat locally. Add Lightning for speed when you want it.</td></tr>
+						<tr><td>Someone who wants to call hosted models on a plan, not credits</td><td><span class="pill console">Console</span></td><td>Use Generation (Subscription) in the console: it runs on your plan quota, while Pay-to-Go draws from the credit wallet.</td></tr>
+						<tr><td>A developer shipping a feature</td><td><span class="pill app">App</span> + <span class="pill console">Console</span></td><td>Prototype in the app and playground, create a key in the console, fund the wallet, call <span class="mono">/v1</span>.</td></tr>
+						<tr><td>A startup with a shared budget</td><td><span class="pill console">Console</span> + <span class="pill org">Organization</span></td><td>Create an org, invite the team, set per-member budgets, and issue org keys with limits.</td></tr>
+						<tr><td>A company rolling out AI to employees</td><td>All three</td><td>Enforce SSO, restrict models and tools by policy, push desktop settings to every member, and stream audit to your SIEM.</td></tr>
+						<tr><td>A team hosting private models</td><td><span class="pill app">App</span> + <span class="pill org">Organization</span></td><td>Host a server from the app; let the org fill the allowed-user list from your directory.</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+		</div>
+		</main>
+
+		<section class="closer">
+			<div class="wrap">
+				<h2>Pick your starting point.</h2>
+				<p>Everything uses the same account, so you can begin anywhere and add the rest later.</p>
+				<div class="h-cta">
+					<a class="btn-brand" href="install.html#install">Download the app</a>
+					<a class="btn-ghost" href="/console">Open the console</a>
+					<a class="btn-ghost" href="mailto:feedback@inferenceport.ai">Talk to us</a>
+				</div>
+			</div>
+		</section>
+
+		<ip-footer></ip-footer>
+	</body>
+</html>

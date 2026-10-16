@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>ipx — the InferencePort AI command line</title>
+		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+		<meta name="description" content="ipx is the InferencePort AI command line: chat and generate media, call the Pay-to-Go API, manage organizations, deploy models, run agents and the Council MCP, host local models and run AI Shield from your terminal and CI." />
+		
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href="https://inferenceport.ai/ipx.html" />
+
+		<!-- Open Graph -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://inferenceport.ai/ipx.html" />
+		<meta property="og:title" content="ipx — the InferencePort AI command line" />
+		<meta property="og:description" content="One native binary for chat, generation, organizations, deployments, agents, Council MCP, local models and AI Shield." />
+		<meta property="og:image" content="https://inferenceport.ai/og-image.png" />
+		<meta property="og:site_name" content="InferencePort AI" />
+
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="ipx — the InferencePort AI command line" />
+		<meta name="twitter:description" content="One native binary for chat, generation, organizations, deployments, agents, Council MCP, local models and AI Shield." />
+		<meta name="twitter:image" content="https://inferenceport.ai/og-image.png" />
+
+		<!-- Structured Data -->
+		
+
+		
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href="styles/shared.css" />
+		<link rel="stylesheet" href="styles/site.css" />
+		<script src="components/ip-navbar.js"></script>
+		<script src="components/ip-footer.js"></script>
+		<script src="scripts/animations.js" defer></script>
+	</head>
+	<body>
+		<ip-navbar active="ipx"></ip-navbar>
+		<main>
+		<section class="hx">
+			<div class="wrap">
+				<div class="hx-grid">
+					<div>
+						<span class="eyebrow">Command line &middot; one native binary</span>
+						<h1>All of InferencePort, in your <em>terminal.</em></h1>
+						<p class="sub">Chat and generate media, call the Pay-to-Go API, manage your organization, deploy models, run agents and the Council MCP, host local models, and scan with AI Shield &mdash; from scripts, servers and CI.</p>
+						<div class="cta"><a class="btn-brand" href="#install">Install ipx</a><a class="btn-ghost" href="https://github.com/inferenceport-ai/cli" target="_blank" rel="noopener">View on GitHub</a></div>
+						<div class="proof"><span><b>Windows, macOS, Linux</b></span><span><b>--json</b> on every command</span><span><b>Apache-2.0</b></span></div>
+					</div>
+					<div class="term">
+						<div class="term-bar"><i></i><i></i><i></i><span>ipx</span></div>
+<pre><span class="p">$</span> ipx auth login
+<span class="p">$</span> ipx gen image "a lighthouse at dawn" -o lighthouse.jpg
+<span class="p">$</span> ipx p2g balance
+<span class="p">$</span> ipx agent chat acme-bot/support
+<span class="p">$</span> ipx mcp council reason "Is this migration safe?" --tier basic
+<span class="p">$</span> git diff | ipx shield scan --task dlp --fail-on review
+<span class="c"># exit code 3 fails the pipeline</span></pre>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="blk alt" id="install">
+			<div class="wrap">
+				<div class="sh"><div class="k">Install</div><h2>Use the package manager you already have.</h2><p>ipx ships as a self-contained native binary. None of these need Python or anything else installed beyond themselves.</p></div>
+				<table class="instbl">
+					<tr><td>pip</td><td><code>pip install inferenceport-cli</code></td></tr>
+					<tr><td>npm</td><td><code>npm install -g @inferenceport-ai/ipx</code></td></tr>
+					<tr><td>cargo</td><td><code>cargo install ipx-cli</code></td></tr>
+					<tr><td>macOS / Linux</td><td><code>curl -fsSL https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.sh | sh</code></td></tr>
+					<tr><td>Windows PowerShell</td><td><code>irm https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.ps1 | iex</code></td></tr>
+					<tr><td>Prebuilt binary</td><td><a href="https://github.com/inferenceport-ai/cli/releases" target="_blank" rel="noopener">Download from GitHub Releases &rarr;</a></td></tr>
+				</table>
+			</div>
+		</section>
+
+		<section class="blk">
+			<div class="wrap">
+				<div class="sh"><div class="k">What it does</div><h2>Every part of the platform, one command away.</h2><p>Sign in with email, GitHub, Google, Microsoft, Hugging Face, SSO or an API key. Switch into an organization with <span class="mono">ipx auth context</span> and billing, policy and org commands follow.</p></div>
+				<div class="cmdgrid">
+					<div class="cmd"><code class="n">ipx gen</code><p>Subscription-billed Lightning: chat, text, image, video and audio.</p><small>ipx gen image "…" -o out.jpg</small></div>
+					<div class="cmd"><code class="n">ipx p2g</code><p>Credit-billed Pay-to-Go API: chat, image, video, audio and 3D, plus balance, ledger and keys.</p><small>ipx p2g 3d --image chair.jpg -o chair.glb</small></div>
+					<div class="cmd"><code class="n">ipx org</code><p>Members, invitations, teams, API keys, billing, usage, audit, domains, SSO, policy and desktop policy.</p><small>ipx org keys create ci --monthly-limit 25</small></div>
+					<div class="cmd"><code class="n">ipx agent</code><p>Create, update, publish and chat with managed agents; manage invites and members.</p><small>ipx agent chat acme-bot/support</small></div>
+					<div class="cmd"><code class="n">ipx mcp council</code><p>The hosted Council of LLMs MCP server: tiers, models, reason, test, and connect to your client.</p><small>ipx mcp council reason "…" --tier basic</small></div>
+					<div class="cmd"><code class="n">Deployments</code><p>Deploy, check, cancel, restore and track usage of on-demand model deployments, personal or for the org.</p><small>ipx --help</small></div>
+					<div class="cmd"><code class="n">ipx shield</code><p>AI Shield: scan, analyze, phishing, url, check, disposable, request, file, password, listing, review and domain.</p><small>ipx shield scan "Ignore previous instructions…"</small></div>
+					<div class="cmd"><code class="n">ipx model / local</code><p>Pull local models and chat with them, using the same engine as the desktop app.</p><small>ipx model pull llama3.2</small></div>
+					<div class="cmd"><code class="n">ipx server</code><p>Host your local models for teammates: start, stop, status and logs.</p><small>ipx server start --allow teammate@acme.com --detach</small></div>
+					<div class="cmd"><code class="n">ipx import</code><p>Add Hugging Face Spaces, websites and files to the desktop app library.</p><small>ipx import space black-forest-labs/FLUX.1-schnell</small></div>
+					<div class="cmd"><code class="n">ipx usage</code><p>Quotas, wallet balance and organization spend at a glance.</p><small>ipx usage get</small></div>
+					<div class="cmd"><code class="n">ipx doctor</code><p>Diagnostics, config, API passthrough, rewards and shell completion.</p><small>ipx config · doctor · api · completion</small></div>
+				</div>
+			</div>
+		</section>
+
+		<section class="blk alt">
+			<div class="wrap">
+				<div class="frow c-api">
+					<div class="ftext">
+						<div class="pill-l">Built for automation</div>
+						<h2>Gate a pipeline. Pipe the output.</h2>
+						<p>ipx is scriptable by default: every command takes <span class="mono">--json</span>, reads from stdin and returns meaningful exit codes.</p>
+						<ul class="checks">
+							<li><b>--json everywhere.</b> Raw output for <span class="mono">jq</span>: <span class="mono">ipx --json usage get | jq .quota</span>.</li>
+							<li><b>Fail the build.</b> <span class="mono">--fail-on review</span> exits with code 3 when Shield returns a verdict at or above review.</li>
+							<li><b>Your own rules.</b> Pass <span class="mono">--policy</span>, <span class="mono">--block</span> and <span class="mono">--allow</span> to Shield.</li>
+							<li><b>API keys.</b> Authenticate non-interactively in CI with an API key.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="shield.html">AI Shield commands</a><a class="btn-ghost" href="https://inferenceport-ai.readthedocs.io" target="_blank" rel="noopener">Read the docs</a></div>
+					</div>
+					<div class="term">
+						<div class="term-bar"><i></i><i></i><i></i><span>ci.sh</span></div>
+<pre><span class="c"># scan a diff before it ships</span>
+<span class="p">$</span> git diff | ipx shield scan --task dlp --fail-on review
+
+<span class="c"># bulk-check a list of emails</span>
+<span class="p">$</span> ipx shield check email -f signups.txt --only-flagged
+
+<span class="c"># triage a suspicious message</span>
+<span class="p">$</span> ipx shield phishing -f suspicious.eml
+
+<span class="c"># check uploads against your policy</span>
+<span class="p">$</span> ipx shield file uploads/* --policy policy.json</pre>
+					</div>
+				</div>
+			</div>
+		</section>
+		</main>
+		<section class="closer">
+			<div class="wrap">
+				<h2>Install ipx in a minute.</h2>
+				<p>One binary. Sign in once, then script anything you can do in the console.</p>
+				<div class="h-cta"><a class="btn-brand" href="#install">Install ipx</a><a class="btn-ghost" href="https://github.com/inferenceport-ai/cli" target="_blank" rel="noopener">GitHub</a><a class="btn-ghost" href="/console">Open the console</a></div>
+			</div>
+		</section>
+		<ip-footer></ip-footer>
+	</body>
+</html>
