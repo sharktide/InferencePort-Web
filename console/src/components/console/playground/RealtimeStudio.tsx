@@ -44,14 +44,14 @@ export function estimateTokenCost(usage: any, rates: Record<string, any> | undef
   const image = num(inD.image_tokens);
   const textOut = num(outD.text_tokens) || (outD.audio_tokens ? 0 : num(usage.output_tokens));
   const cachedText = Math.min(cached, text);
-  const cost =
+  return (
     (Math.max(0, text - cachedText) * num(rates.text_in) +
       cachedText * num(rates.cached_text_in) +
       audio * num(rates.audio_in) +
       image * num(rates.image_in) +
       textOut * num(rates.text_out) +
-      num(outD.audio_tokens) * num(rates.audio_out)) / 1_000_000;
-  return cost;
+      num(outD.audio_tokens) * num(rates.audio_out)) / 1_000_000
+  );
 }
 
 const WORKLET = `
@@ -81,19 +81,33 @@ export function resampleToPcm16(input: Float32Array, fromRate: number): Uint8Arr
   return new Uint8Array(out.buffer);
 }
 
-const isConversational = (m: any) => Array.isArray(m?.output_modalities) && m.output_modalities.includes("audio");
+const isConversational = (m: any) =>
+  m?.session_kind ? m.session_kind === "conversation" : Array.isArray(m?.output_modalities) && m.output_modalities.includes("audio");
 
-const defaultSession = (m: any, voice: string, instructions: string) =>
-  JSON.stringify(
-    isConversational(m)
-      ? { modalities: ["text", "audio"], instructions, voice: voice || undefined, input_audio_format: "pcm16", output_audio_format: "pcm16", turn_detection: { type: "server_vad" } }
-      : { input_audio_format: "pcm16" },
-    null,
-    2,
-  );
+/**
+ * The session.update body for a model. The catalog ships a default in the upstream's (GA) Realtime shape; voice and
+ * instructions are overlaid for conversational models. Conversational models reject input-transcription settings,
+ * so none are ever added here.
+ */
+export function buildSession(m: any, voice: string, instructions: string): Record<string, any> {
+  const base = m?.default_session && typeof m.default_session === "object"
+    ? JSON.parse(JSON.stringify(m.default_session))
+    : isConversational(m)
+      ? { type: "realtime", output_modalities: ["audio"], audio: { input: { format: { type: "audio/pcm", rate: PCM_RATE }, turn_detection: { type: "server_vad" } }, output: { format: { type: "audio/pcm", rate: PCM_RATE } } } }
+      : { type: "transcription", audio: { input: { format: { type: "audio/pcm", rate: PCM_RATE }, turn_detection: null } } };
+  if (isConversational(m)) {
+    if (instructions.trim()) base.instructions = instructions.trim();
+    if (voice) {
+      base.audio = base.audio || {};
+      base.audio.output = { ...(base.audio.output || {}), voice };
+    }
+  }
+  return base;
+}
 
-export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: StudioProps) {
+export default function RealtimeStudio({ session, apiBase, apiPrefix, models, active = true }: StudioProps) {
   const org = useOptionalOrgContext();
+  const activeOrg = org?.activeSlug ?? null;
   const catalog = useMemo(() => realtimeModels(models), [models]);
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [voice, setVoice] = useState("");
@@ -109,9 +123,12 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
   const [micOn, setMicOn] = useState(false);
   const [spent, setSpent] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [queuedCount, setQueuedCount] = useState(0);
 
   const ws = useRef<WebSocket | null>(null);
   const ctx = useRef<AudioContext | null>(null);
+  const out = useRef<MediaStreamAudioDestinationNode | null>(null);
+  const outEl = useRef<HTMLAudioElement | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const node = useRef<AudioWorkletNode | null>(null);
   const pending = useRef<Float32Array[]>([]);
@@ -119,19 +136,25 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
   const sentSeconds = useRef(0);
   const playAt = useRef(0);
   const sources = useRef<Set<AudioBufferSourceNode>>(new Set());
-  const phaseRef = useRef<Phase>("idle");
-  phaseRef.current = phase;
+  /** Bumped on every connect/disconnect; async setup that finishes for an older session cleans up after itself. */
+  const gen = useRef(0);
+  const responding = useRef(false);
+  const queued = useRef<string[]>([]);
 
   const selected = catalog.find((m) => slug(m) === model);
   const talks = isConversational(selected);
   const voices: string[] = Array.isArray(selected?.voices) ? selected.voices : [];
+  const sessionActive = phase === "connecting" || phase === "live";
 
   useEffect(() => {
     if (catalog.length && !catalog.some((m) => slug(m) === model)) setModel(slug(catalog[0]));
   }, [catalog, model]);
 
+  /* Another model has its own session shape: drop manual edits made for the previous one. */
+  useEffect(() => { setSessionEdited(false); }, [model]);
+
   useEffect(() => {
-    if (!sessionEdited) setSessionJson(defaultSession(selected, voice, instructions));
+    if (!sessionEdited) setSessionJson(JSON.stringify(buildSession(selected, voice, instructions), null, 2));
   }, [selected, voice, instructions, sessionEdited]);
 
   useEffect(() => {
@@ -153,6 +176,8 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
     stopPlayback();
+    if (outEl.current) { outEl.current.pause(); outEl.current.srcObject = null; outEl.current = null; }
+    out.current = null;
     ctx.current?.close().catch(() => undefined);
     ctx.current = null;
     pending.current = [];
@@ -160,15 +185,30 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     setMicOn(false);
   }, [stopPlayback]);
 
-  const disconnect = useCallback(() => {
+  const disconnect = useCallback((why?: string) => {
+    gen.current += 1; // invalidates any microphone setup still in flight
     const sock = ws.current;
     ws.current = null;
     if (sock && sock.readyState <= WebSocket.OPEN) sock.close(1000);
     teardownAudio();
+    responding.current = false;
+    queued.current = [];
+    setQueuedCount(0);
+    if (why) setNote(why);
     setPhase((p) => (p === "failed" ? p : "idle"));
   }, [teardownAudio]);
 
+  /* Unmount, hidden studio, a switch away from the P2G API, or another organization: end the session so nothing
+     keeps streaming (and billing) in the background. */
   useEffect(() => () => { disconnect(); }, [disconnect]);
+  const hidden = !active || apiPrefix !== "/v1";
+  useEffect(() => {
+    if (hidden && ws.current) disconnect("The session ended because you left the Realtime tab.");
+  }, [hidden, disconnect]);
+  const startedOrg = useRef<string | null>(null);
+  useEffect(() => {
+    if (ws.current && startedOrg.current !== activeOrg) disconnect("The session ended because the organization changed.");
+  }, [activeOrg, disconnect]);
 
   useEffect(() => {
     if (phase !== "live") return;
@@ -176,9 +216,27 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     return () => clearInterval(t);
   }, [phase]);
 
+  /* Model audio is played through an <audio> element fed by a MediaStream destination (not straight to the Web
+     Audio output) so the browser can use it as the echo-cancellation reference; otherwise the microphone picks
+     up the model's own voice and it starts answering itself. */
+  const ensureAudio = useCallback(() => {
+    if (ctx.current) return ctx.current;
+    const audio = new AudioContext();
+    const dest = audio.createMediaStreamDestination();
+    const el = new Audio();
+    el.srcObject = dest.stream;
+    void el.play().catch(() => undefined);
+    ctx.current = audio;
+    out.current = dest;
+    outEl.current = el;
+    void audio.resume().catch(() => undefined);
+    return audio;
+  }, []);
+
   const play = useCallback((b64: string) => {
     const audio = ctx.current;
-    if (!audio) return;
+    const dest = out.current;
+    if (!audio || !dest) return;
     const bin = atob(b64);
     const n = Math.floor(bin.length / 2);
     if (!n) return;
@@ -190,7 +248,7 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     }
     const src = audio.createBufferSource();
     src.buffer = buf;
-    src.connect(audio.destination);
+    src.connect(dest);
     const start = Math.max(audio.currentTime + 0.02, playAt.current);
     src.start(start);
     playAt.current = start + buf.duration;
@@ -208,10 +266,21 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     });
   }, []);
 
+  const sendItem = useCallback((text: string) => {
+    const sock = ws.current;
+    if (!sock || sock.readyState !== WebSocket.OPEN) return;
+    sock.send(JSON.stringify({ type: "conversation.item.create", item: { type: "message", role: "user", content: [{ type: "input_text", text }] } }));
+    sock.send(JSON.stringify({ type: "response.create" }));
+    responding.current = true;
+  }, []);
+
   const onEvent = useCallback((ev: any) => {
     const type: string = ev?.type || "";
-    if (type !== "response.output_audio.delta" && type !== "response.audio.delta" && !type.endsWith(".delta")) pushLog(type);
+    if (!type.endsWith(".delta")) pushLog(type);
     switch (type) {
+      case "response.created":
+        responding.current = true;
+        break;
       case "response.output_audio.delta":
       case "response.audio.delta":
         if (typeof ev.delta === "string") play(ev.delta);
@@ -226,6 +295,10 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
       case "response.audio_transcript.done":
         upsertTurn(String(ev.item_id || ev.response_id || "assistant"), "assistant", (t) => ({ ...t, text: ev.transcript ?? t.text, final: true }));
         break;
+      case "response.output_text.done":
+      case "response.text.done":
+        upsertTurn(String(ev.item_id || ev.response_id || "assistant"), "assistant", (t) => ({ ...t, text: ev.text ?? t.text, final: true }));
+        break;
       case "conversation.item.input_audio_transcription.delta":
         upsertTurn(String(ev.item_id || "user"), "user", (t) => ({ ...t, text: t.text + (ev.delta || "") }));
         break;
@@ -236,8 +309,12 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
         stopPlayback();
         break;
       case "response.done": {
+        responding.current = false;
+        setTurns((ts) => ts.map((t) => (t.role === "assistant" && !t.final ? { ...t, final: true } : t)));
         const usage = ev?.response?.usage;
         if (usage) setSpent((s) => s + estimateTokenCost(usage, selected?.realtime_pricing_per_million_tokens));
+        const next = queued.current.shift();
+        if (next !== undefined) { setQueuedCount(queued.current.length); sendItem(next); }
         break;
       }
       case "error":
@@ -246,7 +323,7 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
       default:
         break;
     }
-  }, [play, pushLog, selected, stopPlayback, upsertTurn]);
+  }, [play, pushLog, selected, sendItem, stopPlayback, upsertTurn]);
 
   const flush = useCallback((from: number) => {
     const sock = ws.current;
@@ -261,35 +338,45 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     sock.send(JSON.stringify({ type: "input_audio_buffer.append", audio: toBase64(bytes) }));
   }, []);
 
-  const startMic = useCallback(async () => {
-    const audio = new AudioContext();
-    ctx.current = audio;
-    await audio.resume().catch(() => undefined);
+  /** Start the microphone for session `mine`. Anything acquired for a session that has since ended is released. */
+  const startMic = useCallback(async (mine: number) => {
+    const audio = ensureAudio();
+    const stale = () => mine !== gen.current;
     await audio.audioWorklet.addModule(URL.createObjectURL(new Blob([WORKLET], { type: "application/javascript" })));
+    if (stale()) return;
     const media = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } });
+    if (stale()) { media.getTracks().forEach((t) => t.stop()); return; }
     stream.current = media;
     const source = audio.createMediaStreamSource(media);
     const capture = new AudioWorkletNode(audio, "pcm-capture");
     capture.port.onmessage = (e: MessageEvent<Float32Array>) => {
+      if (stale()) return;
       pending.current.push(e.data);
       pendingLen.current += e.data.length;
       if (pendingLen.current >= (SEND_SAMPLES * audio.sampleRate) / PCM_RATE) flush(audio.sampleRate);
     };
+    /* Some browsers only run nodes that reach the destination: route the worklet through a muted gain. */
+    const mute = audio.createGain();
+    mute.gain.value = 0;
     source.connect(capture);
+    capture.connect(mute);
+    mute.connect(audio.destination);
     node.current = capture;
     setMicOn(true);
-  }, [flush]);
+  }, [ensureAudio, flush]);
 
   const connect = async () => {
     if (!session?.access_token) return;
-    let extra: Record<string, unknown> = {};
-    try {
-      const parsed = sessionJson.trim() ? JSON.parse(sessionJson) : {};
-      if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("not an object");
-      extra = parsed;
-    } catch {
-      setError("The session JSON in Advanced is not a valid JSON object.");
-      return;
+    let update: Record<string, unknown> | null = null;
+    if (sessionJson.trim()) {
+      try {
+        const parsed = JSON.parse(sessionJson);
+        if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("not an object");
+        update = parsed;
+      } catch {
+        setError("The session JSON in Advanced is not a valid JSON object.");
+        return;
+      }
     }
     setError("");
     setNote("");
@@ -298,11 +385,16 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     setSpent(0);
     setSeconds(0);
     sentSeconds.current = 0;
+    responding.current = false;
+    queued.current = [];
+    setQueuedCount(0);
     setPhase("connecting");
 
+    const mine = ++gen.current;
+    startedOrg.current = activeOrg;
     const url = new URL(`${apiBase.replace(/^http/, "ws")}/v1/realtime`);
     url.searchParams.set("model", model);
-    if (org?.activeSlug) url.searchParams.set("org", org.activeSlug);
+    if (activeOrg) url.searchParams.set("org", activeOrg);
     const sock = new WebSocket(url.toString(), ["realtime", `openai-insecure-api-key.${session.access_token}`]);
     ws.current = sock;
     let opened = false;
@@ -310,15 +402,13 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     sock.onopen = async () => {
       opened = true;
       setPhase("live");
-      sock.send(JSON.stringify({ type: "session.update", session: extra }));
+      if (update) sock.send(JSON.stringify({ type: "session.update", session: update }));
       try {
-        await startMic();
+        await startMic(mine);
       } catch (e) {
-        teardownAudio();
+        if (mine !== gen.current) return; // the session already ended; nothing to recover
         if (talks) {
-          // Still usable as a text chat: replies just play without a microphone
-          ctx.current = new AudioContext();
-          void ctx.current.resume().catch(() => undefined);
+          ensureAudio(); // replies still play without a microphone
           setNote("Microphone unavailable, so this session is text only.");
         } else {
           setError("This model needs microphone audio, and the microphone could not be started.");
@@ -332,13 +422,16 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     };
     sock.onerror = () => { /* the close event carries the reason */ };
     sock.onclose = (e) => {
-      if (ws.current !== sock) return;
+      if (ws.current !== sock) return; // we closed it ourselves
       ws.current = null;
+      gen.current += 1;
       teardownAudio();
-      const reason = CLOSE_REASONS[e.code];
+      const reason = CLOSE_REASONS[e.code] || (e.code !== 1000 && e.reason ? e.reason : "");
+      const lost = opened && e.code !== 1000 && !reason;
       if (reason) setError((prev) => prev || reason);
       else if (!opened) setError("Could not reach the realtime API.");
-      setPhase(reason || !opened ? "failed" : "idle");
+      else if (lost) setError(`The connection was lost (code ${e.code}). Start a new session to continue.`);
+      setPhase(reason || !opened || lost ? "failed" : "idle");
     };
   };
 
@@ -346,10 +439,15 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
     const sock = ws.current;
     const text = draft.trim();
     if (!sock || sock.readyState !== WebSocket.OPEN || !text) return;
-    sock.send(JSON.stringify({ type: "conversation.item.create", item: { type: "message", role: "user", content: [{ type: "input_text", text }] } }));
-    sock.send(JSON.stringify({ type: "response.create" }));
     upsertTurn(`local-${Date.now()}`, "user", (t) => ({ ...t, text, final: true }));
     setDraft("");
+    if (responding.current) {
+      // The model is still answering; a second response.create would be rejected, so send this one when it finishes.
+      queued.current.push(text);
+      setQueuedCount(queued.current.length);
+      return;
+    }
+    sendItem(text);
   };
 
   const commit = () => {
@@ -377,24 +475,31 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
   return (
     <div className={shared.studio}>
       <aside className={cx(shared.controls, styles.rail)} aria-label="Realtime settings">
-        <ModelSelect models={catalog} value={model} onChange={setModel} label="Model" hint={catalog.length ? undefined : "No realtime models are available right now."} />
+        <ModelSelect
+          models={catalog}
+          value={model}
+          onChange={setModel}
+          label="Model"
+          disabled={sessionActive}
+          hint={sessionActive ? "End the session to switch models." : catalog.length ? undefined : "No realtime models are available right now."}
+        />
 
         {talks && voices.length > 0 && (
           <Field label="Voice">
-            <select className={shared.select} value={voice} onChange={(e) => setVoice(e.target.value)} disabled={live}>
+            <select className={shared.select} value={voice} onChange={(e) => setVoice(e.target.value)} disabled={sessionActive}>
               {voices.map((v) => <option key={v} value={v}>{v}</option>)}
             </select>
           </Field>
         )}
 
         {talks && (
-          <Field label="Instructions">
-            <textarea className={shared.textarea} rows={3} value={instructions} onChange={(e) => setInstructions(e.target.value)} disabled={live} />
+          <Field label="Instructions" hint="This model replies in speech and text; your own speech is not transcribed.">
+            <textarea className={shared.textarea} rows={3} value={instructions} onChange={(e) => setInstructions(e.target.value)} disabled={sessionActive} />
           </Field>
         )}
 
-        {live || phase === "connecting" ? (
-          <Button variant="danger" icon="stop" onClick={disconnect} className={styles.submit}>End session</Button>
+        {sessionActive ? (
+          <Button variant="danger" icon="stop" onClick={() => disconnect()} className={styles.submit}>End session</Button>
         ) : (
           <Button icon="mic" onClick={() => void connect()} disabled={!catalog.length} className={styles.submit}>
             {talks ? "Start conversation" : "Start transcribing"}
@@ -406,18 +511,18 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
 
         <Advanced>
           <div className={styles.advBody}>
-            <Field label="session.update" hint="Sent when the socket opens. Edit it to match the model's protocol; leave empty to send nothing.">
+            <Field label="session.update" hint="Sent when the socket opens, in the model's own format. Edit it to change the session; clear it to send nothing.">
               <textarea
                 className={cx(shared.textarea, shared.mono)}
-                rows={8}
+                rows={10}
                 spellCheck={false}
                 value={sessionJson}
-                disabled={live}
+                disabled={sessionActive}
                 onChange={(e) => { setSessionJson(e.target.value); setSessionEdited(true); }}
               />
             </Field>
             {sessionEdited && (
-              <button type="button" className={styles.linkBtn} disabled={live} onClick={() => setSessionEdited(false)}>Reset to default</button>
+              <button type="button" className={styles.linkBtn} disabled={sessionActive} onClick={() => setSessionEdited(false)}>Reset to default</button>
             )}
           </div>
         </Advanced>
@@ -425,20 +530,22 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
 
       <section className={shared.stage} aria-label="Realtime session">
         <div className={styles.bar}>
-          <StatusLine state={phase === "failed" ? "failed" : live ? "done" : phase === "connecting" ? "pending" : "pending"}>
+          <StatusLine state={phase === "failed" ? "failed" : live ? "done" : "pending"}>
             {phase === "connecting" ? "Connecting" : live ? (micOn ? "Live · listening" : "Live") : phase === "failed" ? "Disconnected" : "Not connected"}
           </StatusLine>
           <span className={styles.spacer} />
           {(live || seconds > 0) && <span className={styles.meta} title="Session time">{mm}:{ss}</span>}
           {(live || estimate > 0) && <span className={styles.meta} title="Estimated from usage reported during this session; exact charges are in Activity">≈ ${estimate.toFixed(4)}</span>}
-          {live && !talks && <Button variant="ghost" onClick={commit}>Commit audio</Button>}
+          {live && !talks && selected?.manual_commit && <Button variant="ghost" onClick={commit}>Commit audio</Button>}
         </div>
 
         {turns.length === 0 ? (
           <EmptyStage icon="mic" title={live ? "Listening…" : "No session yet"}>
             {talks
               ? "Start a conversation and speak, or type a message once connected. Replies are played back and transcribed here."
-              : "Start transcribing and speak. Incremental and final transcripts appear here as they arrive."}
+              : selected?.manual_commit
+                ? "Start transcribing, speak, then press Commit audio to get the transcript of what you said."
+                : "Start transcribing and speak. Incremental and final transcripts appear here as they arrive."}
           </EmptyStage>
         ) : (
           <ol className={styles.turns} aria-live="polite">
@@ -453,10 +560,11 @@ export default function RealtimeStudio({ session, apiBase, apiPrefix, models }: 
 
         {live && talks && (
           <form className={styles.compose} onSubmit={(e) => { e.preventDefault(); sendText(); }}>
-            <input className={shared.input} aria-label="Message" placeholder="Type a message instead of speaking…" value={draft} onChange={(e) => setDraft(e.target.value)} />
+            <input className={shared.input} aria-label="Type a message" placeholder="Type a message instead of speaking…" value={draft} onChange={(e) => setDraft(e.target.value)} />
             <Button type="submit" icon="arrow-up" disabled={!draft.trim()} aria-label="Send message" />
           </form>
         )}
+        {queuedCount > 0 && <p className={shared.hint}>{queuedCount} message{queuedCount === 1 ? "" : "s"} waiting for the current reply to finish.</p>}
 
         {log.length > 0 && (
           <details className={styles.log}>

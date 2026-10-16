@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import shared from "./Playground.module.css";
 import styles from "./EmbeddingStudio.module.css";
 import type { StudioProps } from "./types";
@@ -9,7 +9,8 @@ import { assertOk, downloadHref, jsonHeaders } from "./api";
 import { Advanced, Button, cx, EmptyStage, ErrorNote, Field, IconButton, ModelSelect, Segmented } from "./ui";
 
 const DEFAULT_MODEL = "text-embedding-3-small";
-const MAX_INPUTS = 32;
+const MAX_INPUTS = 32; // the API accepts at most 32 inputs per request
+const MIN_DIMENSIONS = 128;
 const PREVIEW_VALUES = 6;
 const SAMPLES = [
   "The cat sat on the mat.",
@@ -58,6 +59,8 @@ export default function EmbeddingStudio({ session, apiBase, apiPrefix, models }:
   const [error, setError] = useState("");
   const [result, setResult] = useState<Result | null>(null);
   const [copied, setCopied] = useState<number | "all" | null>(null);
+  /** Id of the newest request; an older one that finishes late must not replace newer results. */
+  const latest = useRef(0);
 
   useEffect(() => {
     if (catalog.length && !catalog.some((m) => slug(m) === model)) setModel(slug(catalog[0]));
@@ -82,13 +85,14 @@ export default function EmbeddingStudio({ session, apiBase, apiPrefix, models }:
   }
 
   const submit = async () => {
-    if (!lines.length) return;
+    if (!lines.length || busy) return;
     if (lines.length > MAX_INPUTS) { setError(`Use at most ${MAX_INPUTS} lines per request in the playground.`); return; }
     const dims = dimensions.trim() ? Number(dimensions) : undefined;
-    if (dims !== undefined && (!Number.isInteger(dims) || dims < 1 || (maxDims && dims > maxDims))) {
-      setError(`Dimensions must be a whole number between 1 and ${maxDims ?? "the model maximum"}.`);
+    if (dims !== undefined && (!Number.isInteger(dims) || dims < MIN_DIMENSIONS || (maxDims && dims > maxDims))) {
+      setError(`Dimensions must be a whole number between ${MIN_DIMENSIONS} and ${maxDims ?? "the model maximum"}.`);
       return;
     }
+    const mine = ++latest.current;
     setError("");
     setBusy(true);
     try {
@@ -99,6 +103,7 @@ export default function EmbeddingStudio({ session, apiBase, apiPrefix, models }:
       const rows: any[] = Array.isArray(d?.data) ? [...d.data].sort((a, b) => (a.index ?? 0) - (b.index ?? 0)) : [];
       const vectors = rows.map((row) => (typeof row.embedding === "string" ? decodeBase64Embedding(row.embedding) : (row.embedding as number[])));
       if (vectors.length !== lines.length) throw new Error("The API returned an unexpected number of embeddings.");
+      if (mine !== latest.current) return;
       setResult({
         model: d?.model || model,
         vectors,
@@ -108,9 +113,9 @@ export default function EmbeddingStudio({ session, apiBase, apiPrefix, models }:
         base64: format === "base64",
       });
     } catch (e) {
-      setError(errText(e, "Embedding request failed."));
+      if (mine === latest.current) setError(errText(e, "Embedding request failed."));
     } finally {
-      setBusy(false);
+      if (mine === latest.current) setBusy(false);
     }
   };
 
@@ -154,7 +159,7 @@ export default function EmbeddingStudio({ session, apiBase, apiPrefix, models }:
 
         <Advanced>
           <div className={styles.advBody}>
-            <Field label="Dimensions" hint={maxDims ? `Optional · up to ${maxDims}. Leave empty for the model default.` : "Optional · leave empty for the model default."}>
+            <Field label="Dimensions" hint={`Optional · ${MIN_DIMENSIONS} to ${maxDims ?? 4096}${selected?.supported_dimensions ? ` (this model: ${selected.supported_dimensions.join(", ")})` : ""}. Leave empty for the model default.`}>
               <input
                 className={shared.input}
                 inputMode="numeric"

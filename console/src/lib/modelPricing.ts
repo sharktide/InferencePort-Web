@@ -110,17 +110,17 @@ export function formatRealtimePrice(m: any, pct = 1): string | null {
 
 // pct scales every rate (used for reward discounts); 1 keeps list prices.
 export function formatModelPrice(m: any, pct = 1): string | null {
+  const type = modelType(m);
+  // These read their own top-level rate fields, so they work even when the entry has no `pricing` object.
+  if (type === "embedding") return formatEmbeddingPrice(m, pct);
+  if (type === "realtime") return formatRealtimePrice(m, pct);
   const pricing = m?.pricing;
   if (!pricing) return null;
-  const type = modelType(m);
 
   if (type === "audio") {
     const audio = formatAudioPrice(m, pct);
     if (audio) return audio;
   }
-
-  if (type === "embedding") return formatEmbeddingPrice(m, pct);
-  if (type === "realtime") return formatRealtimePrice(m, pct);
 
   if (type === "image") {
     if (pricing.token_pricing) {

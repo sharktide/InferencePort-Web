@@ -591,11 +591,12 @@
 		}
 
 		function formatModelPrice(m) {
-			const pricing = m?.pricing;
-			if (!pricing) return null;
 			const type = modelType(m);
+			// These read their own top-level rate fields, so they work without a `pricing` object.
 			if (type === "embedding") return formatEmbeddingPrice(m);
 			if (type === "realtime") return formatRealtimePrice(m);
+			const pricing = m?.pricing;
+			if (!pricing) return null;
 			if (type === "audio") {
 				const audio = formatAudioPrice(m);
 				if (audio) return audio;

@@ -180,7 +180,7 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
           const hidden = id !== mode || (source === "gen" && MODES.find((m) => m.id === id)?.p2gOnly);
           return (
             <section key={id} hidden={hidden} className={styles.studioSlot} aria-label={`${id} studio`}>
-              <Studio {...studioProps} />
+              <Studio {...studioProps} active={!hidden} />
             </section>
           );
         })}

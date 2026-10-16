@@ -76,9 +76,9 @@ export function Range({
 
 /* ---------- Searchable model picker ---------- */
 export function ModelSelect({
-  models, value, onChange, defaultLabel, placeholder = "Select a model", label = "Model", hint,
+  models, value, onChange, defaultLabel, placeholder = "Select a model", label = "Model", hint, disabled,
 }: {
-  models: any[]; value: string; onChange: (v: string) => void;
+  models: any[]; value: string; onChange: (v: string) => void; disabled?: boolean;
   /** When set, adds a leading "no explicit model" option. */
   defaultLabel?: string; placeholder?: string; label?: string; hint?: string;
 }) {
@@ -114,6 +114,7 @@ export function ModelSelect({
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-controls={listId}
+          disabled={disabled}
           onClick={() => setOpen((o) => !o)}
         >
           <span className={shared.pickerText}>

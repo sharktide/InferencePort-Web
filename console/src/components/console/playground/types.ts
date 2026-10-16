@@ -9,4 +9,6 @@ export interface StudioProps {
   /** Full /v1/models catalog (already filtered to is_ready !== false). */
   models: any[];
   theme: "light" | "dark";
+  /** False while the studio is hidden (another modality is open); long-running sessions should end. */
+  active?: boolean;
 }
