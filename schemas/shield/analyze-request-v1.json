@@ -233,6 +233,12 @@
         "agent_tool_output",
         "phishing",
         "dlp",
+        "api_request",
+        "file_upload",
+        "password",
+        "marketplace",
+        "reviews",
+        "domain",
         null
       ],
       "description": "Task profile that sets category weights and decision thresholds (aliases such as moderation, rag, pii are also accepted). Defaults to general."
@@ -403,6 +409,259 @@
         },
         "include_evidence": {
           "type": "boolean"
+        },
+        "blocklists": {
+          "type": "object",
+          "properties": {
+            "emails": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "email_domains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "domains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "ips": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "usernames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "phones": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "countries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "keywords": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "user_agents": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "wallets": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "device_fingerprints": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "account_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            }
+          },
+          "additionalProperties": false,
+          "description": "Always flag matching subjects (ips accept CIDR)"
+        },
+        "allowlists": {
+          "type": "object",
+          "properties": {
+            "emails": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "email_domains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "domains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "ips": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "usernames": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "phones": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "countries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "keywords": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "user_agents": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "wallets": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "device_fingerprints": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            },
+            "account_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 5000
+            }
+          },
+          "additionalProperties": false,
+          "description": "Allow matching subjects unless hard evidence says otherwise (keywords ignored)"
+        },
+        "custom_rules": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "keywords": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "pattern": {
+                "type": "string",
+                "maxLength": 300,
+                "description": "Regex; nested quantifiers, lookarounds and backreferences are rejected"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "content",
+                    "email",
+                    "username",
+                    "ip",
+                    "phone",
+                    "url",
+                    "user_agent",
+                    "listing",
+                    "request",
+                    "metadata",
+                    "any"
+                  ]
+                }
+              },
+              "category": {
+                "type": "string"
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "risk": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "challenge",
+                  "rate_limit",
+                  "review",
+                  "block"
+                ]
+              },
+              "explanation": {
+                "type": "string"
+              },
+              "case_sensitive": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
@@ -427,6 +686,209 @@
         "null"
       ],
       "description": "Stable id of the subject account (used for memory/duplicate detection)"
+    },
+    "request": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "HTTP request to inspect (WAF)",
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "query": {
+          "type": [
+            "object",
+            "string"
+          ]
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "body": {
+          "type": [
+            "object",
+            "array",
+            "string",
+            "null"
+          ]
+        },
+        "expected_admin": {
+          "type": "boolean",
+          "description": "Admin paths are expected for this caller"
+        }
+      },
+      "additionalProperties": false
+    },
+    "file": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "content_base64": {
+          "type": "string",
+          "description": "File bytes, base64 (\u226410 MB)"
+        },
+        "text": {
+          "type": "string"
+        },
+        "mime": {
+          "type": "string",
+          "description": "Content type claimed by the uploader"
+        }
+      },
+      "additionalProperties": false
+    },
+    "files": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "content_base64": {
+            "type": "string",
+            "description": "File bytes, base64 (\u226410 MB)"
+          },
+          "text": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string",
+            "description": "Content type claimed by the uploader"
+          }
+        },
+        "additionalProperties": false
+      },
+      "maxItems": 10
+    },
+    "password": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 256,
+      "description": "Password to rate; never stored, echoed or sent to the LLM"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Owner's name (password personal-info check)"
+    },
+    "listing": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "market_price": {
+          "type": "number"
+        },
+        "brand": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "condition": {
+          "type": "string"
+        },
+        "seller_account_age_days": {
+          "type": "number"
+        },
+        "image_count": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "review": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        },
+        "verified_purchase": {
+          "type": "boolean"
+        },
+        "reviews_by_author_24h": {
+          "type": "number"
+        },
+        "product_reviews_24h": {
+          "type": "number"
+        },
+        "product_reviews_daily_avg": {
+          "type": "number"
+        },
+        "max_similarity_to_other_reviews": {
+          "type": "number"
+        },
+        "author_is_seller": {
+          "type": "boolean"
+        },
+        "same_device_as_seller": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "domain": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "domains": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20
+    },
+    "wallet": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Crypto wallet address (BTC, ETH/EVM, TRON, LTC, SOL)"
     }
   },
   "additionalProperties": false

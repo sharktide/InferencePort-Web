@@ -532,7 +532,7 @@
 		<section class="hero-section">
 			<div class="container">
 				<div class="hero-eyebrow">
-					<span class="pulse-red"></span> AI abuse prevention — live
+					<span class="pulse-red"></span> Abuse, fraud &amp; attack prevention — live
 				</div>
 				<h1 class="hero-title">
 					The Trust Layer<br /><span class="accent">for Modern Apps.</span>
@@ -540,8 +540,9 @@
 				<p class="hero-subtitle">
 					One API. Every signal. Real-time decisions with full
 					reasoning. Shield protects your app from bots, fraud, prompt
-					attacks, account farming, and data exfiltration — all from a
-					single endpoint.
+					attacks, account takeover, web attacks, malicious uploads, weak
+					passwords, scam listings, fake reviews and data leaks — and
+					enforces your own rules on top.
 				</p>
 				<div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
 					<a href="console/" class="btn btn-brand">Open Developer Console</a>
@@ -554,7 +555,7 @@
 							<div class="stat-label">endpoint to learn</div>
 						</div>
 						<div class="col-auto text-center">
-							<div class="stat-num">19</div>
+							<div class="stat-num">29</div>
 							<div class="stat-label">analysis features</div>
 						</div>
 						<div class="col-auto text-center">
@@ -801,7 +802,7 @@
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag">Task Profiles</div>
-					<h2 class="section-title">One engine. <span class="accent">Tuned for every job.</span></h2>
+					<h2 class="section-title">15 tasks. One engine. <span class="accent">Tuned for every job.</span></h2>
 					<p class="section-sub mx-auto mt-2">
 						The same evidence means different things in different places. A pasted API key is the whole
 						point of a DLP scan but barely matters on a signup form. Set <code>task</code> and Shield
@@ -881,8 +882,70 @@
 							<div class="task-th">challenge / review / block: 30 / 55 / 75</div>
 						</div>
 					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🧱</div>
+							<div class="task-name">"task": "api_request"</div>
+							<div class="feat-body">Web/API traffic as a WAF: SQL, NoSQL and command injection, XSS, SSRF, Log4Shell, traversal, scanners and probes.</div>
+							<div class="task-th">challenge / review / block: 30 / 50 / 70</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">📎</div>
+							<div class="task-name">"task": "file_upload"</div>
+							<div class="feat-body">Uploads and attachments: disguised executables, macros, scripted PDFs/SVGs, polyglots, zip bombs — and secrets in their text.</div>
+							<div class="task-th">challenge / review / block: 30 / 50 / 70</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🔒</div>
+							<div class="task-name">"task": "password"</div>
+							<div class="feat-body">Common, patterned, leetspeak and personal passwords, strength estimates and breach counts (k-anonymity).</div>
+							<div class="task-th">challenge / review / block: 25 / 50 / 70</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🛒</div>
+							<div class="task-name">"task": "marketplace"</div>
+							<div class="feat-body">Listings: weapons, drugs, forged documents, stolen accounts, counterfeits, off-platform payment and too-good-to-be-true prices.</div>
+							<div class="task-th">challenge / review / block: 30 / 55 / 75</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">⭐</div>
+							<div class="task-name">"task": "reviews"</div>
+							<div class="feat-body">Fake, incentivised, duplicated, burst and self-written reviews, plus spam and abuse in the text.</div>
+							<div class="task-th">challenge / review / block: 30 / 55 / 75</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🌐</div>
+							<div class="task-name">"task": "domain"</div>
+							<div class="feat-body">Domains and wallets before you trust or pay them: look-alikes, brand-new and DGA domains, crypto checksum failures.</div>
+							<div class="task-th">challenge / review / block: 30 / 50 / 70</div>
+						</div>
+					</div>
 				</div>
 				<div class="row g-4 mt-4 align-items-stretch">
+					<div class="col-12">
+						<div class="ip-card">
+							<div class="feat-icon">🧩</div>
+							<div class="feat-title">Anything else? Bring your own rules.</div>
+							<div class="feat-body">
+								Every request can carry your policy: <code>blocklists</code> and <code>allowlists</code>
+								(emails, email domains, domains, IPs and CIDR ranges, usernames, phones, countries, keywords,
+								user agents, wallets, devices, account IDs) and up to 50 <code>custom_rules</code> — keywords or a
+								regex, the fields to match, a category, a weight and an optional action. Shield fuses them
+								with its own evidence, so a rule like "review anything mentioning Project Atlas" or "block
+								sign-ups from these networks" works alongside everything above.
+							</div>
+						</div>
+					</div>
 					<div class="col-lg-6">
 						<div class="ip-card h-100">
 							<div class="feat-icon">🎯</div>
@@ -915,6 +978,8 @@
 $ ipx shield scan -f prompt.txt --fail-on review<br />
 $ git diff | ipx shield scan --task dlp --fail-on review<br />
 $ ipx shield phishing -f suspicious.eml<br />
+$ ipx shield request "/search?q=1' OR '1'='1"<br />
+$ ipx shield file uploads/* --policy policy.json<br />
 $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 							</div>
 						</div>
@@ -1313,7 +1378,7 @@ $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag">Feature Flags</div>
-					<h2 class="section-title">22 features. <span class="accent">You control the pipeline.</span></h2>
+					<h2 class="section-title">29 features. <span class="accent">You control the pipeline.</span></h2>
 					<p class="section-sub mx-auto mt-2">
 						Every detection module is on out of the box; memory-based features are opt-in. Turn off
 						<code>external_lookups</code> and <code>llm_reasoning</code> for a fully offline,
@@ -1344,6 +1409,13 @@ $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 						<div class="toggle-item"><span class="toggle-dot on"></span> content_analysis</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> exfiltration_analysis</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> llm_reasoning</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> request_inspection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> file_inspection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> password_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> commerce_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> domain_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> wallet_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> custom_policy</div>
 						<div class="toggle-item"><span class="toggle-dot off"></span> memory_update</div>
 					</div>
 					<p class="text-center mt-3" style="font-size:0.78rem;color:var(--text-muted);"><span class="toggle-dot on" style="display:inline-block;"></span> on by default &nbsp; <span class="toggle-dot off" style="display:inline-block;"></span> opt-in</p>
