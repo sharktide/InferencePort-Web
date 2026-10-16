@@ -4,7 +4,7 @@ class IpFooter extends HTMLElement {
 <footer class="ipf">
 	<div class="ipf-top">
 		<div>
-			<span class="ipf-brand"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="1" y="1" width="16" height="16" stroke="#fff" stroke-width="1.5"/><path d="M5 13V5m4 8V5m4 8V9" stroke="#4f7cff" stroke-width="1.8"/></svg>InferencePort <em>AI</em></span>
+			<span class="ipf-brand"><svg width="16" height="28" viewBox="170 30 320 565" fill="#FCD704" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg>InferencePort <em>AI</em></span>
 			<p class="ipf-blurb">Run models on your hardware, in our cloud, or both — governed from a single account and a single console.</p>
 		</div>
 		<div>

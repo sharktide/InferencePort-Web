@@ -2,7 +2,7 @@ class IpNavbar extends HTMLElement {
 	connectedCallback() {
 		const active = this.getAttribute("active") || "";
 		const on = (...ids) => (ids.includes(active) ? " active" : "");
-		const MARK = `<svg class="ipn-mark" viewBox="0 0 18 18" fill="none" aria-hidden="true"><rect x="1" y="1" width="16" height="16" stroke="#0b0f1a" stroke-width="1.5"/><path d="M5 13V5m4 8V5m4 8V9" stroke="#4f7cff" stroke-width="1.8"/></svg>`;
+		const MARK = `<svg class="ipn-mark" viewBox="170 30 320 565" fill="#FCD704" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg>`;
 		const CARET = `<svg class="ipn-caret" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5"/></svg>`;
 
 		this.innerHTML = `
