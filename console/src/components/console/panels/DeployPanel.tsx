@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import deployStyles from "./DeployPanel.module.css";
 import { useModal } from "../../Modal";
+import { useOptionalOrgContext } from "../OrgContext";
 
 interface Props {
   session: any;
@@ -49,9 +50,25 @@ const featherlessLogoUrl = (theme: string) =>
 
 export default function DeployPanel({ session, apiBase, config, theme = "light" }: Props) {
   const modal = useModal();
+  /* In an organization context the deployments belong to the org: the fee bills the org wallet and every member that may
+     spend on the org can call the model. Only owners and admins deploy, cancel and terminate. */
+  const orgCtx = useOptionalOrgContext();
+  const org = orgCtx?.activeOrg ?? null;
+  /* Until the organization list has loaded we cannot tell personal from organization mode, so nothing is requested or
+     shown that could act on the wrong wallet. */
+  const orgUnresolved = !!session && !!orgCtx && orgCtx.orgs === null;
+  const canManage = !org || org.role === "owner" || org.role === "admin";
+  const depBase = org ? `/v1/orgs/${encodeURIComponent(org.slug)}/deployments` : "/v1/deploy";
+  const ownerLabel = org ? `${org.name} (organization)` : "your account";
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [searchResults, setSearchResults] = useState<FeatherlessModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  /* Identifies the current context; async work started under another context must not apply or submit anything. */
+  const ctxKey = `${session?.user?.id ?? ""}|${depBase}`;
+  const ctxRef = useRef(ctxKey);
+  ctxRef.current = ctxKey;
+  const loadSeq = useRef(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchPage, setSearchPage] = useState(1);
   const [searchTotal, setSearchTotal] = useState(0);
@@ -82,13 +99,20 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const loadDeployments = useCallback(async () => {
+    const seq = ++loadSeq.current;
+    const key = ctxKey;
     try {
-      const data = await fj("/v1/deploy", { headers: authH() });
+      const data = await fj(depBase, { headers: authH() });
+      if (seq !== loadSeq.current || key !== ctxRef.current) return; /* superseded by a newer request or context */
       setDeployments(data.data || []);
+      setLoadError(null);
     } catch (e: any) {
+      if (seq !== loadSeq.current || key !== ctxRef.current) return;
+      /* Keep the last good list; a failed refresh is not "no deployments". */
+      setLoadError(e.message || "Could not load deployments");
       console.error("Failed to load deployments:", e);
     }
-  }, [session]);
+  }, [session, depBase, ctxKey]);
 
   const searchModels = useCallback(async (query: string, page: number) => {
     setSearching(true);
@@ -107,10 +131,12 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   }, [session]);
 
   useEffect(() => {
-    if (!session) return;
+    if (!session || orgUnresolved) return;
     setLoading(true);
-    loadDeployments().finally(() => setLoading(false));
-  }, [session, loadDeployments]);
+    setDeployments([]);
+    setLoadError(null);
+    loadDeployments().finally(() => { if (ctxRef.current === ctxKey) setLoading(false); });
+  }, [session, orgUnresolved, loadDeployments, ctxKey]);
 
   useEffect(() => {
     if (tab !== "browse") return;
@@ -142,6 +168,8 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const handleDeploy = async (modelId: string) => {
+    const startKey = ctxKey;
+    const switched = () => ctxRef.current !== startKey;
     setDeploying(modelId);
     setError(null);
     setSuccess(null);
@@ -165,13 +193,15 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
       setProvisioning({ modelId, stage: stages[i], progress: currentProgress, stages });
       const wait = Math.round(stageTimings[i]);
       await new Promise((r) => setTimeout(r, wait));
+      if (switched()) { setProvisioning(null); setDeploying(null); return; } /* never bill the context the user left */
       elapsed += wait;
       currentProgress = Math.min(95, Math.round((elapsed / totalMs) * 100));
       setProvisioning({ modelId, stage: stages[i], progress: currentProgress, stages });
     }
 
     try {
-      const result = await fj("/v1/deploy", {
+      if (switched()) { setProvisioning(null); setDeploying(null); return; }
+      const result = await fj(depBase, {
         method: "POST",
         headers: authH(),
         body: JSON.stringify({ model_id: modelId }),
@@ -191,7 +221,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   const handleCancel = async (deploymentId: string) => {
     if (!await modal.confirm("Access will remain until the end of the current billing cycle.", "Cancel this deployment?")) return;
     try {
-      const result = await fj(`/v1/deploy/${deploymentId}/cancel`, {
+      const result = await fj(`${depBase}/${deploymentId}/cancel`, {
         method: "POST",
         headers: authH(),
       });
@@ -205,7 +235,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   const handleTerminate = async (deploymentId: string) => {
     if (!await modal.confirm("This cannot be undone.", "Terminate this deployment now?")) return;
     try {
-      const result = await fj(`/v1/deploy/${deploymentId}`, {
+      const result = await fj(`${depBase}/${deploymentId}`, {
         method: "DELETE",
         headers: authH(),
       });
@@ -217,20 +247,32 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const handleUncancel = async (deploymentId: string) => {
-    const token = session?.access_token;
-    if (!token) return;
     try {
-      await fetch(`${apiBase}/v1/deploy/${deploymentId}/uncancel`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const result = await fj(`${depBase}/${deploymentId}/uncancel`, { method: "POST", headers: authH() });
+      setSuccess(result.message || "Deployment restored.");
       await loadDeployments();
-    } catch (e) { console.error(e); }
+    } catch (e: any) {
+      setError(e.message || "Failed to restore deployment");
+    }
   };
+
+  useEffect(() => { if (!canManage && tab === "browse") setTab("active"); }, [canManage, tab]);
 
   const activeDeployments = deployments.filter((d) => d.status === "active" || d.status === "cancelled_pending");
   const inactiveDeployments = deployments.filter((d) => d.status !== "active" && d.status !== "cancelled_pending");
   const activeModelIds = new Set(activeDeployments.map((d) => d.featherless_model_id));
+
+  if (orgUnresolved) {
+    return (
+      <div className={`${styles.panel} ${styles.active}`}>
+        <div className={`${styles.lockedOverlay} ${styles.panelLock}`} role="status">
+          {orgCtx?.listError
+            ? <>Could not load your organizations ({orgCtx.listError}), so we can't tell which wallet deployments belong to. <button type="button" onClick={() => { void orgCtx.refresh(); }}>Retry</button></>
+            : "Loading organization…"}
+        </div>
+      </div>
+    );
+  }
 
   if (!session) {
     return (
@@ -245,15 +287,27 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Featherless On-Demand Deployments</div>
+        <div className={styles.heading}>{org ? `${org.name} · Featherless Deployments` : "Featherless On-Demand Deployments"}</div>
         <p className={styles.muted}>
           Deploy any model from Featherless AI. $0.50/month per deployment. Token usage billed at Featherless rates + $0.05 markup.
+          {org && " Deployments are shared with the whole organization and billed to the organization wallet (paid credits only)."}
         </p>
+        {org && !canManage && (
+          <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "4px" }}>
+            Only organization owners and admins can deploy or change deployments. You can use the deployed models below.
+          </p>
+        )}
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "4px" }}>
           Disclaimer: If a deployed model is removed from Featherless, the deployment will be cancelled without refund of the monthly fee.
         </p>
       </section>
 
+      {loadError && (
+        <section className={`${styles.card} ${styles.wide} ${deployStyles.errorCard}`} role="alert">
+          Could not refresh deployments: {loadError}
+          <button className={deployStyles.dismissBtn} onClick={() => { void loadDeployments(); }}>Retry</button>
+        </section>
+      )}
       {error && (
         <section className={`${styles.card} ${styles.wide} ${deployStyles.errorCard}`}>
           {error}
@@ -273,14 +327,16 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
             className={`${styles.playgroundTab} ${tab === "active" ? styles.active : ""}`}
             onClick={() => setTab("active")}
           >
-            My Deployments ({activeDeployments.length})
+            {org ? "Organization Deployments" : "My Deployments"} ({activeDeployments.length})
           </button>
-          <button
-            className={`${styles.playgroundTab} ${tab === "browse" ? styles.active : ""}`}
-            onClick={() => setTab("browse")}
-          >
-            Browse & Deploy
-          </button>
+          {canManage && (
+            <button
+              className={`${styles.playgroundTab} ${tab === "browse" ? styles.active : ""}`}
+              onClick={() => setTab("browse")}
+            >
+              Browse & Deploy
+            </button>
+          )}
         </div>
       </section>
 
@@ -288,8 +344,14 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
         <>
           <section className={`${styles.card} ${styles.wide}`}>
             <div className={styles.heading}>Active Deployments</div>
-            {activeDeployments.length === 0 ? (
-              <p className={styles.muted}>No active deployments. Use "Browse & Deploy" to find and deploy a model.</p>
+            {activeDeployments.length === 0 && loadError ? (
+              <p className={styles.muted}>Deployments could not be loaded.</p>
+            ) : activeDeployments.length === 0 ? (
+              <p className={styles.muted}>
+                {canManage
+                  ? 'No active deployments. Use "Browse & Deploy" to find and deploy a model.'
+                  : "No active deployments. Ask an organization owner or admin to deploy a model."}
+              </p>
             ) : (
               <div className={styles.stack}>
                 {activeDeployments.map((d) => (
@@ -320,7 +382,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                         </div>
                       </div>
                       <div className={deployStyles.deploymentActions}>
-                        {d.status === "active" && (
+                        {canManage && d.status === "active" && (
                           <>
                             <button className={deployStyles.cancelBtn} onClick={() => handleCancel(d.id)}>
                               Cancel (end of cycle)
@@ -332,9 +394,11 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                         )}
                         {d.status === "cancelled_pending" && (
                           <>
-                            <button className={deployStyles.cancelBtn} onClick={() => handleUncancel(d.id)} style={{ background: "var(--accent)", color: "#fff", borderColor: "var(--accent)" }}>
-                              Restore
-                            </button>
+                            {canManage && (
+                              <button className={deployStyles.cancelBtn} onClick={() => handleUncancel(d.id)} style={{ background: "var(--accent)", color: "#fff", borderColor: "var(--accent)" }}>
+                                Restore
+                              </button>
+                            )}
                             <span className={styles.muted} style={{ fontSize: "12px", alignSelf: "center" }}>
                               Active until {d.billing_cycle_end ? new Date(d.billing_cycle_end).toLocaleDateString() : "None"}
                             </span>
@@ -519,7 +583,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
             </div>
 
             <div style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.5, marginBottom: "18px" }}>
-              A <strong style={{ color: "var(--text)" }}>${DEPLOYMENT_FEE}/mo</strong> deployment fee will be charged immediately. Usage is billed at Featherless rates + $0.05/M token markup. You can cancel anytime. Access continues until the end of the billing cycle.
+              A <strong style={{ color: "var(--text)" }}>${DEPLOYMENT_FEE}/mo</strong> deployment fee will be charged immediately to {ownerLabel}{org ? "'s wallet" : ""}. Usage is billed at Featherless rates + $0.05/M token markup. You can cancel anytime. Access continues until the end of the billing cycle.
             </div>
 
             <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
