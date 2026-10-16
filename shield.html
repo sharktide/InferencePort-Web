@@ -633,7 +633,7 @@
 							<div class="ip-card">
 								<div class="feat-icon">⚡</div>
 								<div class="feat-title">Developer Experience</div>
-								<div class="feat-body">Integration in under 15 minutes. Single endpoint. Simple API. Immediate value. No rules, no tuning, no thresholds.</div>
+								<div class="feat-body">Integration in under 15 minutes. One call to <code>/analyze</code> works out of the box, with focused endpoints, task profiles, thresholds and your own rules when you need to tune it.</div>
 							</div>
 							<div class="ip-card">
 								<div class="feat-icon">🧠</div>
@@ -1020,7 +1020,7 @@ $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 					<p class="section-sub mx-auto mt-2">
 						Base URL <code>https://api.inferenceport.ai</code>. Authenticate with
 						<code>Authorization: Bearer &lt;access token or ipa_live_… API key&gt;</code>;
-						calls count against your plan's daily Shield quota. Pick the narrowest endpoint that fits, or
+						calls to <code>/check</code>, <code>/analyze</code>, <code>/scan</code> and <code>/detect-phishing</code> count against your plan's daily Shield quota (<code>/capabilities</code> is free and needs no token). Pick the narrowest endpoint that fits, or
 						<code>/analyze</code> when you want everything weighed together.
 					</p>
 				</div>
@@ -1126,7 +1126,7 @@ $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 						<div class="col-lg-5">
 							<div class="section-tag">Capabilities</div>
 							<p class="section-sub mb-3">Public (no token): the live list of tasks with their thresholds, features with defaults, check types, categories and decisions. Build UIs and validation from it.</p>
-							<ul class="api-list"><li>No authentication, no quota</li><li><code>tasks</code>, <code>features</code>, <code>check_types</code>, <code>categories</code>, <code>decisions</code>, <code>config</code> options</li></ul>
+							<ul class="api-list"><li>No authentication, and it does not count against your quota (unlike the other four endpoints)</li><li><code>tasks</code>, <code>features</code>, <code>check_types</code>, <code>categories</code>, <code>decisions</code>, <code>config</code> options</li></ul>
 							<div class="api-cli"><span class="api-cli-label">CLI</span> <code>ipx shield tasks</code></div>
 						</div>
 						<div class="col-lg-7">
@@ -1176,7 +1176,7 @@ $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 				<div class="row g-3"><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">📧</div><div class="feat-title">Detect disposable email domains</div><div class="feat-body">Reject throwaway signups, or clean an existing list.</div><pre class="api-pre api-pre-sm">ipx shield disposable -f signups.txt --only-disposable
 curl -X POST …/ai-shield/check \
   -d &#x27;{&quot;type&quot;:&quot;email&quot;,&quot;values&quot;:[&quot;a@mailinator.com&quot;]}&#x27;</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🕵️</div><div class="feat-title">Triage indicators of compromise</div><div class="feat-body">Score a list of IPs, domains, URLs and wallets and export CSV.</div><pre class="api-pre api-pre-sm">ipx shield check ip -f iocs.txt --only-flagged --csv</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧱</div><div class="feat-title">Put a WAF check in front of an endpoint</div><div class="feat-body">Inspect a request for injection, SSRF, traversal and scanners.</div><pre class="api-pre api-pre-sm">ipx shield request &quot;/search?q=1&#x27; OR &#x27;1&#x27;=&#x27;1&quot; --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">📎</div><div class="feat-title">Vet uploads and attachments</div><div class="feat-body">Catch disguised executables, macros, scripted PDFs/SVGs and zip bombs.</div><pre class="api-pre api-pre-sm">ipx shield file uploads/* --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🔐</div><div class="feat-title">Stop secrets and PII leaking</div><div class="feat-body">Scan outputs, logs and diffs, then redact.</div><pre class="api-pre api-pre-sm">git diff --cached | ipx shield scan --task dlp --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧠</div><div class="feat-title">Guard an LLM app or agent</div><div class="feat-body">Check user prompts and retrieved documents before the model sees them.</div><pre class="api-pre api-pre-sm">ipx shield scan -f prompt.txt --task prompt_guard
-curl -s $URL | ipx shield scan --task agent_tool_output</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🎣</div><div class="feat-title">Triage suspicious email</div><div class="feat-body">Verdict from the lure, the links, the sender and SPF/DKIM/DMARC.</div><pre class="api-pre api-pre-sm">ipx shield phishing -f suspicious.eml</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🪪</div><div class="feat-title">Audit tokens and password hashes</div><div class="feat-body">Find unsigned JWTs and weak, unsalted stored hashes.</div><pre class="api-pre api-pre-sm">ipx shield check jwt &quot;$TOKEN&quot; --fail-on review
+curl -s $URL | ipx shield scan --task agent_tool_output</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🎣</div><div class="feat-title">Triage suspicious email</div><div class="feat-body">Verdict from the lure, the links, the sender and SPF/DKIM/DMARC.</div><pre class="api-pre api-pre-sm">ipx shield phishing -f suspicious.eml</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🪪</div><div class="feat-title">Audit tokens and password hashes</div><div class="feat-body">Find unsigned JWTs and weak, unsalted stored hashes.</div><pre class="api-pre api-pre-sm">printf '%s\n' &quot;$TOKEN&quot; | ipx shield check jwt --fail-on review
 cut -d: -f2 export.txt | ipx shield check hash --only-flagged</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧩</div><div class="feat-title">Enforce your own policy</div><div class="feat-body">Blocklists, allowlists and custom regex/keyword rules on every call.</div><pre class="api-pre api-pre-sm">ipx shield scan -f post.txt --policy policy.json</pre></div></div></div>
 			</div>
 		</section>
@@ -1592,7 +1592,7 @@ cut -d: -f2 export.txt | ipx shield check hash --only-flagged</pre></div></div><
 					<div class="section-tag">Feature Flags</div>
 					<h2 class="section-title">29 features. <span class="accent">You control the pipeline.</span></h2>
 					<p class="section-sub mx-auto mt-2">
-						Every detection module is on out of the box; memory-based features are opt-in. Turn off
+						Every detection module is on out of the box except the three that build up history across requests — <code>duplicate_detection</code>, <code>campaign_detection</code> and <code>memory_update</code> are opt-in (<code>historical_memory</code> lookups stay on, but only find something once you've enabled <code>memory_update</code>). Turn off
 						<code>external_lookups</code> and <code>llm_reasoning</code> for a fully offline,
 						millisecond verdict, or tune <code>thresholds</code>, <code>category_weights</code> and
 						<code>trusted_domains</code> per request.
@@ -1725,8 +1725,8 @@ cut -d: -f2 export.txt | ipx shield check hash --only-flagged</pre></div></div><
 								<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:6px;"></span>InferencePort AI Shield
 							</div>
 							<ul class="compare-list">
-								<li>✦ Unified platform — one endpoint</li>
-								<li>✦ Zero configuration, works immediately</li>
+								<li>✦ Unified platform — one engine behind five endpoints</li>
+								<li>✦ Works with zero configuration, tunable when you need it</li>
 								<li>✦ Covers all threat categories</li>
 								<li>✦ AI reasons across all signals together</li>
 								<li>✦ Developer-friendly, flat pricing</li>
