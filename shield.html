@@ -340,6 +340,9 @@
 				flex-shrink: 0;
 			}
 			.toggle-dot.on { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+			.toggle-dot.off { background: transparent; border: 1.5px solid var(--text-muted, #94a3b8); }
+			.task-name { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--danger, #ef4444); margin-bottom: 4px; }
+			.task-th { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; }
 
 			/* ── Decision badges ── */
 			.decision-badge {
@@ -749,8 +752,9 @@
 								<span class="endpoint-path">/ai-shield/analyze</span>
 							</div>
 							<div class="endpoint-body">
-<span class="cm">// Send any combination of signals — that's all you need.</span><br />
+<span class="cm">// Pick a task, send any combination of signals — that's all you need.</span><br />
 {<br />
+&nbsp;&nbsp;<span class="prop">"task"</span>: <span class="str">"signup"</span>,<br />
 &nbsp;&nbsp;<span class="prop">"email"</span>: <span class="str">"user@example.com"</span>,<br />
 &nbsp;&nbsp;<span class="prop">"phone"</span>: <span class="str">"+123456789"</span>,<br />
 &nbsp;&nbsp;<span class="prop">"username"</span>: <span class="str">"john12345"</span>,<br />
@@ -779,8 +783,139 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"Disposable email indicators detected"</span>,<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="val-str">"Content resembles known spam patterns"</span><br />
 &nbsp;&nbsp;],<br />
+&nbsp;&nbsp;<span class="key">"category_scores"</span>: { <span class="key">"bot_automation"</span>: <span class="val-num">86</span>, <span class="key">"disposable_identity"</span>: <span class="val-num">68</span> },<br />
+&nbsp;&nbsp;<span class="key">"actions"</span>: [<span class="val-str">"Require a CAPTCHA or proof-of-work challenge"</span>],<br />
 &nbsp;&nbsp;<span class="key">"recommended_action"</span>: <span class="val-str">"block"</span><br />
 }
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═══════════════════════════════════════════════════
+		     TASK PROFILES
+		     ═══════════════════════════════════════════════════ -->
+		<section class="py-5" id="tasks">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Task Profiles</div>
+					<h2 class="section-title">One engine. <span class="accent">Tuned for every job.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						The same evidence means different things in different places. A pasted API key is the whole
+						point of a DLP scan but barely matters on a signup form. Set <code>task</code> and Shield
+						re-weights every category and picks thresholds built for that job.
+					</p>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🛡️</div>
+							<div class="task-name">"task": "signup"</div>
+							<div class="feat-body">Bots, disposable and generated identities, multi-accounting, trial and referral farming.</div>
+							<div class="task-th">challenge / review / block: 30 / 55 / 78</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🔑</div>
+							<div class="task-name">"task": "login"</div>
+							<div class="feat-body">Credential stuffing, brute force, impossible travel and account takeover.</div>
+							<div class="task-th">challenge / review / block: 30 / 55 / 80</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">💳</div>
+							<div class="task-name">"task": "payment"</div>
+							<div class="feat-body">Card testing, stolen cards, risky new accounts and promo abuse at checkout.</div>
+							<div class="task-th">challenge / review / block: 30 / 55 / 75</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">💬</div>
+							<div class="task-name">"task": "content_moderation"</div>
+							<div class="feat-body">Spam, scams, phishing lures, threats, harassment, hate and self-harm in UGC.</div>
+							<div class="task-th">challenge / review / block: 35 / 60 / 80</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🧠</div>
+							<div class="task-name">"task": "prompt_guard"</div>
+							<div class="feat-body">Prompt injection, jailbreaks, system-prompt extraction, tool abuse and exfiltration.</div>
+							<div class="task-th">challenge / review / block: 25 / 45 / 70</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🤖</div>
+							<div class="task-name">"task": "agent_tool_output"</div>
+							<div class="feat-body">Indirect injection hidden in web pages, emails, files and tool results your agent reads.</div>
+							<div class="task-th">challenge / review / block: 25 / 45 / 70</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🎣</div>
+							<div class="task-name">"task": "phishing"</div>
+							<div class="feat-body">Lures, look-alike links, display-name spoofing and SPF/DKIM/DMARC failures.</div>
+							<div class="task-th">challenge / review / block: 30 / 50 / 70</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🔐</div>
+							<div class="task-name">"task": "dlp"</div>
+							<div class="feat-body">API keys, private keys, tokens, cards, SSNs and IBANs — with automatic redaction.</div>
+							<div class="task-th">challenge / review / block: 20 / 40 / 65</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-4">
+						<div class="ip-card h-100">
+							<div class="feat-icon">⚖️</div>
+							<div class="task-name">"task": "general"</div>
+							<div class="feat-body">Balanced default that weighs every signal you send.</div>
+							<div class="task-th">challenge / review / block: 30 / 55 / 75</div>
+						</div>
+					</div>
+				</div>
+				<div class="row g-4 mt-4 align-items-stretch">
+					<div class="col-lg-6">
+						<div class="ip-card h-100">
+							<div class="feat-icon">🎯</div>
+							<div class="feat-title">Accurate before the AI even runs</div>
+							<div class="feat-body">
+								Deterministic detectors see through obfuscation (zero-width characters, homoglyphs,
+								leetspeak, spaced letters, base64) and validate what they find: card numbers must
+								pass Luhn, IBANs their checksum, keys their provider format. Independent weak
+								signals add up; one strong signal is enough. The LLM reviewer then reads the
+								redacted content to catch paraphrased attacks and talk down false alarms —
+								but it can never overrule hard evidence like a leaked private key.
+								A labeled test corpus guards every release: no benign sample may be reviewed or
+								blocked, and no attack may be allowed.
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6">
+						<div class="endpoint-card h-100">
+							<div class="endpoint-bar">
+								<span class="endpoint-method">POST</span>
+								<span class="endpoint-path">/ai-shield/scan · /detect-phishing</span>
+							</div>
+							<div class="endpoint-body">
+<span class="cm">// Content-only scan, e.g. before text reaches your LLM</span><br />
+{ <span class="prop">"task"</span>: <span class="str">"prompt_guard"</span>, <span class="prop">"messages"</span>: [...], <span class="prop">"config"</span>: { <span class="prop">"redact"</span>: <span class="str">true</span> } }<br /><br />
+<span class="cm">// Phishing check with sender &amp; auth results</span><br />
+{ <span class="prop">"sender"</span>: <span class="str">"PayPal &lt;alert@paypa1.com&gt;"</span>, <span class="prop">"subject"</span>: <span class="str">"..."</span>,<br />
+&nbsp;&nbsp;<span class="prop">"content"</span>: <span class="str">"..."</span>, <span class="prop">"authentication"</span>: { <span class="prop">"dmarc"</span>: <span class="str">"fail"</span> } }<br /><br />
+<span class="cm">// Or from your terminal / CI with the ipx CLI</span><br />
+$ ipx shield scan -f prompt.txt --fail-on review<br />
+$ git diff | ipx shield scan --task dlp --fail-on review<br />
+$ ipx shield phishing -f suspicious.eml<br />
+$ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 							</div>
 						</div>
 					</div>
@@ -1178,19 +1313,20 @@
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag">Feature Flags</div>
-					<h2 class="section-title">19 features. <span class="accent">All on by default.</span></h2>
+					<h2 class="section-title">22 features. <span class="accent">You control the pipeline.</span></h2>
 					<p class="section-sub mx-auto mt-2">
-						Every analysis module is enabled out of the box. Disable what
-						you don't need for faster responses and lower cost. You control
-						the pipeline.
+						Every detection module is on out of the box; memory-based features are opt-in. Turn off
+						<code>external_lookups</code> and <code>llm_reasoning</code> for a fully offline,
+						millisecond verdict, or tune <code>thresholds</code>, <code>category_weights</code> and
+						<code>trusted_domains</code> per request.
 					</p>
 				</div>
 				<div class="toggles-demo">
 					<div class="toggles-grid">
 						<div class="toggle-item"><span class="toggle-dot on"></span> heuristics</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> historical_memory</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> duplicate_detection</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> campaign_detection</div>
+						<div class="toggle-item"><span class="toggle-dot off"></span> duplicate_detection</div>
+						<div class="toggle-item"><span class="toggle-dot off"></span> campaign_detection</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> email_intelligence</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> ip_intelligence</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> phone_intelligence</div>
@@ -1199,14 +1335,18 @@
 						<div class="toggle-item"><span class="toggle-dot on"></span> behavior_intelligence</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> content_intelligence</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> url_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> sensitive_data_detection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> external_lookups</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> identity_analysis</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> fraud_analysis</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_analysis</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> content_analysis</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> exfiltration_analysis</div>
 						<div class="toggle-item"><span class="toggle-dot on"></span> llm_reasoning</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> memory_update</div>
+						<div class="toggle-item"><span class="toggle-dot off"></span> memory_update</div>
 					</div>
+					<p class="text-center mt-3" style="font-size:0.78rem;color:var(--text-muted);"><span class="toggle-dot on" style="display:inline-block;"></span> on by default &nbsp; <span class="toggle-dot off" style="display:inline-block;"></span> opt-in</p>
 				</div>
 			</div>
 		</section>

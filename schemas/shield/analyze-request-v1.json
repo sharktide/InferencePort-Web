@@ -5,55 +5,428 @@
   "type": "object",
   "properties": {
     "email": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "email",
       "description": "User email address"
     },
     "phone": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "E.164 formatted phone number"
     },
     "username": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "User-chosen username"
     },
     "ip": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "IPv4 or IPv6 address"
     },
     "device_fingerprint": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Opaque device fingerprint string"
     },
     "geolocation": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "description": "Optional geolocation data",
       "properties": {
-        "country": { "type": "string" },
-        "city": { "type": "string" }
+        "country": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        }
       },
       "additionalProperties": true
     },
     "signup_time": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date-time",
       "description": "ISO8601 timestamp of signup"
     },
     "content": {
-      "type": ["string", "null"],
-      "description": "User-generated content for threat analysis"
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "User-generated text, prompt or document to analyse (prompt attacks, harmful content, scams, links, secrets, PII)"
     },
     "metadata": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "description": "Arbitrary metadata for behavioral and identity analysis",
       "properties": {
-        "account_id": { "type": "string" },
-        "user_id": { "type": "string" },
-        "external_user_id": { "type": "string" },
-        "user_agent": { "type": "string" },
-        "referrer": { "type": "string" }
+        "account_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        },
+        "external_user_id": {
+          "type": "string"
+        },
+        "user_agent": {
+          "type": "string"
+        },
+        "referrer": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string",
+          "description": "IANA timezone of the client"
+        },
+        "form_fill_ms": {
+          "type": "number",
+          "description": "Time to complete the form"
+        },
+        "signups_last_hour": {
+          "type": "number",
+          "description": "Signups from this source in the last hour"
+        },
+        "accounts_from_ip_24h": {
+          "type": "number"
+        },
+        "actions_last_minute": {
+          "type": "number"
+        },
+        "session_age_seconds": {
+          "type": "number"
+        },
+        "mouse_movements": {
+          "type": "number"
+        },
+        "keystrokes": {
+          "type": "number"
+        },
+        "webdriver": {
+          "type": "boolean",
+          "description": "navigator.webdriver"
+        },
+        "honeypot_filled": {
+          "type": "boolean"
+        },
+        "captcha_failed": {
+          "type": "boolean"
+        },
+        "failed_logins": {
+          "type": "number"
+        },
+        "distinct_accounts_tried": {
+          "type": "number"
+        },
+        "new_device": {
+          "type": "boolean"
+        },
+        "new_country": {
+          "type": "boolean"
+        },
+        "impossible_travel_kmh": {
+          "type": "number"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Transaction amount"
+        },
+        "avg_order_amount": {
+          "type": "number"
+        },
+        "cards_tried_last_hour": {
+          "type": "number"
+        },
+        "card_country": {
+          "type": "string",
+          "description": "ISO-2"
+        },
+        "ip_country": {
+          "type": "string",
+          "description": "ISO-2"
+        },
+        "billing_country": {
+          "type": "string"
+        },
+        "shipping_country": {
+          "type": "string"
+        },
+        "cvv_mismatch": {
+          "type": "boolean"
+        },
+        "avs_mismatch": {
+          "type": "boolean"
+        },
+        "trials_from_device": {
+          "type": "number"
+        },
+        "referrals_from_device": {
+          "type": "number"
+        },
+        "accounts_on_device": {
+          "type": "number"
+        },
+        "previously_banned": {
+          "type": "boolean"
+        },
+        "account_age_days": {
+          "type": "number",
+          "description": "Trust signal when large"
+        },
+        "email_verified": {
+          "type": "boolean",
+          "description": "Trust signal"
+        },
+        "phone_verified": {
+          "type": "boolean",
+          "description": "Trust signal"
+        },
+        "mfa_enabled": {
+          "type": "boolean",
+          "description": "Trust signal"
+        },
+        "successful_payments": {
+          "type": "number",
+          "description": "Trust signal"
+        },
+        "known_device": {
+          "type": "boolean",
+          "description": "Trust signal"
+        },
+        "kyc_verified": {
+          "type": "boolean",
+          "description": "Trust signal"
+        }
       },
       "additionalProperties": true
+    },
+    "task": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "general",
+        "signup",
+        "login",
+        "payment",
+        "content_moderation",
+        "prompt_guard",
+        "agent_tool_output",
+        "phishing",
+        "dlp",
+        null
+      ],
+      "description": "Task profile that sets category weights and decision thresholds (aliases such as moderation, rag, pii are also accepted). Defaults to general."
+    },
+    "text": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Alias of content"
+    },
+    "prompt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Alias of content"
+    },
+    "messages": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "Chat messages; system messages are skipped, tool/function messages are treated as fetched content (indirect injection)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "content": {
+            "type": [
+              "string",
+              "array"
+            ]
+          }
+        },
+        "required": [
+          "content"
+        ]
+      }
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "user",
+        "tool",
+        "document",
+        "web",
+        "email",
+        "retrieval",
+        null
+      ],
+      "description": "Where content came from; non-user sources raise indirect-injection weight"
+    },
+    "urls": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 50,
+      "description": "Links to analyse in addition to those found in content"
+    },
+    "url": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Single link to analyse"
+    },
+    "subject": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Message subject (analysed with content)"
+    },
+    "sender": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Message sender, e.g. 'PayPal <service@paypal.com>'"
+    },
+    "reply_to": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authentication": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "spf": {
+          "type": "string"
+        },
+        "dkim": {
+          "type": "string"
+        },
+        "dmarc": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Email authentication results (pass/fail/softfail/none)"
+    },
+    "config": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "features": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "description": "Feature flags; see GET /ai-shield/capabilities"
+        },
+        "thresholds": {
+          "type": "object",
+          "properties": {
+            "challenge": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "review": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "block": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "additionalProperties": false
+        },
+        "category_weights": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2
+          }
+        },
+        "trusted_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 200
+        },
+        "redact": {
+          "type": "boolean",
+          "description": "Return redacted_content with secrets/PII replaced"
+        },
+        "include_evidence": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Stable id of the subject account (used for memory/duplicate detection)"
+    },
+    "subject_user_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Stable id of the subject account (used for memory/duplicate detection)"
+    },
+    "external_user_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Stable id of the subject account (used for memory/duplicate detection)"
     }
   },
   "additionalProperties": false
