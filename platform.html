@@ -138,7 +138,7 @@
 			</div>
 			<div>
 				<h2>The fast path, with nothing to set up.</h2>
-				<p class="lead">Lightning is the hosted chat experience: Lightning Text v2 streams up to 1,000 words per second and Lightning Image Turbo is the default image model. It runs on your subscription&rsquo;s quotas, so there is nothing to fund and no key to manage.</p>
+				<p class="lead">Lightning is the hosted chat experience: Lightning Text v2 streams up to 1,000 words per second and Lightning Image Turbo is the default image model. It runs on your subscription&rsquo;s quotas, so there is no wallet to fund.</p>
 				<div class="callout" style="--c:var(--gold)"><b>Lightning vs the API.</b> Lightning subscriptions are tuned for everyday chatting and bounded by plan limits. For production services, use the Pay-to-Go API from the console &mdash; it bills a separate credit wallet instead of consuming plan quotas.</div>
 			</div>
 		</section>
@@ -158,7 +158,9 @@
 					<li><b>API keys</b><span>Create and revoke keys for the OpenAI-compatible endpoint.</span></li>
 					<li><b>Pay-to-Go API</b><span>Text, image, video, audio and 3D, billed per request from a credit wallet on its own ledger.</span></li>
 					<li><b>Playground</b><span>Try models and prompts before wiring them into code.</span></li>
-					<li><b>Agents &amp; MCP</b><span>Configure agents and connect MCP tooling.</span></li>
+					<li><b>Subscription generation</b><span>Try text, image, video and audio generation against your plan&rsquo;s quota, signed in as yourself &mdash; no credits drawn.</span></li>
+					<li><b>Models</b><span>Browse the catalog of available models.</span></li>
+					<li><b>Agents &amp; MCP</b><span>Create agents with a model, system prompt and MCP servers, and keep them private or publish them.</span></li>
 					<li><b>Shield</b><span>Manage AI Shield, the one-call fraud and abuse decision API.</span></li>
 				</ul>
 				<h4>Account</h4>
@@ -228,6 +230,7 @@
 					<thead><tr><th>You are&hellip;</th><th>You use</th><th>The flow</th></tr></thead>
 					<tbody>
 						<tr><td>An individual who wants private AI</td><td><span class="pill app">Desktop app</span></td><td>Install, pull a model, chat locally. Add Lightning for speed when you want it.</td></tr>
+						<tr><td>Someone who wants to call hosted models on a plan, not credits</td><td><span class="pill console">Console</span></td><td>Use Generation (Subscription) in the console: it runs on your plan quota, while Pay-to-Go draws from the credit wallet.</td></tr>
 						<tr><td>A developer shipping a feature</td><td><span class="pill app">App</span> + <span class="pill console">Console</span></td><td>Prototype in the app and playground, create a key in the console, fund the wallet, call <span class="mono">/v1</span>.</td></tr>
 						<tr><td>A startup with a shared budget</td><td><span class="pill console">Console</span> + <span class="pill org">Organization</span></td><td>Create an org, invite the team, set per-member budgets, and issue org keys with limits.</td></tr>
 						<tr><td>A company rolling out AI to employees</td><td>All three</td><td>Enforce SSO, restrict models and tools by policy, push desktop settings to every member, and stream audit to your SIEM.</td></tr>

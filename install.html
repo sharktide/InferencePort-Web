@@ -25,274 +25,72 @@
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
 		rel="stylesheet" />
 	<link rel="stylesheet" href="styles/shared.css" />
+	<link rel="stylesheet" href="styles/site.css" />
 	<script src="components/ip-navbar.js"></script>
 	<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
 	<style>
-		/* Hero */
-		.hero-section {
-			background: linear-gradient(180deg, rgba(79, 124, 255, 0.04) 0%, transparent 100%);
-			padding: 80px 0;
-		}
-
-		.hero-title {
-			letter-spacing: -1px;
-			color: var(--text) !important;
-		}
-
-		.hero-text {
-			color: var(--text-muted);
-			max-width: 520px;
-		}
-
 		/* Recommended card */
-		#recommended-download .rec-card {
-			background: var(--surface);
-			border: 1px solid var(--brand-border);
-			border-radius: 14px;
-			padding: 24px 28px;
-			display: flex;
-			flex-direction: column;
-			gap: 12px;
-		}
-
-		@media (min-width: 768px) {
-			#recommended-download .rec-card {
-				flex-direction: row;
-				align-items: center;
-				justify-content: space-between;
-			}
-		}
-
-		.rec-title {
-			font-weight: 700;
-			font-size: 1.05rem;
-			color: var(--text);
-			margin-bottom: 3px;
-		}
-
-		.rec-meta {
-			font-size: 0.82rem;
-			color: var(--muted);
-		}
-
-		.rec-filename {
-			font-family: "JetBrains Mono", monospace;
-			font-size: 0.75rem;
-			color: var(--muted);
-		}
-
-		.rec-switch {
-			font-size: 0.8rem;
-			color: var(--brand);
-			text-decoration: none;
-		}
-
-		.rec-switch:hover {
-			text-decoration: underline;
-		}
-
-		.btn-rec-dl {
-			background: var(--brand);
-			color: #fff;
-			border: none;
-			border-radius: 9px;
-			padding: 11px 28px;
-			font-weight: 600;
-			font-size: 0.9rem;
-			white-space: nowrap;
-			box-shadow: 0 0 24px rgba(79, 124, 255, 0.3);
-			transition:
-				transform 0.18s,
-				opacity 0.18s;
-			text-decoration: none;
-			display: inline-block;
-		}
-
-		.btn-rec-dl:hover {
-			transform: translateY(-2px);
-			opacity: 0.9;
-			color: #fff;
-		}
+		#recommended-download .rec-card { background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 24px 28px; display: flex; flex-direction: column; gap: 12px; }
+		@media (min-width: 768px) { #recommended-download .rec-card { flex-direction: row; align-items: center; justify-content: space-between; } }
+		.rec-title { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; color: var(--text); margin-bottom: 3px; }
+		.rec-meta { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+		.rec-filename { font-family: var(--mono); font-size: 0.75rem; color: var(--text-muted); overflow-wrap: anywhere; }
+		.rec-switch { font-size: 0.8rem; color: var(--brand-ink); }
+		.btn-rec-dl { background: var(--ink); color: #fff; border: 1px solid var(--ink); border-radius: var(--radius); padding: 12px 24px; font-weight: 650; font-size: 0.9rem; white-space: nowrap; text-decoration: none; display: inline-block; transition: background .15s, border-color .15s; }
+		.btn-rec-dl:hover { background: var(--brand); border-color: var(--brand); color: #fff; }
 
 		/* Tabs */
-		.nav-tabs {
-			border-bottom: 1px solid var(--border);
-		}
+		.nav-tabs { border-bottom: 1px solid var(--ink); }
+		.nav-tabs .nav-link { color: var(--text-muted) !important; border: none; border-bottom: 2px solid transparent; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; padding: 12px 20px; border-radius: 0; background: transparent !important; margin-bottom: -1px; }
+		.nav-tabs .nav-link:hover { color: var(--ink) !important; }
+		.nav-tabs .nav-link.active { color: var(--ink) !important; border-bottom-color: var(--ink) !important; }
 
-		.nav-tabs .nav-link {
-			color: var(--muted) !important;
-			border: none;
-			border-bottom: 2px solid transparent;
-			font-size: 0.88rem;
-			font-weight: 500;
-			padding: 10px 20px;
-			border-radius: 0;
-			background: transparent !important;
-		}
-
-		.nav-tabs .nav-link:hover {
-			color: var(--text-body) !important;
-		}
-
-		.nav-tabs .nav-link.active {
-			color: var(--text) !important;
-			border-bottom-color: var(--brand) !important;
-		}
-
-		/* Download cards inside tabs */
-		.dl-card {
-			background: var(--surface);
-			border: 1px solid var(--border);
-			border-radius: 12px;
-			margin-bottom: 14px;
-			overflow: hidden;
-		}
-
-		.dl-card-header {
-			background: var(--bg-alt);
-			border-bottom: 1px solid var(--border-light);
-			padding: 12px 18px;
-			font-weight: 600;
-			font-size: 0.88rem;
-			color: var(--text);
-			display: flex;
-			align-items: center;
-			gap: 8px;
-		}
-
-		.dl-card-body {
-			padding: 4px 0;
-		}
-
-		.list-group-item {
-			background: transparent !important;
-			border-color: var(--border-light) !important;
-			padding: 11px 18px;
-			font-size: 0.84rem;
-			color: var(--muted);
-		}
-
-		.list-group-item a {
-			color: var(--brand);
-			text-decoration: none;
-			font-family: "JetBrains Mono", monospace;
-			font-size: 0.8rem;
-		}
-
-		.list-group-item a:hover {
-			text-decoration: underline;
-		}
-
-		.list-group-item:first-child {
-			border-top: none !important;
-		}
-
-		.gpu-badge {
-			background: rgba(251, 191, 36, 0.12);
-			color: #92400e;
-			border: 1px solid rgba(251, 191, 36, 0.25);
-			font-family: "JetBrains Mono", monospace;
-			font-size: 0.6rem;
-			padding: 2px 8px;
-			border-radius: 4px;
-			font-weight: 500;
-			letter-spacing: 0.05em;
-		}
-
-		.no-builds {
-			color: var(--muted);
-			font-size: 0.83rem;
-			padding: 14px 18px;
-		}
-
-		/* Community */
-		.community-section {
-			background: var(--surface);
-			border-top: 1px solid var(--border);
-			border-bottom: 1px solid var(--border);
-		}
-
-		.btn-gh {
-			background: var(--surface);
-			color: var(--text-body);
-			border: 1px solid var(--border);
-			border-radius: 8px;
-			padding: 9px 20px;
-			font-size: 0.88rem;
-			text-decoration: none;
-			transition: background 0.18s;
-		}
-
-		.btn-gh:hover {
-			background: var(--bg-alt);
-			color: var(--text);
-		}
-
-		</style>
+		/* Download cards */
+		.dl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0; margin-bottom: 14px; overflow: hidden; }
+		.dl-card-header { background: var(--bg-alt); border-bottom: 1px solid var(--border); padding: 12px 18px; font-weight: 650; font-size: 0.88rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
+		.dl-card-body { padding: 4px 0; }
+		.list-group-item { background: transparent !important; border-color: var(--border-light) !important; padding: 11px 18px; font-size: 0.84rem; color: var(--text-muted); }
+		.list-group-item a { color: var(--brand-ink); text-decoration: none; font-family: var(--mono); font-size: 0.8rem; overflow-wrap: anywhere; }
+		.list-group-item a:hover { color: var(--ink); text-decoration: underline; }
+		.list-group-item:first-child { border-top: none !important; }
+		.gpu-badge { background: var(--gold-dim); color: var(--gold-ink); border: 1px solid var(--gold-border); font-family: var(--mono); font-size: 0.6rem; padding: 2px 8px; border-radius: 2px; font-weight: 500; letter-spacing: 0.05em; }
+		.no-builds { color: var(--text-muted); font-size: 0.83rem; padding: 14px 18px; }
+		.shot { border: 1px solid var(--ink); display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+	</style>
 <script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 
 <body>
 	<ip-navbar active="install"></ip-navbar>
-
-	<!-- Hero -->
-	<section class="hero-section">
-		<div class="container">
-			<div class="row align-items-center">
-				<div class="col-md-6 text-center text-md-start">
-					<h1
-						class="display-4 fw-bold d-flex align-items-center justify-content-center justify-content-md-start hero-title">
-						<span class="me-2">
-							<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="orange"
-								class="bi bi-lightning-fill" viewBox="0 0 16 16">
-								<path d="M11.3 1L6 9h4l-1 6 5.3-8H10l1.3-6z" />
-							</svg>
-						</span>
-						InferencePort AI
-					</h1>
-					<p class="lead mt-3 hero-text">
-						InferencePort makes it effortless to run, test, and share local AI
-						models and Hugging Face Spaces from a clean desktop interface.
-					</p>
-					<a href="#install" class="btn btn-brand btn-lg mt-3 fw-semibold">Install Now</a>
+	<main>
+	<section class="h-hero">
+		<div class="wrap">
+			<div class="h-hero-grid" style="align-items:center">
+				<div>
+					<div class="h-kicker">Desktop app &middot; Windows, macOS, Linux</div>
+					<h1 class="h-title" style="font-size:clamp(2.5rem,5.4vw,4.6rem)">Install InferencePort.</h1>
+					<p class="h-lede">Run local models, host a server for your team, and switch to Lightning cloud models when you want speed. Free to install; local chat is always free.</p>
+					<div class="h-cta"><a href="#install" class="btn-brand">Choose your download</a><a href="platform.html#app" class="btn-ghost">What the app does &rarr;</a></div>
 				</div>
-				<div class="col-md-6 text-center mt-4 mt-md-0">
-					<img src="img/examples/cucumber.png" alt="App Screenshot" class="img-fluid rounded shadow-lg"
-						style="width: 425px; height: 225px; object-fit: cover" />
-				</div>
+				<div><img src="img/examples/cucumber.png" alt="InferencePort desktop app screenshot" class="shot" /></div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Download section -->
-	<section id="install" class="py-5">
-		<div class="container">
-			<h2 class="fw-bold text-center mb-4" style="color: var(--text); letter-spacing: -0.02em">
-				Download &amp; Install
-			</h2>
+	<section id="install" class="sec" style="border-top:0">
+		<div class="wrap">
+			<div class="sec-head">
+				<div class="sec-idx">01 &mdash; Download</div>
+				<div><h2>Pick your platform.</h2><p>We detect your system and recommend a build. Every release is also listed below, including GPU builds for CUDA, ROCm and NVIDIA Jetson.</p></div>
+			</div>
 
-			<!-- Recommended download — populated by JS -->
 			<div id="recommended-download" class="mb-4"></div>
 
-			<!-- Platform tabs -->
-			<ul class="nav nav-tabs justify-content-center mb-0" id="installTabs" role="tablist">
-				<li class="nav-item">
-					<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#windows" id="windows-tab">
-						🪟 Windows
-					</button>
-				</li>
-				<li class="nav-item">
-					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac" id="mac-tab">
-						🍎 macOS
-					</button>
-				</li>
-				<li class="nav-item">
-					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#linux" id="linux-tab">
-						🐧 Linux
-					</button>
-				</li>
+			<ul class="nav nav-tabs mb-0" id="installTabs" role="tablist">
+				<li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#windows" id="windows-tab">Windows</button></li>
+				<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#mac" id="mac-tab">macOS</button></li>
+				<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#linux" id="linux-tab">Linux</button></li>
 			</ul>
-
 			<div class="tab-content mt-4" id="installTabsContent">
 				<div class="tab-pane fade show active" id="windows"></div>
 				<div class="tab-pane fade" id="mac"></div>
@@ -301,22 +99,28 @@
 		</div>
 	</section>
 
-	<!-- Community -->
-	<section class="community-section py-5">
-		<div class="container text-center">
-			<h2 class="fw-bold mb-2" style="color: var(--text); letter-spacing: -0.02em">
-				Join the Community
-			</h2>
-			<p style="color: var(--muted); margin-bottom: 24px">
-				Collaborate, contribute, and explore new possibilities with developers
-				worldwide.
-			</p>
-			<div class="d-flex justify-content-center gap-3 flex-wrap">
-				<a href="https://github.com/sharktide/InferencePort-ai" class="btn-gh">GitHub Repo (App)</a>
-				<a href="https://github.com/sharktide/InferencePort-web" class="btn-gh">GitHub Repo (Web)</a>
+	<section class="sec paper">
+		<div class="wrap">
+			<div class="sec-head">
+				<div class="sec-idx">02 &mdash; After you install</div>
+				<div><h2>Your account connects the rest.</h2><p>The app works without an account for local chat. Sign in with your InferencePort account to unlock cloud features &mdash; and the same sign-in opens the web console and any organization you belong to.</p></div>
 			</div>
+			<ul class="idx-list">
+				<li><b>Local</b><span>Pull a model from the marketplace and chat offline. Nothing leaves your machine.</span></li>
+				<li><b>Cloud</b><span>Turn on Lightning for hosted chat and generation within your plan.</span></li>
+				<li><b>Team</b><span>Host a server, or join an organization whose admins manage policy from the <a href="/console">Developer Console</a>.</span></li>
+			</ul>
+			<p style="margin-top:28px"><a class="btn-ghost" href="platform.html">See how the app, console and organizations fit together &rarr;</a></p>
 		</div>
 	</section>
+
+	<section class="sec tight">
+		<div class="wrap" style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between">
+			<div><div class="section-tag" style="margin:0">Open source</div><div style="font-size:1.05rem;color:var(--ink);font-weight:650;letter-spacing:-0.02em">Read the code, file issues, contribute.</div></div>
+			<div class="h-cta" style="margin:0"><a href="https://github.com/sharktide/InferencePort-ai" class="btn-ghost">GitHub &middot; App</a><a href="https://github.com/sharktide/InferencePort-web" class="btn-ghost">GitHub &middot; Web</a></div>
+		</div>
+	</section>
+	</main>
 
 	<ip-footer></ip-footer>
 

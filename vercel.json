@@ -7,12 +7,12 @@
     {
       "source": "/solutions.html",
       "destination": "/platform.html",
-      "permanent": true
+      "permanent": false
     },
     {
       "source": "/solutions",
       "destination": "/platform.html",
-      "permanent": true
+      "permanent": false
     },
     {
       "source": "/chat",
