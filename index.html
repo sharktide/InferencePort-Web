@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>InferencePort AI — Run, rent and govern AI from one account</title>
+		<title>InferencePort AI — AI platform: local models, hosted chat, one API, console and team controls</title>
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
 		<meta name="description" content="InferencePort AI gives you cloud & local AI models through the Cloud Platform and the Self-Hosted Platform. Chat with Lightning at 1,000 words/sec, self-host models for your team, use the Pay-to-Go API, and detect fraud with AI Shield. Open-source and cross-platform." />
 		<meta name="keywords" content="AI API, cloud AI models, local AI, self-hosted AI, Ollama, Lightning AI, text generation, image generation, video generation, AI fraud detection, AI Shield, open source AI, InferencePort" />
@@ -70,317 +70,336 @@
 	</head>
 	<body>
 		<ip-navbar active="home"></ip-navbar>
-
 		<main>
+
 		<!-- ═════════ HERO ═════════ -->
-		<section class="h-hero">
+		<section class="hx">
 			<div class="wrap">
-				<div class="h-hero-grid">
+				<div class="hx-grid">
 					<div>
-						<div class="h-kicker">AI infrastructure &middot; local, cloud, governed</div>
-						<h1 class="h-title">Run it. Rent it. <em>Govern it.</em></h1>
-						<p class="h-lede">InferencePort puts open-source models on your own hardware, a production API in our cloud, and the controls that let a whole organization use both &mdash; under one account, with one set of keys and one audit trail.</p>
-						<div class="h-cta">
-							<a class="btn-brand" href="install.html#install">Download the desktop app</a>
-							<a class="btn-ghost" href="platform.html">See how it fits together &rarr;</a>
+						<span class="eyebrow"><svg viewBox="170 30 320 565" fill="#FCD704" stroke="#0b0f1a" stroke-width="20" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg>The AI platform for models, apps and teams</span>
+						<h1>Run AI models on your hardware <em>or ours.</em></h1>
+						<p class="sub">InferencePort is a desktop app for private, local AI; a fast hosted chat; one OpenAI-compatible API for text, image, video, audio and 3D; and the console and team controls to manage all of it.</p>
+						<div class="cta">
+							<a class="btn-brand" href="install.html#install">Download for free</a>
+							<a class="btn-ghost" href="/console">Open the developer console</a>
 						</div>
+						<div class="proof"><span><b>45,000+</b> models</span><span><b>1,000</b> words/sec</span><span><b>Windows, macOS, Linux</b></span><span><b>Free</b> to start</span></div>
 					</div>
-					<div class="spec reveal" aria-label="Example API request">
-						<div class="spec-bar"><span>POST /v1/chat/completions</span><span>OpenAI-compatible</span></div>
-<pre><span class="c"># Same SDKs. Different base URL.</span>
+					<div class="win">
+						<div class="win-bar"><i></i><i></i><i></i><span>InferencePort AI &mdash; desktop app</span></div>
+						<img src="img/examples/cucumber.png" alt="The InferencePort desktop app answering a question in chat" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ PRODUCTS ═════════ -->
+		<section class="blk alt" id="products">
+			<div class="wrap">
+				<div class="sh">
+					<div class="k">What we offer</div>
+					<h2>Six products. One account.</h2>
+					<p>Use one on its own or all together. Everything signs in with the same InferencePort account.</p>
+				</div>
+				<div class="pgrid">
+					<a class="pc c-app" href="#app">
+						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="12"/><path d="M8 20h8M12 16v4"/></svg></div>
+						<span class="tagline">Desktop app</span><h3>Run models locally</h3>
+						<p>Chat with open-source models offline, host a server for your team, and install tools &mdash; on Windows, macOS or Linux.</p>
+						<span class="more">Explore the app &rarr;</span>
+					</a>
+					<a class="pc c-chat" href="#lightning">
+						<div class="ic"><svg viewBox="170 30 320 565" fill="#FCD704" stroke="#0b0f1a" stroke-width="22" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg></div>
+						<span class="tagline">Lightning chat</span><h3>Instant hosted AI</h3>
+						<p>Our fastest cloud models, streaming up to 1,000 words per second. In the app or any browser, free on every plan.</p>
+						<span class="more">See Lightning &rarr;</span>
+					</a>
+					<a class="pc c-api" href="#api">
+						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></div>
+						<span class="tagline">Pay-to-Go API</span><h3>One API, every modality</h3>
+						<p>An OpenAI-compatible endpoint for text, image, video, audio and 3D, billed per request from a credit wallet.</p>
+						<span class="more">View the API &rarr;</span>
+					</a>
+					<a class="pc c-console" href="#console">
+						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18"/><path d="M9 3v18M13 9h5M13 14h5"/></svg></div>
+						<span class="tagline">Developer console</span><h3>Operate it all</h3>
+						<p>Create API keys, buy credits, watch usage, try models in the playground, and build agents &mdash; in the browser.</p>
+						<span class="more">Tour the console &rarr;</span>
+					</a>
+					<a class="pc c-org" href="#organizations">
+						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 5.5a3 3 0 010 5.8M18 14.5c1.9.8 3 2.8 3 5.5"/></svg></div>
+						<span class="tagline">Organizations</span><h3>Manage your team</h3>
+						<p>A shared wallet, member budgets, SSO, audit logs and policies that apply to everyone&rsquo;s desktop app.</p>
+						<span class="more">See team controls &rarr;</span>
+					</a>
+					<a class="pc c-shield" href="#shield">
+						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
+						<span class="tagline">AI Shield</span><h3>Stop fraud and abuse</h3>
+						<p>Send signals in one call, get a risk score and a decision &mdash; allow, challenge, review, rate-limit or block.</p>
+						<span class="more">Explore Shield &rarr;</span>
+					</a>
+				</div>
+				<p class="alsoline">Plus the <a href="marketplace.html">model catalog</a> and the <a href="tools.html">Tool Registry</a>, covered <a href="#catalog">below</a>.</p>
+			</div>
+		</section>
+
+		<!-- ═════════ DESKTOP APP ═════════ -->
+		<section class="blk" id="app">
+			<div class="wrap">
+				<div class="frow c-app">
+					<div class="ftext">
+						<div class="pill-l">Desktop app</div>
+						<h2>Private AI that runs on your own computer.</h2>
+						<p>Download InferencePort, pick a model, and start chatting &mdash; no coding, no account needed. Local chats stay on your device.</p>
+						<ul class="checks">
+							<li><b>Local chat, offline.</b> Run open-source models through Ollama with streaming replies.</li>
+							<li><b>45,000+ models.</b> Download from the built-in marketplace or Hugging Face, or import your own GGUF or Modelfile.</li>
+							<li><b>Sessions you control.</b> Save, rename, favorite, and edit, regenerate or delete responses.</li>
+							<li><b>Custom tools.</b> Build tools and run code in chat, or install community tools from the registry.</li>
+							<li><b>Host a server.</b> Share your models with teammates by email or API key, and connect to remote servers.</li>
+							<li><b>Spaces and sync.</b> Open Hugging Face Spaces in-app; sign in to sync chats across devices.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="install.html#install">Download the app</a><a class="btn-ghost" href="platform.html#app">Learn more</a></div>
+					</div>
+					<div class="win">
+						<div class="win-bar"><i></i><i></i><i></i><span>Local model &middot; offline</span></div>
+						<img src="img/examples/cucumber.png" alt="Chat in the InferencePort desktop app" />
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ LIGHTNING ═════════ -->
+		<section class="blk dark" id="lightning">
+			<div class="wrap">
+				<div class="frow rev c-chat">
+					<div class="ftext">
+						<div class="pill-l" style="color:var(--gold)">Lightning chat</div>
+						<h2>Cloud AI that answers as fast as you can read.</h2>
+						<p>Lightning is our hosted model family. Use it from the desktop app, or open it in any browser &mdash; nothing to install, nothing to configure.</p>
+						<ul class="checks">
+							<li><b>Lightning Text v2.</b> Up to 1,000 words per second with smooth streaming, for chat, code and long writing.</li>
+							<li><b>Lightning Image Turbo.</b> Our default image model: photoreal and cinematic, faster than before.</li>
+							<li><b>Free on every plan.</b> No credit card for the free tier; paid plans raise image, video and audio limits.</li>
+							<li><b>Synced.</b> Browser chats sync to your account.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="chat/">Try Lightning now</a><a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="lightning.html">About Lightning</a></div>
+					</div>
+					<div class="big-stat">
+						<div class="n">1,000<small>words per second</small></div>
+						<div class="stream"><span class="u">Lightning Text v2</span>Streaming a long answer token by token, without the wait<span class="caret"></span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ API ═════════ -->
+		<section class="blk" id="api">
+			<div class="wrap">
+				<div class="frow c-api">
+					<div class="ftext">
+						<div class="pill-l">Pay-to-Go API</div>
+						<h2>One endpoint for every kind of AI.</h2>
+						<p>Point your existing OpenAI SDK at InferencePort and call text, image, video, audio and 3D models. You pay per request from a prepaid credit wallet &mdash; separate from any chat subscription.</p>
+						<ul class="checks">
+							<li><b>OpenAI-compatible.</b> Same SDKs and tools; change the base URL and key.</li>
+							<li><b>Text with streaming</b> and function calling, including Lightning models.</li>
+							<li><b>Image, video, audio and 3D</b> generation through the same account.</li>
+							<li><b>Predictable spend.</b> Buy credit packs; usage and cost are visible per model in the console.</li>
+							<li><b>Model catalog API.</b> List models programmatically by type and capability.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="/console">Get an API key</a><a class="btn-ghost" href="marketplace.html">Browse models</a></div>
+					</div>
+					<div class="panel" style="--c:var(--ink)">
+						<div class="panel-h"><span>POST /v1/chat/completions</span><span>OpenAI-compatible</span></div>
+<pre><span class="c"># Same SDKs. New base URL.</span>
 <span class="k">curl</span> <span class="u">https://api.inferenceport.ai/v1/chat/completions</span> \
   -H <span class="s">"Authorization: Bearer $IP_API_KEY"</span> \
   -H <span class="s">"Content-Type: application/json"</span> \
   -d <span class="s">'{
     "messages": [
-      {"role":"user","content":"Hello"}
+      {"role": "user", "content": "Hello"}
     ],
     "stream": true
   }'</span></pre>
-						<div class="spec-foot">
-							<div><b>Key</b>from the Console</div>
-							<div><b>Billing</b>credit wallet</div>
-							<div><b>Models</b>5 modalities</div>
+						<div class="chips"><span class="chip y">Text</span><span class="chip y">Image</span><span class="chip y">Video</span><span class="chip y">Audio</span><span class="chip y">3D</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ CONSOLE ═════════ -->
+		<section class="blk alt" id="console">
+			<div class="wrap">
+				<div class="frow rev c-console">
+					<div class="ftext">
+						<div class="pill-l">Developer console</div>
+						<h2>Your control room for everything cloud.</h2>
+						<p>The console is a web dashboard at <span class="mono">/console</span>. It is where you get set up, build, and keep an eye on usage and spend.</p>
+						<ul class="checks">
+							<li><b>API keys and credits.</b> Create keys, buy credit packs, manage billing and receipts.</li>
+							<li><b>Playground.</b> Try text, image, video and audio models before you write code.</li>
+							<li><b>Usage.</b> Per-model usage and cost over time.</li>
+							<li><b>Agents and MCP.</b> Build agents with a model, prompt and MCP servers; keep them private or publish them.</li>
+							<li><b>Shield and more.</b> Manage AI Shield, authorized apps, and rewards.</li>
+							<li><b>Organizations.</b> Switch into a team workspace from the same sidebar.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="/console">Open the console</a><a class="btn-ghost" href="platform.html#console">Learn more</a></div>
+					</div>
+					<div class="panel" style="--c:var(--purple)">
+						<div class="panel-h"><span>Developer console</span><span>/console</span></div>
+						<div class="nav-mock">
+							<div class="side">
+								<small>Account</small><div>Account</div><div>Billing</div>
+								<small>Explore</small><div>Models</div><div>Playground</div>
+								<small>Build</small><div>Agents</div><div>API key</div><div class="on">Usage</div><div>Pay-to-Go API</div><div>MCP</div><div>Shield</div>
+							</div>
+							<div class="main">
+								<div class="stat3"><div><b>12.4k</b><span>Requests</span></div><div><b>$18.20</b><span>Spend</span></div><div><b>6</b><span>Models</span></div></div>
+								<div class="bars" aria-hidden="true"><i style="height:35%"></i><i style="height:52%"></i><i style="height:44%"></i><i style="height:70%"></i><i style="height:58%"></i><i style="height:84%"></i><i style="height:64%"></i><i style="height:92%"></i><i style="height:76%"></i><i style="height:100%"></i></div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<div class="h-strip">
-					<div><b>45,000+</b>open-source models runnable locally</div>
-					<div><b>1,000 w/s</b>Lightning cloud text streaming</div>
-					<div><b>3 OS</b>Windows, macOS, Linux</div>
-					<div><b>$0</b>to start &mdash; local chat is always free</div>
+			</div>
+		</section>
+
+		<!-- ═════════ ORGANIZATIONS ═════════ -->
+		<section class="blk" id="organizations">
+			<div class="wrap">
+				<div class="frow c-org">
+					<div class="ftext">
+						<div class="pill-l">Organizations</div>
+						<h2>Give a whole team AI, with the controls IT expects.</h2>
+						<p>Organizations live inside the console. Members share one credit wallet while admins set budgets, policies and security &mdash; billed per seat, free for up to 3 members.</p>
+						<ul class="checks">
+							<li><b>Shared wallet and budgets.</b> Per-member and per-key limits, spend caps and alerts.</li>
+							<li><b>Roles.</b> Owner, admin, billing manager, auditor and member.</li>
+							<li><b>SSO and security.</b> SAML single sign-on, enforced SSO, verified domains and IP allowlists.</li>
+							<li><b>Audit log.</b> Exportable, with streaming to your SIEM on Team plans.</li>
+							<li><b>Desktop app policy.</b> Choose cloud or local-only, which models can be pulled, tools, and who can host servers.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="pricing.html#organizations">Organization plans</a><a class="btn-ghost" href="platform.html#organizations">How it works</a></div>
+					</div>
+					<div class="panel" style="--c:var(--cyan)">
+						<div class="panel-h"><span>Organization &middot; Desktop app policy</span><span>Admins</span></div>
+						<div class="krow"><span>Cloud (Lightning) models</span><span class="sel">Allow</span></div>
+						<div class="krow"><span>Model downloads</span><span class="sel">Allow-list</span></div>
+						<div class="krow"><span>Imports and custom tools</span><span class="tog"></span></div>
+						<div class="krow"><span>Members can host a server</span><span class="sel">Admins only</span></div>
+						<div class="krow"><span>Bill Lightning to the organization</span><span class="tog on"></span></div>
+					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- ═════════ 01 THE MAP ═════════ -->
-		<section class="sec" id="map">
+		<!-- ═════════ SHIELD ═════════ -->
+		<section class="blk alt" id="shield">
 			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">01 &mdash; The map</div>
-					<div>
-						<h2>One account. Three places to work from.</h2>
-						<p>InferencePort is not one app with many tabs. It is a desktop app you run, a web console you operate, and an organization layer that governs both. Each has one job.</p>
+				<div class="frow rev c-shield">
+					<div class="ftext">
+						<div class="pill-l" style="color:#b91c1c">AI Shield</div>
+						<h2>Know who you can trust, in one API call.</h2>
+						<p>Send whatever you know about a sign-up, login or message. Shield returns a risk score, a confidence level, plain-English reasons and a recommended action in under a second.</p>
+						<ul class="checks">
+							<li><b>Signup protection.</b> Bots, fake accounts, trial farming and referral abuse.</li>
+							<li><b>Identity.</b> Linked accounts, duplicates and ban evasion.</li>
+							<li><b>Content.</b> Spam, scams and malicious messages.</li>
+							<li><b>Prompt protection.</b> Injection, jailbreaks and tool or agent abuse in your AI product.</li>
+							<li><b>No rules to tune.</b> One endpoint; send any mix of email, IP, phone, username, device or text.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="shield.html">Explore Shield</a><a class="btn-ghost" href="/console">Get started</a></div>
+					</div>
+					<div class="panel" style="--c:#ef4444">
+						<div class="panel-h"><span>POST /ai-shield/analyze</span><span>Response</span></div>
+<pre>{
+  <span class="u">"risk_score"</span>: 91,
+  <span class="u">"confidence"</span>: 0.97,
+  <span class="u">"decision"</span>: <span class="s">"block"</span>,
+  <span class="u">"reasons"</span>: [
+    <span class="s">"Device associated with previous abuse"</span>,
+    <span class="s">"Disposable email indicators detected"</span>
+  ]
+}</pre>
+						<div class="dec"><span class="a">Allow</span><span class="ch">Challenge</span><span class="r">Review</span><span class="rl">Rate limit</span><span class="b">Block</span></div>
 					</div>
 				</div>
+			</div>
+		</section>
 
-				<div class="map reveal">
+		<!-- ═════════ CATALOG ═════════ -->
+		<section class="blk" id="catalog">
+			<div class="wrap">
+				<div class="sh">
+					<div class="k">Models and tools</div>
+					<h2>Find what to run, and extend what it can do.</h2>
+				</div>
+				<div class="duo">
+					<a class="pc c-app" href="marketplace.html">
+						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5zM3 13l9 5 9-5"/></svg></div>
+						<span class="tagline">Model catalog</span><h3>Browse every model</h3>
+						<p>Cloud and local models across text, image, video, audio and 3D, filterable by type and capability. Hugging Face models run locally; hosted models run on Pay-to-Go.</p>
+						<span class="more">Browse models &rarr;</span>
+					</a>
+					<a class="pc c-chat" href="tools.html">
+						<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14.5 6.5a4 4 0 005 5L9 22l-4-4zM13 8l3 3"/></svg></div>
+						<span class="tagline">Tool Registry</span><h3>Share and install tools</h3>
+						<p>Upload your own tools to the registry, or open a community tool in the desktop app with one click and run it in chat.</p>
+						<span class="more">Open the registry &rarr;</span>
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- ═════════ HOW THEY CONNECT ═════════ -->
+		<section class="blk alt" id="connect">
+			<div class="wrap">
+				<div class="sh">
+					<div class="k">How it fits together</div>
+					<h2>One account connects the app, the console and your team.</h2>
+					<p>Sign in once. Keys and credits come from the console. Organization policy set there reaches every member&rsquo;s desktop app, and org-billed usage rolls up into one wallet.</p>
+				</div>
+				<div class="map">
 					<div class="map-acct"><span>One InferencePort account</span><span>same sign-in &middot; app &middot; web chat &middot; console</span></div>
 					<div class="map-cols">
-						<article class="surf surf-app">
-							<div class="surf-label">Desktop app</div>
-							<h3>Where you use AI</h3>
-							<p>Chat with local models, host a server for your team, install community tools, and switch to Lightning cloud models when you want speed.</p>
-							<dl>
-								<div><dt>Runs on</dt><dd>Your machine &mdash; Windows, macOS, Linux</dd></div>
-								<div><dt>Used by</dt><dd>Everyone</dd></div>
-								<div><dt>Data</dt><dd>Local chats stay on-device</dd></div>
-								<div><dt>Cost</dt><dd>Free. Cloud tiers optional.</dd></div>
-							</dl>
-						</article>
-
-						<article class="surf surf-chat">
-							<div class="surf-label">Lightning chat</div>
-							<h3>Hosted chat, instantly</h3>
-							<p>The fast cloud path &mdash; up to 1,000 words per second. Available inside the app and in any browser at <span class="mono">/chat</span>.</p>
-							<dl>
-								<div><dt>Runs on</dt><dd>InferencePort cloud</dd></div>
-								<div><dt>Used by</dt><dd>Anyone with an account</dd></div>
-								<div><dt>Data</dt><dd>Plan quotas, no setup</dd></div>
-								<div><dt>Cost</dt><dd>Free tier, then monthly plans</dd></div>
-							</dl>
-						</article>
-
-						<article class="surf surf-console">
-							<div class="surf-label">Developer console</div>
-							<h3>Where you operate AI</h3>
-							<p>Create API keys, fund the Pay-to-Go wallet, read usage, try models in the playground, wire up Shield and MCP.</p>
-							<dl>
-								<div><dt>Runs on</dt><dd>Web &mdash; <span class="mono">/console</span></dd></div>
-								<div><dt>Used by</dt><dd>Developers, admins</dd></div>
-								<div><dt>Data</dt><dd>Keys, credits, usage, logs</dd></div>
-								<div><dt>Cost</dt><dd>Credits, pay per request</dd></div>
-							</dl>
-
-						</article>
-					</div>
-					<div class="map-org" id="org-inset">
-						<div class="surf-label">Organizations &middot; a workspace inside the console</div>
-						<div class="map-org-body"><b>Where a team is governed.</b> Shared wallet, member budgets, policies, SSO and audit &mdash; billed per seat. It sits on top of the console and reaches down into every member&rsquo;s app.</div>
-					</div>
-					<div class="map-bridge">
-						<span><b>Organization policy</b>set once in the console</span>
-						<svg viewBox="0 0 56 14" fill="none" aria-hidden="true"><path d="M56 7H2M8 1L2 7l6 6" stroke="currentColor" stroke-width="1.5"/></svg>
-						<span><b>Every member&rsquo;s desktop app</b>picks it up within minutes</span>
+						<article class="surf surf-app"><div class="surf-label">Desktop app</div><h3>Use</h3><p>Chat, host servers, run tools. Local-first.</p></article>
+						<article class="surf surf-console"><div class="surf-label">Developer console</div><h3>Operate</h3><p>Keys, wallet, usage, playground, Shield.</p></article>
+						<article class="surf surf-org"><div class="surf-label">Organizations</div><h3>Govern</h3><p>Seats, budgets, policy, SSO, audit.</p></article>
 					</div>
 				</div>
+				<p style="margin-top:28px"><a class="btn-ghost" href="platform.html">Read the full platform guide &rarr;</a></p>
 			</div>
 		</section>
 
-		<!-- ═════════ 02 HOW THEY CONNECT ═════════ -->
-		<section class="sec paper" id="bridge">
+		<!-- ═════════ PRICING ═════════ -->
+		<section class="blk" id="pricing">
 			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">02 &mdash; The bridges</div>
-					<div>
-						<h2>What actually flows between them.</h2>
-						<p>No hand-waving. Four concrete links connect the app, the console and your organization.</p>
-					</div>
+				<div class="sh">
+					<div class="k">Pricing</div>
+					<h2>Start free. Pay only when you need more.</h2>
+					<p>Every plan includes unlimited local chat. Subscriptions raise cloud limits; Pay-to-Go and organizations are billed separately.</p>
 				</div>
-				<div class="ledger">
-					<div class="ledger-row reveal">
-						<div class="n">01</div>
-						<h3>One identity everywhere</h3>
-						<p>Sign in once with your InferencePort account. The same account opens the desktop app, web chat and the console, and it is the identity organizations invite, budget and audit.</p>
-						<div class="flow"><span class="a">App</span><i>&harr;</i><span class="g">Chat</span><i>&harr;</i><span class="c">Console</span></div>
-					</div>
-					<div class="ledger-row reveal">
-						<div class="n">02</div>
-						<h3>Keys and credits come from the console</h3>
-						<p>You mint API keys and fund the Pay-to-Go wallet in the console. Your code calls the OpenAI-compatible endpoint with that key; each request debits the wallet. Lightning subscriptions are separate &mdash; they draw on plan quotas, not credits.</p>
-						<div class="flow"><span class="c">Console</span><i>&rarr; key &rarr;</i><span>Your code</span><i>&rarr; debit &rarr;</i><span class="c">Wallet</span></div>
-					</div>
-					<div class="ledger-row reveal">
-						<div class="n">03</div>
-						<h3>Organization policy governs the app</h3>
-						<p>Admins choose, in the console, whether members may use cloud models or stay local-only, which models can be pulled, whether custom tools and imports are allowed, and who may host a server. Members&rsquo; desktop apps pick the policy up within a few minutes or on restart. Lightning usage can bill to the organization instead of the member.</p>
-						<div class="flow"><span class="o">Org policy</span><i>&rarr; sync &rarr;</i><span class="a">Member apps</span></div>
-					</div>
-					<div class="ledger-row reveal">
-						<div class="n">04</div>
-						<h3>Spend and activity roll back up</h3>
-						<p>API-key and playground usage billed to the org lands on one shared wallet, broken down by member, key and model, with budgets, alerts and an audit log you can export or stream to your SIEM.</p>
-						<div class="flow"><span class="c">Keys + playground</span><i>&rarr;</i><span class="o">Org wallet</span><i>&rarr;</i><span class="o">Usage &middot; Audit</span></div>
-					</div>
+				<div class="price-row">
+					<div class="pr"><h3>Free</h3><div class="amt">$0</div><p>Unlimited local chat, 50 cloud chats a day, and starter image, video and audio limits.</p></div>
+					<div class="pr"><h3>AI Light</h3><div class="amt">$9.99 <small>/ mo</small></div><p>Unlimited cloud chat for casual users and creators.</p></div>
+					<div class="pr hl"><h3>AI Core</h3><div class="amt">$15.99 <small>/ mo</small></div><p>Best value: 150 images and 30 videos a day.</p></div>
+					<div class="pr"><h3>Creator &amp; Pro</h3><div class="amt">$29.99+ <small>/ mo</small></div><p>High-volume image and video work, up to unlimited.</p></div>
+					<div class="pr"><h3>Pay-to-Go &amp; Orgs</h3><div class="amt">By use <small>/ seat</small></div><p>Credits per request, and team plans from $0 (up to 3 members).</p></div>
 				</div>
-			</div>
-		</section>
-
-		<!-- ═════════ 03 WHICH ONE ═════════ -->
-		<section class="sec" id="which">
-			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">03 &mdash; Choose</div>
-					<div>
-						<h2>Which one do I use?</h2>
-						<p>Start from what you are trying to do.</p>
-					</div>
-				</div>
-				<table class="dtable">
-					<thead><tr><th>I want to&hellip;</th><th>Use</th><th>Because</th></tr></thead>
-					<tbody>
-						<tr><td>Chat privately, offline, on my own hardware</td><td><span class="pill app">Desktop app</span></td><td>Local models via Ollama. Nothing leaves your machine.</td></tr>
-						<tr><td>Chat fast without installing anything</td><td><span class="pill chat">Lightning chat</span></td><td>Hosted models at up to 1,000 words/sec, bounded by plan quotas.</td></tr>
-						<tr><td>Share local models with my team or customers</td><td><span class="pill app">Desktop app</span></td><td>Host an InferencePort server and invite users by email, or issue custom API keys.</td></tr>
-						<tr><td>Try generation on my plan, without spending credits</td><td><span class="pill console">Developer console</span></td><td>&ldquo;Generation (Subscription)&rdquo; runs against plan quotas. Pay-to-Go is the separate credit-billed path.</td></tr>
-						<tr><td>Call models from production code</td><td><span class="pill console">Developer console</span></td><td>Create a key, fund the wallet, hit <span class="mono">/v1</span>. Separate ledger, predictable spend.</td></tr>
-						<tr><td>Give a team shared credits, budgets and SSO</td><td><span class="pill org">Organizations</span></td><td>One wallet, per-member and per-key limits, SAML, IP allowlists, audit log.</td></tr>
-						<tr><td>Control what employees can do in the app</td><td><span class="pill org">Organizations</span></td><td>Desktop policy: cloud on/off, model pulls, tools, server hosting.</td></tr>
-						<tr><td>Detect fraud, bots and abuse in my product</td><td><span class="pill shield">AI Shield</span></td><td>Send signals in one call, get a decision with reasoning. Managed from the console.</td></tr>
-					</tbody>
-				</table>
-				<p style="margin-top:28px"><a href="platform.html" class="btn-ghost">Read the full guide to all three &rarr;</a></p>
-			</div>
-		</section>
-
-		<!-- ═════════ 04 LIGHTNING ═════════ -->
-		<section class="sec night" id="lightning">
-			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">04 &mdash; Lightning</div>
-					<div>
-						<h2>Cloud inference at the speed of reading.</h2>
-						<p>Lightning Text v2 streams at up to 1,000 words per second, and Lightning Image Turbo is the default image model. Both are available on every plan, including free.</p>
-					</div>
-				</div>
-				<div class="split">
-					<div class="bignum">1,000<small>words / sec</small></div>
-					<ul class="idx-list">
-						<li><b>Text</b><span>Lightning Text v2 &mdash; low-latency decoding with smooth streaming for chat, code and long-form writing.</span></li>
-						<li><b>Image</b><span>Lightning Image Turbo &mdash; cinematic, photoreal output, faster than the previous default.</span></li>
-						<li><b>Where</b><span>Desktop app, <span class="mono">/chat</span> in any browser, or the API.</span></li>
-						<li><b>Cost</b><span>Included in every plan. No credit card for the free tier.</span></li>
-					</ul>
-				</div>
-				<p style="margin-top:40px"><a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="lightning.html">About Lightning &rarr;</a></p>
-			</div>
-		</section>
-
-		<!-- ═════════ 05 API ═════════ -->
-		<section class="sec" id="api">
-			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">05 &mdash; Pay-to-Go API</div>
-					<div>
-						<h2>One endpoint. Every modality.</h2>
-						<p>A drop-in OpenAI-compatible API on its own credit ledger &mdash; built for production services, not chat quotas.</p>
-					</div>
-				</div>
-				<div class="caps">
-					<div class="cap"><div class="k">Text</div><h3>Chat &amp; completions</h3><p>Streaming, function calling and multi-turn conversations, including Lightning models.</p></div>
-					<div class="cap"><div class="k">Image</div><h3>Generation</h3><p>Prompt to image with multiple aspect ratios and styles, including batch use.</p></div>
-					<div class="cap"><div class="k">Video</div><h3>Generation</h3><p>Text to video with configurable duration for content and media pipelines.</p></div>
-					<div class="cap"><div class="k">Audio</div><h3>Speech &amp; synthesis</h3><p>Text-to-speech with voice options and adjustable speed.</p></div>
-					<div class="cap"><div class="k">3D</div><h3>Models &amp; assets</h3><p>Generate 3D assets from text or images for games, simulation and printing.</p></div>
-					<div class="cap"><div class="k">Catalog</div><h3>Model discovery</h3><p>List and select models programmatically, filtered by type and capability.</p></div>
-				</div>
-				<p style="margin-top:32px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn-brand" href="/console">Open the console</a><a class="btn-ghost" href="marketplace.html">Browse models</a></p>
-			</div>
-		</section>
-
-		<!-- ═════════ 06 SELF-HOSTED ═════════ -->
-		<section class="sec paper" id="selfhost">
-			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">06 &mdash; Self-hosting</div>
-					<div>
-						<h2>Your hardware. Your data. Their access.</h2>
-						<p>Turn any machine running the desktop app into an AI server. Invite people by email, or hand out API keys. Inference runs on your hardware.</p>
-					</div>
-				</div>
-				<div class="split">
-					<ul class="idx-list">
-						<li><b>Host</b><span>Run local LLMs and marketplace models from the app in minutes.</span></li>
-						<li><b>Authenticate</b><span>InferencePort accounts, or custom API keys for programmatic access.</span></li>
-						<li><b>Invite</b><span>Add users by email. Organizations can fill the list from their directory in one click.</span></li>
-						<li><b>Free</b><span>100 free token verifications per day on every server.</span></li>
-					</ul>
-					<ul class="idx-list">
-						<li><b>Models</b><span>Ollama-compatible, plus 45,000+ Hugging Face models with compatible metadata.</span></li>
-						<li><b>Tools</b><span>Install community tools from the registry, or publish your own.</span></li>
-						<li><b>Remote</b><span>Connect to other Ollama and InferencePort servers and switch between them.</span></li>
-						<li><b>Spaces</b><span>Launch Hugging Face Spaces directly from the app.</span></li>
-					</ul>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═════════ 07 ORGANIZATIONS ═════════ -->
-		<section class="sec" id="organizations">
-			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">07 &mdash; Organizations</div>
-					<div>
-						<h2>Seats, policy and proof.</h2>
-						<p>Billed per seat. Start free with three members; add SSO, IP allowlists and long-retention audit when rollout gets serious.</p>
-					</div>
-				</div>
-				<div class="ladder">
-					<div class="rung">
-						<div class="tier">Free</div><h3>Pilot</h3>
-						<div class="price">$0 <small>forever</small></div>
-						<ul><li>Up to 3 members</li><li>Shared credit wallet</li><li>2 org API keys</li><li>7-day audit log</li></ul>
-					</div>
-					<div class="rung">
-						<div class="tier">Starter</div><h3>Controls</h3>
-						<div class="price">$7.99 <small>/ seat / mo</small></div>
-						<ul><li>25 members, 5 teams</li><li>Per-member and per-key budgets</li><li>Org-wide model policy</li><li>30-day audit, CSV/JSON export</li></ul>
-					</div>
-					<div class="rung hl">
-						<div class="tier">Team &middot; most popular</div><h3>Secure rollout</h3>
-						<div class="price">$20 <small>/ seat / mo</small></div>
-						<ul><li>SAML SSO, enforced</li><li>IP allowlists</li><li>Audit streaming to your SIEM</li><li>Auditor role, 365-day retention</li></ul>
-					</div>
-					<div class="rung">
-						<div class="tier">Enterprise</div><h3>Commercial terms</h3>
-						<div class="price">Custom</div>
-						<ul><li>Unlimited seats and keys</li><li>Up to 7-year audit retention</li><li>99.9% uptime SLA, custom DPA</li><li>Dedicated onboarding</li></ul>
-					</div>
-				</div>
-				<p style="margin-top:32px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn-brand" href="pricing.html#organizations">Compare organization plans</a><a class="btn-ghost" href="platform.html#organizations">How organizations work</a></p>
-			</div>
-		</section>
-
-		<!-- ═════════ 08 SHIELD ═════════ -->
-		<section class="sec paper" id="shield">
-			<div class="wrap">
-				<div class="sec-head">
-					<div class="sec-idx">08 &mdash; AI Shield</div>
-					<div>
-						<h2>One call. One decision.</h2>
-						<p>Send everything you know about a sign-up, login or request &mdash; email, phone, IP, username, device &mdash; and get back a risk score, confidence, reasoning and a recommended action in under a second.</p>
-					</div>
-				</div>
-				<div class="h-strip" style="border-top:1px solid var(--ink)">
-					<div><b>1</b>endpoint to learn</div>
-					<div><b>19</b>analysis features</div>
-					<div><b>5</b>possible decisions</div>
-					<div><b>&lt;1s</b>response time</div>
-				</div>
-				<p style="margin-top:32px"><a class="btn-ghost" href="shield.html">Explore Shield &rarr;</a></p>
+				<p style="margin-top:28px"><a class="btn-ghost" href="pricing.html">Compare all plans &rarr;</a></p>
 			</div>
 		</section>
 		</main>
 
-		<!-- ═════════ CLOSER ═════════ -->
 		<section class="closer">
 			<div class="wrap">
-				<h2>Start local. Scale when you need to.</h2>
-				<p>Install the app and chat for free in minutes. When you are ready to ship, the console and your organization are one sign-in away.</p>
+				<h2>Try InferencePort free.</h2>
+				<p>Install the app and chat locally in minutes, or open Lightning in your browser. Add the console and your team whenever you are ready.</p>
 				<div class="h-cta">
-					<a class="btn-brand" href="install.html#install">Download the desktop app</a>
+					<a class="btn-brand" href="install.html#install">Download for free</a>
+					<a class="btn-ghost" href="chat/">Try Lightning in the browser</a>
 					<a class="btn-ghost" href="/console">Open the console</a>
-					<a class="btn-ghost" href="platform.html">Read the platform guide</a>
 				</div>
 			</div>
 		</section>

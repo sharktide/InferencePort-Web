@@ -13,7 +13,7 @@ class IpNavbar extends HTMLElement {
 		<div class="ipn-panel" id="ipn-panel">
 			<ul class="ipn-links">
 				<li class="ipn-item">
-					<button class="ipn-link ipn-dd${on("platform", "install", "lightning", "shield", "solutions")}" type="button" aria-expanded="false">Platform ${CARET}</button>
+					<button class="ipn-link ipn-dd${on("platform", "install", "lightning", "shield", "solutions")}" type="button" aria-expanded="false">Products ${CARET}</button>
 					<div class="ipn-menu">
 						<a class="ipn-m" href="/platform.html"><i class="dot-shield"></i><div><b>How it all fits together</b><span>App, Console and Organizations — one account, one map.</span></div></a>
 						<a class="ipn-m" href="/install.html"><i class="dot-app"></i><div><b>Desktop App</b><span>Local models, self-hosted servers, tools. Runs on your hardware.</span></div></a>
