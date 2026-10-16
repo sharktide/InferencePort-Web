@@ -58,6 +58,8 @@ const WORK_TABS = new Set(["models", "playground", "agents", "mcp"]);
 function tabAvailable(tab: string, org: OrgSummary | null): boolean {
   if (isOrgSection(tab)) return !!org && orgSectionAllowed(tab, org.role);
   if (org && WORK_TABS.has(tab) && !SPENDING_ROLES.includes(org.role)) return false;
+  /* Deploy is listed in the Work/Build navigation for roles that can spend; keep saved tabs consistent with that. */
+  if (org && tab === "deploy" && !SPENDING_ROLES.includes(org.role)) return false;
   if (org) return !PERSONAL_ONLY_TABS.has(tab);
   return true;
 }

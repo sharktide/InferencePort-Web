@@ -52,13 +52,23 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   const modal = useModal();
   /* In an organization context the deployments belong to the org: the fee bills the org wallet and every member that may
      spend on the org can call the model. Only owners and admins deploy, cancel and terminate. */
-  const org = useOptionalOrgContext()?.activeOrg ?? null;
+  const orgCtx = useOptionalOrgContext();
+  const org = orgCtx?.activeOrg ?? null;
+  /* Until the organization list has loaded we cannot tell personal from organization mode, so nothing is requested or
+     shown that could act on the wrong wallet. */
+  const orgUnresolved = !!session && !!orgCtx && orgCtx.orgs === null;
   const canManage = !org || org.role === "owner" || org.role === "admin";
   const depBase = org ? `/v1/orgs/${encodeURIComponent(org.slug)}/deployments` : "/v1/deploy";
   const ownerLabel = org ? `${org.name} (organization)` : "your account";
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [searchResults, setSearchResults] = useState<FeatherlessModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  /* Identifies the current context; async work started under another context must not apply or submit anything. */
+  const ctxKey = `${session?.user?.id ?? ""}|${depBase}`;
+  const ctxRef = useRef(ctxKey);
+  ctxRef.current = ctxKey;
+  const loadSeq = useRef(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchPage, setSearchPage] = useState(1);
   const [searchTotal, setSearchTotal] = useState(0);
@@ -89,14 +99,20 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const loadDeployments = useCallback(async () => {
+    const seq = ++loadSeq.current;
+    const key = ctxKey;
     try {
       const data = await fj(depBase, { headers: authH() });
+      if (seq !== loadSeq.current || key !== ctxRef.current) return; /* superseded by a newer request or context */
       setDeployments(data.data || []);
+      setLoadError(null);
     } catch (e: any) {
-      setDeployments([]);
+      if (seq !== loadSeq.current || key !== ctxRef.current) return;
+      /* Keep the last good list; a failed refresh is not "no deployments". */
+      setLoadError(e.message || "Could not load deployments");
       console.error("Failed to load deployments:", e);
     }
-  }, [session, depBase]);
+  }, [session, depBase, ctxKey]);
 
   const searchModels = useCallback(async (query: string, page: number) => {
     setSearching(true);
@@ -115,11 +131,12 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   }, [session]);
 
   useEffect(() => {
-    if (!session) return;
+    if (!session || orgUnresolved) return;
     setLoading(true);
     setDeployments([]);
-    loadDeployments().finally(() => setLoading(false));
-  }, [session, loadDeployments]);
+    setLoadError(null);
+    loadDeployments().finally(() => { if (ctxRef.current === ctxKey) setLoading(false); });
+  }, [session, orgUnresolved, loadDeployments, ctxKey]);
 
   useEffect(() => {
     if (tab !== "browse") return;
@@ -151,6 +168,8 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   };
 
   const handleDeploy = async (modelId: string) => {
+    const startKey = ctxKey;
+    const switched = () => ctxRef.current !== startKey;
     setDeploying(modelId);
     setError(null);
     setSuccess(null);
@@ -174,12 +193,14 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
       setProvisioning({ modelId, stage: stages[i], progress: currentProgress, stages });
       const wait = Math.round(stageTimings[i]);
       await new Promise((r) => setTimeout(r, wait));
+      if (switched()) { setProvisioning(null); setDeploying(null); return; } /* never bill the context the user left */
       elapsed += wait;
       currentProgress = Math.min(95, Math.round((elapsed / totalMs) * 100));
       setProvisioning({ modelId, stage: stages[i], progress: currentProgress, stages });
     }
 
     try {
+      if (switched()) { setProvisioning(null); setDeploying(null); return; }
       const result = await fj(depBase, {
         method: "POST",
         headers: authH(),
@@ -241,6 +262,18 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
   const inactiveDeployments = deployments.filter((d) => d.status !== "active" && d.status !== "cancelled_pending");
   const activeModelIds = new Set(activeDeployments.map((d) => d.featherless_model_id));
 
+  if (orgUnresolved) {
+    return (
+      <div className={`${styles.panel} ${styles.active}`}>
+        <div className={`${styles.lockedOverlay} ${styles.panelLock}`} role="status">
+          {orgCtx?.listError
+            ? <>Could not load your organizations ({orgCtx.listError}), so we can't tell which wallet deployments belong to. <button type="button" onClick={() => { void orgCtx.refresh(); }}>Retry</button></>
+            : "Loading organization…"}
+        </div>
+      </div>
+    );
+  }
+
   if (!session) {
     return (
       <div className={`${styles.panel} ${styles.active}`}>
@@ -269,6 +302,12 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
         </p>
       </section>
 
+      {loadError && (
+        <section className={`${styles.card} ${styles.wide} ${deployStyles.errorCard}`} role="alert">
+          Could not refresh deployments: {loadError}
+          <button className={deployStyles.dismissBtn} onClick={() => { void loadDeployments(); }}>Retry</button>
+        </section>
+      )}
       {error && (
         <section className={`${styles.card} ${styles.wide} ${deployStyles.errorCard}`}>
           {error}
@@ -305,7 +344,9 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
         <>
           <section className={`${styles.card} ${styles.wide}`}>
             <div className={styles.heading}>Active Deployments</div>
-            {activeDeployments.length === 0 ? (
+            {activeDeployments.length === 0 && loadError ? (
+              <p className={styles.muted}>Deployments could not be loaded.</p>
+            ) : activeDeployments.length === 0 ? (
               <p className={styles.muted}>
                 {canManage
                   ? 'No active deployments. Use "Browse & Deploy" to find and deploy a model.'
