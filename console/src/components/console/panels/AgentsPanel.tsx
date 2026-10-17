@@ -268,6 +268,7 @@ export default function AgentsPanel({ session, apiBase }: Props) {
             const id = String(m.id || "");
             if (!id || id.startsWith("hf/") || id.startsWith("agent/")) return false;
             if (m.managed_by === "inferenceport") return false;
+            if (m.type === "embedding" || m.type === "realtime") return false;
             const mods = m.output_modalities || m.modalities || ["text"];
             return Array.isArray(mods) && mods.includes("text");
           })

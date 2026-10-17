@@ -166,6 +166,11 @@
 			background: rgba(26, 107, 255, 0.10);
 		}
 
+		.pill-realtime {
+			color: #be185d;
+			background: rgba(236, 72, 153, 0.10);
+		}
+
 		.model-meta {
 			display: flex;
 			flex-direction: column;
@@ -399,7 +404,7 @@
 				InferencePort AI Marketplace
 			</h1>
 			<p class="lead mt-3" style="color: var(--text-muted); max-width: 520px; margin: 12px auto 0;">
-				Browse all available AI models across text, image, video, and 3D.
+				Browse all available AI models across text, image, video, audio, 3D, embeddings and realtime.
 			</p>
 		</div>
 	</section>
@@ -416,6 +421,8 @@
 				<button class="filter-tab" data-filter="video">Video</button>
 				<button class="filter-tab" data-filter="audio">Audio</button>
 				<button class="filter-tab" data-filter="3d">3D</button>
+				<button class="filter-tab" data-filter="embedding">Embeddings</button>
+				<button class="filter-tab" data-filter="realtime">Realtime</button>
 				<button class="filter-tab" data-filter="local">Local</button>
 			</div>
 			<input type="text" id="search-models" class="form-control mb-4" placeholder="Search models…" />
@@ -453,7 +460,8 @@
 		function isTextModel(m) {
 			const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
 			const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
-			return i.includes("text") && o.includes("text");
+			// Realtime models also take and give text but are not chat models.
+			return m?.type !== "embedding" && m?.type !== "realtime" && i.includes("text") && o.includes("text");
 		}
 
 		function slug(m) {
@@ -468,6 +476,7 @@
 			if (o.includes("image")) return "image";
 			if (o.includes("video")) return "video";
 			if (o.includes("audio")) return "audio";
+			if (o.includes("embedding")) return "embedding";
 			return "text";
 		}
 
@@ -477,6 +486,8 @@
 				case "image": return "pill-image";
 				case "video": return "pill-video";
 				case "audio": return "pill-audio";
+				case "embedding": return "pill-embedding";
+				case "realtime": return "pill-realtime";
 				case "3D":
 				case "3d": return "pill-3d";
 				default: return "pill-text";
@@ -493,7 +504,33 @@
 			}
 		}
 
+		// Embeddings bill per million input tokens; realtime per million tokens by modality or per streamed audio hour.
+		function formatEmbeddingPrice(m) {
+			const perMillion = parseFloat(m?.input_pricing_per_million_tokens);
+			if (Number.isFinite(perMillion)) return `$${fmtRate(perMillion)}/M tokens`;
+			const prompt = parseFloat(m?.pricing?.prompt);
+			if (Number.isFinite(prompt) && prompt !== 0) return `$${fmtRate(prompt * 1_000_000)}/M tokens`;
+			return null;
+		}
+
+		function formatRealtimePrice(m) {
+			const rates = m?.realtime_pricing_per_million_tokens;
+			if (rates && typeof rates === "object") {
+				const n = (v) => { const x = parseFloat(v); return Number.isFinite(x) ? x : null; };
+				const parts = [];
+				if (n(rates.audio_in) != null) parts.push(`Audio in: $${fmtRate(n(rates.audio_in))}/M`);
+				if (n(rates.audio_out) != null) parts.push(`Audio out: $${fmtRate(n(rates.audio_out))}/M`);
+				if (n(rates.text_in) != null && n(rates.text_out) != null) parts.push(`Text: $${fmtRate(n(rates.text_in))} in / $${fmtRate(n(rates.text_out))} out per M`);
+				if (parts.length) return parts.join(" · ");
+			}
+			const perSecond = parseFloat(m?.input_price_per_second);
+			if (Number.isFinite(perSecond)) return `$${fmtRate(perSecond * 3600)}/hour of audio`;
+			return null;
+		}
+
 		function formatPricing(m) {
+			if (modelType(m) === "embedding") return formatEmbeddingPrice(m);
+			if (modelType(m) === "realtime") return formatRealtimePrice(m);
 			if (modelType(m) === "audio") return formatAudioPrice(m);
 			const p = m?.pricing || {};
 			if (p.prompt != null && p.completion != null) {
@@ -554,9 +591,12 @@
 		}
 
 		function formatModelPrice(m) {
+			const type = modelType(m);
+			// These read their own top-level rate fields, so they work without a `pricing` object.
+			if (type === "embedding") return formatEmbeddingPrice(m);
+			if (type === "realtime") return formatRealtimePrice(m);
 			const pricing = m?.pricing;
 			if (!pricing) return null;
-			const type = modelType(m);
 			if (type === "audio") {
 				const audio = formatAudioPrice(m);
 				if (audio) return audio;

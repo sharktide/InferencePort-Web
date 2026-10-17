@@ -76,6 +76,8 @@
 .badgeVideo { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.22); }
 .badgeAudio { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.20); }
 .badge3d { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.22); }
+.badgeEmbedding { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.20); }
+.badgeRealtime { color: var(--text-2); background: rgba(107, 114, 128, 0.10); border-color: rgba(107, 114, 128, 0.22); }
 .badgeDefault { color: var(--muted); background: var(--surface); border-color: var(--border); }
 
 .modelStats {

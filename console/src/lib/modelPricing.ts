@@ -27,6 +27,7 @@ const fmtRate = (v: number): string => {
 export function modelType(m: any): string {
   if (m?.type) return String(m.type);
   const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
+  if (o.includes("embedding")) return "embedding";
   if (o.includes("image")) return "image";
   if (o.includes("video")) return "video";
   if (o.includes("audio")) return "audio";
@@ -78,11 +79,43 @@ export function formatAudioPrice(m: any, pct = 1): string | null {
   return null;
 }
 
+// Embedding models bill per million input tokens; realtime models either per
+// million tokens by modality (gpt-realtime-*) or per second of streamed audio
+// (live transcription). Rates are USD and `pct` scales them like the others.
+export function formatEmbeddingPrice(m: any, pct = 1): string | null {
+  const perMillion = num(m?.input_pricing_per_million_tokens);
+  if (perMillion != null) return `$${fmtRate(perMillion * pct)}/M tokens`;
+  const prompt = num(m?.pricing?.prompt);
+  if (prompt != null && prompt !== 0) return `$${fmtRate(prompt * 1_000_000 * pct)}/M tokens`;
+  return null;
+}
+
+export function formatRealtimePrice(m: any, pct = 1): string | null {
+  const rates = m?.realtime_pricing_per_million_tokens;
+  if (rates && typeof rates === "object") {
+    const textIn = num(rates.text_in);
+    const audioIn = num(rates.audio_in);
+    const textOut = num(rates.text_out);
+    const audioOut = num(rates.audio_out);
+    const parts: string[] = [];
+    if (audioIn != null) parts.push(`Audio in: $${fmtRate(audioIn * pct)}/M`);
+    if (audioOut != null) parts.push(`Audio out: $${fmtRate(audioOut * pct)}/M`);
+    if (textIn != null && textOut != null) parts.push(`Text: $${fmtRate(textIn * pct)} in / $${fmtRate(textOut * pct)} out per M`);
+    if (parts.length) return parts.join(" \u00b7 ");
+  }
+  const perSecond = num(m?.input_price_per_second);
+  if (perSecond != null) return `$${fmtRate(perSecond * 3600 * pct)}/hour of audio`;
+  return null;
+}
+
 // pct scales every rate (used for reward discounts); 1 keeps list prices.
 export function formatModelPrice(m: any, pct = 1): string | null {
+  const type = modelType(m);
+  // These read their own top-level rate fields, so they work even when the entry has no `pricing` object.
+  if (type === "embedding") return formatEmbeddingPrice(m, pct);
+  if (type === "realtime") return formatRealtimePrice(m, pct);
   const pricing = m?.pricing;
   if (!pricing) return null;
-  const type = modelType(m);
 
   if (type === "audio") {
     const audio = formatAudioPrice(m, pct);
@@ -126,6 +159,8 @@ export function formatModelPrice(m: any, pct = 1): string | null {
 
 export function formatPricing(m: any): string | null {
   if (modelType(m) === "audio") return formatAudioPrice(m);
+  if (modelType(m) === "embedding") return formatEmbeddingPrice(m);
+  if (modelType(m) === "realtime") return formatRealtimePrice(m);
   const p = m?.pricing || {};
   if (p.token_pricing) {
     const tp = p.token_pricing;

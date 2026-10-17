@@ -10,7 +10,7 @@ import { createOrgApi, ORG_HEADER, type OrgApi, type OrgSummary } from "../../li
 const STORAGE_KEY = "console-org";
 /* The header only matters where usage is billed or the org wallet is shown. Read-only lookups (models, agents) stay
    header-free so an exhausted org budget or a role that cannot spend never breaks them. */
-const ORG_BILLED = /^\/v1\/(chat|images|videos|audio|3d|me|credits)(\/|\?|$)/;
+const ORG_BILLED = /^\/v1\/(chat|images|videos|audio|3d|embeddings|me|credits)(\/|\?|$)/;
 /* Server-side refresh trigger, e.g. after a first SSO sign-in joined the user to an organization. */
 export const ORGS_CHANGED_EVENT = "console:orgs-changed";
 

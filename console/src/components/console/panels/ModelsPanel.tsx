@@ -4,6 +4,8 @@ import Icon from "../../Icon";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import AudioPlayground from "./AudioPlayground";
+import EmbeddingStudio from "../playground/EmbeddingStudio";
+import RealtimeStudio from "../playground/RealtimeStudio";
 import {
   formatDiscountedPrice,
   formatModelPrice,
@@ -54,9 +56,9 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const [threeError, setThreeError] = useState("");
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return i.includes("text") && o.includes("text"); };
+  const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return !["embedding", "realtime"].includes(m?.type) && i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
-  const modelType = (m: any) => { if (m.type) return m.type; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; if (o.includes("image")) return "image"; if (o.includes("video")) return "video"; if (o.includes("audio")) return "audio"; if (o.includes("3d")) return "3d"; return "text"; };
+  const modelType = (m: any) => { if (m.type) return m.type; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; if (o.includes("image")) return "image"; if (o.includes("video")) return "video"; if (o.includes("audio")) return "audio"; if (o.includes("3d")) return "3d"; if (o.includes("embedding")) return "embedding"; return "text"; };
   const modelDisplayName = (m: any) => {
     const name = m?.name || m?.id || "Unnamed model";
     if ((m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by) return `@${m.owned_by}/${name}`;
@@ -68,6 +70,8 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
     if (t === "image") return styles.isConfigImage;
     if (t === "3d" || t === "3D") return styles.isConfig3d;
     if (t === "audio") return styles.isConfigAudio;
+    if (t === "embedding") return styles.isConfigEmbedding;
+    if (t === "realtime") return styles.isConfigRealtime;
     return styles.isConfigVideo;
   };
 
@@ -508,7 +512,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         <div className={styles.heading}>Live playground</div>
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test generation using {source === "p2g" ? "P2G API" : "Gen API"}. Every successful generation consumes credits.</p>
         <div className={styles.tabs}>
-          {(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
+          {(source === "p2g" ? ["text", "image", "video", "audio", "3d", "embedding", "realtime"] as const : ["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t === "embedding" ? "Embeddings" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
         </div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{modelDisplayName(m)}</option>)}</select></label>
@@ -564,6 +568,12 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             apiPrefix={source === "p2g" ? "/v1" : "/gen"}
             models={source === "p2g" ? allModels : []}
           />
+        )}
+        {source === "p2g" && tab === "embedding" && (
+          <EmbeddingStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
+        )}
+        {source === "p2g" && tab === "realtime" && (
+          <RealtimeStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
         )}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
