@@ -314,7 +314,7 @@ function ConsoleFrame({
       usage: <UsagePanel session={session} apiBase={apiBase} />,
       "gen-api": <GenApiPanel session={session} config={config} apiBase={apiBase} />,
       mcp: <McpPanel session={session} config={config} apiBase={apiBase} />,
-      "payg-api": <PaygApiPanel session={session} config={config} apiBase={apiBase} />,
+      "payg-api": <PaygApiPanel session={session} config={config} apiBase={apiBase} theme={theme} />,
       shield: <ShieldPanel session={session} config={config} apiBase={apiBase} />,
       "authorized-apps": <AuthorizedAppsPanel session={session} config={config} apiBase={apiBase} supabase={supabase} />,
     };

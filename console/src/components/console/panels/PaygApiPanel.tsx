@@ -3,9 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import AudioPlayground from "./AudioPlayground";
+import EmbeddingStudio from "../playground/EmbeddingStudio";
+import RealtimeStudio from "../playground/RealtimeStudio";
 import { formatModelPrice } from "../../../lib/modelPricing";
 
-interface Props { session: any; config: any; apiBase: string; }
+interface Props { session: any; config: any; apiBase: string; theme?: "light" | "dark"; }
 
 interface ThreeJobResult {
   glbUrl?: string;
@@ -36,7 +38,7 @@ function get3DModels(allModels: any[]) {
   return allModels.filter((m: any) => m.type === "3d" || m.output_modalities?.includes("3d"));
 }
 
-export default function PaygApiPanel({ session, config, apiBase }: Props) {
+export default function PaygApiPanel({ session, config, apiBase, theme }: Props) {
   const [allModels, setAllModels] = useState<any[]>([]);
   const [allRemoteModels, setAllRemoteModels] = useState<any[]>([]);
   const [textModels, setTextModels] = useState<any[]>([]);
@@ -307,7 +309,7 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
       <section className={`${styles.card} ${styles.wide}`}>
         <h2>P2G API playground</h2>
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test the Pay-2-Go API. Every successful generation consumes credits.</p>
-        <div className={styles.tabs}>{(["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</div>
+        <div className={styles.tabs}>{(["text", "image", "video", "audio", "3d", "embedding", "realtime"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t === "embedding" ? "Embeddings" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}</div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}><label>Model<select value={textModel} onChange={(e) => setTextModel(e.target.value)}>{textModels.map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{m.name}</option>)}</select></label><textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} /><button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button><pre className={styles.output}>{textOutput}</pre></div>}
         {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}>          <label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}><option value="">Default</option>{getImageModels(allModels).map((m: any, i: number) => <option key={i} value={m.id}>{m.name}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}</select></label><textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} /><button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>{imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}</div>}
         {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
@@ -344,6 +346,12 @@ export default function PaygApiPanel({ session, config, apiBase }: Props) {
         </div>}
         {tab === "audio" && (
           <AudioPlayground session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} />
+        )}
+        {tab === "embedding" && (
+          <EmbeddingStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
+        )}
+        {tab === "realtime" && (
+          <RealtimeStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
         )}
         {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>

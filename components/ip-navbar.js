@@ -31,7 +31,7 @@ class IpNavbar extends HTMLElement {
 					<div class="ipn-menu">
 						<div class="ipn-mega">
 							<div class="ipn-col"><h5>Build</h5>
-								${mi("/index.html#api","api","c-api","Pay-to-Go API","One OpenAI-compatible endpoint for text, image, video, audio and 3D.")}
+								${mi("/index.html#api","api","c-api","Pay-to-Go API","One OpenAI-compatible endpoint for text, image, video, audio, 3D, embeddings and realtime voice.")}
 								${mi("/index.html#agents","agents","c-console","Managed Agents","Host agents on your prompt, model and MCP tools. Call them like a model.")}
 								${mi("/index.html#council","council","c-console","Council MCP","A council of models, cross-reviewed into one answer, inside any MCP client.")}
 								${mi("/ipx.html","cli","c-api","ipx CLI","Scan, check and automate from your terminal and CI.")}

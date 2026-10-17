@@ -14,6 +14,7 @@
   flex-direction: column;
   gap: 1.25rem;
   padding: 0;
+  min-width: 0;
   /* no overflow clipping: the model picker popover must be able to extend past the rail */
   overflow: visible;
 }
@@ -36,7 +37,7 @@
   to { opacity: 1; transform: none; }
 }
 @media (max-width: 1060px) {
-  .studio { grid-template-columns: 1fr; }
+  .studio { grid-template-columns: minmax(0, 1fr); }  /* minmax(0, …): a long unbreakable child must not widen the page */
   .controls { position: static; max-height: none; }
 }
 
