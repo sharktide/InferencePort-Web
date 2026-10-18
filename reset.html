@@ -285,7 +285,8 @@
 				return new Promise((resolve) => {
 					const overlay = document.createElement("div");
 					overlay.className = "modal-overlay";
-					overlay.innerHTML = `<div class="modal-box"><div class="modal-message">${message}</div><div class="modal-actions"><button class="modal-ok">OK</button></div></div>`;
+					overlay.innerHTML = `<div class="modal-box"><div class="modal-message"></div><div class="modal-actions"><button class="modal-ok">OK</button></div></div>`;
+					overlay.querySelector(".modal-message").textContent = String(message);
 					document.body.appendChild(overlay);
 					const btn = overlay.querySelector(".modal-ok");
 					const dismiss = () => { overlay.remove(); resolve(); };
@@ -300,6 +301,10 @@
 			const input2 = document.getElementById("confirm-input");
 
 			submitBtn.addEventListener("click", async () => {
+				if (!input1.value) {
+					await showToast("Please enter a new password");
+					return;
+				}
 				if (input1.value !== input2.value) {
 					await showToast("Passwords do not match");
 					return;
