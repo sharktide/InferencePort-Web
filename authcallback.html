@@ -168,7 +168,8 @@
 
 			// The fragment carries live access/refresh tokens, so `rd` must never
 			// point at an arbitrary site (open redirect / token theft). Only loopback
-			// listeners (desktop app, CLI) and InferencePort origins are accepted.
+			// listeners (desktop app, CLI), InferencePort origins and the exact hosts
+			// below are accepted.
 			function safeRedirect(raw) {
 				if (!raw) return null;
 				let u;
@@ -184,7 +185,16 @@
 				const own =
 					u.protocol === "https:" &&
 					/^(?:[a-z0-9-]+\.)*(?:inferenceport\.ai|inference\.js\.org)$/i.test(host);
-				if (!loopback && !own) return null;
+				// Exact hosts that serve the browser build of the app (never a wildcard:
+				// anyone can create an *.hf.space or *.vercel.app site).
+				const trusted =
+					u.protocol === "https:" &&
+					[
+						"sharktide-chat.hf.space",
+						"sharktide-chat.static.hf.space",
+						"inferenceportai.vercel.app",
+					].includes(host.toLowerCase());
+				if (!loopback && !own && !trusted) return null;
 				if (u.username || u.password) return null;
 				u.hash = "";
 				return u.toString();
