@@ -166,9 +166,34 @@
 				return;
 			}
 
+			// The fragment carries live access/refresh tokens, so `rd` must never
+			// point at an arbitrary site (open redirect / token theft). Only loopback
+			// listeners (desktop app, CLI) and InferencePort origins are accepted.
+			function safeRedirect(raw) {
+				if (!raw) return null;
+				let u;
+				try {
+					u = new URL(raw);
+				} catch (e) {
+					return null;
+				}
+				const host = u.hostname;
+				const loopback =
+					u.protocol === "http:" &&
+					(host === "localhost" || host === "127.0.0.1" || host === "[::1]");
+				const own =
+					u.protocol === "https:" &&
+					/^(?:[a-z0-9-]+\.)*(?:inferenceport\.ai|inference\.js\.org)$/i.test(host);
+				if (!loopback && !own) return null;
+				if (u.username || u.password) return null;
+				u.hash = "";
+				return u.toString();
+			}
+
 			let deepLink;
-			if (urlParams.get("rd")) {
-				deepLink = urlParams.get("rd") + "#" + hash;
+			const rd = safeRedirect(urlParams.get("rd"));
+			if (rd) {
+				deepLink = rd + "#" + hash;
 			} else {
 				deepLink = `inferenceport-ai:///auth/callback#${hash}`;
 			}
