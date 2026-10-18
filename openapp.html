@@ -208,7 +208,11 @@
 				errorBox.textContent = `Selected model: ${hash}`;
 				errorBox.classList.remove("d-none");
 
-				const deepLink = `inferenceport-ai:///marketplace?hf=${hash}`;
+				let safeHash = hash;
+				try {
+					safeHash = decodeURIComponent(hash);
+				} catch (e) {}
+				const deepLink = `inferenceport-ai:///marketplace?hf=${encodeURIComponent(safeHash)}`;
 
 				document
 					.getElementById("launch")
