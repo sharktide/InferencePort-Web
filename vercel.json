@@ -3,6 +3,25 @@
   "buildCommand": "bash build.sh",
   "outputDirectory": "dist",
   "installCommand": "echo 'Using root buildCommand instead'",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000" },
+        { "key": "Permissions-Policy", "value": "payment=()" }
+      ]
+    },
+    {
+      "source": "/(authcallback|authcallback\\.html|reset\\.html|openapp\\.html|verifyemail\\.html)",
+      "headers": [
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    }
+  ],
   "redirects": [
     {
       "source": "/solutions.html",
