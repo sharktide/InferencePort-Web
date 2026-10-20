@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decision models — System One API | InferencePort AI</title>
+  <meta name="description" content="Classify, score and evaluate typed questions with decision models on the unified InferencePort P2G API." />
+  <link rel="canonical" href="https://inferenceport.ai/decision.html" />
+  <link rel="icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="styles/shared.css" />
+  <link rel="stylesheet" href="styles/site.css" />
+  <script src="components/ip-navbar.js"></script>
+  <script src="components/ip-footer.js"></script>
+  <style>pre{overflow:auto;padding:1.25rem;border:1px solid var(--line,#ddd);border-radius:12px;line-height:1.65} .guide{max-width:900px;padding-bottom:80px}.guide h2{margin-top:2.5rem}.guide p,.guide li{line-height:1.8}</style>
+</head>
+<body>
+  <ip-navbar active="platform"></ip-navbar>
+  <main>
+    <section class="h-hero"><div class="wrap">
+      <div class="h-kicker">P2G API guide</div>
+      <h1 class="h-title">Decisions, with probabilities.</h1>
+      <p class="h-lede">Classify requests, evaluate gates and score outcomes using typed questions on the unified API.</p>
+      <p><a href="console/">Open the console → Playground → Decisions</a> · <a href="marketplace.html">Browse models</a></p>
+    </div></section>
+    <article class="wrap guide">
+      <h2>One endpoint, configurable providers</h2>
+      <p><code>POST /v1/systemone</code> accepts a model, text or JSON state, and named questions. Microsoft Decision 1 is available through the Foundry East US integration. Discover decision models with <code>GET /v1/decision/models</code> or <code>GET /v1/models</code>.</p>
+      <p>Authenticate with your InferencePort bearer token or API key. Add <code>X-InferencePort-Org</code> to bill an organization. Decision models use P2G wallet credits and have their own modality policy.</p>
+      <h2>Ask typed questions</h2>
+      <ul>
+        <li><code>choice</code>: select a named criterion and inspect the returned probabilities.</li>
+        <li><code>noul</code>: evaluate a question as a value from zero to one.</li>
+        <li><code>score</code>: score against an ordered list of criteria.</li>
+      </ul>
+      <pre><code>{
+  "model": "microsoft/decision-1",
+  "state": "I was charged twice. Please refund me.",
+  "questions": {
+    "team": {
+      "type": "choice",
+      "instructions": "Which team should handle this request?",
+      "criteria": {
+        "billing": "Charges, invoices and refunds",
+        "support": "How-to and account questions"
+      }
+    },
+    "refund": {
+      "type": "noul",
+      "instructions": "Is the customer requesting a refund?"
+    }
+  }
+}</code></pre>
+      <p>Save the request as <code>request.json</code>, then call your configured API base:</p>
+      <pre><code>curl "$INFERENCEPORT_API_BASE/v1/systemone" \
+  -H "Authorization: Bearer $INFERENCEPORT_API_KEY" \
+  -H 'Content-Type: application/json' \
+  --data-binary @request.json</code></pre>
+      <p>Results preserve the provider’s <code>answers</code> object. Read <code>usage.input_tokens</code> and <code>usage.payg_credits_charged</code> for usage and cost. Requests support up to 64 questions, 2–64 choice or score criteria, and 1 MB of serialized state/questions.</p>
+      <h2>Try it in the console or CLI</h2>
+      <p>The Decisions playground lets you select a model, edit state and question JSON, inspect choices and probabilities, and download the complete response.</p>
+      <pre><code>ipx p2g models --type decision
+ipx p2g prices --type decision
+ipx p2g decision --file request.json --output result.json
+cat request.json | ipx p2g decision --file - --json</code></pre>
+      <h2>Pricing and provider setup</h2>
+      <p>Decision models bill per input token at the configured catalog rate. Microsoft Decision 1 starts at $0.042 per million input tokens. Check the live model catalog for current prices. Normal account discounts, markups and wallet rounding apply. Charges round to 0.0001 credits. Missing provider usage is estimated across questions; failed provider requests are not charged.</p>
+      <p>Operators manage providers and retail rates in <code>InferencePort-Lightning/src/models/decision.json</code>. The Foundry entry uses the server-side <code>FOUNDRY_KEY</code> secret. Add System One compatible deployments such as D3 or JEV with their URL, upstream ID, authentication variable and desired input-token rate. Clients continue using their InferencePort credentials.</p>
+    </article>
+  </main>
+  <ip-footer></ip-footer>
+</body>
+</html>

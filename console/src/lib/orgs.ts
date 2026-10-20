@@ -4,8 +4,8 @@ export type OrgRole = "owner" | "admin" | "billing_manager" | "auditor" | "membe
 export type AssignableRole = Exclude<OrgRole, "owner">;
 export type OrgPlan = "free" | "starter" | "team" | "enterprise";
 export type SelfServePlan = "starter" | "team";
-export type Modality = "text" | "image" | "video" | "audio" | "3d" | "embedding" | "realtime";
-export const MODALITIES: Modality[] = ["text", "image", "video", "audio", "3d", "embedding", "realtime"];
+export type Modality = "text" | "image" | "video" | "audio" | "3d" | "embedding" | "realtime" | "decision";
+export const MODALITIES: Modality[] = ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"];
 
 /** Header that makes a request bill / apply policy as an organization (set automatically by OrgContext). */
 export const ORG_HEADER = "X-InferencePort-Org";

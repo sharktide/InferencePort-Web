@@ -5,7 +5,7 @@ export { slug };
 const arr = (v: any): string[] => (Array.isArray(v) ? v : []);
 
 // Embedding and realtime models list "text" as an input/output but are not chat models.
-const NON_CHAT_TYPES = ["embedding", "realtime"];
+const NON_CHAT_TYPES = ["embedding", "realtime", "decision"];
 export const isNonChat = (m: any) => NON_CHAT_TYPES.includes(m?.type);
 export const isText = (m: any) => !isNonChat(m) && arr(m?.input_modalities).includes("text") && arr(m?.output_modalities).includes("text");
 export const outputs = (m: any, kind: string) => arr(m?.output_modalities).includes(kind) || m?.type === kind;

@@ -12,7 +12,7 @@ import ContextChip from "../ContextChip";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
 
-type Mode = "text" | "image" | "video" | "audio" | "3d" | "embedding" | "realtime";
+type Mode = "text" | "image" | "video" | "audio" | "3d" | "embedding" | "realtime" | "decision";
 
 function StudioLoading() {
   return (
@@ -32,6 +32,7 @@ const VideoStudio = load(() => import("../playground/VideoStudio"));
 const AudioStudio = load(() => import("../playground/AudioStudio"));
 const ThreeDStudio = load(() => import("../playground/ThreeDStudio"));
 const EmbeddingStudio = load(() => import("../playground/EmbeddingStudio"));
+const DecisionStudio = load(() => import("../playground/DecisionStudio"));
 const RealtimeStudio = load(() => import("../playground/RealtimeStudio"));
 
 const MODES: { id: Mode; label: string; icon: IconName; blurb: string; p2gOnly?: boolean }[] = [
@@ -41,6 +42,7 @@ const MODES: { id: Mode; label: string; icon: IconName; blurb: string; p2gOnly?:
   { id: "audio", label: "Audio", icon: "music", blurb: "Music, speech, transcription and voice tools" },
   { id: "3d", label: "3D", icon: "cube", blurb: "Image to 3D models", p2gOnly: true },
   { id: "embedding", label: "Embeddings", icon: "list", blurb: "Turn text into vectors for search and similarity", p2gOnly: true },
+  { id: "decision", label: "Decisions", icon: "list", blurb: "Classify and evaluate typed questions with probabilities", p2gOnly: true },
   { id: "realtime", label: "Realtime", icon: "mic", blurb: "Live voice conversations and transcription", p2gOnly: true },
 ];
 
@@ -52,10 +54,11 @@ const STUDIOS: Record<Mode, ComponentType<StudioProps>> = {
   "3d": ThreeDStudio,
   embedding: EmbeddingStudio,
   realtime: RealtimeStudio,
+  decision: DecisionStudio,
 };
 
-const ALL_MODES: readonly Mode[] = ["text", "image", "video", "audio", "3d", "embedding", "realtime"];
-const P2G_ONLY: readonly Mode[] = ["video", "3d", "embedding", "realtime"];
+const ALL_MODES: readonly Mode[] = ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"];
+const P2G_ONLY: readonly Mode[] = ["video", "3d", "embedding", "realtime", "decision"];
 
 const readPref = <T extends string>(key: string, allowed: readonly T[], fallback: T): T => {
   try {

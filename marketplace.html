@@ -404,7 +404,7 @@
 				InferencePort AI Marketplace
 			</h1>
 			<p class="lead mt-3" style="color: var(--text-muted); max-width: 520px; margin: 12px auto 0;">
-				Browse all available AI models across text, image, video, audio, 3D, embeddings and realtime.
+				Browse all available AI models across text, image, video, audio, 3D, embeddings, decisions and realtime.
 			</p>
 		</div>
 	</section>
@@ -423,8 +423,10 @@
 				<button class="filter-tab" data-filter="3d">3D</button>
 				<button class="filter-tab" data-filter="embedding">Embeddings</button>
 				<button class="filter-tab" data-filter="realtime">Realtime</button>
+				<button class="filter-tab" data-filter="decision">Decisions</button>
 				<button class="filter-tab" data-filter="local">Local</button>
 			</div>
+			<p><a href="decision.html">Decision API guide and examples</a></p>
 			<input type="text" id="search-models" class="form-control mb-4" placeholder="Search models…" />
 			<div class="text-center my-4" id="loading-spinner">
 				<div class="spinner-border" style="color: var(--brand)" role="status">
@@ -461,7 +463,7 @@
 			const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
 			const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
 			// Realtime models also take and give text but are not chat models.
-			return m?.type !== "embedding" && m?.type !== "realtime" && i.includes("text") && o.includes("text");
+			return m?.type !== "embedding" && m?.type !== "realtime" && m?.type !== "decision" && i.includes("text") && o.includes("text");
 		}
 
 		function slug(m) {
@@ -487,6 +489,7 @@
 				case "video": return "pill-video";
 				case "audio": return "pill-audio";
 				case "embedding": return "pill-embedding";
+				case "decision": return "pill-embedding";
 				case "realtime": return "pill-realtime";
 				case "3D":
 				case "3d": return "pill-3d";
@@ -497,6 +500,7 @@
 		function tagPillClass(tag) {
 			switch (tag) {
 				case "embedding": return "pill-embedding";
+				case "decision": return "pill-embedding";
 				case "thinking": return "pill-thinking";
 				case "tools": return "pill-tools";
 				case "vision": return "pill-vision";
@@ -529,7 +533,7 @@
 		}
 
 		function formatPricing(m) {
-			if (modelType(m) === "embedding") return formatEmbeddingPrice(m);
+			if (["embedding", "decision"].includes(modelType(m))) return formatEmbeddingPrice(m);
 			if (modelType(m) === "realtime") return formatRealtimePrice(m);
 			if (modelType(m) === "audio") return formatAudioPrice(m);
 			const p = m?.pricing || {};
@@ -593,7 +597,7 @@
 		function formatModelPrice(m) {
 			const type = modelType(m);
 			// These read their own top-level rate fields, so they work without a `pricing` object.
-			if (type === "embedding") return formatEmbeddingPrice(m);
+			if (["embedding", "decision"].includes(type)) return formatEmbeddingPrice(m);
 			if (type === "realtime") return formatRealtimePrice(m);
 			const pricing = m?.pricing;
 			if (!pricing) return null;
