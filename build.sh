@@ -13,6 +13,9 @@ cd ..
 rm -rf dist
 mkdir -p dist
 
+if [ -d "api" ]; then
+    cp -r "api" dist/
+fi
 # Copy root static files
 for f in index.html platform.html ipx.html pricing.html lightning.html verifyemail.html marketplace.html redirect.html tools.html security.html shield.html install.html reset.html openapp.html authcallback.html robots.txt sitemap.xml CNAME LICENSE icon.png; do
   [ -f "$f" ] && cp "$f" dist/
