@@ -15,6 +15,9 @@ if (Test-Path dist) {
 }
 New-Item -ItemType Directory -Force -Path dist | Out-Null
 
+if (Test-Path "api" -PathType Container) {
+    Copy-Item -Recurse "api" dist/
+}
 # Copy root static files
 $files = @(
     "index.html", "pricing.html", "lightning.html", "marketplace.html", 
