@@ -112,7 +112,7 @@ export function formatRealtimePrice(m: any, pct = 1): string | null {
 export function formatModelPrice(m: any, pct = 1): string | null {
   const type = modelType(m);
   // These read their own top-level rate fields, so they work even when the entry has no `pricing` object.
-  if (type === "embedding") return formatEmbeddingPrice(m, pct);
+  if ((type === "embedding" || type === "decision")) return formatEmbeddingPrice(m, pct);
   if (type === "realtime") return formatRealtimePrice(m, pct);
   const pricing = m?.pricing;
   if (!pricing) return null;
@@ -159,7 +159,7 @@ export function formatModelPrice(m: any, pct = 1): string | null {
 
 export function formatPricing(m: any): string | null {
   if (modelType(m) === "audio") return formatAudioPrice(m);
-  if (modelType(m) === "embedding") return formatEmbeddingPrice(m);
+  if (["embedding", "decision"].includes(modelType(m))) return formatEmbeddingPrice(m);
   if (modelType(m) === "realtime") return formatRealtimePrice(m);
   const p = m?.pricing || {};
   if (p.token_pricing) {

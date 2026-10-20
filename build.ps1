@@ -22,7 +22,7 @@ if (Test-Path "api" -PathType Container) {
 $files = @(
     "index.html", "platform.html", "ipx.html", "pricing.html", "lightning.html", "marketplace.html", 
     "redirect.html", "tools.html", 
-    "security.html", "shield.html", "install.html", "reset.html", "verifyemail.html",
+    "security.html", "decision.html", "shield.html", "install.html", "reset.html", "verifyemail.html",
     "openapp.html", "authcallback.html", "robots.txt", "sitemap.xml", 
     "CNAME", "LICENSE", "icon.png"
 )
