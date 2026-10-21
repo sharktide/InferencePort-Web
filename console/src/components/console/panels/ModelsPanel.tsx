@@ -71,7 +71,8 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
     if (t === "image") return styles.isConfigImage;
     if (t === "3d" || t === "3D") return styles.isConfig3d;
     if (t === "audio") return styles.isConfigAudio;
-    if (t === "embedding" || t === "decision") return styles.isConfigEmbedding;
+    if (t === "embedding") return styles.isConfigEmbedding;
+    if (t === "decision") return styles.isConfigDecision;
     if (t === "realtime") return styles.isConfigRealtime;
     return styles.isConfigVideo;
   };
@@ -513,7 +514,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         <div className={styles.heading}>Live playground</div>
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test generation using {source === "p2g" ? "P2G API" : "Gen API"}. Every successful generation consumes credits.</p>
         <div className={styles.tabs}>
-          {(source === "p2g" ? ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"] as const : ["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t === "decision" ? "Decisions" : t === "embedding" ? "Embeddings" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
+          {(source === "p2g" ? ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"] as const : ["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${t === "decision" ? styles.playgroundTabDecision : ""} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t === "decision" ? "Decisions" : t === "embedding" ? "Embeddings" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
         </div>
         {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
           <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{modelDisplayName(m)}</option>)}</select></label>
