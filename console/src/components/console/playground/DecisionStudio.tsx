@@ -52,6 +52,9 @@ export default function DecisionStudio({ session, apiBase, apiPrefix, models }: 
         throw new Error("Named assets must be a JSON object.");
       }
       const assetCount = Object.keys(namedAssets).length;
+      if (acceptsAssets && assetCount + imageFiles.length > 16) {
+        throw new Error("Turbo supports at most 16 images including named assets.");
+      }
       if (acceptsImages && imageFiles.length) {
         const maxCount = acceptsAssets ? 16 : 4;
         const maxSize = acceptsAssets ? 16 * 1024 * 1024 : 8_000_000;
