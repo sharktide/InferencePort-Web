@@ -161,7 +161,7 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
               disabled={locked}
               aria-current={mode === m.id ? "page" : undefined}
               title={locked ? "Only available on the P2G API" : m.blurb}
-              className={cx(styles.modeBtn, mode === m.id && styles.modeActive)}
+              className={cx(styles.modeBtn, m.id === "decision" && styles.modeDecision, mode === m.id && styles.modeActive)}
               onClick={() => choose(m.id)}
             >
               <Icon name={m.icon} className={styles.modeIcon} />
