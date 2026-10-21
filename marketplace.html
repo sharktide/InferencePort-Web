@@ -64,6 +64,12 @@
 			color: var(--text);
 		}
 
+		.filter-tab[data-filter="decision"].active {
+			background: rgba(101, 163, 13, 0.12);
+			border-color: rgba(101, 163, 13, 0.35);
+			color: #4d7c0f;
+		}
+
 		.filter-tab.active {
 			background: var(--brand-dim);
 			border-color: var(--brand-border);
@@ -223,6 +229,11 @@
 		.pill-embedding {
 			color: #6366f1;
 			background: rgba(99, 102, 241, 0.12);
+		}
+
+		.pill-decision {
+			color: #4d7c0f;
+			background: rgba(101, 163, 13, 0.12);
 		}
 
 		.pill-thinking {
@@ -489,7 +500,7 @@
 				case "video": return "pill-video";
 				case "audio": return "pill-audio";
 				case "embedding": return "pill-embedding";
-				case "decision": return "pill-embedding";
+				case "decision": return "pill-decision";
 				case "realtime": return "pill-realtime";
 				case "3D":
 				case "3d": return "pill-3d";
@@ -500,7 +511,7 @@
 		function tagPillClass(tag) {
 			switch (tag) {
 				case "embedding": return "pill-embedding";
-				case "decision": return "pill-embedding";
+				case "decision": return "pill-decision";
 				case "thinking": return "pill-thinking";
 				case "tools": return "pill-tools";
 				case "vision": return "pill-vision";
