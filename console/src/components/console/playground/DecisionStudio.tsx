@@ -45,24 +45,44 @@ export default function DecisionStudio({ session, apiBase, apiPrefix, models }: 
       const payload: Record<string, unknown> = {
         model, state: stateFormat === "json" ? JSON.parse(state) : state, questions: named,
       };
+      const allowedImageTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
+      const allowedVideoTypes = new Set(["video/mp4", "video/webm", "video/quicktime", "video/x-matroska"]);
+      const namedAssets = acceptsAssets && assetsJson.trim() ? JSON.parse(assetsJson) : {};
+      if (!namedAssets || typeof namedAssets !== "object" || Array.isArray(namedAssets)) {
+        throw new Error("Named assets must be a JSON object.");
+      }
+      const assetCount = Object.keys(namedAssets).length;
       if (acceptsImages && imageFiles.length) {
         const maxCount = acceptsAssets ? 16 : 4;
         const maxSize = acceptsAssets ? 16 * 1024 * 1024 : 8_000_000;
-        if (imageFiles.length > maxCount || imageFiles.some((file) => file.size > maxSize)) {
+        if (imageFiles.length + assetCount > maxCount || imageFiles.some((file) => file.size > maxSize || file.size === 0)) {
           throw new Error(`This model supports at most ${maxCount} images, up to ${Math.round(maxSize / 1024 / 1024)} MiB each.`);
+        }
+        if (imageFiles.some((file) => !allowedImageTypes.has(file.type))) {
+          throw new Error("Images must be PNG, JPEG or WebP.");
         }
         payload.images = await Promise.all(imageFiles.map(fileToDataUrl));
       }
       if (acceptsVideos && videoFile) {
-        if (videoFile.size > 32_000_000) throw new Error("Video cannot exceed 32 MB.");
+        if (!allowedVideoTypes.has(videoFile.type)) throw new Error("Video must be MP4, WebM, MOV or MKV.");
+        if (!videoFile.size || videoFile.size > 32_000_000) throw new Error("Video must be nonempty and at most 32 MB.");
         payload.videos = [await fileToDataUrl(videoFile)];
       }
-      if (acceptsAssets && assetsJson.trim() && assetsJson.trim() !== "{}") {
-        const parsed = JSON.parse(assetsJson);
-        if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
-          throw new Error("Named assets must be a JSON object.");
+      if (acceptsAssets && assetCount) {
+        for (const [tag, asset] of Object.entries(namedAssets)) {
+          const a = asset as Record<string, unknown> | null;
+          if (!tag || !a || typeof a !== "object" || a.type !== "image" ||
+              typeof a.data_base64 !== "string" || !a.data_base64) {
+            throw new Error("Named assets require a name and a base64 image object.");
+          }
         }
-        payload.assets = parsed;
+        payload.assets = namedAssets;
+      }
+      if (JSON.stringify({ state: payload.state, questions: named }).length > 1_000_000) {
+        throw new Error("Decision state and questions exceed 1 MB.");
+      }
+      if (new Blob([JSON.stringify(payload)]).size > 48 * 1024 * 1024) {
+        throw new Error("Decision request exceeds the 48 MiB combined JSON limit.");
       }
       const { data } = await apiJson({ apiBase }, "/v1/systemone", {
         method: "POST", headers: jsonHeaders(session), body: JSON.stringify(payload),
