@@ -52,6 +52,8 @@
   color: var(--accent);
   border-color: var(--brand-border);
 }
+.modeDecision.modeActive { background: rgba(101, 163, 13, 0.12); color: #4d7c0f; border-color: rgba(101, 163, 13, 0.30); }
+[data-theme="dark"] .modeDecision.modeActive { color: #bef264; }
 .modeIcon { width: 1.15em; height: 1.15em; transition: transform var(--d-move) var(--ease-spring); }
 .modeActive .modeIcon { transform: scale(1.12); }
 .lockTag {
