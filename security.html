@@ -1,366 +1,146 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Security &amp; Legal — InferencePort LLC</title>
-		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="styles/shared.css" />
-		<script src="components/ip-navbar.js"></script>
-		<style>
-			.page-hero {
-				padding: 110px 0 56px;
-				text-align: center;
-				background: radial-gradient(
-					ellipse 60% 30% at 50% 0%,
-					rgba(79, 124, 255, 0.04) 0%,
-					transparent 60%
-				);
-			}
-			.page-title {
-				font-size: clamp(1.8rem, 4vw, 3rem);
-				font-weight: 800;
-				letter-spacing: -0.04em;
-				line-height: 1.1;
-				color: var(--text);
-			}
-			.page-title .accent {
-				color: var(--brand);
-			}
-			.page-sub {
-				font-size: 1rem;
-				color: var(--muted);
-				max-width: 420px;
-				margin: 14px auto 0;
-				line-height: 1.65;
-			}
-
-			/* Sidebar TOC */
-			.toc {
-				position: sticky;
-				top: 80px;
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				padding: 20px;
-			}
-			.toc-title {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.66rem;
-				color: var(--muted);
-				letter-spacing: 0.1em;
-				text-transform: uppercase;
-				margin-bottom: 14px;
-			}
-			.toc-link {
-				display: block;
-				font-size: 0.82rem;
-				color: var(--muted);
-				text-decoration: none;
-				padding: 6px 0;
-				border-bottom: 1px solid var(--border-light);
-				transition: color 0.15s;
-			}
-			.toc-link:last-child {
-				border-bottom: none;
-			}
-			.toc-link:hover {
-				color: var(--text);
-			}
-			.toc-link.sub {
-				padding-left: 12px;
-				font-size: 0.78rem;
-			}
-
-			/* Doc content */
-			.doc-section {
-				margin-bottom: 48px;
-			}
-			.doc-section h2 {
-				font-size: 1.25rem;
-				font-weight: 800;
-				color: var(--text);
-				letter-spacing: -0.02em;
-				margin-bottom: 4px;
-				padding-top: 8px;
-			}
-			.doc-section h3 {
-				font-size: 1rem;
-				font-weight: 700;
-				color: var(--text);
-				margin-top: 20px;
-				margin-bottom: 6px;
-			}
-			.doc-section p {
-				font-size: 0.88rem;
-				color: var(--text-body);
-				line-height: 1.75;
-				margin-bottom: 12px;
-			}
-			.doc-section ul {
-				font-size: 0.88rem;
-				color: var(--text-body);
-				line-height: 1.75;
-				padding-left: 20px;
-				margin-bottom: 12px;
-			}
-			.doc-section ul li {
-				margin-bottom: 6px;
-			}
-			.doc-section strong {
-				color: var(--text);
-			}
-			.doc-section a {
-				color: var(--brand);
-				text-decoration: none;
-			}
-			.doc-section a:hover {
-				text-decoration: underline;
-			}
-			.doc-section hr {
-				border-color: var(--border);
-				margin: 32px 0;
-			}
-			.doc-section .date-tag {
-				font-family: "JetBrains Mono", monospace;
-				font-size: 0.7rem;
-				color: var(--muted);
-				background: var(--bg-alt);
-				border: 1px solid var(--border);
-				border-radius: 5px;
-				padding: 3px 9px;
-				display: inline-block;
-				margin-bottom: 16px;
-			}
-
-			/* Alert boxes */
-			.doc-alert {
-				border-radius: 10px;
-				padding: 14px 18px;
-				font-size: 0.84rem;
-				line-height: 1.6;
-				margin: 16px 0;
-			}
-			.doc-alert.info {
-				background: rgba(79, 124, 255, 0.08);
-				border: 1px solid rgba(79, 124, 255, 0.22);
-				color: var(--brand);
-			}
-			.doc-alert.warn {
-				background: rgba(251, 191, 36, 0.07);
-				border: 1px solid rgba(251, 191, 36, 0.2);
-				color: #92400e;
-			}
-			.doc-alert.danger {
-				background: rgba(239, 68, 68, 0.07);
-				border: 1px solid rgba(239, 68, 68, 0.2);
-				color: var(--danger);
-			}
-			.doc-alert strong {
-				color: inherit;
-			}
-
-			/* Contact card */
-			.contact-card {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				padding: 18px 20px;
-				margin-bottom: 10px;
-				display: flex;
-				align-items: center;
-				gap: 14px;
-			}
-			.contact-icon {
-				font-size: 1.2rem;
-				flex-shrink: 0;
-			}
-			.contact-label {
-				font-size: 0.78rem;
-				color: var(--muted);
-				margin-bottom: 2px;
-			}
-			.contact-val {
-				font-size: 0.84rem;
-				color: var(--text-body);
-			}
-			.contact-val a {
-				color: var(--brand);
-				text-decoration: none;
-			}
-			.contact-val a:hover {
-				text-decoration: underline;
-			}
-
-		</style>
-	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Security, privacy, terms of service, refund and cancellation policy, COPPA and FERPA disclosures for InferencePort LLC." />
+<title>Security, Privacy &amp; Terms — InferencePort LLC</title>
+<link rel="canonical" href="https://inferenceport.ai/security.html" />
+<link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+<link rel="stylesheet" href="/styles/shared.css" />
+<script src="/components/ip-navbar.js"></script>
+<style>
+/* Scope explicit light-theme colors: shared.css is light-themed, unlike the retired dark legal styles. */
+.legal-page { --legal-text: #343d4f; --legal-heading: #0b0f1a; --legal-muted: #526078; --legal-line: #d4dae3; --legal-link: #244bc1; background: #fff; color: var(--legal-text); min-height: 100vh; }
+.legal-page .legal-hero { padding: 72px 24px 38px; border-bottom: 1px solid var(--legal-line); background: #fbfbf9; }
+.legal-page .hero-inner { max-width: 1180px; margin: 0 auto; }
+.legal-page .hero-label { font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; color: #53617c; font-weight: 750; margin-bottom: 14px; }
+.legal-page h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 850; color: var(--legal-heading); letter-spacing: -.05em; line-height: 1.12; margin: 0 0 16px; }
+.legal-page .intro { color: var(--legal-muted); max-width: 790px; font-size: 1.03rem; line-height: 1.7; margin: 0; }
+.legal-page .updated { display: inline-block; margin-top: 20px; font-size: .81rem; color: #445169; font-weight: 650; }
+.legal-page .legal-layout { display: grid; grid-template-columns: 226px minmax(0, 1fr); max-width: 1180px; gap: 42px; padding: 36px 24px 88px; margin: 0 auto; }
+.legal-page .legal-nav { align-self: start; position: sticky; top: 78px; border: 1px solid var(--legal-line); border-radius: 8px; padding: 16px 18px; background: #fff; max-height: calc(100vh - 95px); overflow: auto; }
+.legal-page .nav-heading { font-size: .7rem; font-weight: 800; letter-spacing: .1em; color: #53617c; text-transform: uppercase; margin: 1px 0 12px; }
+.legal-page .legal-nav a { display: block; font-size: .83rem; font-weight: 600; color: #384963; line-height: 1.5; text-decoration: none; padding: 7px 0; border-top: 1px solid #ecedf1; }
+.legal-page .legal-nav a:hover, .legal-page .legal-nav a:focus-visible { color: #1e48b9; text-decoration: underline; }
+.legal-page .legal-document { min-width: 0; color: var(--legal-text); }
+.legal-page .legal-section { scroll-margin-top: 86px; border-bottom: 1px solid var(--legal-line); padding-bottom: 30px; margin-bottom: 36px; }
+.legal-page .legal-section:last-child { border-bottom: 0; }
+.legal-page .legal-kicker { color: #4d648a; font-size: .66rem; letter-spacing: .12em; font-weight: 800; margin-bottom: 8px; }
+.legal-page h2 { font-size: clamp(1.4rem, 2.5vw, 1.85rem); color: var(--legal-heading); font-weight: 800; margin: 0 0 18px; letter-spacing: -.03em; }
+.legal-page h3 { color: #172034; font-size: 1.1rem; font-weight: 750; margin: 27px 0 10px; }
+.legal-page p, .legal-page li { font-size: .96rem; color: #333f52; line-height: 1.8; overflow-wrap: break-word; }
+.legal-page p { margin: 0 0 16px; }
+.legal-page ul { padding-left: 25px; margin: 12px 0 18px; }
+.legal-page li { margin-bottom: 9px; }
+.legal-page strong { color: #182338; font-weight: 750; }
+.legal-page .legal-emphasis { border-left: 3px solid #101927; padding-left: 18px; }
+.legal-page a { color: var(--legal-link); text-decoration: underline; text-underline-offset: 2px; }
+.legal-page a:hover { color: #172d74; }
+.legal-page code { color: #254695; background: #f1f4fa; padding: 1px 4px; border-radius: 3px; font-size: .9em; }
+.legal-page .legal-contacts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; margin: 6px 0 25px; }
+.legal-page .legal-contacts div { padding: 17px 18px; border: 1px solid var(--legal-line); border-radius: 6px; }
+.legal-page .legal-contacts span { display: block; font-size: .68rem; font-weight: 750; letter-spacing: .06em; color: #5c6980; margin-bottom: 6px; }
+.legal-page .legal-contacts a { font-weight: 700; font-size: .92rem; overflow-wrap: anywhere; }
+@media(max-width:850px){.legal-page .legal-layout{display:block; padding-top: 22px}.legal-page .legal-nav{position:static;max-height:none;display:flex;flex-wrap:wrap;gap:0 18px;margin-bottom:26px}.legal-page .legal-nav .nav-heading{width:100%}.legal-page .legal-nav a{border:0;border-bottom:1px solid #ecedf1}.legal-page .legal-contacts{grid-template-columns:1fr}}
+@media print { .legal-page .legal-nav, ip-navbar, ip-footer{display:none!important}.legal-page .legal-layout{display:block;padding:0}.legal-page .legal-section{break-inside:avoid}.legal-page a{color:#0b0f1a} }
+</style>
+<script data-goatcounter="https://ipai.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
-	<body>
-		<ip-navbar active="security"></ip-navbar>
-
-		<div class="page-hero">
-			<div class="container">
-				<div class="section-tag">Legal & Privacy</div>
-				<h1 class="page-title">
-					Security &amp; Legal<br /><span class="accent">InferencePort LLC</span>
-				</h1>
-				<p class="page-sub">
-					Learn how InferencePort LLC handles
-					your data and what you agree to by using it.
-				</p>
-			</div>
-		</div>
-
-		<section class="pb-5">
-			<div class="container">
-				<div class="row g-4">
-					<!-- Sidebar TOC -->
-					<div class="col-lg-3 d-none d-lg-block">
-						<div class="toc"><div class="toc-title">Legal and security</div><a class="toc-link" href="/privacy.html">Privacy Policy</a><a class="toc-link" href="/terms.html">Terms of Service</a><a class="toc-link" href="#privacy">Legal overview</a><a class="toc-link" href="#security-practices">Security overview</a><a class="toc-link" href="#contact-cards">Contact</a></div>
-							<a class="toc-link" href="/privacy.html">Current Privacy Policy</a>
-							<a class="toc-link" href="/terms.html">Current Terms of Service</a>
-							<a class="toc-link" href="#privacy">Legal overview</a>
-							<a class="toc-link sub" href="#account">Account Requirements</a>
-							<a class="toc-link sub" href="#chat-data">Chat Data</a>
-							<a class="toc-link sub" href="#data-collected">Data Collected</a>
-							<a class="toc-link sub" href="#third-party">Third-Party Services</a>
-							<a class="toc-link sub" href="#security-practices">Security Practices</a>
-							<a class="toc-link sub" href="#contact">Contact</a>
-							<a class="toc-link" href="#gdpr">GDPR Compliance</a>
-							<a class="toc-link sub" href="#gdpr-rights">Your Rights</a>
-							<a class="toc-link sub" href="#gdpr-legal-basis">Legal Basis</a>
-							<a class="toc-link sub" href="#gdpr-retention">Data Retention</a>
-							<a class="toc-link" href="#coppa">COPPA Compliance</a>
-							<a class="toc-link" href="#tos">Terms of Service</a>
-							<a class="toc-link sub" href="#nature">1. Nature of App</a>
-							<a class="toc-link sub" href="#disclaimer">2. AI Disclaimer</a>
-							<a class="toc-link sub" href="#warranties">3. No Warranties</a>
-							<a class="toc-link sub" href="#liability">4. Liability</a>
-							<a class="toc-link sub" href="#responsibility">5. User Responsibility</a>
-							<a class="toc-link sub" href="#opensource">6. Open Source</a>
-							<a class="toc-link sub" href="#reporting">7. Reporting</a>
-							<a class="toc-link" href="#subscription">Subscription Policy</a>
-							<a class="toc-link" href="#governing-law">Governing Law</a>
-							<a class="toc-link" href="#sanctions">Sanctions &amp; Export</a>
-							<a class="toc-link" href="#contact-cards">Contact Us</a>
-						</div>
-					</div>
-
-					<!-- Main content -->
-					<div class="col-lg-9">
-<div class="doc-alert info" style="margin-bottom:26px"><strong>Current InferencePort LLC policies:</strong> <a href="/privacy.html">Privacy Policy</a> and <a href="/terms.html">Terms of Service</a>, effective October 22, 2026.</div>
-
-						<!-- Current security and legal overview -->
-<div class="doc-section" id="privacy">
-  <div class="section-tag">Effective October 22, 2026</div>
-  <h2>Privacy Policy &amp; Terms of Service</h2>
-  <span class="date-tag">Operated by InferencePort LLC</span>
-  <p>Our current legal documents apply across the InferencePort website and console, cloud APIs, Lightning, Pay-to-Go, AI Shield, managed agents, model deployments, Council MCP, the desktop application, the <code>ipx</code> CLI and optional self-hosted servers.</p>
-  <p><a href="/privacy.html">Read the Privacy Policy</a> for collected information, cloud-provider routing, local storage, billing and audit records, retention and privacy rights.</p>
-  <p><a href="/terms.html">Read the Terms of Service</a> for account responsibilities, permitted use, AI outputs, third-party tools, subscriptions, metered credits, software licensing, warranty limitations and applicable law.</p>
+<body>
+<ip-navbar active="security"></ip-navbar>
+<div class="legal-page">
+<header class="legal-hero"><div class="hero-inner"><div class="hero-label">InferencePort LLC · Security &amp; Legal</div><h1>Security, Privacy<br />&amp; Terms of Service</h1><p class="intro">One authoritative policy covering our products, CLI, cloud and local AI services, data handling, subscriptions, refunds, liability, children's privacy, and educational records.</p><span class="updated">LAST UPDATED: OCTOBER 22, 2026</span></div></header>
+<div class="legal-layout">
+<nav class="legal-nav" aria-label="On this page"><div class="nav-heading">On this page</div><a href="#security">Platform Security</a>
+<a href="#privacy">Privacy Policy</a>
+<a href="#coppa">COPPA / Minors</a>
+<a href="#ferpa">FERPA / Schools</a>
+<a href="#terms">Terms of Service</a>
+<a href="#billing">Billing & Credits</a>
+<a href="#refunds">Refund Policy</a>
+<a href="#liability">Warranty Disclaimer</a>
+<a href="#limit-liability">Liability Limits</a>
+<a href="#indemnification">Indemnification</a>
+<a href="#termination">Termination</a>
+<a href="#opensource">Open Source</a>
+<a href="#governing-law">Governing Law</a>
+<a href="#contact">Contact</a></nav>
+<main class="legal-document" id="main-content"><section class="legal-section" id="security"><div class="legal-kicker">SECURITY</div><h2>Security &amp; Platform Safeguards</h2><p>InferencePort LLC ("InferencePort," "we," "us," or "our") provides hosted artificial-intelligence services, developer APIs, security tooling, desktop software, and command-line tools. We implement service-specific controls intended to protect accounts, authorization, infrastructure, and customer information. <strong>NO NETWORK, AI MODEL, SOFTWARE, OR SECURITY DETECTION SYSTEM IS GUARANTEED TO BE ERROR-FREE OR COMPLETELY SECURE.</strong></p>
+<h3>Security measures and responsibilities</h3>
+<p>Depending on the feature, safeguards include access-token and API-key verification, organization role and policy enforcement, rate limiting, request-size controls, selected encrypted data stores, abuse monitoring, and diagnostic redaction. We seek to avoid recording prompts and model-generated content in routine API logs. Certain administrative and usage events may include timestamps, actor identifiers, IP addresses, user agents, selected model identifiers, status, and resource or billing metadata. Safeguards differ between our cloud infrastructure, providers, desktop app, CLI, and customer-hosted systems.</p>
+<p>Keep passwords, bearer tokens, API keys, local credential files, and tools confidential. The <code>ipx</code> CLI saves login sessions or API keys locally and restricts file permissions on supported systems; the files are <strong>not guaranteed to be encrypted at rest on your device</strong>. The desktop application may similarly store login state locally. The optional desktop and CLI local model proxies are operator-controlled; a hosted proxy may expose local services over a network. The CLI proxy does not implement the desktop proxy's optional encrypted-session handshake. Configure HTTPS/TLS or other appropriate transport protection, network restrictions, and explicit authorization if you enable remote access.</p>
+<h3>Security reports</h3>
+<p>Report suspected vulnerabilities privately to <a href="mailto:security@inferenceport.ai">security@inferenceport.ai</a>. Provide a description and reproduction details without exposing other users' sensitive information or disrupting live services. Do not publish unremediated security reports that disclose another user's personal information.</p></section>
+<section class="legal-section" id="privacy"><div class="legal-kicker">PRIVACY</div><h2>Privacy Policy</h2><p><strong>LAST UPDATED: OCTOBER 22, 2026.</strong> This Privacy Policy covers <code>inferenceport.ai</code>, the developer console, Lightning, Pay-to-Go APIs, model marketplace, AI Shield, managed agents, Council MCP, on-demand deployments, browser chat, desktop application, <code>ipx</code> CLI, organization features, and related services (collectively the "Services"). InferencePort LLC operates these Services. For an enterprise or school customer, we may process end-user data on behalf of that customer under its instructions and applicable written agreements.</p>
+<h3 id="privacy-data">Information processed and collected</h3>
+<p><strong>Account and identity information:</strong> We process account IDs, email addresses, usernames, optional profile details, sign-in events, subscription status, and authorization metadata to provide accounts and access controls. Login is handled using authentication services, which may include email/password, supported OAuth identity providers, and organization SSO. We do not intentionally store users' plaintext passwords in our own application database.</p>
+<p><strong>Service and usage metadata:</strong> We record information required to authenticate, measure, bill, support, and secure the Services. This can include model or endpoint selected, token/usage counts, media generation units, realtime-audio duration, timestamps, statuses, quotas, credit transactions, reward ledger entries, invoices, payment references, deployment settings, key identifiers, organization memberships, audit events, security events, IP addresses, and user agents. Our payment processor receives the information necessary to take payment; our application need not collect full payment card numbers.</p>
+<p><strong>AI request content:</strong> An AI request necessarily requires us to receive, transmit, and temporarily process the submitted prompt, message, file, image, audio, video, structured decision data, embedding input, or AI Shield input and corresponding output. <strong>AS A STANDARD PRACTICE, INFERENCEPORT DOES NOT RETAIN RAW API REQUEST PROMPTS, INPUT FILE CONTENT, OR GENERATED OUTPUTS AS A PERSISTENT RECORD AFTER THE REQUEST IS COMPLETED, EXCEPT WHEN YOU ENABLE OR REQUEST A FEATURE THAT STORES THAT CONTENT, OR WHERE TEMPORARY PROCESSING, SECURITY REVIEW, OR LAW REQUIRES OTHERWISE.</strong> Normal service routing may use transient memory, short-lived buffering and caches during execution. Limited transient records such as hashed prompt-cache identifiers are not full prompt archives. We do not intentionally log full request bodies merely to bill an ordinary API call.</p>
+<p><strong>Explicitly stored features are different from transient API requests.</strong> If you save or synchronize a chat, use a hosted chat interface with saved history, store generated media, publish an agent, configure a managed agent with persistent instructions/system prompts or MCP credentials, upload a tool or file for retention, or use a feature requiring security/fraud memory, that feature may store its associated content or derived security indicators as necessary to operate. We do not describe those intentionally saved artifacts as zero-retention inference traffic. Public agent/profile/tool listings can be visible to other people depending on your chosen visibility controls.</p>
+<p><strong>Organization and device information:</strong> Organizations may retain membership, policy, usage, invoice, and audit records. Audit logs may contain an actor's email, IP address, user agent, event, and relevant non-prompt metadata, and may be sent to an organization-configured webhook. The desktop app may save local chats and configuration on your computer; <code>ipx</code> may save credentials, preferences, cached organization policies, and local server logs. These local files are controlled by the device operator, not remotely deleted by uninstalling the application.</p>
+<h3 id="privacy-purposes">Limited purpose, no sale and no model training</h3>
+<p><strong>INFERENCEPORT DOES NOT SELL, RENT, OR BROKER PERSONAL INFORMATION OR CUSTOMER AI PROMPTS, INPUTS, OR OUTPUTS. INFERENCEPORT DOES NOT USE CUSTOMER PROMPTS, INPUTS, OUTPUTS, OR SAVED CHATS TO TRAIN OR FINE-TUNE OUR OWN AI MODELS. WE DO NOT USE CUSTOMER AI CONTENT FOR TARGETED ADVERTISING.</strong> We process information to provide the requested Service, route inference requests, enable explicitly requested persistence, administer accounts and organizations, bill usage, prevent fraud and abuse, handle support, protect our infrastructure, and comply with law. We may use operational statistics and aggregated or de-identified measurements that do not reveal the substantive content of your prompts to maintain and improve platform performance.</p>
+<h3 id="privacy-providers">Cloud providers and subprocessors</h3>
+<p>Hosted requests may be sent to third-party model and infrastructure providers necessary to perform the requested task. The provider can depend on model choice and routing or fallback configuration. For example, services may integrate with Supabase (authentication and records), Stripe (payments), Hugging Face (models and Spaces), Azure or other hosting/storage services, Pollinations, Experiential, and other available inference vendors. Council MCP may involve multiple independently operated models, and managed agents may invoke user-configured MCP tools. We share only information reasonably necessary for the requested feature, account and billing operation, or lawful obligation.</p>
+<p><strong>OUR NO-TRAINING COMMITMENT DESCRIBES INFERENCEPORT'S OWN PRACTICES; IT DOES NOT, BY ITSELF, CREATE AN UNVERIFIED CONTRACTUAL PROMISE ON BEHALF OF EVERY THIRD-PARTY INFERENCE PROVIDER.</strong> External providers may have distinct safety-review, logging, training, retention, location, and privacy policies. Where we contract for restricted provider data use, those protections apply according to the relevant agreement. Customers with sensitive, confidential, regulated, or education-record data should verify the selected model/provider terms and, where appropriate, obtain an approved data-processing agreement before use. Do not assume that selecting a model imposes universal zero-retention terms on all vendors.</p>
+<h3 id="privacy-tracking">Website information and cookies</h3>
+<p>Our sites may collect ordinary hosting/access logs and use cookies or local storage for login, preferences, security and session continuity. Site analytics may include <strong>GoatCounter</strong>; third-party identity, hosting, and payment services may process browser/network data under their policies. We do not sell this information or use submitted prompts for behavioral advertisements. Browser controls may affect nonessential tracking and can impair essential sign-in features.</p>
+<h3 id="privacy-local">Local-only operation and hosting</h3>
+<p>If you run a local AI model without signing in or invoking cloud integrations, model inference can stay on your device and need not send prompt content to InferencePort's hosted inference API. If you sign in, enable sync, invoke cloud generation, connect an external tool, download from a third-party model catalog, or expose a self-hosted server to remote users, that action can involve network processing and service-specific metadata. A remote server's operator is responsible for its own local logs, authorization and network security. We do not claim to control data held solely by third-party sites, independent model servers, or your own machine.</p>
+<h3 id="privacy-retention">Retention, deletion and security</h3>
+<p>We do not set a blanket raw-inference-content retention period because we do not intentionally archive ordinary request prompts or outputs after processing. Transient buffers and short-lived caches are cleared according to system operation. By contrast, accounts, saved conversations/media, persistent agent settings, tool credentials, fraud intelligence, billing ledgers, security records and organization audit events remain for as long as needed to supply the enabled feature, protect legitimate interests, resolve disputes, comply with law, or meet an applicable agreement. Deleted information may persist temporarily in backups or systems managed by third parties in accordance with their schedules and legal requirements. We do not promise instantaneous removal from every independent upstream provider.</p>
+<p>To access, correct, request a copy of, or request deletion of personal information held by InferencePort, contact <a href="mailto:privacy@inferenceport.ai">privacy@inferenceport.ai</a>. We may verify identity, honor applicable statutory timelines, and retain records required by law or active disputes. Deleting a local app does not cancel subscriptions, revoke issued keys, or delete cloud account data; deleting a cloud account cannot automatically erase your device files, independent providers' records, or school-controlled records.</p>
+<h3 id="privacy-rights">Rights, legal bases and international processing</h3>
+<p>When applicable, we rely on contractual necessity to deliver purchased services, legitimate interests to secure and support them, legal obligations for billing and compliance, and consent for optional uses for which law requires it. Depending on jurisdiction, individuals may have rights to access, correction, deletion, portability, restriction, objection, consent withdrawal, or appeal; they may also complain to a competent supervisory authority. We will not unlawfully discriminate against anyone for exercising privacy rights. Organization-controlled data requests may need to be directed to the controlling organization. Cloud providers may process data across national borders; we use appropriate contractual or other mechanisms where required and do not promise domestic-only routing.</p></section>
+<section class="legal-section" id="coppa"><div class="legal-kicker">CHILDREN'S DATA</div><h2>Children's Privacy — COPPA</h2><p><strong>THE HOSTED ACCOUNT, API, AND CLOUD SERVICES ARE NOT DIRECTED TO CHILDREN UNDER 13, AND CHILDREN UNDER 13 MUST NOT REGISTER FOR OR INDEPENDENTLY USE THOSE SERVICES.</strong> We do not knowingly collect personal information online from a child under 13 without a legally valid basis, notice, and any verifiable parental consent required by the Children's Online Privacy Protection Act ("COPPA"), 15 U.S.C. §§ 6501–6506, and 16 C.F.R. Part 312. We do not operate a general-purpose verified parental-consent signup flow for under-13 consumer accounts; adult supervision alone does not authorize bypassing the account restrictions.</p>
+<p>If we learn that an ineligible child provided information through an account or cloud service, we will investigate, restrict or terminate access as appropriate, and delete the child's personal information when required, subject to lawful exceptions. Parents or guardians may email <a href="mailto:privacy@inferenceport.ai">privacy@inferenceport.ai</a> to request review, access, correction where applicable, or deletion. We may verify the adult's identity and relationship to the child before disclosing any records. We do not condition participation in a child-directed service on disclosure of more personal information than is reasonably needed, and do not knowingly use children's information for behavioral advertising or model training.</p>
+<p>Users aged 13–17 must have parental or guardian consent where applicable law requires it and must satisfy any higher local age threshold for specific services. For any school-directed feature designed for use by children under 13, separate review and appropriate school/parental authorizations must be established <strong>before</strong> the school submits children's personal information. A school's authority to consent under COPPA is limited to educational use and does not constitute blanket permission for unrelated commercial use or third-party model training. Local desktop features and third-party models have their own safety and data practices; this provision does not imply that every locally installed tool is child-directed or monitored by InferencePort.</p>
+<p>This section addresses InferencePort's intended restrictions and commitments; it does not represent that age verification is perfect. The <a href="https://www.ftc.gov/business-guidance/privacy-security/childrens-privacy" target="_blank" rel="noopener noreferrer">FTC's children's privacy guidance</a> explains the applicable federal framework.</p></section>
+<section class="legal-section" id="ferpa"><div class="legal-kicker">EDUCATION RECORDS</div><h2>Student Records — FERPA &amp; Education Customers</h2><p>Under the Family Educational Rights and Privacy Act ("FERPA"), 20 U.S.C. § 1232g and 34 C.F.R. Part 99, eligible schools and education agencies generally control disclosures of personally identifiable information from protected education records. <strong>A CONSUMER INFERENCEPORT ACCOUNT OR ORDINARY PUBLIC API KEY IS NOT, BY ITSELF, A FERPA DATA-PROCESSING AGREEMENT OR A GUARANTEE THAT EVERY THIRD-PARTY MODEL PROVIDER IS APPROVED FOR STUDENT EDUCATION RECORDS.</strong></p>
+<p>Schools must independently identify a lawful basis for any disclosure, obtain required permissions, verify provider routing and student-data terms, and establish an appropriate written agreement and approved workflow <strong>before</strong> uploading or transmitting protected education records. Where a qualifying written agreement expressly designates InferencePort as a service provider or school official for an institutional function, the agreement must define permitted services and subprocessors, access and security requirements, the school's direct control over use and maintenance of records, restrictions on redisclosure, incident handling, and required return/deletion. Absent such an agreement and authorization, do not submit FERPA-protected records to ordinary cloud inference endpoints.</p>
+<p><strong>IF INFERENCEPORT RECEIVES FERPA-PROTECTED DATA UNDER AN APPLICABLE SCHOOL AGREEMENT, WE WILL PROCESS THAT DATA ONLY TO DELIVER THE CONTRACTED EDUCATIONAL SERVICE AND UNDER THE SCHOOL'S AUTHORIZED INSTRUCTIONS, NOT FOR MODEL TRAINING, ADVERTISING, SALE, UNRELATED PROFILE BUILDING, OR UNAUTHORIZED REDISCLOSURE.</strong> Access is limited to authorized purposes; disclosure to an approved provider is governed by applicable school instructions, contractual protections, and law. Student/parent requests about school-controlled education records should be directed to the school, which is responsible for determining access, amendment, consent and disclosure obligations.</p>
+<p>FERPA's "school official" exception depends on conditions including the school's direct control and limits on use and redisclosure; this page does not claim that every deployment or school use automatically qualifies. Consult your school's legal/privacy office and the <a href="https://studentprivacy.ed.gov/" target="_blank" rel="noopener noreferrer">U.S. Department of Education Student Privacy Policy Office</a> guidance before enabling external models or student-data integrations.</p></section>
+<section class="legal-section" id="terms"><div class="legal-kicker">LEGAL TERMS</div><h2>Terms of Service</h2><p><strong>LAST UPDATED: OCTOBER 22, 2026.</strong> These Terms of Service ("Terms") form a binding agreement between you and <strong>InferencePort LLC</strong> regarding the websites, console, desktop application, CLI, hosted AI services, APIs, models, integrations, accounts, and related functionality ("Services"). By registering, purchasing, installing, accessing, or using a Service, you accept these Terms and acknowledge this page's Privacy Policy. If you act for an organization, you represent that you have authority to bind it. Separate written enterprise agreements take precedence only to the extent they expressly conflict.</p>
+<h3 id="terms-eligibility">Eligibility, accounts, organization controls and API keys</h3>
+<p>You must meet the age and parental-consent requirements above, provide accurate account information, keep credentials secure, and promptly revoke compromised access. You are responsible for your users, API keys, agents, hosted endpoints, connected tools, and activities authorized by your credentials except to the extent caused by InferencePort's own misconduct or prohibited by law. Organization administrators may create teams, manage member roles and invitations, govern use through policies, access audit and billing information, configure SSO, set budget limits and enforce desktop or API access restrictions. Enterprise users must follow lawful organization policies and any applicable order form.</p>
+<h3 id="terms-products">Scope of Services</h3>
+<p>Services include Lightning generation and subscriptions; Pay-to-Go text, image, video, audio, 3D, embeddings, realtime and decision endpoints; managed agents and tool calling; Council MCP multi-model analysis; model deployments; AI Shield scans, fraud and abuse indicators; local model downloads and server hosting; the <code>ipx</code> CLI; the desktop app; organizations; usage, credits, rewards, billing and marketplace tools. Feature sets, model catalogs, provider routing, eligibility, geographic availability, capacity and rate limits may vary and change. Some features require a subscription, separate prepaid wallet, credits, an organization entitlement, or additional terms shown at purchase.</p>
+<h3 id="terms-acceptable">Acceptable use, compliance, and user obligations</h3>
+<p>You agree to comply with applicable laws, model licenses, export/sanctions rules and provider policies; obtain lawful rights to all uploaded content; and respect other users' privacy. You must not intentionally compromise access controls, bypass billing or throttling, disrupt the platform, distribute malicious content, use stolen credentials, or attempt unauthorized access to others' data or infrastructure. You are responsible for the security of custom tools, imported models, self-hosted machines, proxies, and third-party services you connect. Good-faith vulnerability research must be authorized and limited to applicable published scope or explicit permission; lawful confidential reporting is permitted.</p>
+<h3 id="terms-content">User content, generated results, and permitted processing</h3>
+<p>You retain all rights you already possess in your prompts, datasets, uploads, code and other user-submitted materials ("Input"). You are responsible for ensuring that your Input and use of outputs does not violate privacy, publicity, intellectual property or other rights. As between you and InferencePort, InferencePort does not claim ownership of Input merely because you use its API. To the extent permitted by applicable law and model-provider terms, you may use generated responses and media ("Output") subject to those licenses; Outputs may be similar to those provided to other users and might not qualify for copyright protection.</p>
+<p>You grant us and necessary providers a limited, nonexclusive permission to transmit, process and temporarily buffer Input and Output to deliver requests, apply enabled features, ensure security, calculate charges and satisfy lawful obligations. This <strong>IS NOT PERMISSION FOR INFERENCEPORT TO TRAIN AI MODELS ON YOUR INPUT OR OUTPUT OR TO SELL YOUR DATA</strong>. Separately, you instruct us to store content when you expressly enable saved chat/media, managed agents, or other persistent features. You choose public or private visibility for shareable assets and warrant you have rights to publish them.</p>
+<h3 id="terms-tools">Third-party services and software</h3>
+<p>Models, external APIs, hosted tools, MCP servers, plugins, datasets, and Hugging Face Spaces may have separate licenses, safety controls, data policies and service terms. Provider routing may change to maintain availability. The use of third-party models and tools is at your risk, subject to non-waivable law. Custom tools can execute code or communicate with outside endpoints, including those you configure; you are responsible for granting tool permissions prudently. Neither a local application nor a CLI proxy automatically supplies end-to-end security for traffic you independently expose on a public network.</p>
+<h3 id="terms-output">AI accuracy and consequential decisions</h3>
+<p><strong>AI-GENERATED CONTENT, DECISIONS, MODERATION OUTPUT, AND AI SHIELD RISK SCORES MAY BE WRONG, INCOMPLETE, UNSAFE, BIASED, OR UNSUITABLE FOR ANY PARTICULAR PURPOSE. YOU MUST INDEPENDENTLY REVIEW OUTPUT BEFORE RELYING ON IT. DO NOT USE OUTPUT AS A SUBSTITUTE FOR LICENSED MEDICAL, LEGAL, FINANCIAL, OR OTHER PROFESSIONAL ADVICE.</strong> You remain responsible for decisions based on Output, including automated actions and legally regulated or safety-critical uses. We do not guarantee detection of every fraud attempt, attack, policy violation, or abusive request.</p></section>
+<section class="legal-section" id="billing"><div class="legal-kicker">INFERENCEPORT LLC</div><h2>Subscriptions, Credits &amp; Payments</h2><p>Paid plans may include recurring subscriptions, separately metered <strong>Pay-to-Go prepaid credit wallets</strong>, organization billing and seats, model deployments and usage charges. These products are distinct. A Lightning subscription does not grant unlimited Pay-to-Go API credits. Current plans, applicable rates, model prices, surcharges, usage allowances and taxes are stated in the product/checkout flow or console at the time of purchase or use; prices can vary by provider, model, request, input/output tokens, media units, realtime duration, deployment time and other disclosed units.</p>
+<p>By submitting an order, you authorize InferencePort or its payment processor to charge the advertised fees and taxes. Recurring plans automatically renew at the displayed billing frequency unless cancelled in accordance with checkout and billing terms. You may cancel via the available account/billing controls or by contacting <a href="mailto:billing@inferenceport.ai">billing@inferenceport.ai</a>; cancellation generally stops the <em>next</em> renewal and does not retroactively reverse earlier usage or billing periods. Promotional rewards, bonus credits, quota allowances, purchased wallet credits, and organizational budget controls may have separate terms and eligibility restrictions. Credits are not cash, are not transferable or redeemable for cash unless explicitly stated or required by law, and do not constitute a banking or deposit account.</p>
+<p>You must monitor your usage, set appropriate limits and secure your API keys. Usage records and the applicable product rate govern billing unless an error is established. We may correct pricing or metering errors in a lawful manner. An insufficient balance may prevent further requests or interrupt a running session. We may change future pricing or features with any notice required by law or subscription terms; a new price does not automatically rewrite a completed purchase's terms.</p></section>
+<section class="legal-section" id="refunds"><div class="legal-kicker">REFUNDS</div><h2>Refund &amp; Cancellation Policy</h2><p><strong>EXCEPT AS EXPRESSLY REQUIRED BY APPLICABLE LAW OR OTHERWISE APPROVED BY INFERENCEPORT LLC IN WRITING, ALL SALES ARE FINAL AND NON-REFUNDABLE.</strong> This includes recurring subscriptions, prepaid credit purchases, model deployment charges, organization charges, consumed or unused service time, partially used billing periods, usage-based API charges, and promotional or bonus credit arrangements, subject to the specific terms displayed at purchase.</p>
+<h3>Subscriptions</h3>
+<p>Cancellation prevents future automatic renewals once processed; it does not ordinarily produce a prorated refund for the current billing period, unused plan capacity, failure to use a feature, dissatisfaction with AI outputs, temporary downtime, changed catalog entries or voluntary account closure. Where cancellation or withdrawal rights are mandatory, <strong>THOSE RIGHTS ARE NOT WAIVED BY THESE TERMS</strong>. Access to paid features may continue until the end of the current paid period unless access is restricted under another valid provision or required by law.</p>
+<h3>Pay-to-Go, wallet credits and metered usage</h3>
+<p>API requests and charges for actual service delivery are generally non-refundable once fulfilled or incurred. Unused prepaid credits do not automatically qualify for cash refunds, exchanges, account-to-account transfers or conversion into subscription benefits unless we expressly agree or applicable law requires. Promotions or credits issued at no cost have no cash redemption value. Refunds do not entitle you to retain credits or services already reversed as part of the refund. We may grant a discretionary refund or credit correction without creating an obligation to grant one in another case.</p>
+<h3>Incorrect charges and statutory rights</h3>
+<p>If you believe a charge is duplicated, unauthorized or inaccurate, promptly email <a href="mailto:billing@inferenceport.ai">billing@inferenceport.ai</a> with the transaction reference, account email and explanation; <strong>DO NOT EMAIL A FULL CARD NUMBER, PASSWORD, OR API KEY.</strong> We will review available billing evidence and any legally required refund obligations. Nothing in this policy eliminates rights to dispute unauthorized payments through applicable consumer-protection laws or payment network rules. Any statutory cooling-off, cancellation, renewal, or refund rights prevail where these Terms cannot lawfully override them.</p></section>
+<section class="legal-section" id="liability"><div class="legal-kicker">INFERENCEPORT LLC</div><h2>Disclaimer of Warranties</h2><p class="legal-emphasis"><strong>TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SERVICES, SOFTWARE, MODELS, OUTPUTS, GENERATED MEDIA, SECURITY ANALYSIS, API ENDPOINTS, AND ALL RELATED INFORMATION ARE PROVIDED “AS IS” AND “AS AVAILABLE,” WITH ALL FAULTS AND WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, OR STATUTORY. INFERENCEPORT LLC AND ITS LICENSORS AND SERVICE PROVIDERS EXPRESSLY DISCLAIM ALL IMPLIED WARRANTIES, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, ACCURACY, COMPLETENESS, QUIET ENJOYMENT, AND WARRANTIES ARISING FROM COURSE OF DEALING OR USAGE OF TRADE, TO THE EXTENT SUCH DISCLAIMERS ARE LEGALLY PERMITTED.</strong></p>
+<p class="legal-emphasis"><strong>WE DO NOT WARRANT THAT ANY SERVICE OR RESULT WILL BE UNINTERRUPTED, TIMELY, SECURE, AVAILABLE, ERROR-FREE, ACCURATE, COMPLETE, LAWFUL, OR FREE OF MALICIOUS CODE; THAT MODEL OUTPUTS WILL BE ORIGINAL OR NON-INFRINGING; THAT ANY THIRD-PARTY PROVIDER OR TOOL WILL CONTINUE OPERATING; OR THAT AI SHIELD WILL DETECT OR PREVENT EVERY THREAT, FRAUD ATTEMPT, OR UNAUTHORIZED ACTION. YOU ASSUME THE RISKS OF USING OR RELYING UPON ARTIFICIAL-INTELLIGENCE OUTPUT, SUBJECT TO RIGHTS AND REMEDIES THAT APPLICABLE LAW DOES NOT PERMIT YOU TO WAIVE.</strong></p></section>
+<section class="legal-section" id="limit-liability"><div class="legal-kicker">LIABILITY</div><h2>Limitation of Liability</h2><p class="legal-emphasis"><strong>TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW, INFERENCEPORT LLC AND ITS AFFILIATES, OFFICERS, EMPLOYEES, AGENTS, LICENSORS, SERVICE PROVIDERS AND SUPPLIERS WILL NOT BE LIABLE UNDER ANY THEORY OF LIABILITY (INCLUDING CONTRACT, TORT, NEGLIGENCE, STRICT LIABILITY OR OTHERWISE) FOR ANY INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, CONSEQUENTIAL OR PUNITIVE DAMAGES; LOST PROFITS, REVENUE, DATA, GOODWILL, BUSINESS OPPORTUNITIES OR ANTICIPATED SAVINGS; BUSINESS INTERRUPTION; OR COSTS OF SUBSTITUTE GOODS OR SERVICES, ARISING OUT OF OR RELATING TO THE SERVICES, THE USE OR INABILITY TO USE THE SERVICES, AI OUTPUTS, CUSTOMER CONTENT, UNAUTHORIZED ACCESS, THIRD-PARTY PROVIDERS OR TOOLS, OR OTHER MATTERS COVERED BY THESE TERMS, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES AND EVEN IF A REMEDY FAILS OF ITS ESSENTIAL PURPOSE.</strong></p>
+<p class="legal-emphasis"><strong>TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE TOTAL AGGREGATE LIABILITY OF INFERENCEPORT LLC FOR ALL CLAIMS ARISING OUT OF OR RELATED TO THE SERVICES WILL NOT EXCEED THE GREATER OF (A) US $100 OR (B) THE TOTAL AMOUNTS ACTUALLY PAID BY YOU TO INFERENCEPORT LLC FOR THE AFFECTED SERVICES DURING THE TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE EVENT FIRST GIVING RISE TO THE CLAIM. MULTIPLE CLAIMS DO NOT EXPAND THIS LIMIT. THESE LIMITATIONS APPLY ONLY TO THE EXTENT ENFORCEABLE AND DO NOT EXCLUDE LIABILITY FOR FRAUD, WILLFUL MISCONDUCT, GROSS NEGLIGENCE, PERSONAL INJURY OR DEATH, OR ANY OTHER LIABILITY THAT MAY NOT BE EXCLUDED OR LIMITED BY APPLICABLE LAW.</strong></p></section>
+<section class="legal-section" id="indemnification"><div class="legal-kicker">INFERENCEPORT LLC</div><h2>Indemnification</h2><p><strong>TO THE EXTENT PERMITTED BY LAW,</strong> you agree to defend, indemnify and hold harmless InferencePort LLC and its affiliates, officers, directors, employees, service providers and agents from third-party claims, liabilities, damages, judgments, settlements, costs and reasonable attorneys' fees arising from (a) Input or other material you submit, publish or share; (b) your infringement of another party's intellectual-property, privacy or other rights; (c) your unlawful or unauthorized use of the Services; (d) security or other incidents arising from a self-hosted server, external MCP tool or integration operated or configured by you; or (e) a material violation of these Terms. This provision does not require indemnification for InferencePort's own wrongdoing or any claim or loss that the law prohibits us from shifting to you. We may participate in the defense with counsel of our choice at our expense, subject to applicable law.</p></section>
+<section class="legal-section" id="termination"><div class="legal-kicker">INFERENCEPORT LLC</div><h2>Suspension, Termination &amp; Changes</h2><p>We may suspend, restrict, limit or terminate access where reasonably necessary because of a suspected security incident, credential compromise, illegal activity, contractual breach, payment failure, provider requirements, serious platform abuse, government order or operational necessity. We may adjust features, model catalog entries, prices for future purchases and available infrastructure; we do not guarantee continued access to a specific third-party model or free tier. We will give notice and an opportunity to respond where practical and required by law; emergency measures may be immediate.</p>
+<p>You can stop using the Services, cancel recurring billing and request account closure. Account closure does not automatically refund paid fees, extinguish already-incurred charges, revoke every externally issued credential or remove local data. Accrued payment obligations and terms that by their nature should survive (including intellectual property, liability limitations, lawful records retention and dispute provisions) remain effective after termination.</p></section>
+<section class="legal-section" id="opensource"><div class="legal-kicker">INFERENCEPORT LLC</div><h2>Intellectual Property &amp; Open Source</h2><p>InferencePort LLC retains rights to the InferencePort AI brand, trademarks, hosted service interfaces, proprietary software and documentation. The desktop application and <code>ipx</code> CLI include open-source code, including code distributed under Apache License 2.0 as stated in the applicable repositories. <strong>NOTHING IN THESE TERMS REMOVES, LIMITS OR SUPERSEDES THE LICENSE RIGHTS THAT AN APPLICABLE OPEN-SOURCE LICENSE EXPRESSLY GRANTS FOR CODE COVERED BY THAT LICENSE.</strong> Third-party models, weights, datasets, plugins and supporting software may impose additional obligations independent of these Terms. You are responsible for compliance with their license notices and conditions.</p></section>
+<section class="legal-section" id="governing-law"><div class="legal-kicker">INFERENCEPORT LLC</div><h2>Governing Law, Disputes &amp; General Terms</h2><p>Unless mandatory law requires otherwise, these Terms are governed by the laws of the State of Florida and applicable United States federal law without regard to conflicts-of-law rules. Subject to non-waivable consumer jurisdiction and venue rights, actions relating to these Terms are to be brought before courts of competent jurisdiction in Florida. <strong>NO ARBITRATION CLAUSE OR CLASS-ACTION WAIVER IS CREATED BY THIS PAGE.</strong> We do not waive consumer protections that the law makes non-waivable.</p>
+<p>If one part of these Terms is held unenforceable, the rest remains effective to the extent possible. Failure to enforce a provision does not waive it. We are not responsible for delay or nonperformance caused by events beyond reasonable control, including major provider or network outages, natural disasters, governmental actions or infrastructure failures, except as applicable law provides otherwise. These Terms and any applicable signed agreement form the agreement governing use of the Services; separately applicable provider and open-source licenses continue to govern their subject matter.</p>
+<p>We may revise these Terms or this Policy as services and laws change and display an updated effective date. Material notice and any legally required consent will be provided where applicable. Changes do not retroactively alter completed transactions where prohibited by law. If you do not accept revised terms, discontinue using the affected Services.</p></section>
+<section class="legal-section" id="contact"><div class="legal-kicker">INFERENCEPORT LLC</div><h2>Contact InferencePort LLC</h2><div class="legal-contacts"><div><span>PRIVACY &amp; DATA REQUESTS</span><a href="mailto:privacy@inferenceport.ai">privacy@inferenceport.ai</a></div><div><span>CONFIDENTIAL SECURITY REPORTS</span><a href="mailto:security@inferenceport.ai">security@inferenceport.ai</a></div><div><span>BILLING, CANCELLATION &amp; REFUNDS</span><a href="mailto:billing@inferenceport.ai">billing@inferenceport.ai</a></div><div><span>GENERAL &amp; LEGAL INQUIRIES</span><a href="mailto:feedback@inferenceport.ai">feedback@inferenceport.ai</a></div></div>
+<p>Please do not email passwords, complete payment card numbers, access tokens, or API keys. InferencePort LLC is the service provider identified throughout this document; an appropriate legal mailing address or additional statutory contact information should be provided through an applicable agreement or as required by law.</p></section></main>
 </div>
-<hr />
-<div class="doc-section" id="security-practices">
-  <div class="section-tag">Safeguards and responsibilities</div>
-  <h2>Security overview</h2>
-  <p>InferencePort uses authentication, API-key controls, organization roles, request and rate limits, security diagnostics, and other service-specific protections. The desktop application and CLI can execute local models without sending their prompts through our hosted inference APIs; optional cloud services, sync and authentication do communicate with remote services.</p>
-  <h3>Protect your credentials</h3>
-  <p>Keep API keys and access tokens confidential and revoke them if compromised. Local CLI credential files are not guaranteed encrypted. If you expose a model server, configure network and transport protection carefully; the CLI proxy does not implement the desktop proxy's optional encrypted-session handshake.</p>
-  <h3>Use trusted integrations</h3>
-  <p>Cloud model routing may involve external inference providers, and agents and MCP tools may send context to connected third parties. Review their policies and permissions. AI Shield offers detection and risk scoring, not a guarantee that all harmful content or threats will be caught.</p>
-  <h3>Report a vulnerability</h3>
-  <p>Send confidential reports to <a href="mailto:security@vorugaluav.resend.app">security@vorugaluav.resend.app</a>. Avoid publishing undisclosed vulnerabilities or any sensitive personal information in public issue trackers.</p>
 </div>
-<hr />
-<!-- Contact cards -->
-						<div id="contact-cards">
-							<div class="section-tag">Get in Touch</div>
-							<h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 20px;">
-								Contact
-							</h2>
-
-							<div class="contact-card">
-								<div class="contact-icon">🔒</div>
-								<div>
-									<div class="contact-label">Security Disclosures</div>
-									<div class="contact-val">
-										<a href="mailto:security@vorugaluav.resend.app">security@vorugaluav.resend.app</a>
-									</div>
-								</div>
-							</div>
-
-							<div class="contact-card">
-								<div class="contact-icon">🚩</div>
-								<div>
-									<div class="contact-label">Content Reports</div>
-									<div class="contact-val">
-										<a href="mailto:reports@vorugaluav.resend.app">reports@vorugaluav.resend.app</a>
-									</div>
-								</div>
-							</div>
-
-							<div class="contact-card">
-								<div class="contact-icon">💬</div>
-								<div>
-									<div class="contact-label">General Questions</div>
-									<div class="contact-val">
-										<a href="mailto:hello@vorugaluav.resend.app">hello@vorugaluav.resend.app</a>
-										or
-										<a href="https://github.com/sharktide/inferenceport-ai/issues/new" target="_blank">GitHub Issues</a>
-									</div>
-								</div>
-							</div>
-
-							<div class="contact-card">
-								<div class="contact-icon">🔐</div>
-								<div>
-									<div class="contact-label">Privacy &amp; Data Requests (GDPR / COPPA)</div>
-									<div class="contact-val">
-										<a href="mailto:privacy@vorugaluav.resend.app">privacy@vorugaluav.resend.app</a>
-									</div>
-								</div>
-							</div>
-
-							<div class="contact-card">
-								<div class="contact-icon">💳</div>
-								<div>
-									<div class="contact-label">Billing &amp; Subscription</div>
-									<div class="contact-val">
-										<a href="mailto:billing@vorugaluav.resend.app">billing@vorugaluav.resend.app</a>
-									</div>
-								</div>
-							</div>
-
-							<div class="contact-card">
-								<div class="contact-icon">🗑️</div>
-								<div>
-									<div class="contact-label">Data Deletion Requests</div>
-									<div class="contact-val">
-										<a href="mailto:privacy@vorugaluav.resend.app">privacy@vorugaluav.resend.app</a>
-										— subject: "Data Deletion Request"
-									</div>
-								</div>
-							</div>
-						</div>
-
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<ip-footer></ip-footer>
-
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-		<script src="components/ip-footer.js"></script>
-		<script src="scripts/animations.js"></script>
-	<script src="scripts/hero-canvas.js"></script>
-	</body>
+<ip-footer></ip-footer>
+<script src="/components/ip-footer.js"></script>
+</body>
 </html>
