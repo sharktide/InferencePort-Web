@@ -33,9 +33,10 @@ class IpFooter extends HTMLElement {
 				<li><a href="/pricing.html">Pricing</a></li>
 				<li><a href="/marketplace.html">Model catalog</a></li>
 				<li><a href="/platform.html">Platform guide</a></li>
-				<li><a href="/security.html">Security</a></li>
-				<li><a href="/privacy.html">Privacy Policy</a></li>
-				<li><a href="/terms.html">Terms of Service</a></li>
+				<li><a href="/security.html#security">Security</a></li>
+				<li><a href="/security.html#privacy">Privacy Policy</a></li>
+				<li><a href="/security.html#terms">Terms of Service</a></li>
+				<li><a href="/security.html#refunds">Refund Policy</a></li>
 				<li><a href="mailto:feedback@inferenceport.ai">Contact</a></li>
 			</ul>
 		</div>
