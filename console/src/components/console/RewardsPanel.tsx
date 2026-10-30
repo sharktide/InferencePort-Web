@@ -151,9 +151,8 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
   if (!session?.access_token) {
     return (
       <div className={styles.rewardsPanel}>
-        <div className={`${panelStyles.card} ${styles.emptyState}`} role="status">
-          <div className={styles.emptyIcon}><Icon name="gift" /></div>
-          <p>Sign in to view your rewards and progress.</p>
+        <div className={`${panelStyles.card} ${panelStyles.lockedOverlay}`} role="status">
+          Sign in to view your rewards and progress.
         </div>
       </div>
     );
