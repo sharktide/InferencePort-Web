@@ -3,6 +3,7 @@
 import Icon from "../Icon";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./RewardsPanel.module.css";
+import panelStyles from "./panels/Panel.module.css";
 
 interface Props {
   session: any;
@@ -74,7 +75,10 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
   const claimEffectTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (!session?.access_token) return;
+    if (!session?.access_token) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`${apiBase}/v1/rewards`, {
@@ -143,6 +147,16 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
   }, {});
 
   const chainOrder = ["spend", "diversity", "volume", "tokens", "streak", "special"];
+
+  if (!session?.access_token) {
+    return (
+      <div className={styles.rewardsPanel}>
+        <div className={`${panelStyles.card} ${panelStyles.lockedOverlay}`} role="status">
+          Sign in to view your rewards and progress.
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
