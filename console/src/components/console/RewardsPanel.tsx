@@ -151,7 +151,7 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
     return (
       <div className={styles.rewardsPanel}>
         <div className={styles.emptyState} role="status">
-          <div className={styles.emptyIcon}><Icon name="lock" /></div>
+          <div className={styles.emptyIcon}><Icon name="gift" /></div>
           <p>Sign in to view your rewards and progress.</p>
         </div>
       </div>
