@@ -74,7 +74,10 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
   const claimEffectTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchData = useCallback(async () => {
-    if (!session?.access_token) return;
+    if (!session?.access_token) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`${apiBase}/v1/rewards`, {
@@ -143,6 +146,17 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
   }, {});
 
   const chainOrder = ["spend", "diversity", "volume", "tokens", "streak", "special"];
+
+  if (!session?.access_token) {
+    return (
+      <div className={styles.rewardsPanel}>
+        <div className={styles.emptyState} role="status">
+          <div className={styles.emptyIcon}><Icon name="lock" /></div>
+          <p>Sign in to view your rewards and progress.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
