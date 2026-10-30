@@ -50,7 +50,7 @@ const MAX_PASSTHROUGH_BYTES = 3 * 1024 * 1024;
 /** Used only when the catalog has no 3D models yet. */
 const FALLBACK_MODELS = [
   { id: "tripoSR", name: "TripoSR" },
-  { id: "sv3d", name: "SF3D" },
+  { id: "sf3d", name: "SF3D" },
   { id: "trellis2", name: "Trellis 2" },
   { id: "asset-harvester", name: "Asset Harvester" },
 ];
@@ -58,7 +58,7 @@ const FALLBACK_MODELS = [
 const MODEL_HINTS: Record<string, string> = {
   "asset-harvester": "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt.",
   tripoSR: "TripoSR produces a GLB model from a single image.",
-  sv3d: "SF3D produces a GLB model from a single image.",
+  sf3d: "SF3D produces a GLB model from a single image.",
   trellis2: "Trellis 2 produces a GLB model. Higher resolution keeps more detail and costs more.",
 };
 
