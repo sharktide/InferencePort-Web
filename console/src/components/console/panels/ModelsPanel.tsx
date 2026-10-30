@@ -596,7 +596,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
           <p className={`${styles.muted} ${styles.tiny}`}>
             {threeModel === "asset-harvester" && "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt."}
             {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
-            {threeModel === "sv3d" && "SF3D produces a GLB model from a single image."}
+            {threeModel === "sf3d" && "SF3D produces a GLB model from a single image."}
             {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
             {" "}Async job polling: most jobs complete within 1 to 5 minutes.
           </p>

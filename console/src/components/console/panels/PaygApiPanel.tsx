@@ -300,7 +300,7 @@ export default function PaygApiPanel({ session, config, apiBase, theme }: Props)
           <p>Use <code>Authorization: Bearer &lt;your-supabase-jwt&gt;</code> or <code>Authorization: Bearer &lt;lightning-api-key&gt;</code>.</p>
           <h3>3D generation</h3>
           <p>3D generation uses an asynchronous job model. Submitting a request returns a <code>job_id</code> immediately (HTTP 202); you then poll <code>GET /v1/3d/jobs/{'{'}job_id{'}'}</code> until the job reaches <code>completed</code> or <code>failed</code> status. Credits are charged at submission time and refunded automatically if the job fails.</p>
-          <p>Supported models: <code>tripoSR</code> ($0.02), <code>asset-harvester</code> ($0.07), <code>sv3d</code> ($0.02), <code>trellis2</code> ($0.24 to $0.35 with resolution options).</p>
+          <p>Supported models: <code>tripoSR</code> ($0.07), <code>asset-harvester</code> ($0.25), <code>sf3d</code> ($0.07), <code>trellis2</code> ($0.24 to $0.35 with resolution options).</p>
           <h3>Pricing</h3>
           <p>Credits are consumed per request. View your <strong>Account</strong> tab for current credit balance and purchase packs. See the <strong>Models</strong> tab for per-model pricing.</p>
           <p>Audio models are billed on the unit their provider uses: per 1,000 input characters (TTS), per million UTF-8 bytes, per second of input audio (transcription, voice tools) or per second of generated audio (music and sound effects).</p>
@@ -373,7 +373,7 @@ export default function PaygApiPanel({ session, config, apiBase, theme }: Props)
           <p className={`${styles.muted} ${styles.tiny}`}>
             {threeModel === "asset-harvester" && "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt."}
             {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
-            {threeModel === "sv3d" && "SF3D produces a GLB model from a single image."}
+            {threeModel === "sf3d" && "SF3D produces a GLB model from a single image."}
             {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
             {" "}Async job polling: most jobs complete within 1 to 5 minutes.
           </p>
