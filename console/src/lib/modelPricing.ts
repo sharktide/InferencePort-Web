@@ -15,7 +15,7 @@ export interface ModelDiscount {
 // Validate the *whole* rate: parseFloat("0.5invalid") must not become $0.50.
 const num = (v: any): number | null => {
   if (typeof v !== "number" && typeof v !== "string") return null;
-  if (typeof v === "string" && !/^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?$/.test(v.trim())) return null;
+  if (typeof v === "string" && !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(v.trim())) return null;
   const n = typeof v === "number" ? v : Number(v.trim());
   return Number.isFinite(n) && n >= 0 ? n : null;
 };
@@ -114,7 +114,7 @@ export function formatRealtimePrice(m: any, pct = 1): string | null {
   }
   const seconds = num(m?.input_price_per_second);
   if (seconds !== null) parts.push(`Audio: $${fmtRate(seconds * 3600 * pct)}/hour`);
-  return parts.length ? parts.join(" \\u00b7 ") : null;
+  return parts.length ? parts.join(" · ") : null;
 }
 
 // pct scales every rate (used for reward discounts); 1 keeps list prices.
@@ -136,7 +136,7 @@ export function formatModelPrice(m: any, pct = 1): string | null {
     const perRequest = num(p.request);
     if (perImage !== null) parts.push(`$${fmtRate(perImage * pct)}/gen`);
     if (perRequest !== null) parts.push(`$${fmtRate(perRequest * pct)}/request`);
-    return parts.length ? parts.join(" \\u00b7 ") : null;
+    return parts.length ? parts.join(" · ") : null;
   }
 
   if (type === "3d") {
@@ -163,7 +163,7 @@ export function formatModelPrice(m: any, pct = 1): string | null {
   const outRate = perMillionTokens(p.completion);
   if (inRate !== null) parts.push(`In: $${fmtRate(inRate * pct)}/M`);
   if (outRate !== null) parts.push(`Out: $${fmtRate(outRate * pct)}/M`);
-  if (parts.length) return parts.join(" \\u00b7 ");
+  if (parts.length) return parts.join(" · ");
   const request = num(p.request);
   return request === null ? null : `$${fmtRate(request * pct)}/request`;
 }
