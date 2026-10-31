@@ -147,10 +147,10 @@ export function formatModelPrice(m: any, pct = 1): string | null {
     if (values.length) {
       const min = Math.min(...values) * pct;
       const max = Math.max(...values) * pct;
-      parts.push(min === max ? `${min.toFixed(4)}/model` : `${min.toFixed(2)}-${max.toFixed(2)}/model`);
+      parts.push(min === max ? `$${min.toFixed(4)}/model` : `$${min.toFixed(2)}-$${max.toFixed(2)}/model`);
     }
     const request = num(p.request);
-    if (request !== null) parts.push(`${parts.length ? "Request: " : ""}${(request * pct).toFixed(4)}/model`);
+    if (request !== null) parts.push(`${parts.length ? "Request: " : ""}$${(request * pct).toFixed(4)}/model`);
     return parts.length ? parts.join(" · ") : null;
   }
 
