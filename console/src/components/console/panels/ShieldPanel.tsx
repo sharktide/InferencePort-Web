@@ -137,6 +137,43 @@ async function encodeFile(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
+function parseMessages(input: string): JsonObject[] {
+  let parsed: unknown;
+  try { parsed = JSON.parse(input); } catch { throw new Error("Chat messages must be valid JSON."); }
+  if (!Array.isArray(parsed) || !parsed.length || parsed.some((item: unknown) =>
+      !item || Array.isArray(item) || typeof item !== "object" ||
+      (typeof (item as JsonObject).role !== "undefined" && typeof (item as JsonObject).role !== "string") ||
+      !(typeof (item as JsonObject).content === "string" || Array.isArray((item as JsonObject).content)))) {
+    throw new Error("Messages must be a non-empty array of objects with content (string or array) and optional role (string).");
+  }
+  return parsed as JsonObject[];
+}
+
+// Prevent the check endpoint's result values, facts or error text from disclosing
+// submitted JWTs, secrets, or passwords in the UI or in JSON response previews.
+function scrubSensitiveResponse(data: JsonObject, sensitiveValues: string[], kind: string): JsonObject {
+  if (!sensitiveValues.length) return data;
+  const scrub = (item: unknown): unknown => {
+    if (typeof item === "string") {
+      return sensitiveValues.reduce((text, secret) => secret ? text.split(secret).join("[REDACTED]") : text, item);
+    }
+    if (Array.isArray(item)) return item.map(scrub);
+    if (item && typeof item === "object") {
+      return Object.fromEntries(Object.entries(item).map(([key, val]) => [key, scrub(val)]));
+    }
+    return item;
+  };
+  const cleaned = scrub(data) as JsonObject;
+  if (kind === "jwt" || kind === "secret") {
+    if (Array.isArray(cleaned.results)) {
+      cleaned.results = cleaned.results.map((row: JsonObject, i: number) => ({
+        ...row, value: "<" + kind + " #" + (i + 1) + ">",
+      }));
+    }
+  }
+  return cleaned;
+}
+
 function safeError(data: JsonObject, status: number): string {
   const detail = data.detail ?? data.error ?? data.message;
   if (typeof detail === "string") return detail;
@@ -308,11 +345,16 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       body.task = "api_request";
       body.request = request;
     } else if (mode === "file") {
-      if (!file) throw new Error("Select a file to inspect.");
-      if (file.size > 2_000_000) throw new Error("Maximum file size is 2 MB, matching the CLI inspection limit.");
-      if (file.size === 0) throw new Error("Select a non-empty file.");
+      if (!files.length) throw new Error("Select one or more files to inspect.");
+      if (files.length > 10) throw new Error("Maximum 10 files per Shield request.");
+      if (files.some((file) => file.size > 2_000_000)) throw new Error("Each file must be at most 2 MB, matching the CLI inspection limit.");
+      if (files.some((file) => file.size === 0)) throw new Error("Empty files cannot be inspected.");
       body.task = "file_upload";
-      body.file = { name: file.name, content_base64: await encodeFile(file), mime: value("mime") || file.type || undefined };
+      body.files = await Promise.all(files.map(async (file) => ({
+        name: file.name,
+        content_base64: await encodeFile(file),
+        mime: value("mime") || file.type || undefined,
+      })));
     } else if (mode === "password") {
       if (!value("password")) throw new Error("Enter a password to inspect.");
       body.task = "password";
@@ -364,30 +406,66 @@ export default function ShieldPanel({ session, apiBase }: Props) {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!auth || busy) return;
+    const submittingMode = mode;
+    const submittingKind = mode === "check" ? value("indicatorType") : "";
+    const submittingPassword = mode === "password" ? value("password") : "";
+    const submittingIndicators = mode === "check" && ["jwt", "secret"].includes(submittingKind) ? value("values") : "";
+    const sensitiveValues = submittingPassword
+      ? [submittingPassword]
+      : submittingIndicators ? lines(submittingIndicators) : [];
+    const runId = ++requestId.current;
+    const controller = new AbortController();
+    activeRequest.current = controller;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    let timedOut = false;
     setBusy(true);
     setError("");
     setResult(null);
+    setResultMode(null);
     try {
       const { endpoint, body } = await makePayload();
-      if ((mode === "password" || (mode === "check" && ["jwt", "secret"].includes(value("indicatorType")))) &&
+      // File encoding is asynchronous; navigation can invalidate a request before fetching.
+      if (runId !== requestId.current) return;
+      if (sensitiveValues.length &&
           !/^https:\/\//i.test(apiBase) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/?$/i.test(apiBase)) {
         throw new Error("A secure HTTPS API URL is required for credential inspection.");
       }
+      timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 120_000);
       const response = await fetch(apiBase.replace(/\/$/, "") + endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: "Bearer " + auth },
         body: JSON.stringify(body),
+        signal: controller.signal,
       });
       const data = (await response.json().catch(() => ({}))) as JsonObject;
-      if (!response.ok) throw new Error(safeError(data, response.status));
-      setResult(data);
+      if (runId !== requestId.current) return;
+      // Do not surface backend error detail that could echo a submitted credential.
+      if (!response.ok) {
+        if (sensitiveValues.length) throw new Error("Shield check failed (HTTP " + response.status + ").");
+        throw new Error(safeError(data, response.status));
+      }
+      setResult(scrubSensitiveResponse(data, sensitiveValues, submittingKind));
+      setResultMode(submittingMode);
+      setResultKind(submittingKind);
       setLastEndpoint(endpoint);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Shield request failed.");
+      if (runId === requestId.current) {
+        setError(timedOut ? "The Shield request timed out after 120 seconds. Try again." :
+          e instanceof Error ? e.message : "Shield request failed.");
+      }
     } finally {
-      setBusy(false);
-      if (mode === "password") update("password", "");
-      if (mode === "check" && ["jwt", "secret"].includes(value("indicatorType"))) update("values", "");
+      if (timeout) clearTimeout(timeout);
+      if (runId === requestId.current) {
+        setBusy(false);
+        activeRequest.current = null;
+      }
+      // A replacement input entered while the request was pending must survive.
+      if (submittingPassword) {
+        setFields((prev) => prev.password === submittingPassword ? { ...prev, password: "" } : prev);
+      }
+      if (submittingIndicators) {
+        setFields((prev) => prev.values === submittingIndicators ? { ...prev, values: "" } : prev);
+      }
     }
   };
 
@@ -404,7 +482,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
 
   const checkResults: JsonObject[] = Array.isArray(result?.results) ? result.results : [];
   const filteredChecks = checkResults.filter((r) => (!onlyFlagged || r.verdict !== "clean") &&
-    (!disposableOnly || value("indicatorType") !== "email" || Boolean(r.facts?.disposable)));
+    (!disposableOnly || resultKind !== "email" || Boolean(r.facts?.disposable)));
   const reasons: string[] = Array.isArray(result?.reasons) ? result.reasons : Array.isArray(result?.indicators) ? result.indicators.map(String) : [];
   const categories: string[] = Array.isArray(result?.threat_categories) ? result.threat_categories : [];
   const status = result?.decision || (typeof result?.is_phishing === "boolean" ? (result.is_phishing ? "block" : "allow") : "");
@@ -478,8 +556,8 @@ export default function ShieldPanel({ session, apiBase }: Props) {
             )}
             {mode === "file" && (
               <label className={ui.full}>
-                <span className={ui.fieldLabel}>File (up to 2 MB)</span>
-                <input className={ui.field} type="file" onChange={(e: ChangeEvent<HTMLInputElement>) => setFile(e.target.files?.[0] || null)} />
+                <span className={ui.fieldLabel}>Files (up to 10 files, 2 MB each)</span>
+                <input className={ui.field} type="file" multiple onChange={(e: ChangeEvent<HTMLInputElement>) => setFiles(Array.from(e.target.files || []))} />
                 <span className={ui.hint}>Files are read in the browser and submitted to Shield for inspection. They are not stored by this page.</span>
               </label>
             )}
@@ -548,14 +626,14 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       {result && (
         <section className={styles.card + " " + styles.wide} aria-live="polite">
           <div className={ui.workHeading}><h2>Shield result</h2><code className={ui.endpoint}>{lastEndpoint}</code></div>
-          {mode === "check" ? (
+          {resultMode === "check" ? (
             <>
               <div className={ui.stats}>
                 {([["Checked", result.count], ["Clean", result.summary?.clean], ["Suspicious", result.summary?.suspicious], ["Malicious", result.summary?.malicious]] as const).map(([label, v]) => <div key={label} className={styles.shieldStat}><span className={styles.shieldStatLabel}>{label}</span><span className={styles.shieldStatValue}>{v ?? 0}</span></div>)}
               </div>
               <div className={ui.controls}>
                 <label className={ui.check}><input type="checkbox" checked={onlyFlagged} onChange={(e) => setOnlyFlagged(e.target.checked)} /> Show flagged only</label>
-                {value("indicatorType") === "email" && <label className={ui.check}><input type="checkbox" checked={disposableOnly} onChange={(e) => setDisposableOnly(e.target.checked)} /> Disposable only</label>}
+                {resultKind === "email" && <label className={ui.check}><input type="checkbox" checked={disposableOnly} onChange={(e) => setDisposableOnly(e.target.checked)} /> Disposable only</label>}
               </div>
               <div className={ui.tableScroll}>
                 <table className={ui.table}>
