@@ -1,6 +1,7 @@
 "use client";
 
 import styles from "./Sidebar.module.css";
+import { PERSONAL_ITEMS } from "../../lib/consoleSections";
 import Icon, { type IconName } from "../Icon";
 import ContextSwitcher from "./ContextSwitcher";
 import { useOptionalOrgContext } from "./OrgContext";
@@ -27,25 +28,6 @@ interface NavGroup {
   items: NavItem[];
 }
 
-/* Personal sections (ids are the panel keys in ConsoleLayout). */
-const PERSONAL_ITEMS: Record<string, { label: string; icon: IconName }> = {
-  account: { label: "Account management", icon: "user-circle" },
-  organizations: { label: "Organizations", icon: "user-circle" },
-  billing: { label: "Billing", icon: "credit-card" },
-  models: { label: "Models", icon: "cube" },
-  playground: { label: "Playground", icon: "sparkle" },
-  deploy: { label: "Deploy (Featherless)", icon: "gauge" },
-  agents: { label: "Agents", icon: "chat-circle-text" },
-  rewards: { label: "Rewards", icon: "gift" },
-  "api-key": { label: "API key", icon: "key" },
-  usage: { label: "Usage", icon: "chart-bar" },
-  "gen-api": { label: "Generation (Subscription)", icon: "chat-circle-text" },
-  "payg-api": { label: "P2G API", icon: "coins" },
-  mcp: { label: "MCP (Council)", icon: "link" },
-  shield: { label: "Shield", icon: "shield-check" },
-  "authorized-apps": { label: "Authorized Applications", icon: "plugs-connected" },
-};
-
 const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
   { title: "Organization", ids: ["organizations"] },
@@ -64,7 +46,7 @@ function item(id: string): NavItem {
     const meta = ORG_SECTION_META[id as OrgSectionId];
     return { id, label: meta.label, icon: meta.icon };
   }
-  const p = PERSONAL_ITEMS[id];
+  const p = PERSONAL_ITEMS[id as keyof typeof PERSONAL_ITEMS];
   return { id, label: p.label, icon: p.icon };
 }
 

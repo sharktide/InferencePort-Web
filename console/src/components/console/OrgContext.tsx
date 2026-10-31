@@ -8,6 +8,13 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { createOrgApi, ORG_HEADER, type OrgApi, type OrgSummary } from "../../lib/orgs";
 
 const STORAGE_KEY = "console-org";
+const WORKSPACE_PARAM = "workspace";
+const SLUG_RE = /^[a-z0-9-]{1,40}$/i;
+
+function readSharedWorkspace(): string | null {
+  const slug = new URLSearchParams(window.location.search).get(WORKSPACE_PARAM);
+  return slug && SLUG_RE.test(slug) ? slug.toLowerCase() : null;
+}
 /* The header only matters where usage is billed or the org wallet is shown. Read-only lookups (models, agents) stay
    header-free so an exhausted org budget or a role that cannot spend never breaks them. */
 const ORG_BILLED = /^\/v1\/(chat|images|videos|audio|3d|embeddings|me|credits)(\/|\?|$)/;
@@ -54,7 +61,17 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   const api = useMemo(() => createOrgApi(apiBase, () => tokenRef.current), [apiBase]);
 
   const [orgs, setOrgs] = useState<OrgSummary[] | null>(null);
-  const [requested, setRequested] = useState<string | null>(() => (typeof window === "undefined" ? null : readStored()));
+  const [requested, setRequested] = useState<string | null>(() => (typeof window === "undefined" ? null : readSharedWorkspace() ?? readStored()));
+
+  /* Browser history can restore a different organization's shared section link. */
+  useEffect(() => {
+    const onPopState = () => {
+      const shared = readSharedWorkspace();
+      if (shared) setRequested(shared);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   const [listError, setListError] = useState<string | null>(null);
 

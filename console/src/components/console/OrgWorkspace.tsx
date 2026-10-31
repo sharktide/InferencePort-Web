@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
-import type { IconName } from "../Icon";
+import { ORG_SECTION_META, type OrgSectionId } from "../../lib/consoleSections";
 import { useOrgContext } from "./OrgContext";
 import { navigateConsole } from "./ContextSwitcher";
-import { OrgApiError, ROLE_LABELS, type OrgApi, type OrgDetail, type OrgRole } from "../../lib/orgs";
+import { OrgApiError, ROLE_LABELS, type OrgApi, type OrgDetail } from "../../lib/orgs";
 import { Badge, Callout, PLAN_LABELS, errorText } from "./panels/orgs/shared";
 import OverviewTab from "./panels/orgs/OverviewTab";
 import MembersTab from "./panels/orgs/MembersTab";
@@ -21,48 +21,9 @@ import SecurityTab from "./panels/orgs/SecurityTab";
 import NotificationsTab from "./panels/orgs/NotificationsTab";
 import styles from "./OrgWorkspace.module.css";
 
-/* Organization sections. In org mode they are top-level sidebar items (no nested tab bar). */
-export type OrgSectionId =
-  | "org-overview"
-  | "org-members"
-  | "org-teams"
-  | "org-keys"
-  | "org-usage"
-  | "org-billing"
-  | "org-invoices"
-  | "org-policies"
-  | "org-desktop"
-  | "org-audit"
-  | "org-security"
-  | "org-notifications";
-
-const ALL_ROLES: OrgRole[] = ["owner", "admin", "billing_manager", "auditor", "member"];
-
-export const ORG_SECTION_META: Record<OrgSectionId, { label: string; icon: IconName; roles: OrgRole[] }> = {
-  "org-overview": { label: "Overview", icon: "gauge", roles: ALL_ROLES },
-  "org-members": { label: "Members", icon: "user-circle", roles: ALL_ROLES },
-  "org-teams": { label: "Teams", icon: "chat-circle-text", roles: ALL_ROLES },
-  "org-keys": { label: "API keys", icon: "key", roles: ALL_ROLES },
-  "org-usage": { label: "Usage", icon: "chart-bar", roles: ALL_ROLES },
-  "org-billing": { label: "Billing", icon: "credit-card", roles: ["owner", "admin", "billing_manager", "auditor"] },
-  "org-invoices": { label: "Invoices", icon: "credit-card", roles: ["owner", "admin", "billing_manager", "auditor"] },
-  "org-policies": { label: "Policies", icon: "shield-check", roles: ["owner", "admin"] },
-  "org-desktop": { label: "Desktop app", icon: "plugs-connected", roles: ["owner", "admin"] },
-  "org-audit": { label: "Audit log", icon: "clock-countdown", roles: ["owner", "admin", "auditor"] },
-  "org-security": { label: "Security", icon: "lock-simple", roles: ["owner", "admin"] },
-  "org-notifications": { label: "Notifications", icon: "warning-circle", roles: ["owner", "admin", "billing_manager"] },
-};
-
-export const ORG_SECTION_ORDER = Object.keys(ORG_SECTION_META) as OrgSectionId[];
-
-export function isOrgSection(id: string): id is OrgSectionId {
-  return Object.prototype.hasOwnProperty.call(ORG_SECTION_META, id);
-}
-
-/* Visibility is a UI convenience only: the server enforces every capability. */
-export function orgSectionAllowed(id: OrgSectionId, role: OrgRole | null | undefined): boolean {
-  return !!role && ORG_SECTION_META[id].roles.includes(role);
-}
+/* Section metadata is shared with the static route registry. */
+export { ORG_SECTION_META, ORG_SECTION_ORDER, isOrgSection, orgSectionAllowed } from "../../lib/consoleSections";
+export type { OrgSectionId } from "../../lib/consoleSections";
 
 interface OrgWorkspaceProps {
   section: OrgSectionId;
