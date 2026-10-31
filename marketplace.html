@@ -76,6 +76,45 @@
 			color: var(--brand);
 		}
 
+		.price-controls {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 12px;
+			margin-bottom: 8px;
+		}
+		.price-controls label {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+			text-align: left;
+			font-size: 0.8rem;
+			font-weight: 600;
+			color: var(--muted);
+			min-width: min(210px, 100%);
+		}
+		.price-controls select {
+			background: var(--surface);
+			border: 1px solid var(--border);
+			color: var(--text);
+			border-radius: 9px;
+			padding: 10px 12px;
+			font-size: 0.875rem;
+			width: 100%;
+		}
+		.price-controls select:disabled { opacity: 0.55; cursor: not-allowed; }
+		.price-controls select:focus-visible {
+			outline: 2px solid var(--brand);
+			outline-offset: 2px;
+		}
+		.price-hint {
+			font-size: 0.76rem;
+			color: var(--muted);
+			text-align: center;
+			margin: 0 0 1.5rem;
+			line-height: 1.5;
+		}
+
 		.models-grid {
 			display: grid;
 			grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -439,6 +478,26 @@
 			</div>
 			<p><a href="decision.html">Decision API guide and examples</a></p>
 			<input type="text" id="search-models" class="form-control mb-4" placeholder="Search models…" />
+			<div class="price-controls">
+				<label for="price-range">Starting price
+					<select id="price-range">
+						<option value="all">All prices</option>
+						<option value="zero">$0 rate</option>
+						<option value="lt1">Under $1</option>
+						<option value="1to5">$1–$5</option>
+						<option value="5to20">$5–$20</option>
+						<option value="gte20">$20+</option>
+					</select>
+				</label>
+				<label for="price-sort">Sort by
+					<select id="price-sort">
+						<option value="default">Default order</option>
+						<option value="asc">Price: low to high</option>
+						<option value="desc">Price: high to low</option>
+					</select>
+				</label>
+			</div>
+			<p class="price-hint">Price options use each cloud model’s lowest published list rate. Units vary (per million tokens, generation, second, etc.); unpriced and local models sort last and are excluded from price ranges.</p>
 			<div class="text-center my-4" id="loading-spinner">
 				<div class="spinner-border" style="color: var(--brand)" role="status">
 					<span class="visually-hidden">Loading…</span>
@@ -466,6 +525,8 @@
 		let localModels = [];
 		let config = null;
 		let activeFilter = "all";
+		let priceRange = "all";
+		let priceSort = "default";
 		const MODELS_PER_PAGE = 24;
 		let currentPage = 1;
 		let filteredModels = [];
@@ -610,16 +671,26 @@
 			// These read their own top-level rate fields, so they work without a `pricing` object.
 			if (["embedding", "decision"].includes(type)) return formatEmbeddingPrice(m);
 			if (type === "realtime") return formatRealtimePrice(m);
-			const pricing = m?.pricing;
-			if (!pricing) return null;
+			const pricing = m?.pricing || {};
 			if (type === "audio") {
 				const audio = formatAudioPrice(m);
 				if (audio) return audio;
 			}
-			if (type === "image" && pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+			if (type === "image") {
+				const tp = pricing.token_pricing;
+				if (tp && typeof tp === "object") {
+					const parts = [];
+					if (num(tp.text_in) != null && num(tp.text_in) !== 0) parts.push(`Text: ${num(tp.text_in).toFixed(2)}/M`);
+					if (num(tp.image_in) != null && num(tp.image_in) !== 0) parts.push(`Img In: ${num(tp.image_in).toFixed(2)}/M`);
+					if (num(tp.image_out) != null && num(tp.image_out) !== 0) parts.push(`Img Out: ${num(tp.image_out).toFixed(2)}/M`);
+					if (parts.length) return parts.join(" · ");
+				}
+				if (num(pricing.image) != null && num(pricing.image) !== 0) return `${num(pricing.image).toFixed(4)}/gen`;
+			}
 			if (type === "3d" || type === "3D") {
 				if (m.price_tiers) {
-					const values = Object.values(m.price_tiers).map((v) => parseFloat(v));
+					const values = Object.values(m.price_tiers).map(num).filter((v) => v !== null && v >= 0);
+					if (!values.length) return null;
 					const min = Math.min(...values);
 					const max = Math.max(...values);
 					if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
@@ -637,6 +708,63 @@
 
 		function formatPrice(m) {
 			return formatModelPrice(m) || formatPricing(m) || "Pricing unavailable";
+		}
+
+		// Starting list price in USD in the model's native billing unit.
+		// Never infer that missing prices (including local models) are free.
+		function modelStartingPrice(m) {
+			const p = m?.pricing || {};
+			const type = modelType(m).toLowerCase();
+			const lowest = (...rates) => {
+				const valid = rates.map(num).filter((v) => v !== null && v >= 0);
+				if (!valid.length) return null;
+				const positive = valid.filter((v) => v > 0);
+				return Math.min(...(positive.length ? positive : valid));
+			};
+			const perMillion = (v) => {
+				const n = num(v);
+				return n === null ? null : n * 1_000_000;
+			};
+			if (type === "embedding" || type === "decision") {
+				return lowest(m?.input_pricing_per_million_tokens) ?? lowest(perMillion(p.prompt));
+			}
+			if (type === "realtime") {
+				const rates = m?.realtime_pricing_per_million_tokens || {};
+				const tokenRate = lowest(rates.text_in, rates.audio_in, rates.text_out, rates.audio_out);
+				const secs = num(m?.input_price_per_second);
+				return tokenRate ?? (secs === null ? null : lowest(secs * 3600));
+			}
+			if (type === "audio") {
+				const unit = billingUnit(m);
+				if (unit === "input_chars") return lowest(m?.price_per_1k_chars, p.request);
+				if (unit === "input_bytes") return lowest(m?.price_per_million_bytes, p.request);
+				if (unit === "input_seconds") return lowest(m?.input_price_per_second, p.request);
+				if (unit === "seconds") return lowest(m?.price_per_second, p.request);
+				return lowest(m?.price_per_1k_chars, m?.price_per_million_bytes, m?.input_price_per_second, m?.price_per_second, p.request);
+			}
+			if (type === "3d") {
+				const tiers = m?.price_tiers && typeof m.price_tiers === "object" ? Object.values(m.price_tiers) : [];
+				return lowest(...tiers) ?? lowest(p.request);
+			}
+			if (type === "image") {
+				const rate = lowest(p.image);
+				if (rate !== null) return rate;
+				const tp = p.token_pricing || {};
+				return lowest(tp.text_in, tp.image_in, tp.image_out, p.request);
+			}
+			if (type === "video") return lowest(p.request, m?.price_per_second);
+			return lowest(perMillion(p.prompt), perMillion(p.completion)) ?? lowest(p.request);
+		}
+
+		function matchesPriceRange(price) {
+			if (priceRange === "all") return true;
+			if (price === null) return false;
+			if (priceRange === "zero") return price === 0;
+			if (priceRange === "lt1") return price > 0 && price < 1;
+			if (priceRange === "1to5") return price >= 1 && price < 5;
+			if (priceRange === "5to20") return price >= 5 && price < 20;
+			if (priceRange === "gte20") return price >= 20;
+			return true;
 		}
 
 		function escapeHtml(str) {
@@ -807,6 +935,19 @@
 				filteredLocal.forEach(m => allModels.push({ type: "local", data: m }));
 			}
 
+			// Filter and sort before pagination, so results and counts reflect the full catalog.
+			if (priceRange !== "all") {
+				allModels = allModels.filter(({ type, data }) => type === "cloud" && matchesPriceRange(modelStartingPrice(data)));
+			}
+			if (priceSort !== "default") {
+				allModels.sort((a, b) => {
+					const priceA = a.type === "cloud" ? modelStartingPrice(a.data) : null;
+					const priceB = b.type === "cloud" ? modelStartingPrice(b.data) : null;
+					if (priceA === null) return priceB === null ? 0 : 1;
+					if (priceB === null) return -1;
+					return priceSort === "asc" ? priceA - priceB : priceB - priceA;
+				});
+			}
 			const total = allModels.length;
 			const totalPages = Math.ceil(total / MODELS_PER_PAGE);
 
@@ -859,12 +1000,32 @@
 			renderAll(e.target.value);
 		});
 
+		document.getElementById("price-range").addEventListener("change", (e) => {
+			priceRange = e.target.value;
+			currentPage = 1;
+			renderAll(document.getElementById("search-models").value);
+		});
+		document.getElementById("price-sort").addEventListener("change", (e) => {
+			priceSort = e.target.value;
+			currentPage = 1;
+			renderAll(document.getElementById("search-models").value);
+		});
+
 		document.getElementById("filter-tabs").addEventListener("click", (e) => {
 			const tab = e.target.closest(".filter-tab");
 			if (!tab) return;
 			document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
 			tab.classList.add("active");
 			activeFilter = tab.dataset.filter;
+			const onlyLocal = activeFilter === "local";
+			if (onlyLocal) {
+				priceRange = "all";
+				priceSort = "default";
+				document.getElementById("price-range").value = "all";
+				document.getElementById("price-sort").value = "default";
+			}
+			document.getElementById("price-range").disabled = onlyLocal;
+			document.getElementById("price-sort").disabled = onlyLocal;
 			currentPage = 1;
 			renderAll(document.getElementById("search-models").value);
 		});
