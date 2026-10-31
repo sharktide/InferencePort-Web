@@ -90,6 +90,7 @@ export default function ConsoleLayout() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
+  const rootHistoryTab = useRef(activeTab);
 
   /* Keep the address bar in sync without remounting the console on every tab switch. */
   const updateTab = useCallback((tab: string, method: "push" | "replace") => {
@@ -108,6 +109,11 @@ export default function ConsoleLayout() {
 
   /* On refresh, use the requested route; on browser Back/Forward, restore that tab. */
   useEffect(() => {
+    const isRoot = ["/", "/console", "/console/"].includes(window.location.pathname);
+    if (isRoot) {
+      /* This root entry must retain its own selection, not whatever localStorage saves later. */
+      window.history.replaceState({ ...window.history.state, consoleRootTab: rootHistoryTab.current }, "");
+    }
     const routeTab = consoleTabFromPath(window.location.pathname);
     if (routeTab) {
       const canonical = consoleTabHref(routeTab, window.location.hostname);
@@ -118,7 +124,10 @@ export default function ConsoleLayout() {
     const onPopState = () => {
       const tab = consoleTabFromPath(window.location.pathname);
       if (tab) setActiveTab(tab);
-      else if (["/", "/console", "/console/"].includes(window.location.pathname)) setActiveTab(initialTab());
+      else if (["/", "/console", "/console/"].includes(window.location.pathname)) {
+        const restored = normalizeConsoleTab(window.history.state?.consoleRootTab);
+        setActiveTab(restored || rootHistoryTab.current);
+      }
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -222,8 +231,10 @@ export default function ConsoleLayout() {
               if (!hadSession.current && !hasExplicitLanding()) replaceTab("models");
               hadSession.current = true;
             } else {
+              const wasSignedIn = hadSession.current;
               hadSession.current = false;
-              replaceTab("account");
+              /* INITIAL_SESSION(null) must not erase a bookmarked page before OAuth/SSO. */
+              if (wasSignedIn) replaceTab("account");
             }
           });
         } else {
@@ -321,21 +332,34 @@ function ConsoleFrame({
     if (SLUG_RE.test(slug)) setActiveSlug(slug.toLowerCase());
     params.delete("org");
     const query = params.toString();
-    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
   }, [setActiveSlug]);
+
+  /* Encode the currently selected organization into shareable organization section URLs.
+     This is separate from the existing legacy ?org= landing behavior. */
+  useEffect(() => {
+    if (!session || !orgs) return;
+    const params = new URLSearchParams(window.location.search);
+    const desired = isOrgSection(activeTab) ? activeSlug : null;
+    if (desired === params.get("workspace")) return;
+    if (desired) params.set("workspace", desired);
+    else params.delete("workspace");
+    const query = params.toString();
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+  }, [session, orgs, activeTab, activeSlug]);
 
   /* Wait for the organization list before judging a section: a stored org tab is valid only if that org is active */
   useEffect(() => {
-    if (!session) {
-      /* Org pages need a session: a deep link or saved tab while signed out lands on the sign-in page */
-      if (isOrgSection(activeTab) || activeTab === "organizations") setActiveTab("account");
-      return;
-    }
+    if (!session) return; /* Keep the requested route until sign-in; render AccountPanel below. */
     if (!orgs) return;
     if (!tabAvailable(activeTab, activeOrg)) setActiveTab(defaultTab(activeOrg));
   }, [session, orgs, activeOrg, activeTab, setActiveTab]);
 
   const renderSection = (tab: string): ReactNode => {
+    /* The login UI uses the current URL as its OAuth return destination. */
+    if (!session && tab !== "organizations" && tab !== "agents") {
+      return <AccountPanel config={config} session={session} supabase={supabase} />;
+    }
     if (isOrgSection(tab)) {
       if (activeOrg) return <OrgWorkspace section={tab} session={session} apiBase={apiBase} config={config} supabase={supabase} />;
       if (listError) {
