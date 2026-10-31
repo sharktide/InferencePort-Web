@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { consoleTabFromPath, consoleTabHref, normalizeConsoleTab } from "../../lib/consoleTabs";
 import TopBar from "./TopBar";
 import Sidebar from "./Sidebar";
 import { ORGS_CHANGED_EVENT, OrgProvider, useOrgContext } from "./OrgContext";
@@ -37,15 +38,25 @@ function landsOnOrganizations(): boolean {
   return params.has("org_invite") || params.has("org");
 }
 
-/* First paint tab: deep links win over the saved tab. ?org=<slug> opens that organization's sections. */
+/* Explicit console routes and invitation links win over the saved tab. */
+function hasExplicitLanding(): boolean {
+  if (typeof window === "undefined") return false;
+  return landsOnOrganizations()
+    || new URLSearchParams(window.location.search).has("invite")
+    || consoleTabFromPath(window.location.pathname) !== null;
+}
+
+/* First paint tab: query-based invitations and org links take priority over tab paths and saved tabs. */
 function initialTab(): string {
   if (typeof window === "undefined") return "account";
   const params = new URLSearchParams(window.location.search);
   if (params.has("invite")) return "agents";
   if (params.has("org_invite")) return "organizations";
   if (params.has("org")) return params.has("billing") ? "org-billing" : "org-overview";
+  const routeTab = consoleTabFromPath(window.location.pathname);
+  if (routeTab) return routeTab;
   try {
-    return localStorage.getItem("console-active-tab") || "account";
+    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "account";
   } catch {
     return "account";
   }
@@ -79,6 +90,48 @@ export default function ConsoleLayout() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
+  const rootHistoryTab = useRef(activeTab);
+
+  /* Keep the address bar in sync without remounting the console on every tab switch. */
+  const updateTab = useCallback((tab: string, method: "push" | "replace") => {
+    const normalized = normalizeConsoleTab(tab);
+    if (!normalized) return;
+    setActiveTab(normalized);
+    if (typeof window === "undefined") return;
+    const path = consoleTabHref(normalized, window.location.hostname);
+    if (window.location.pathname === path) return;
+    const href = `${path}${window.location.search}${window.location.hash}`;
+    if (method === "push") window.history.pushState(window.history.state, "", href);
+    else window.history.replaceState(window.history.state, "", href);
+  }, []);
+  const navigateTab = useCallback((tab: string) => updateTab(tab, "push"), [updateTab]);
+  const replaceTab = useCallback((tab: string) => updateTab(tab, "replace"), [updateTab]);
+
+  /* On refresh, use the requested route; on browser Back/Forward, restore that tab. */
+  useEffect(() => {
+    const isRoot = ["/", "/console", "/console/"].includes(window.location.pathname);
+    if (isRoot) {
+      /* This root entry must retain its own selection, not whatever localStorage saves later. */
+      window.history.replaceState({ ...window.history.state, consoleRootTab: rootHistoryTab.current }, "");
+    }
+    const routeTab = consoleTabFromPath(window.location.pathname);
+    if (routeTab) {
+      const canonical = consoleTabHref(routeTab, window.location.hostname);
+      if (window.location.pathname !== canonical) {
+        window.history.replaceState(window.history.state, "", `${canonical}${window.location.search}${window.location.hash}`);
+      }
+    }
+    const onPopState = () => {
+      const tab = consoleTabFromPath(window.location.pathname);
+      if (tab) setActiveTab(tab);
+      else if (["/", "/console", "/console/"].includes(window.location.pathname)) {
+        const restored = normalizeConsoleTab(window.history.state?.consoleRootTab);
+        setActiveTab(restored || rootHistoryTab.current);
+      }
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -123,12 +176,12 @@ export default function ConsoleLayout() {
     const onNavigate = (e: Event) => {
       const tab = (e as CustomEvent<unknown>).detail;
       if (typeof tab !== "string" || !tab) return;
-      setActiveTab(tab);
+      navigateTab(tab);
       setIsMobileNavOpen(false);
     };
     window.addEventListener(CONSOLE_NAVIGATE_EVENT, onNavigate);
     return () => window.removeEventListener(CONSOLE_NAVIGATE_EVENT, onNavigate);
-  }, []);
+  }, [navigateTab]);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,7 +214,7 @@ export default function ConsoleLayout() {
             if (s) {
               hadSession.current = true;
               /* Keep the tab the user was on; only land on Models on a first visit or right after signing in */
-              if ((!hadSavedTab.current || fromAuthRedirect.current) && !landsOnOrganizations()) setActiveTab("models");
+              if ((!hadSavedTab.current || fromAuthRedirect.current) && !hasExplicitLanding()) replaceTab("models");
             }
           }
           client.auth.onAuthStateChange(async (_event, s) => {
@@ -175,11 +228,13 @@ export default function ConsoleLayout() {
             }
             if (s) {
               /* Token refreshes and repeated SIGNED_IN events (e.g. returning to the browser tab) must not reset the tab */
-              if (!hadSession.current && !landsOnOrganizations()) setActiveTab("models");
+              if (!hadSession.current && !hasExplicitLanding()) replaceTab("models");
               hadSession.current = true;
             } else {
+              const wasSignedIn = hadSession.current;
               hadSession.current = false;
-              setActiveTab("account");
+              /* INITIAL_SESSION(null) must not erase a bookmarked page before OAuth/SSO. */
+              if (wasSignedIn) replaceTab("account");
             }
           });
         } else {
@@ -190,7 +245,7 @@ export default function ConsoleLayout() {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [replaceTab]);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -224,7 +279,8 @@ export default function ConsoleLayout() {
         theme={theme}
         onThemeToggle={toggleTheme}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={replaceTab}
+        navigateTab={navigateTab}
         isMobileNavOpen={isMobileNavOpen}
         setMobileNavOpen={setIsMobileNavOpen}
         unclaimedRewards={unclaimedRewards}
@@ -243,6 +299,7 @@ interface FrameProps {
   onThemeToggle: () => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  navigateTab: (tab: string) => void;
   isMobileNavOpen: boolean;
   setMobileNavOpen: (open: boolean) => void;
   unclaimedRewards: number;
@@ -259,6 +316,7 @@ function ConsoleFrame({
   onThemeToggle,
   activeTab,
   setActiveTab,
+  navigateTab,
   isMobileNavOpen,
   setMobileNavOpen,
   unclaimedRewards,
@@ -274,21 +332,34 @@ function ConsoleFrame({
     if (SLUG_RE.test(slug)) setActiveSlug(slug.toLowerCase());
     params.delete("org");
     const query = params.toString();
-    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
   }, [setActiveSlug]);
+
+  /* Encode the currently selected organization into shareable organization section URLs.
+     This is separate from the existing legacy ?org= landing behavior. */
+  useEffect(() => {
+    if (!session || !orgs) return;
+    const params = new URLSearchParams(window.location.search);
+    const desired = isOrgSection(activeTab) ? activeSlug : null;
+    if (desired === params.get("workspace")) return;
+    if (desired) params.set("workspace", desired);
+    else params.delete("workspace");
+    const query = params.toString();
+    window.history.replaceState(window.history.state, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+  }, [session, orgs, activeTab, activeSlug]);
 
   /* Wait for the organization list before judging a section: a stored org tab is valid only if that org is active */
   useEffect(() => {
-    if (!session) {
-      /* Org pages need a session: a deep link or saved tab while signed out lands on the sign-in page */
-      if (isOrgSection(activeTab) || activeTab === "organizations") setActiveTab("account");
-      return;
-    }
+    if (!session) return; /* Keep the requested route until sign-in; render AccountPanel below. */
     if (!orgs) return;
     if (!tabAvailable(activeTab, activeOrg)) setActiveTab(defaultTab(activeOrg));
   }, [session, orgs, activeOrg, activeTab, setActiveTab]);
 
   const renderSection = (tab: string): ReactNode => {
+    /* The login UI uses the current URL as its OAuth return destination. */
+    if (!session && tab !== "organizations" && tab !== "agents") {
+      return <AccountPanel config={config} session={session} supabase={supabase} />;
+    }
     if (isOrgSection(tab)) {
       if (activeOrg) return <OrgWorkspace section={tab} session={session} apiBase={apiBase} config={config} supabase={supabase} />;
       if (listError) {
@@ -339,7 +410,7 @@ function ConsoleFrame({
           isOpen={isMobileNavOpen}
           onClose={() => setMobileNavOpen(false)}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={navigateTab}
           unclaimedRewards={unclaimedRewards}
         />
         <main className={styles.consoleContent}>
