@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { consoleTabFromPath, consoleTabHref, normalizeConsoleTab } from "../../lib/consoleTabs";
 import TopBar from "./TopBar";
 import Sidebar from "./Sidebar";
 import { ORGS_CHANGED_EVENT, OrgProvider, useOrgContext } from "./OrgContext";
@@ -37,15 +38,25 @@ function landsOnOrganizations(): boolean {
   return params.has("org_invite") || params.has("org");
 }
 
-/* First paint tab: deep links win over the saved tab. ?org=<slug> opens that organization's sections. */
+/* Explicit console routes and invitation links win over the saved tab. */
+function hasExplicitLanding(): boolean {
+  if (typeof window === "undefined") return false;
+  return landsOnOrganizations()
+    || new URLSearchParams(window.location.search).has("invite")
+    || consoleTabFromPath(window.location.pathname) !== null;
+}
+
+/* First paint tab: query-based invitations and org links take priority over tab paths and saved tabs. */
 function initialTab(): string {
   if (typeof window === "undefined") return "account";
   const params = new URLSearchParams(window.location.search);
   if (params.has("invite")) return "agents";
   if (params.has("org_invite")) return "organizations";
   if (params.has("org")) return params.has("billing") ? "org-billing" : "org-overview";
+  const routeTab = consoleTabFromPath(window.location.pathname);
+  if (routeTab) return routeTab;
   try {
-    return localStorage.getItem("console-active-tab") || "account";
+    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "account";
   } catch {
     return "account";
   }
@@ -79,6 +90,39 @@ export default function ConsoleLayout() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
+
+  /* Keep the address bar in sync without remounting the console on every tab switch. */
+  const updateTab = useCallback((tab: string, method: "push" | "replace") => {
+    const normalized = normalizeConsoleTab(tab);
+    if (!normalized) return;
+    setActiveTab(normalized);
+    if (typeof window === "undefined") return;
+    const path = consoleTabHref(normalized, window.location.hostname);
+    if (window.location.pathname === path) return;
+    const href = `${path}${window.location.search}${window.location.hash}`;
+    if (method === "push") window.history.pushState(window.history.state, "", href);
+    else window.history.replaceState(window.history.state, "", href);
+  }, []);
+  const navigateTab = useCallback((tab: string) => updateTab(tab, "push"), [updateTab]);
+  const replaceTab = useCallback((tab: string) => updateTab(tab, "replace"), [updateTab]);
+
+  /* On refresh, use the requested route; on browser Back/Forward, restore that tab. */
+  useEffect(() => {
+    const routeTab = consoleTabFromPath(window.location.pathname);
+    if (routeTab) {
+      const canonical = consoleTabHref(routeTab, window.location.hostname);
+      if (window.location.pathname !== canonical) {
+        window.history.replaceState(window.history.state, "", `${canonical}${window.location.search}${window.location.hash}`);
+      }
+    }
+    const onPopState = () => {
+      const tab = consoleTabFromPath(window.location.pathname);
+      if (tab) setActiveTab(tab);
+      else if (["/", "/console", "/console/"].includes(window.location.pathname)) setActiveTab(initialTab());
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -123,12 +167,12 @@ export default function ConsoleLayout() {
     const onNavigate = (e: Event) => {
       const tab = (e as CustomEvent<unknown>).detail;
       if (typeof tab !== "string" || !tab) return;
-      setActiveTab(tab);
+      navigateTab(tab);
       setIsMobileNavOpen(false);
     };
     window.addEventListener(CONSOLE_NAVIGATE_EVENT, onNavigate);
     return () => window.removeEventListener(CONSOLE_NAVIGATE_EVENT, onNavigate);
-  }, []);
+  }, [navigateTab]);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,7 +205,7 @@ export default function ConsoleLayout() {
             if (s) {
               hadSession.current = true;
               /* Keep the tab the user was on; only land on Models on a first visit or right after signing in */
-              if ((!hadSavedTab.current || fromAuthRedirect.current) && !landsOnOrganizations()) setActiveTab("models");
+              if ((!hadSavedTab.current || fromAuthRedirect.current) && !hasExplicitLanding()) replaceTab("models");
             }
           }
           client.auth.onAuthStateChange(async (_event, s) => {
@@ -175,11 +219,11 @@ export default function ConsoleLayout() {
             }
             if (s) {
               /* Token refreshes and repeated SIGNED_IN events (e.g. returning to the browser tab) must not reset the tab */
-              if (!hadSession.current && !landsOnOrganizations()) setActiveTab("models");
+              if (!hadSession.current && !hasExplicitLanding()) replaceTab("models");
               hadSession.current = true;
             } else {
               hadSession.current = false;
-              setActiveTab("account");
+              replaceTab("account");
             }
           });
         } else {
@@ -190,7 +234,7 @@ export default function ConsoleLayout() {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [replaceTab]);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -224,7 +268,8 @@ export default function ConsoleLayout() {
         theme={theme}
         onThemeToggle={toggleTheme}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={replaceTab}
+        navigateTab={navigateTab}
         isMobileNavOpen={isMobileNavOpen}
         setMobileNavOpen={setIsMobileNavOpen}
         unclaimedRewards={unclaimedRewards}
@@ -243,6 +288,7 @@ interface FrameProps {
   onThemeToggle: () => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  navigateTab: (tab: string) => void;
   isMobileNavOpen: boolean;
   setMobileNavOpen: (open: boolean) => void;
   unclaimedRewards: number;
@@ -259,6 +305,7 @@ function ConsoleFrame({
   onThemeToggle,
   activeTab,
   setActiveTab,
+  navigateTab,
   isMobileNavOpen,
   setMobileNavOpen,
   unclaimedRewards,
@@ -339,7 +386,7 @@ function ConsoleFrame({
           isOpen={isMobileNavOpen}
           onClose={() => setMobileNavOpen(false)}
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={navigateTab}
           unclaimedRewards={unclaimedRewards}
         />
         <main className={styles.consoleContent}>
