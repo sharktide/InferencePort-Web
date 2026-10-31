@@ -11,6 +11,7 @@ export const PERSONAL_ITEMS = {
   playground: { label: "Playground", icon: "sparkle" },
   deploy: { label: "Deploy (Featherless)", icon: "gauge" },
   agents: { label: "Agents", icon: "chat-circle-text" },
+  buckets: { label: "Buckets (Preview)", icon: "cube" },
   rewards: { label: "Rewards", icon: "gift" },
   "api-key": { label: "API key", icon: "key" },
   usage: { label: "Usage", icon: "chart-bar" },
