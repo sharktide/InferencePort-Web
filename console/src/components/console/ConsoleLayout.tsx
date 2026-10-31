@@ -379,7 +379,7 @@ function ConsoleFrame({
       models: <ModelsPanel config={config} session={session} apiBase={apiBase} theme={theme} />,
       playground: <PlaygroundPanel config={config} session={session} apiBase={apiBase} theme={theme} />,
       deploy: <DeployPanel session={session} apiBase={apiBase} config={config} theme={theme} />,
-      buckets: <BucketsPanel apiBase={apiBase} />,
+      buckets: <BucketsPanel key={`${activeOrg?.id ?? "personal"}:${session?.user?.id ?? "signed-out"}`} apiBase={apiBase} session={session} />,
       agents: <AgentsPanel session={session} apiBase={apiBase} />,
       organizations: <OrganizationsPanel session={session} />,
       rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
