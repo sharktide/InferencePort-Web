@@ -1,175 +1,691 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import styles from "./Panel.module.css";
-import { useModal } from "../../Modal";
+import ui from "./ShieldWorkbench.module.css";
 
-const featureGroups: Record<string, string[]> = {
-  Signal: ["heuristics"],
-  Memory: ["historical_memory"],
-  Graph: ["duplicate_detection", "campaign_detection"],
-  Intelligence: ["email_intelligence", "ip_intelligence", "phone_intelligence", "username_intelligence", "device_intelligence", "behavior_intelligence", "content_intelligence", "prompt_intelligence"],
-  Agent: ["identity_analysis", "fraud_analysis", "prompt_analysis", "content_analysis", "exfiltration_analysis"],
-  Decision: ["llm_reasoning"],
-  Storage: ["memory_update"],
+type Mode = "analyze" | "scan" | "phishing" | "request" | "file" | "password" | "listing" | "review" | "domain" | "check";
+type InputKind = "text" | "textarea" | "email" | "password" | "number";
+type Field = { name: string; label: string; kind?: InputKind; placeholder?: string; help?: string };
+type JsonObject = Record<string, any>;
+type Capabilities = {
+  version?: string;
+  tasks?: Record<string, { description?: string; thresholds?: Record<string, number> }>;
+  features?: Record<string, { default: boolean; description?: string }>;
+  categories?: string[];
+  check_types?: Record<string, { description?: string }> | string[];
+  endpoints?: Record<string, string>;
 };
 
-const defaultDisabled = new Set(["duplicate_detection", "campaign_detection", "memory_update"]);
+interface Props { session: any; config: any; apiBase: string }
 
-interface Props { session: any; config: any; apiBase: string; }
+const MODES: { id: Mode; title: string; description: string; endpoint: string }[] = [
+  { id: "analyze", title: "Risk analysis", description: "Identity, signup, login, transaction, session and behavioral risk.", endpoint: "POST /ai-shield/analyze" },
+  { id: "scan", title: "Content scan", description: "Prompt injection, unsafe content, secrets, PII and links.", endpoint: "POST /ai-shield/scan" },
+  { id: "phishing", title: "Phishing", description: "Inspect suspicious email, SMS, messages and their links.", endpoint: "POST /ai-shield/detect-phishing" },
+  { id: "request", title: "HTTP / WAF", description: "Inspect web requests for injection, SSRF, traversal and scanners.", endpoint: "POST /ai-shield/scan" },
+  { id: "file", title: "File upload", description: "Inspect files for spoofed types, executable content, macros and scripts.", endpoint: "POST /ai-shield/scan" },
+  { id: "password", title: "Password", description: "Check password strength and known breaches without logging credentials.", endpoint: "POST /ai-shield/scan" },
+  { id: "listing", title: "Marketplace", description: "Assess a listing for counterfeit, prohibited or fraudulent content.", endpoint: "POST /ai-shield/scan" },
+  { id: "review", title: "Reviews", description: "Detect fake or coordinated reviews and suspicious activity.", endpoint: "POST /ai-shield/scan" },
+  { id: "domain", title: "Domains / wallets", description: "Inspect domain impersonation and wallet formats.", endpoint: "POST /ai-shield/scan" },
+  { id: "check", title: "Indicator checks", description: "Bulk-check emails, IPs, links, JWTs, hashes and other indicators.", endpoint: "POST /ai-shield/check" },
+];
 
-export default function ShieldPanel({ session, config, apiBase }: Props) {
-  const modal = useModal();
-  const [fields, setFields] = useState({ email: "", phone: "", ip: "", username: "", device: "", content: "", country: "", city: "", lat: "", lon: "", signupTime: "", metadata: "" });
-  const [toggles, setToggles] = useState<Record<string, boolean>>(() => {
-    const d: Record<string, boolean> = {};
-    Object.values(featureGroups).flat().forEach((f) => { d[f] = !defaultDisabled.has(f); });
-    return d;
+const TASKS = ["general", "signup", "login", "payment", "content_moderation", "prompt_guard", "agent_tool_output", "phishing", "dlp", "api_request", "file_upload", "password", "marketplace", "reviews", "domain"];
+const CHECK_TYPES = ["email", "domain", "url", "ip", "phone", "username", "user_agent", "wallet", "jwt", "hash", "secret"];
+const SOURCES = ["user", "tool", "document", "web", "email", "retrieval"];
+const FIELD_GROUPS: Record<Mode, Field[]> = {
+  analyze: [
+    { name: "email", label: "Email", kind: "email", placeholder: "name@example.com" },
+    { name: "phone", label: "Phone", placeholder: "+1234567890" },
+    { name: "ip", label: "IP address", placeholder: "203.0.113.12" },
+    { name: "username", label: "Username", placeholder: "username" },
+    { name: "device", label: "Device fingerprint" },
+    { name: "content", label: "Content / user submission", kind: "textarea" },
+    { name: "country", label: "Country (ISO-2)", placeholder: "US" },
+    { name: "city", label: "City" },
+    { name: "lat", label: "Latitude", kind: "number", placeholder: "37.7749" },
+    { name: "lon", label: "Longitude", kind: "number", placeholder: "-122.4194" },
+    { name: "signupTime", label: "Signup time (ISO-8601)", placeholder: "2026-01-01T00:00:00Z" },
+    { name: "sender", label: "Sender" },
+    { name: "metadata", label: "Behavioral metadata (JSON object)", kind: "textarea", placeholder: '{"failed_logins":5,"user_agent":"Mozilla/5.0","account_age_days":1}' },
+  ],
+  scan: [
+    { name: "content", label: "Content to scan", kind: "textarea", placeholder: "Paste text, a model prompt, tool output or a document excerpt." },
+    { name: "urls", label: "Additional URLs (one per line, up to 50)", kind: "textarea" },
+    { name: "messages", label: "Structured chat messages (JSON array, optional)", kind: "textarea", placeholder: '[{"role":"user","content":"Hi"},{"role":"tool","content":"Retrieved text"}]', help: "Preserves roles and tool output for indirect-injection detection." },
+  ],
+  phishing: [
+    { name: "sender", label: "Sender", placeholder: "Service <alerts@example.com>" },
+    { name: "subject", label: "Subject" },
+    { name: "replyTo", label: "Reply-to address" },
+    { name: "content", label: "Email / SMS / message body", kind: "textarea" },
+    { name: "urls", label: "Links (one per line)", kind: "textarea" },
+  ],
+  request: [
+    { name: "url", label: "Request URL / path", placeholder: "/api/search?q=example" },
+    { name: "headers", label: "Request headers (JSON object)", kind: "textarea", placeholder: '{"User-Agent":"Mozilla/5.0"}' },
+    { name: "requestBody", label: "Request body (JSON or text)", kind: "textarea" },
+  ],
+  file: [{ name: "mime", label: "Claimed MIME type (optional)", placeholder: "application/pdf" }],
+  password: [
+    { name: "password", label: "Password to check", kind: "password", help: "Only transmitted over HTTPS to Shield; never saved in this console or shown in the result." },
+    { name: "email", label: "Owner email (optional)", kind: "email" },
+    { name: "username", label: "Owner username (optional)" },
+  ],
+  listing: [
+    { name: "title", label: "Listing title" },
+    { name: "description", label: "Description", kind: "textarea" },
+    { name: "price", label: "Listed price", kind: "number" },
+    { name: "marketPrice", label: "Typical market price", kind: "number" },
+    { name: "brand", label: "Brand" },
+    { name: "category", label: "Category" },
+    { name: "sellerAge", label: "Seller age (days)", kind: "number" },
+    { name: "imageCount", label: "Number of images", kind: "number" },
+  ],
+  review: [
+    { name: "content", label: "Review text", kind: "textarea" },
+    { name: "rating", label: "Rating", kind: "number" },
+    { name: "reviews24h", label: "Author reviews (last 24h)", kind: "number" },
+    { name: "similarity", label: "Similarity to other reviews (0–1)", kind: "number" },
+  ],
+  domain: [
+    { name: "domains", label: "Domains (one per line, up to 20)", kind: "textarea" },
+    { name: "wallet", label: "Wallet address (optional)" },
+  ],
+  check: [
+    { name: "values", label: "Values to check (one per line, up to 500)", kind: "textarea", help: "One indicator type per request. Blank lines and lines starting with # are ignored." },
+  ],
+};
+
+const FEATURE_GROUPS: Record<string, string[]> = {
+  Signals: ["heuristics", "historical_memory", "duplicate_detection", "campaign_detection"],
+  Intelligence: ["email_intelligence", "ip_intelligence", "phone_intelligence", "username_intelligence", "device_intelligence", "behavior_intelligence", "content_intelligence", "prompt_intelligence", "url_intelligence", "sensitive_data_detection", "domain_intelligence", "wallet_analysis", "external_lookups"],
+  Agents: ["identity_analysis", "fraud_analysis", "prompt_analysis", "content_analysis", "exfiltration_analysis", "llm_reasoning"],
+  Inspection: ["request_inspection", "file_inspection", "password_analysis", "commerce_analysis", "custom_policy", "memory_update"],
+};
+const FALLBACK_FEATURES = Object.fromEntries(Object.values(FEATURE_GROUPS).flat().map((key) => [key, { default: !["duplicate_detection", "campaign_detection", "memory_update"].includes(key), description: "" }]));
+const DECISION_CLASS: Record<string, string> = { allow: styles.decisionAllow, challenge: styles.decisionChallenge, rate_limit: styles.decisionRateLimit, review: styles.decisionReview, block: styles.decisionBlock };
+
+function lines(value: string): string[] {
+  return Array.from(new Set(value.split(/\r?\n/).map((v) => v.trim()).filter((v) => v && !v.startsWith("#"))));
+}
+function optionalNumber(value: string, label: string): number | undefined {
+  if (value.trim() === "") return undefined;
+  const num = Number(value);
+  if (!Number.isFinite(num)) throw new Error(label + " must be a valid number.");
+  return num;
+}
+function objectJson(value: string, label: string): JsonObject {
+  if (!value.trim()) return {};
+  let parsed: unknown;
+  try { parsed = JSON.parse(value); } catch { throw new Error(label + " must be valid JSON."); }
+  if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") throw new Error(label + " must be a JSON object.");
+  return parsed as JsonObject;
+}
+function withValues(source: Record<string, string>, keys: string[]): JsonObject {
+  const result: JsonObject = {};
+  for (const key of keys) if (source[key]?.trim()) result[key] = source[key].trim();
+  return result;
+}
+async function encodeFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read the selected file."));
+    reader.onload = () => resolve(String(reader.result || "").split(",", 2)[1] || "");
+    reader.readAsDataURL(file);
   });
-  const [result, setResult] = useState<any>(null);
+}
+function parseMessages(input: string): JsonObject[] {
+  let parsed: unknown;
+  try { parsed = JSON.parse(input); } catch { throw new Error("Chat messages must be valid JSON."); }
+  if (!Array.isArray(parsed) || !parsed.length || parsed.some((item: unknown) =>
+      !item || Array.isArray(item) || typeof item !== "object" ||
+      (typeof (item as JsonObject).role !== "undefined" && typeof (item as JsonObject).role !== "string") ||
+      !(typeof (item as JsonObject).content === "string" || Array.isArray((item as JsonObject).content)))) {
+    throw new Error("Messages must be a non-empty array of objects with content (string or array) and optional role (string).");
+  }
+  return parsed as JsonObject[];
+}
+
+// Prevent the check endpoint's result values, facts or error text from disclosing
+// submitted JWTs, secrets, or passwords in the UI or in JSON response previews.
+function scrubSensitiveResponse(data: JsonObject, sensitiveValues: string[], kind: string): JsonObject {
+  if (!sensitiveValues.length) return data;
+  const scrub = (item: unknown): unknown => {
+    if (typeof item === "string") {
+      return sensitiveValues.reduce((text, secret) => secret ? text.split(secret).join("[REDACTED]") : text, item);
+    }
+    if (Array.isArray(item)) return item.map(scrub);
+    if (item && typeof item === "object") {
+      return Object.fromEntries(Object.entries(item).map(([key, val]) => [key, scrub(val)]));
+    }
+    return item;
+  };
+  const cleaned = scrub(data) as JsonObject;
+  if (kind === "jwt" || kind === "secret") {
+    if (Array.isArray(cleaned.results)) {
+      cleaned.results = cleaned.results.map((row: JsonObject, i: number) => ({
+        ...row, value: "<" + kind + " #" + (i + 1) + ">",
+      }));
+    }
+  }
+  return cleaned;
+}
+
+function safeError(data: JsonObject, status: number): string {
+  const detail = data.detail ?? data.error ?? data.message;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) return detail.map((e) => typeof e?.msg === "string" ? e.msg : "Invalid input").join("; ");
+  return "Shield request failed (HTTP " + status + ").";
+}
+function riskColor(decision: string): string {
+  return DECISION_CLASS[decision] || "";
+}
+
+export default function ShieldPanel({ session, apiBase }: Props) {
+  const [mode, setMode] = useState<Mode>("analyze");
+  const [fields, setFields] = useState<Record<string, string>>({ task: "general", scanTask: "prompt_guard", method: "GET", indicatorType: "email", lookup: "auto", verification: "unknown" });
+  const [files, setFiles] = useState<File[]>([]);
+  const [caps, setCaps] = useState<Capabilities | null>(null);
+  const [capsError, setCapsError] = useState(false);
+  const [features, setFeatures] = useState<Record<string, boolean>>({});
+  const [offline, setOffline] = useState(false);
+  const [noLlm, setNoLlm] = useState(false);
+  const [redact, setRedact] = useState(false);
+  const [includeEvidence, setIncludeEvidence] = useState(true);
+  const [onlyFlagged, setOnlyFlagged] = useState(false);
+  const [disposableOnly, setDisposableOnly] = useState(false);
+  const [remember, setRemember] = useState(false);
+  const [adminExpected, setAdminExpected] = useState(false);
+  const [sellerAuthor, setSellerAuthor] = useState(false);
+  const [thresholds, setThresholds] = useState<Record<string, string>>({});
+  const [policyJson, setPolicyJson] = useState("");
+  const [result, setResult] = useState<JsonObject | null>(null);
+  const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [lastEndpoint, setLastEndpoint] = useState("");
+  const [resultMode, setResultMode] = useState<Mode | null>(null);
+  const [resultKind, setResultKind] = useState("");
+  const requestId = useRef(0);
+  const activeRequest = useRef<AbortController | null>(null);
+  const auth = session?.access_token as string | undefined;
+  const value = (key: string) => fields[key] || "";
+  const update = (key: string, v: string) => setFields((p) => ({ ...p, [key]: v }));
+  const current = MODES.find((m) => m.id === mode)!;
 
-  const run = async () => {
-    if (!session) return void await modal.alert("Sign in required");
-    setBusy(true);
-    setResult(null);
-    try {
-      const body: any = {};
-      if (fields.email) body.email = fields.email;
-      if (fields.phone) body.phone = fields.phone;
-      if (fields.ip) body.ip = fields.ip;
-      if (fields.username) body.username = fields.username;
-      if (fields.device) body.device_fingerprint = fields.device;
-      if (fields.content) body.content = fields.content;
+  useEffect(() => {
+    let alive = true;
+    fetch(apiBase.replace(/\/$/, "") + "/ai-shield/capabilities")
+      .then(async (r) => { if (!r.ok) throw new Error("Capability request failed"); return r.json(); })
+      .then((data: Capabilities) => { if (alive) { setCaps(data); setCapsError(false); } })
+      .catch(() => { if (alive) setCapsError(true); });
+    return () => { alive = false; };
+  }, [apiBase]);
 
-      if (fields.country || fields.city || fields.lat || fields.lon) {
-        body.geolocation = {};
-        if (fields.country) body.geolocation.country = fields.country;
-        if (fields.city) body.geolocation.city = fields.city;
-        if (fields.lat) body.geolocation.lat = parseFloat(fields.lat);
-        if (fields.lon) body.geolocation.lon = parseFloat(fields.lon);
-      }
+  const availableFeatures = useMemo(() => caps?.features || FALLBACK_FEATURES, [caps]);
+  const groupedFeatures = useMemo(() => {
+    const known = new Set(Object.values(FEATURE_GROUPS).flat());
+    const groups: Record<string, string[]> = {};
+    for (const [group, names] of Object.entries(FEATURE_GROUPS)) groups[group] = names.filter((n) => n in availableFeatures);
+    const other = Object.keys(availableFeatures).filter((n) => !known.has(n));
+    if (other.length) groups.Other = other;
+    return groups;
+  }, [availableFeatures]);
+  const taskNames = useMemo(() => Object.keys(caps?.tasks || {}).length ? Object.keys(caps!.tasks!) : TASKS, [caps]);
+  const checkNames = Array.isArray(caps?.check_types) ? caps.check_types : (caps?.check_types ? Object.keys(caps.check_types) : CHECK_TYPES);
 
-      if (fields.signupTime) body.signup_time = fields.signupTime;
-
-      if (fields.metadata) {
-        try { body.metadata = JSON.parse(fields.metadata); }
-        catch { await modal.alert("Invalid metadata JSON"); setBusy(false); return; }
-      }
-
-      const disabledFeatures = Object.keys(toggles).filter((k) => !toggles[k]);
-      if (disabledFeatures.length > 0) {
-        body.config = { features: {} };
-        for (const k of disabledFeatures) body.config.features[k] = false;
-      }
-
-      if (!Object.keys(body).length) {
-        await modal.alert("Enter at least one signal to analyze.");
-        setBusy(false);
-        return;
-      }
-
-      const r = await fetch(`${apiBase}/ai-shield/analyze`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
-        body: JSON.stringify(body),
-      });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(d.detail || d.error || `HTTP ${r.status}`);
-      setResult(d);
-    } catch (e: any) { await modal.alert(e.message || "Shield analysis failed"); }
+  const cancelRequest = () => {
+    requestId.current += 1;
+    activeRequest.current?.abort();
+    activeRequest.current = null;
     setBusy(false);
   };
 
-  const dcls = (d: string) => {
-    if (d === "allow") return styles.decisionAllow;
-    if (d === "challenge") return styles.decisionChallenge;
-    if (d === "rate_limit") return styles.decisionRateLimit;
-    if (d === "review") return styles.decisionReview;
-    if (d === "block") return styles.decisionBlock;
-    return "";
+  useEffect(() => () => {
+    requestId.current += 1;
+    activeRequest.current?.abort();
+  }, []);
+
+  const changeMode = (next: Mode) => {
+    if (mode === next) return;
+    cancelRequest();
+    if (mode === "password") update("password", "");
+    if (mode === "check" && ["jwt", "secret"].includes(value("indicatorType"))) update("values", "");
+    setMode(next);
+    setResult(null);
+    setResultMode(null);
+    setError("");
+    setLastEndpoint("");
   };
 
-  if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to test the AI Shield analysis.</div></div>;
+  const changeIndicatorType = (next: string) => {
+    if (next === value("indicatorType")) return;
+    cancelRequest();
+    setFields((prev) => ({ ...prev, values: "", indicatorType: next }));
+    setResult(null);
+    setResultMode(null);
+    setError("");
+  };
+
+  const makeConfig = (): JsonObject => {
+    const cfg = objectJson(policyJson, "Policy configuration");
+    const mergedFeatures: Record<string, boolean> = { ...(cfg.features || {}) };
+    for (const [name, setting] of Object.entries(features)) mergedFeatures[name] = setting;
+    if (offline) mergedFeatures.external_lookups = false;
+    if (noLlm || mode === "password") mergedFeatures.llm_reasoning = false;
+    if (remember && mode === "analyze") mergedFeatures.memory_update = true;
+    if (Object.keys(mergedFeatures).length) cfg.features = mergedFeatures;
+    const t = { ...(cfg.thresholds || {}) };
+    for (const [name, input] of Object.entries(thresholds)) if (input.trim()) t[name] = optionalNumber(input, name + " threshold");
+    if (Object.keys(t).length) cfg.thresholds = t;
+    if (redact) cfg.redact = true;
+    cfg.include_evidence = includeEvidence;
+    if (mode === "check") {
+      if (value("lookup") === "yes") cfg.external_lookups = true;
+      if (value("lookup") === "no" || offline) cfg.external_lookups = false;
+    }
+    return cfg;
+  };
+
+  const makePayload = async (): Promise<{ endpoint: string; body: JsonObject }> => {
+    const cfg = makeConfig();
+    const body: JsonObject = { config: cfg };
+    let endpoint = "/ai-shield/scan";
+    const number = (input: string, output: JsonObject, key: string) => {
+      const n = optionalNumber(value(input), input);
+      if (n !== undefined) output[key] = n;
+    };
+
+    if (mode === "analyze") {
+      endpoint = "/ai-shield/analyze";
+      Object.assign(body, withValues(fields, ["email", "phone", "ip", "username", "content", "sender"]));
+      if (value("device")) body.device_fingerprint = value("device");
+      if (value("signupTime")) body.signup_time = value("signupTime");
+      const geolocation = withValues(fields, ["country", "city"]);
+      number("lat", geolocation, "lat");
+      number("lon", geolocation, "lon");
+      if (Object.keys(geolocation).length) body.geolocation = geolocation;
+      if (value("metadata")) body.metadata = objectJson(value("metadata"), "Behavioral metadata");
+      body.task = value("task") || "general";
+      if (Object.keys(body).filter((k) => !["task", "config"].includes(k)).length === 0) throw new Error("Enter at least one signal to analyze.");
+    } else if (mode === "scan") {
+      body.task = value("scanTask") || "prompt_guard";
+      if (value("content")) body.content = value("content");
+      const urls = lines(value("urls"));
+      if (urls.length > 50) throw new Error("Maximum 50 additional URLs per scan.");
+      if (urls.length) body.urls = urls;
+      if (value("messages")) body.messages = parseMessages(value("messages"));
+      if (!body.content && !body.urls && !body.messages) throw new Error("Enter content, structured messages or at least one URL.");
+      if (value("source")) body.source = value("source");
+    } else if (mode === "phishing") {
+      endpoint = "/ai-shield/detect-phishing";
+      Object.assign(body, withValues(fields, ["sender", "subject", "content"]));
+      if (value("replyTo")) body.reply_to = value("replyTo");
+      const urls = lines(value("urls"));
+      if (urls.length > 50) throw new Error("Maximum 50 URLs per phishing check.");
+      if (urls.length) body.urls = urls;
+      const authentication = withValues(fields, ["spf", "dkim", "dmarc"]);
+      if (Object.keys(authentication).length) body.authentication = authentication;
+      if (!body.sender && !body.subject && !body.content && !body.urls) throw new Error("Provide a sender, subject, message or URL.");
+    } else if (mode === "request") {
+      if (!value("url")) throw new Error("Enter a request URL or path.");
+      const request: JsonObject = { method: value("method") || "GET", url: value("url") };
+      if (value("headers")) {
+        const headers = objectJson(value("headers"), "HTTP headers");
+        if (Object.values(headers).some((v) => typeof v !== "string")) throw new Error("HTTP header values must be strings.");
+        request.headers = headers;
+      }
+      if (value("requestBody")) {
+        try { request.body = JSON.parse(value("requestBody")); }
+        catch { request.body = value("requestBody"); }
+      }
+      if (adminExpected) request.expected_admin = true;
+      body.task = "api_request";
+      body.request = request;
+    } else if (mode === "file") {
+      if (!files.length) throw new Error("Select one or more files to inspect.");
+      if (files.length > 10) throw new Error("Maximum 10 files per Shield request.");
+      if (files.some((file) => file.size > 2_000_000)) throw new Error("Each file must be at most 2 MB, matching the CLI inspection limit.");
+      if (files.some((file) => file.size === 0)) throw new Error("Empty files cannot be inspected.");
+      body.task = "file_upload";
+      body.files = await Promise.all(files.map(async (file) => ({
+        name: file.name,
+        content_base64: await encodeFile(file),
+        mime: value("mime") || file.type || undefined,
+      })));
+    } else if (mode === "password") {
+      if (!value("password")) throw new Error("Enter a password to inspect.");
+      body.task = "password";
+      body.password = value("password");
+      Object.assign(body, withValues(fields, ["email", "username"]));
+    } else if (mode === "listing") {
+      if (!value("title")) throw new Error("Enter a listing title.");
+      body.task = "marketplace";
+      const listing = withValues(fields, ["title", "description", "brand", "category"]);
+      number("price", listing, "price");
+      number("marketPrice", listing, "market_price");
+      number("sellerAge", listing, "seller_account_age_days");
+      number("imageCount", listing, "image_count");
+      if (listing.image_count !== undefined && (!Number.isInteger(listing.image_count) || listing.image_count < 0)) {
+        throw new Error("Number of images must be a non-negative whole number.");
+      }
+      body.listing = listing;
+    } else if (mode === "review") {
+      if (!value("content")) throw new Error("Enter review text.");
+      body.task = "reviews";
+      const review: JsonObject = { text: value("content") };
+      number("rating", review, "rating");
+      number("reviews24h", review, "reviews_by_author_24h");
+      number("similarity", review, "max_similarity_to_other_reviews");
+      if (value("verification") !== "unknown") review.verified_purchase = value("verification") === "yes";
+      if (sellerAuthor) review.author_is_seller = true;
+      body.review = review;
+    } else if (mode === "domain") {
+      const domains = lines(value("domains"));
+      if (domains.length > 20) throw new Error("Maximum 20 domains per scan.");
+      if (domains.length) body.domains = domains;
+      if (value("wallet")) body.wallet = value("wallet");
+      if (!domains.length && !body.wallet) throw new Error("Enter a domain or a wallet address.");
+      body.task = "domain";
+    } else if (mode === "check") {
+      endpoint = "/ai-shield/check";
+      const items = lines(value("values"));
+      if (!items.length) throw new Error("Enter at least one indicator.");
+      if (items.length > 500) throw new Error("Maximum 500 values per request.");
+      if (items.some((v) => v.length > 2048)) throw new Error("Individual values must be at most 2,048 characters.");
+      body.type = value("indicatorType") || "email";
+      body.values = items;
+      // Disposable-email checks use the same /check endpoint, with lookups disabled.
+      if (disposableOnly && body.type === "email") cfg.external_lookups = false;
+    }
+    return { endpoint, body };
+  };
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!auth || busy) return;
+    const submittingMode = mode;
+    const submittingKind = mode === "check" ? value("indicatorType") : "";
+    const submittingPassword = mode === "password" ? value("password") : "";
+    const submittingIndicators = mode === "check" && ["jwt", "secret"].includes(submittingKind) ? value("values") : "";
+    const sensitiveValues = submittingPassword
+      ? [submittingPassword]
+      : submittingIndicators ? lines(submittingIndicators) : [];
+    const runId = ++requestId.current;
+    const controller = new AbortController();
+    activeRequest.current = controller;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    let timedOut = false;
+    setBusy(true);
+    setError("");
+    setResult(null);
+    setResultMode(null);
+    try {
+      const { endpoint, body } = await makePayload();
+      // File encoding is asynchronous; navigation can invalidate a request before fetching.
+      if (runId !== requestId.current) return;
+      if (sensitiveValues.length &&
+          !/^https:\/\//i.test(apiBase) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/?$/i.test(apiBase)) {
+        throw new Error("A secure HTTPS API URL is required for credential inspection.");
+      }
+      timeout = setTimeout(() => { timedOut = true; controller.abort(); }, 120_000);
+      const response = await fetch(apiBase.replace(/\/$/, "") + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + auth },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      const data = (await response.json().catch(() => ({}))) as JsonObject;
+      if (runId !== requestId.current) return;
+      // Do not surface backend error detail that could echo a submitted credential.
+      if (!response.ok) {
+        if (sensitiveValues.length) throw new Error("Shield check failed (HTTP " + response.status + ").");
+        throw new Error(safeError(data, response.status));
+      }
+      setResult(scrubSensitiveResponse(data, sensitiveValues, submittingKind));
+      setResultMode(submittingMode);
+      setResultKind(submittingKind);
+      setLastEndpoint(endpoint);
+    } catch (e) {
+      if (runId === requestId.current) {
+        setError(timedOut ? "The Shield request timed out after 120 seconds. Try again." :
+          e instanceof Error ? e.message : "Shield request failed.");
+      }
+    } finally {
+      if (timeout) clearTimeout(timeout);
+      if (runId === requestId.current) {
+        setBusy(false);
+        activeRequest.current = null;
+      }
+      // A replacement input entered while the request was pending must survive.
+      if (submittingPassword) {
+        setFields((prev) => prev.password === submittingPassword ? { ...prev, password: "" } : prev);
+      }
+      if (submittingIndicators) {
+        setFields((prev) => prev.values === submittingIndicators ? { ...prev, values: "" } : prev);
+      }
+    }
+  };
+
+  const renderField = (field: Field) => (
+    <label key={field.name} className={field.kind === "textarea" ? ui.full : ""}>
+      <span className={ui.fieldLabel}>{field.label}</span>
+      {field.kind === "textarea"
+        ? <textarea className={ui.field} rows={field.name === "content" || field.name === "values" ? 6 : 3} placeholder={field.placeholder} value={value(field.name)} onChange={(e) => update(field.name, e.target.value)} />
+        : <input className={ui.field} type={field.kind || "text"} step={field.kind === "number" ? "any" : undefined} placeholder={field.placeholder} value={value(field.name)} onChange={(e) => update(field.name, e.target.value)} autoComplete={field.kind === "password" ? "off" : undefined} />
+      }
+      {field.help && <span className={ui.hint}>{field.help}</span>}
+    </label>
+  );
+
+  const checkResults: JsonObject[] = Array.isArray(result?.results) ? result.results : [];
+  const filteredChecks = checkResults.filter((r) => (!onlyFlagged || r.verdict !== "clean") &&
+    (!disposableOnly || resultKind !== "email" || Boolean(r.facts?.disposable)));
+  const reasons: string[] = Array.isArray(result?.reasons) ? result.reasons : Array.isArray(result?.indicators) ? result.indicators.map(String) : [];
+  const categories: string[] = Array.isArray(result?.threat_categories) ? result.threat_categories : [];
+  const status = result?.decision || (typeof result?.is_phishing === "boolean" ? (result.is_phishing ? "block" : "allow") : "");
 
   return (
-    <div className={`${styles.panel} ${styles.active}`}>
-      <section className={`${styles.card} ${styles.wide}`}>
-        <h2>AI Shield</h2>
-        <div className={styles.apiDocContent}>
-          <p><strong>AI Shield</strong> is an intelligent abuse prevention and fraud detection system. It analyzes requests in real time to detect and prevent abuse, fraud, and malicious usage of your AI applications.</p>
-          <h3>How it works</h3>
-          <p>Shield employs a multi-layered analysis pipeline:</p>
-          <ol>
-            <li><strong>Signal collection:</strong> Gathers email, IP, phone, device, content, and behavioral signals from each request.</li>
-            <li><strong>Heuristic analysis:</strong> Runs fast pattern-based checks for prompt injection, spam, and known abuse patterns.</li>
-            <li><strong>Intelligence collection:</strong> Queries external and internal intelligence sources for IP reputation, email risk, device fingerprinting, and more.</li>
-            <li><strong>Agent analysis:</strong> Specialized agents analyze identity fraud, exfiltration attempts, prompt threats, content policy violations, and payment fraud.</li>
-            <li><strong>Relationship graph:</strong> Maps entity relationships to detect duplicate accounts and coordinated campaigns.</li>
-            <li><strong>Historical memory:</strong> Checks encrypted global and customer-specific memory for prior abuse history.</li>
-            <li><strong>LLM reasoning:</strong> Synthesizes all evidence through an LLM for final risk scoring and decision.</li>
-            <li><strong>Decision engine:</strong> Produces a final verdict: <code>allow</code>, <code>challenge</code>, <code>rate_limit</code>, <code>review</code>, or <code>block</code>.</li>
-          </ol>
-          <h3>Endpoint</h3>
-          <p><code>POST /ai-shield/analyze</code>: submit signals for abuse analysis.</p>
-          <h3>Response fields</h3>
-          <ul>
-            <li><code>risk_score</code>: 0 to 100 overall risk</li>
-            <li><code>confidence</code>: 0 to 1 confidence in the decision</li>
-            <li><code>decision</code>: allow, challenge, rate_limit, review, or block</li>
-            <li><code>recommended_action</code>: human-readable recommended action</li>
-            <li><code>threat_categories</code>: identified threat types</li>
-            <li><code>reasons</code>: human-readable explanations</li>
-          </ul>
-          <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "1rem" }}><a href="https://docs.inferenceport.ai/en/latest/api/shield.html" target="_blank" rel="noreferrer">Full Shield docs</a></p>
+    <div className={styles.panel + " " + styles.active}>
+      <section className={styles.card + " " + styles.wide}>
+        <div className={ui.header}>
+          <div>
+            <h2>AI Shield</h2>
+            <p className={styles.muted}>Explore the same Shield APIs used by the IPX CLI: abuse prevention, prompt security, fraud, phishing, file inspection, WAF, and indicator intelligence.</p>
+          </div>
+          <span className={ui.version}>{caps?.version ? "Shield v" + caps.version : (capsError ? "Capabilities unavailable" : "Loading capabilities…")}</span>
         </div>
-      </section>
-      <section className={`${styles.card} ${styles.wide}`}>
-        <h2>Shield playground</h2>
-        <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Submit signals to the Shield analysis engine and inspect the decision.</p>
-        <div className={styles.shieldForm}>
-          {([["Email", "email", "email", "user@example.com"], ["Phone", "phone", "text", "+1234567890"], ["IP address", "ip", "text", "203.0.113.1"], ["Username", "username", "text", "johndoe"], ["Device fingerprint", "device", "text", "abc123..."]] as const).map(([label, key, type, placeholder]) => <label key={key}>{label}<input type={type} placeholder={placeholder} value={(fields as any)[key]} onChange={(e) => setFields((p) => ({ ...p, [key]: e.target.value }))} /></label>)}
-          <label>Content<textarea rows={4} placeholder="Content to analyze for prompt injection, policy violations..." value={fields.content} onChange={(e) => setFields((p) => ({ ...p, content: e.target.value }))} /></label>
+        <div className={ui.modeGrid} role="tablist" aria-label="Shield workflows">
+          {MODES.map((item) => (
+            <button key={item.id} type="button" role="tab" aria-selected={mode === item.id} className={ui.mode + (mode === item.id ? " " + ui.selected : "")} onClick={() => changeMode(item.id)}>
+              {item.title}
+            </button>
+          ))}
+        </div>
+        <div className={ui.workHeading}>
+          <div><h3>{current.title}</h3><p className={styles.muted}>{current.description}</p></div>
+          <code className={ui.endpoint}>{current.endpoint}</code>
+        </div>
+        {!auth && <div className={styles.lockedOverlay + " " + styles.panelLock}>Sign in to run Shield checks. Endpoint and capability information is available without signing in.</div>}
+        <form onSubmit={submit} className={ui.form}>
+          <div className={ui.fields}>
+            {(mode === "analyze" || mode === "scan") && (
+              <label>
+                <span className={ui.fieldLabel}>Task profile</span>
+                <select className={ui.field} value={value(mode === "analyze" ? "task" : "scanTask")} onChange={(e) => update(mode === "analyze" ? "task" : "scanTask", e.target.value)}>
+                  {taskNames.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
+                </select>
+              </label>
+            )}
+            {mode === "scan" && (
+              <label>
+                <span className={ui.fieldLabel}>Source</span>
+                <select className={ui.field} value={value("source")} onChange={(e) => update("source", e.target.value)}>
+                  <option value="">Default</option>
+                  {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </label>
+            )}
+            {mode === "request" && (
+              <label>
+                <span className={ui.fieldLabel}>HTTP method</span>
+                <select className={ui.field} value={value("method")} onChange={(e) => update("method", e.target.value)}>
+                  {["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"].map((m) => <option key={m}>{m}</option>)}
+                </select>
+              </label>
+            )}
+            {mode === "check" && (
+              <>
+                <label>
+                  <span className={ui.fieldLabel}>Indicator type</span>
+                  <select className={ui.field} value={value("indicatorType")} onChange={(e) => changeIndicatorType(e.target.value)}>
+                    {checkNames.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
+                  </select>
+                </label>
+                <label>
+                  <span className={ui.fieldLabel}>External reputation lookups</span>
+                  <select className={ui.field} value={value("lookup")} onChange={(e) => update("lookup", e.target.value)}>
+                    <option value="auto">Automatic (up to 10 values)</option>
+                    <option value="yes">On</option>
+                    <option value="no">Off</option>
+                  </select>
+                </label>
+              </>
+            )}
+            {mode === "file" && (
+              <label className={ui.full}>
+                <span className={ui.fieldLabel}>Files (up to 10 files, 2 MB each)</span>
+                <input className={ui.field} type="file" multiple onChange={(e: ChangeEvent<HTMLInputElement>) => setFiles(Array.from(e.target.files || []))} />
+                <span className={ui.hint}>Files are read in the browser and submitted to Shield for inspection. They are not stored by this page.</span>
+              </label>
+            )}
+            {FIELD_GROUPS[mode].map(renderField)}
+            {mode === "phishing" && ["spf", "dkim", "dmarc"].map((name) => (
+              <label key={name}>
+                <span className={ui.fieldLabel}>{name.toUpperCase()} result (optional)</span>
+                <select className={ui.field} value={value(name)} onChange={(e) => update(name, e.target.value)}>
+                  <option value="">Not provided</option>
+                  {(name === "dmarc" ? ["pass", "fail", "none"] : ["pass", "fail", "softfail", "none", "neutral"]).map((x) => <option key={x}>{x}</option>)}
+                </select>
+              </label>
+            ))}
+            {mode === "review" && (
+              <label>
+                <span className={ui.fieldLabel}>Verified purchase</span>
+                <select className={ui.field} value={value("verification") || "unknown"} onChange={(e) => update("verification", e.target.value)}>
+                  <option value="unknown">Unknown</option><option value="yes">Yes</option><option value="no">No</option>
+                </select>
+              </label>
+            )}
+          </div>
+          {mode === "analyze" && <label className={ui.check}><input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} /> Remember this verdict in Shield memory (opt-in)</label>}
+          {mode === "request" && <label className={ui.check}><input type="checkbox" checked={adminExpected} onChange={(e) => setAdminExpected(e.target.checked)} /> This caller is expected to access admin paths</label>}
+          {mode === "review" && <label className={ui.check}><input type="checkbox" checked={sellerAuthor} onChange={(e) => setSellerAuthor(e.target.checked)} /> Reviewer is the seller or linked to the seller</label>}
 
           <details className={styles.shieldConfigDetails}>
-            <summary className={styles.shieldConfigSummary}>Advanced signals <span className={`${styles.muted} ${styles.tiny}`}>(geolocation, signup time, metadata)</span></summary>
-            <div className={styles.shieldAdvancedGrid}>
-              <label className={styles.shieldAdvancedLabel}>Country<input type="text" placeholder="US" value={fields.country} onChange={(e) => setFields((p) => ({ ...p, country: e.target.value }))} /></label>
-              <label className={styles.shieldAdvancedLabel}>City<input type="text" placeholder="San Francisco" value={fields.city} onChange={(e) => setFields((p) => ({ ...p, city: e.target.value }))} /></label>
-              <label className={styles.shieldAdvancedLabel}>Latitude<input type="text" placeholder="37.7749" value={fields.lat} onChange={(e) => setFields((p) => ({ ...p, lat: e.target.value }))} /></label>
-              <label className={styles.shieldAdvancedLabel}>Longitude<input type="text" placeholder="-122.4194" value={fields.lon} onChange={(e) => setFields((p) => ({ ...p, lon: e.target.value }))} /></label>
-              <label className={styles.shieldAdvancedLabel}>Signup time<input type="text" placeholder="2026-01-01T00:00:00Z" value={fields.signupTime} onChange={(e) => setFields((p) => ({ ...p, signupTime: e.target.value }))} /></label>
-              <label className={`${styles.shieldAdvancedLabel} ${styles.shieldAdvancedFullCol}`}>Metadata (JSON)<textarea rows={3} placeholder='{"user_agent": "Mozilla/5.0 ...", "session_id": "sess_abc123", "account_age_days": 30}' value={fields.metadata} onChange={(e) => setFields((p) => ({ ...p, metadata: e.target.value }))} /></label>
+            <summary className={styles.shieldConfigSummary}>Advanced configuration and policy</summary>
+            <div className={ui.controls}>
+              <label className={ui.check}><input type="checkbox" checked={offline} onChange={(e) => setOffline(e.target.checked)} /> Disable third-party lookups</label>
+              <label className={ui.check}><input type="checkbox" checked={noLlm} onChange={(e) => setNoLlm(e.target.checked)} /> Skip LLM reviewer</label>
+              <label className={ui.check}><input type="checkbox" checked={redact} onChange={(e) => setRedact(e.target.checked)} /> Return redacted content</label>
+              <label className={ui.check}><input type="checkbox" checked={includeEvidence} onChange={(e) => setIncludeEvidence(e.target.checked)} /> Include evidence</label>
             </div>
-          </details>
-
-          <details className={styles.shieldConfigDetails}>
-            <summary className={styles.shieldConfigSummary}>Feature config <span className={`${styles.muted} ${styles.tiny}`}>(all enabled by default)</span></summary>
-            <p className={`${styles.muted} ${styles.tiny}`} style={{ margin: "0.5rem 0 0.75rem" }}>Uncheck any feature to skip that analysis step.</p>
-            <div className={styles.shieldConfigGrid}>
-              {Object.entries(featureGroups).map(([group, feats]) => <div key={group} className={styles.shieldConfigGroup}><h4>{group}</h4>{feats.map((f) => <label key={f} className={styles.shieldToggle}><input type="checkbox" checked={toggles[f] ?? true} onChange={() => setToggles((p) => ({ ...p, [f]: !p[f] }))} /><span>{f}</span></label>)}</div>)}
-            </div>
-          </details>
-
-          <button onClick={run} disabled={busy}>{busy ? "Analyzing\u2026" : "Run analysis"}</button>
-        </div>
-        {result && (
-          <div className={styles.shieldResult}>
-            <h3 className={styles.shieldResultTitle}>Analysis result</h3>
-            <div className={styles.shieldResultGrid}>
-              {[["Risk score", result.risk_score], ["Confidence", result.confidence], ["Decision", result.decision], ["Recommended action", result.recommended_action], ["Duplicate score", result.duplicate_user_score], ["Linked accounts", result.linked_accounts], ["Campaign risk", result.campaign_risk_score]].map(([label, val], i) => (
-                <div key={i} className={styles.shieldStat}><span className={styles.shieldStatLabel}>{label}</span><span className={`${styles.shieldStatValue} ${label === "Decision" || label === "Recommended action" ? dcls(val as string) : ""}`}>{val ?? "None"}</span></div>
+            {mode !== "check" && (
+              <div className={ui.thresholds}>
+                {["challenge", "review", "block"].map((name) => (
+                  <label key={name}><span className={ui.fieldLabel}>{name} threshold (0–100)</span>
+                    <input className={ui.field} type="number" min={0} max={100} placeholder="Task default" value={thresholds[name] || ""} onChange={(e) => setThresholds((old) => ({ ...old, [name]: e.target.value }))} />
+                  </label>
+                ))}
+              </div>
+            )}
+            <div className={ui.featureGroups}>
+              {Object.entries(groupedFeatures).map(([group, list]) => list.length > 0 && (
+                <div key={group} className={styles.shieldConfigGroup}>
+                  <h4>{group}</h4>
+                  {list.map((name) => <label key={name} className={styles.shieldToggle} title={availableFeatures[name]?.description}>
+                    <input type="checkbox" checked={features[name] ?? availableFeatures[name]?.default ?? true} onChange={(e) => setFeatures((old) => ({ ...old, [name]: e.target.checked }))} />
+                    <span>{name.replace(/_/g, " ")}</span>
+                  </label>)}
+                </div>
               ))}
             </div>
-            {result.threat_categories?.length > 0 && <><h3>Threat categories</h3><div className={styles.shieldThreats}>{result.threat_categories.map((t: string, i: number) => <span key={i} className={styles.shieldThreatTag}>{t}</span>)}</div></>}
-            {result.reasons?.length > 0 && <><h3>Reasons</h3><ul className={styles.shieldReasons}>{result.reasons.map((r: string, i: number) => <li key={i} className={styles.shieldReasonItem}>{r}</li>)}</ul></>}
-            {result.investigation && <><h3>Investigation</h3><pre className={styles.output}>{JSON.stringify(result.investigation, null, 2)}</pre></>}
-            {result.evidence && <><h3>Evidence</h3><pre className={styles.output}>{JSON.stringify(result.evidence, null, 2)}</pre></>}
-            {result.config_applied && <><h3>Config applied</h3><pre className={styles.output}>{JSON.stringify(result.config_applied, null, 2)}</pre></>}
-            <h3>Full response</h3>
+            <label className={ui.full}>
+              <span className={ui.fieldLabel}>Optional policy configuration (JSON object)</span>
+              <textarea className={ui.field} rows={5} value={policyJson} onChange={(e) => setPolicyJson(e.target.value)} placeholder='{"trusted_domains":["example.com"],"blocklists":{"ips":["192.0.2.0/24"]},"custom_rules":[]}' />
+              <span className={ui.hint}>Supply blocklists, allowlists, custom rules, category weights or trusted domains. Feature switches and thresholds above override conflicting JSON settings.</span>
+            </label>
+          </details>
+          {error && <div className={ui.error} role="alert">{error}</div>}
+          <button type="submit" className={ui.run} disabled={busy || !auth}>{busy ? "Running Shield check…" : "Run " + current.title.toLowerCase()}</button>
+        </form>
+      </section>
+
+      {result && (
+        <section className={styles.card + " " + styles.wide} aria-live="polite">
+          <div className={ui.workHeading}><h2>Shield result</h2><code className={ui.endpoint}>{lastEndpoint}</code></div>
+          {resultMode === "check" ? (
+            <>
+              <div className={ui.stats}>
+                {([["Checked", result.count], ["Clean", result.summary?.clean], ["Suspicious", result.summary?.suspicious], ["Malicious", result.summary?.malicious]] as const).map(([label, v]) => <div key={label} className={styles.shieldStat}><span className={styles.shieldStatLabel}>{label}</span><span className={styles.shieldStatValue}>{v ?? 0}</span></div>)}
+              </div>
+              <div className={ui.controls}>
+                <label className={ui.check}><input type="checkbox" checked={onlyFlagged} onChange={(e) => setOnlyFlagged(e.target.checked)} /> Show flagged only</label>
+                {resultKind === "email" && <label className={ui.check}><input type="checkbox" checked={disposableOnly} onChange={(e) => setDisposableOnly(e.target.checked)} /> Disposable only</label>}
+              </div>
+              <div className={ui.tableScroll}>
+                <table className={ui.table}>
+                  <thead><tr><th>Indicator</th><th>Verdict</th><th>Risk</th><th>Rules / facts</th></tr></thead>
+                  <tbody>{filteredChecks.map((r, i) => <tr key={i}>
+                    <td className={ui.mono}>{r.value}</td>
+                    <td><span className={riskColor(r.decision)}>{r.verdict}</span></td>
+                    <td>{r.risk_score ?? "—"}</td>
+                    <td><span>{(r.rules || []).join(", ") || "—"}</span><details><summary>Facts & reasons</summary><pre className={ui.compactJson}>{JSON.stringify({ facts: r.facts, reasons: r.reasons }, null, 2)}</pre></details></td>
+                  </tr>)}</tbody>
+                </table>
+              </div>
+              {!filteredChecks.length && <p className={styles.muted}>No indicators match the selected filters.</p>}
+            </>
+          ) : (
+            <>
+              <div className={ui.stats}>
+                {([["Risk score", result.risk_score], ["Confidence", result.confidence], ["Decision", status], ["Recommended action", result.recommended_action || result.threat_level]] as const).map(([label, v]) => <div key={label} className={styles.shieldStat}>
+                  <span className={styles.shieldStatLabel}>{label}</span>
+                  <span className={styles.shieldStatValue + " " + (label === "Decision" ? riskColor(String(v)) : "")}>{v ?? "—"}</span>
+                </div>)}
+              </div>
+              {typeof result.is_phishing === "boolean" && <p className={ui.answer}><strong>{result.is_phishing ? "Phishing indicators detected." : "No phishing indicators detected."}</strong> {result.explanation}</p>}
+              {categories.length > 0 && <><h3>Threat categories</h3><div className={styles.shieldThreats}>{categories.map((x, i) => <span className={styles.shieldThreatTag} key={i}>{x}</span>)}</div></>}
+              {reasons.length > 0 && <><h3>Reasons and indicators</h3><ul className={styles.shieldReasons}>{reasons.map((x, i) => <li key={i} className={styles.shieldReasonItem}>{x}</li>)}</ul></>}
+              {result.redacted_content !== undefined && <><h3>Redacted content</h3><pre className={styles.output}>{String(result.redacted_content)}</pre></>}
+              {result.category_scores && <details className={ui.details}><summary>Category scores</summary><pre className={styles.output}>{JSON.stringify(result.category_scores, null, 2)}</pre></details>}
+              {result.evidence && <details className={ui.details}><summary>Evidence</summary><pre className={styles.output}>{JSON.stringify(result.evidence, null, 2)}</pre></details>}
+              {result.investigation && <details className={ui.details}><summary>Investigation</summary><pre className={styles.output}>{JSON.stringify(result.investigation, null, 2)}</pre></details>}
+            </>
+          )}
+          <details className={ui.details}>
+            <summary>Full JSON response</summary>
             <pre className={styles.output}>{JSON.stringify(result, null, 2)}</pre>
-          </div>
-        )}
+          </details>
+        </section>
+      )}
+
+      <section className={styles.card + " " + styles.wide}>
+        <h2>API reference</h2>
+        <p className={styles.muted}>Four endpoints power all the Shield workflows. The tasks, features and categories below are read from the live capabilities endpoint whenever available.</p>
+        <div className={ui.apiList}>{["POST /ai-shield/analyze", "POST /ai-shield/scan", "POST /ai-shield/detect-phishing", "POST /ai-shield/check", "GET /ai-shield/capabilities"].map((endpoint) => <code key={endpoint}>{endpoint}</code>)}</div>
+        <details className={ui.details}>
+          <summary>Task profiles ({taskNames.length})</summary>
+          <div className={ui.profileGrid}>{taskNames.map((task) => <div key={task}><strong>{task}</strong><p className={styles.muted}>{caps?.tasks?.[task]?.description || "Shield task profile"}</p></div>)}</div>
+        </details>
+        <details className={ui.details}>
+          <summary>Features ({Object.keys(availableFeatures).length}) and threat categories</summary>
+          <div className={ui.profileGrid}>{Object.entries(availableFeatures).map(([name, entry]) => <div key={name}><strong>{name}</strong><p className={styles.muted}>{entry.description || (entry.default ? "Enabled by default" : "Disabled by default")}</p></div>)}</div>
+          {!!caps?.categories?.length && <div className={styles.shieldThreats}>{caps.categories.map((category) => <span className={styles.shieldThreatTag} key={category}>{category}</span>)}</div>}
+        </details>
+        <p className={styles.muted + " " + styles.tiny}><a href="https://docs.inferenceport.ai/en/latest/api/shield.html" target="_blank" rel="noreferrer">Full Shield documentation</a> · See also <code>ipx shield tasks</code> and <code>ipx shield check</code> in the CLI.</p>
       </section>
     </div>
   );
