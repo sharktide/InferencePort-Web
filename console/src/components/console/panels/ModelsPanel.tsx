@@ -11,6 +11,9 @@ import {
   formatDiscountedPrice,
   formatModelPrice,
   formatPricing,
+  modelStartingPrice,
+  matchesModelPriceRange,
+  compareModelPrice,
 } from "../../../lib/modelPricing";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
@@ -30,6 +33,8 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const [selectedDetailModel, setSelectedDetailModel] = useState<any | null>(null);
   const [tab, setTab] = useState("text");
   const [modelSearch, setModelSearch] = useState("");
+  const [priceRange, setPriceRange] = useState("all");
+  const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
   const [fixedPrices, setFixedPrices] = useState<Record<string, number>>({});
@@ -204,9 +209,14 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
       .toLowerCase();
     return haystack.includes(query);
   };
-  const displayModels = (source === "p2g" ? textModels() : genModels).filter(matchesSearch);
-  const configModels = source === "p2g" ? nonTextConfigModels().filter(matchesSearch) : [];
-  const visibleCount = displayModels.length + configModels.length;
+  // Price browsing applies to P2G list rates only. Gen API models use multipliers.
+  const catalogModels = (source === "p2g" ? [...textModels(), ...nonTextConfigModels()] : genModels)
+    .filter(matchesSearch)
+    .filter((m: any) => source !== "p2g" || matchesModelPriceRange(modelStartingPrice(m), priceRange));
+  if (source === "p2g" && priceSort !== "default") {
+    catalogModels.sort((a: any, b: any) => compareModelPrice(a, b, priceSort));
+  }
+  const visibleCount = catalogModels.length;
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
   const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) { const errMsg = d.detail || (typeof d.error === "object" ? d.error?.message : d.error) || `HTTP ${r.status}`; throw new Error(errMsg); } return d; };
   const sb = (k: string, v: boolean) => setBusy((p) => ({ ...p, [k]: v }));
@@ -400,7 +410,31 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             fontSize: "14px", fontFamily: "var(--mono)", marginBottom: "12px",
           }}
         />
-        <div className={styles.muted} style={{ marginBottom: "12px", fontSize: "12px" }}>
+        <div className={styles.modelPriceControls}>
+          <label htmlFor="models-price-range">Starting price
+            <select id="models-price-range" value={priceRange} onChange={(e) => setPriceRange(e.target.value)} disabled={source !== "p2g"}>
+              <option value="all">All prices</option>
+              <option value="zero">$0 rate</option>
+              <option value="lt1">Under $1</option>
+              <option value="1to5">$1–$5</option>
+              <option value="5to20">$5–$20</option>
+              <option value="gte20">$20+</option>
+            </select>
+          </label>
+          <label htmlFor="models-price-sort">Sort by
+            <select id="models-price-sort" value={priceSort} onChange={(e) => setPriceSort(e.target.value as "default" | "asc" | "desc")} disabled={source !== "p2g"}>
+              <option value="default">Default order</option>
+              <option value="asc">Price: low to high</option>
+              <option value="desc">Price: high to low</option>
+            </select>
+          </label>
+        </div>
+        <p className={styles.modelPriceHint}>
+          {source === "p2g"
+            ? "Uses the lowest published list rate per model (before rewards). Billing units vary by modality; models without prices sort last and are excluded from price ranges."
+            : "Gen API uses credit multipliers rather than comparable USD model rates. Price controls are available for P2G API."}
+        </p>
+        <div className={styles.muted} style={{ marginBottom: "12px", fontSize: "12px" }} aria-live="polite">
           {query ? `${visibleCount} model${visibleCount === 1 ? "" : "s"} match "${modelSearch.trim()}"` : `${visibleCount} models`}
         </div>
         <div className={styles.modelsGrid}>
@@ -409,13 +443,14 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
               {query ? `No models match "${modelSearch.trim()}".` : "No models available."}
             </p>
           )}
-          {displayModels.map((m: any, i: number) => {
+          {catalogModels.map((m: any, i: number) => {
+            const isConfigModel = source === "p2g" && !isTextModel(m);
             const dynamicPrice = formatModelPrice(m);
-            const label = source === "gen" ? "1x multiplier" : dynamicPrice || formatPricing(m) || "Pricing unavailable";
-            const disc = getModelDiscount(m);
-            const discountedLabel = formatDiscountedPrice(m, disc);
+            const label = source === "gen" ? "1x multiplier" : dynamicPrice || (isConfigModel ? "Existing configuration" : formatPricing(m) || "Pricing unavailable");
+            const disc = source === "p2g" ? getModelDiscount(m) : { type: "none", percent: 0, fixedPrice: 0 };
+            const discountedLabel = source === "p2g" ? formatDiscountedPrice(m, disc) : null;
             return (
-              <div key={i} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
+              <div key={`${slug(m) || "model"}-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
                 {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
@@ -430,59 +465,16 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                 <div className={styles.modelCardTop}>
                   <span className={styles.modelCardName}>{modelDisplayName(m)}</span>
                   <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                    {m.model_state && (
-                      <span className={`${styles.modelPill}`} style={{
+                    {!isConfigModel && m.model_state && (
+                      <span className={styles.modelPill} style={{
                         color: m.model_state === "warm" ? "#22c55e" : "#f59e0b",
                         background: m.model_state === "warm" ? "rgba(34,197,94,0.12)" : "rgba(245,158,11,0.12)",
                         borderColor: m.model_state === "warm" ? "rgba(34,197,94,0.22)" : "rgba(245,158,11,0.22)",
                       }}>{m.model_state === "warm" ? "Warm" : "Loading"}</span>
                     )}
-                    <span className={`${styles.modelPill} ${isTextModel(m) ? styles.isText : styles.isConfig}`}>{String(modelType(m)).toUpperCase()}</span>
-                  </div>
-                </div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "None"}</span></div>
-                <div className={styles.modelMeta}>
-                  <span className={styles.modelKey}>Pricing</span>
-                  <span className={styles.modelValue}>
-                    {disc.type === "fixed" ? (
-                      <>
-                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
-                      </>
-                    ) : disc.type === "percent" && disc.percent > 0 && discountedLabel ? (
-                      <>
-                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{discountedLabel}</span>
-                      </>
-                    ) : (
-                      label
-                    )}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-          {source === "p2g" && configModels.map((m: any, i: number) => {
-            const label = formatModelPrice(m) || "Existing configuration";
-            const disc = getModelDiscount(m);
-            const discountedLabel = formatDiscountedPrice(m, disc);
-            return (
-              <div key={`cfg-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
-                {modelLogoUrl(m) && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
-                    <img
-                      src={modelLogoUrl(m)}
-                      alt=""
-                      style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
-                      loading="lazy"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
-                  </div>
-                )}
-                <div className={styles.modelCardTop}>
-                  <span className={styles.modelCardName}>{modelDisplayName(m)}</span>
-                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                    <span className={`${styles.modelPill} ${configPillClass(m)}`}>{String(modelType(m)).toUpperCase()}</span>
+                    <span className={`${styles.modelPill} ${isConfigModel ? configPillClass(m) : isTextModel(m) ? styles.isText : styles.isConfig}`}>
+                      {String(modelType(m)).toUpperCase()}
+                    </span>
                   </div>
                 </div>
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "None"}</span></div>
