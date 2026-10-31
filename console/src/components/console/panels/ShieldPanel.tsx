@@ -13,7 +13,7 @@ type Capabilities = {
   tasks?: Record<string, { description?: string; thresholds?: Record<string, number> }>;
   features?: Record<string, { default: boolean; description?: string }>;
   categories?: string[];
-  check_types?: string[];
+  check_types?: Record<string, { description?: string }> | string[];
   endpoints?: Record<string, string>;
 };
 
@@ -190,7 +190,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
     return groups;
   }, [availableFeatures]);
   const taskNames = useMemo(() => Object.keys(caps?.tasks || {}).length ? Object.keys(caps!.tasks!) : TASKS, [caps]);
-  const checkNames = caps?.check_types?.length ? caps.check_types : CHECK_TYPES;
+  const checkNames = Array.isArray(caps?.check_types) ? caps.check_types : (caps?.check_types ? Object.keys(caps.check_types) : CHECK_TYPES);
 
   const changeMode = (next: Mode) => {
     if (mode === "password") update("password", "");
@@ -309,7 +309,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       const items = lines(value("values"));
       if (!items.length) throw new Error("Enter at least one indicator.");
       if (items.length > 500) throw new Error("Maximum 500 values per request.");
-      if (items.some((v) => v.length > 4096)) throw new Error("Individual values must be at most 4,096 characters.");
+      if (items.some((v) => v.length > 2048)) throw new Error("Individual values must be at most 2,048 characters.");
       body.type = value("indicatorType") || "email";
       body.values = items;
       // Disposable-email checks use the same /check endpoint, with lookups disabled.
@@ -419,7 +419,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
               <>
                 <label>
                   <span className={ui.fieldLabel}>Indicator type</span>
-                  <select className={ui.field} value={value("indicatorType")} onChange={(e) => update("indicatorType", e.target.value)}>
+                  <select className={ui.field} value={value("indicatorType")} onChange={(e) => { if (["jwt", "secret"].includes(value("indicatorType"))) update("values", ""); update("indicatorType", e.target.value); }}>
                     {checkNames.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
                   </select>
                 </label>
