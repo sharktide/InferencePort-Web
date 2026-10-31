@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import styles from "./Panel.module.css";
 import ui from "./ShieldWorkbench.module.css";
 
@@ -45,13 +45,16 @@ const FIELD_GROUPS: Record<Mode, Field[]> = {
     { name: "content", label: "Content / user submission", kind: "textarea" },
     { name: "country", label: "Country (ISO-2)", placeholder: "US" },
     { name: "city", label: "City" },
+    { name: "lat", label: "Latitude", kind: "number", placeholder: "37.7749" },
+    { name: "lon", label: "Longitude", kind: "number", placeholder: "-122.4194" },
     { name: "signupTime", label: "Signup time (ISO-8601)", placeholder: "2026-01-01T00:00:00Z" },
     { name: "sender", label: "Sender" },
     { name: "metadata", label: "Behavioral metadata (JSON object)", kind: "textarea", placeholder: '{"failed_logins":5,"user_agent":"Mozilla/5.0","account_age_days":1}' },
   ],
   scan: [
     { name: "content", label: "Content to scan", kind: "textarea", placeholder: "Paste text, a model prompt, tool output or a document excerpt." },
-    { name: "urls", label: "Additional URLs (one per line)", kind: "textarea" },
+    { name: "urls", label: "Additional URLs (one per line, up to 50)", kind: "textarea" },
+    { name: "messages", label: "Structured chat messages (JSON array, optional)", kind: "textarea", placeholder: '[{"role":"user","content":"Hi"},{"role":"tool","content":"Retrieved text"}]', help: "Preserves roles and tool output for indirect-injection detection." },
   ],
   phishing: [
     { name: "sender", label: "Sender", placeholder: "Service <alerts@example.com>" },
@@ -88,7 +91,7 @@ const FIELD_GROUPS: Record<Mode, Field[]> = {
     { name: "similarity", label: "Similarity to other reviews (0–1)", kind: "number" },
   ],
   domain: [
-    { name: "domains", label: "Domains (one per line)", kind: "textarea" },
+    { name: "domains", label: "Domains (one per line, up to 20)", kind: "textarea" },
     { name: "wallet", label: "Wallet address (optional)" },
   ],
   check: [
@@ -147,7 +150,7 @@ function riskColor(decision: string): string {
 export default function ShieldPanel({ session, apiBase }: Props) {
   const [mode, setMode] = useState<Mode>("analyze");
   const [fields, setFields] = useState<Record<string, string>>({ task: "general", scanTask: "prompt_guard", method: "GET", indicatorType: "email", lookup: "auto", verification: "unknown" });
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [caps, setCaps] = useState<Capabilities | null>(null);
   const [capsError, setCapsError] = useState(false);
   const [features, setFeatures] = useState<Record<string, boolean>>({});
@@ -166,6 +169,10 @@ export default function ShieldPanel({ session, apiBase }: Props) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [lastEndpoint, setLastEndpoint] = useState("");
+  const [resultMode, setResultMode] = useState<Mode | null>(null);
+  const [resultKind, setResultKind] = useState("");
+  const requestId = useRef(0);
+  const activeRequest = useRef<AbortController | null>(null);
   const auth = session?.access_token as string | undefined;
   const value = (key: string) => fields[key] || "";
   const update = (key: string, v: string) => setFields((p) => ({ ...p, [key]: v }));
@@ -192,13 +199,37 @@ export default function ShieldPanel({ session, apiBase }: Props) {
   const taskNames = useMemo(() => Object.keys(caps?.tasks || {}).length ? Object.keys(caps!.tasks!) : TASKS, [caps]);
   const checkNames = Array.isArray(caps?.check_types) ? caps.check_types : (caps?.check_types ? Object.keys(caps.check_types) : CHECK_TYPES);
 
+  const cancelRequest = () => {
+    requestId.current += 1;
+    activeRequest.current?.abort();
+    activeRequest.current = null;
+    setBusy(false);
+  };
+
+  useEffect(() => () => {
+    requestId.current += 1;
+    activeRequest.current?.abort();
+  }, []);
+
   const changeMode = (next: Mode) => {
+    if (mode === next) return;
+    cancelRequest();
     if (mode === "password") update("password", "");
     if (mode === "check" && ["jwt", "secret"].includes(value("indicatorType"))) update("values", "");
     setMode(next);
     setResult(null);
+    setResultMode(null);
     setError("");
     setLastEndpoint("");
+  };
+
+  const changeIndicatorType = (next: string) => {
+    if (next === value("indicatorType")) return;
+    cancelRequest();
+    setFields((prev) => ({ ...prev, values: "", indicatorType: next }));
+    setResult(null);
+    setResultMode(null);
+    setError("");
   };
 
   const makeConfig = (): JsonObject => {
@@ -235,21 +266,29 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       Object.assign(body, withValues(fields, ["email", "phone", "ip", "username", "content", "sender"]));
       if (value("device")) body.device_fingerprint = value("device");
       if (value("signupTime")) body.signup_time = value("signupTime");
-      if (value("country") || value("city")) body.geolocation = withValues(fields, ["country", "city"]);
+      const geolocation = withValues(fields, ["country", "city"]);
+      number("lat", geolocation, "lat");
+      number("lon", geolocation, "lon");
+      if (Object.keys(geolocation).length) body.geolocation = geolocation;
       if (value("metadata")) body.metadata = objectJson(value("metadata"), "Behavioral metadata");
       body.task = value("task") || "general";
       if (Object.keys(body).filter((k) => !["task", "config"].includes(k)).length === 0) throw new Error("Enter at least one signal to analyze.");
     } else if (mode === "scan") {
       body.task = value("scanTask") || "prompt_guard";
       if (value("content")) body.content = value("content");
-      if (lines(value("urls")).length) body.urls = lines(value("urls"));
-      if (!body.content && !body.urls) throw new Error("Enter content or at least one URL.");
+      const urls = lines(value("urls"));
+      if (urls.length > 50) throw new Error("Maximum 50 additional URLs per scan.");
+      if (urls.length) body.urls = urls;
+      if (value("messages")) body.messages = parseMessages(value("messages"));
+      if (!body.content && !body.urls && !body.messages) throw new Error("Enter content, structured messages or at least one URL.");
       if (value("source")) body.source = value("source");
     } else if (mode === "phishing") {
       endpoint = "/ai-shield/detect-phishing";
       Object.assign(body, withValues(fields, ["sender", "subject", "content"]));
       if (value("replyTo")) body.reply_to = value("replyTo");
-      if (lines(value("urls")).length) body.urls = lines(value("urls"));
+      const urls = lines(value("urls"));
+      if (urls.length > 50) throw new Error("Maximum 50 URLs per phishing check.");
+      if (urls.length) body.urls = urls;
       const authentication = withValues(fields, ["spf", "dkim", "dmarc"]);
       if (Object.keys(authentication).length) body.authentication = authentication;
       if (!body.sender && !body.subject && !body.content && !body.urls) throw new Error("Provide a sender, subject, message or URL.");
@@ -287,6 +326,9 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       number("marketPrice", listing, "market_price");
       number("sellerAge", listing, "seller_account_age_days");
       number("imageCount", listing, "image_count");
+      if (listing.image_count !== undefined && (!Number.isInteger(listing.image_count) || listing.image_count < 0)) {
+        throw new Error("Number of images must be a non-negative whole number.");
+      }
       body.listing = listing;
     } else if (mode === "review") {
       if (!value("content")) throw new Error("Enter review text.");
@@ -300,6 +342,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       body.review = review;
     } else if (mode === "domain") {
       const domains = lines(value("domains"));
+      if (domains.length > 20) throw new Error("Maximum 20 domains per scan.");
       if (domains.length) body.domains = domains;
       if (value("wallet")) body.wallet = value("wallet");
       if (!domains.length && !body.wallet) throw new Error("Enter a domain or a wallet address.");
@@ -419,7 +462,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
               <>
                 <label>
                   <span className={ui.fieldLabel}>Indicator type</span>
-                  <select className={ui.field} value={value("indicatorType")} onChange={(e) => { if (["jwt", "secret"].includes(value("indicatorType"))) update("values", ""); update("indicatorType", e.target.value); }}>
+                  <select className={ui.field} value={value("indicatorType")} onChange={(e) => changeIndicatorType(e.target.value)}>
                     {checkNames.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
                   </select>
                 </label>
