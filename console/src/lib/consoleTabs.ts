@@ -1,36 +1,11 @@
-/* Every top-level console section, including organization workspace tabs.
- * Next.js uses this list to statically export directly addressable routes. */
-export const CONSOLE_TABS = [
-  "account",
-  "organizations",
-  "billing",
-  "models",
-  "playground",
-  "deploy",
-  "agents",
-  "rewards",
-  "api-key",
-  "usage",
-  "gen-api",
-  "payg-api",
-  "mcp",
-  "shield",
-  "authorized-apps",
-  "org-overview",
-  "org-members",
-  "org-teams",
-  "org-keys",
-  "org-usage",
-  "org-billing",
-  "org-invoices",
-  "org-policies",
-  "org-desktop",
-  "org-audit",
-  "org-security",
-  "org-notifications",
-] as const;
+/* The exported routes are derived from the same metadata rendered in the sidebar. */
+import { PERSONAL_ITEMS, ORG_SECTION_ORDER, type OrgSectionId } from "./consoleSections";
 
-export type ConsoleTab = (typeof CONSOLE_TABS)[number];
+export type ConsoleTab = keyof typeof PERSONAL_ITEMS | OrgSectionId;
+export const CONSOLE_TABS: ConsoleTab[] = [
+  ...(Object.keys(PERSONAL_ITEMS) as (keyof typeof PERSONAL_ITEMS)[]),
+  ...ORG_SECTION_ORDER,
+];
 const TAB_SET = new Set<string>(CONSOLE_TABS);
 
 /* Support /model as a convenient legacy/singular alias for /models. */
