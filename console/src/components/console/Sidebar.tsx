@@ -28,16 +28,18 @@ interface NavGroup {
   items: NavItem[];
 }
 
+const BUCKETS_PREVIEW = process.env.NEXT_PUBLIC_BUCKETS_PREVIEW === "1";
+
 const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
   { title: "Organization", ids: ["organizations"] },
   { title: "Explore", ids: ["models", "playground", "deploy", "rewards"] },
-  { title: "Build", ids: ["agents", "api-key", "usage", "gen-api", "payg-api", "mcp", "shield"] },
+  { title: "Build", ids: ["agents", "buckets", "api-key", "usage", "gen-api", "payg-api", "mcp", "shield"] },
   { title: "Access", ids: ["authorized-apps"] },
 ];
 
 /* Work tabs run billed to whichever context is active (the org header is set globally). */
-const WORK_IDS = ["models", "playground", "agents"];
+const WORK_IDS = ["models", "playground", "agents", "buckets"];
 const ORG_BUILD_IDS = ["deploy", "gen-api", "payg-api", "mcp", "shield"];
 const ORG_ACCOUNT_IDS = ["account", "organizations"];
 
@@ -76,6 +78,8 @@ export default function Sidebar({
       ]
     : PERSONAL_GROUPS.map((g) => ({ key: g.title, title: g.title, items: g.ids.map(item) }));
 
+  const visibleGroups = groups.map((g) => ({ ...g, items: g.items.filter((i) => i.id !== "buckets" || BUCKETS_PREVIEW) }));
+
   return (
     <>
       <div
@@ -89,7 +93,7 @@ export default function Sidebar({
         role="navigation"
       >
         <ContextSwitcher variant="sidebar" className={styles.contextHeader} />
-        {groups.map((group) => (
+        {visibleGroups.map((group) => (
           <div key={group.key} className={styles.navGroup} role="group" aria-label={group.title}>
             <span className={styles.consoleNavLabel} title={group.title}>{group.title}</span>
             {group.items.map((tab) => (
