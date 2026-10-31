@@ -6,7 +6,8 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:pricing": "node --test tests/modelPricing.test.cjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
