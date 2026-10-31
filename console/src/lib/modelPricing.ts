@@ -169,24 +169,9 @@ export function formatModelPrice(m: any, pct = 1): string | null {
   return request === null ? null : `$${fmtRate(request * pct)}/request`;
 }
 
+// Legacy formatter entry point; share the same validated prices as filtering.
 export function formatPricing(m: any): string | null {
-  if (modelType(m) === "audio") return formatAudioPrice(m);
-  if (["embedding", "decision"].includes(modelType(m))) return formatEmbeddingPrice(m);
-  if (modelType(m) === "realtime") return formatRealtimePrice(m);
-  const p = m?.pricing || {};
-  if (p.token_pricing) {
-    const tp = p.token_pricing;
-    const parts: string[] = [];
-    if (tp.text_in && tp.text_in !== "0") parts.push(`Text: $${parseFloat(tp.text_in).toFixed(2)}/M`);
-    if (tp.image_in && tp.image_in !== "0") parts.push(`Img In: $${parseFloat(tp.image_in).toFixed(2)}/M`);
-    if (tp.image_out && tp.image_out !== "0") parts.push(`Img Out: $${parseFloat(tp.image_out).toFixed(2)}/M`);
-    if (parts.length > 0) return parts.join(" \u00b7 ");
-  }
-  if (p.prompt != null && p.completion != null) {
-    const perMillion = (v: number) => (v * 1_000_000).toFixed(2);
-    return `In: $${perMillion(p.prompt)}/M \u00b7 Out: $${perMillion(p.completion)}/M`;
-  }
-  return null;
+  return formatModelPrice(m);
 }
 
 // Numeric starting *list* rate in USD for the model's native billing unit.
