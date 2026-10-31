@@ -177,6 +177,74 @@ export function formatPricing(m: any): string | null {
   return null;
 }
 
+// Numeric starting *list* rate in USD for the model's native billing unit.
+// Prices from different modalities are not normalized (e.g. /M tokens vs /sec).
+// Use the lowest positive rate where multiple rates exist, or zero if every
+// explicitly published rate is zero. Unknown prices remain null, never free.
+export function modelStartingPrice(m: any): number | null {
+  const p = m?.pricing || {};
+  const type = modelType(m).toLowerCase();
+  const lowest = (...rates: any[]): number | null => {
+    const valid = rates.map(num).filter((v): v is number => v !== null && v >= 0);
+    if (!valid.length) return null;
+    const positive = valid.filter((v) => v > 0);
+    return Math.min(...(positive.length ? positive : valid));
+  };
+  const perMillion = (value: any) => {
+    const n = num(value);
+    return n === null ? null : n * 1_000_000;
+  };
+
+  if (type === "embedding" || type === "decision") {
+    return lowest(m?.input_pricing_per_million_tokens) ?? lowest(perMillion(p.prompt));
+  }
+  if (type === "realtime") {
+    const rates = m?.realtime_pricing_per_million_tokens || {};
+    const tokenRate = lowest(rates.text_in, rates.audio_in, rates.text_out, rates.audio_out);
+    const seconds = num(m?.input_price_per_second);
+    return tokenRate ?? (seconds === null ? null : lowest(seconds * 3600));
+  }
+  if (type === "audio") {
+    const unit = billingUnit(m);
+    if (unit === "input_chars") return lowest(m?.price_per_1k_chars, p.request);
+    if (unit === "input_bytes") return lowest(m?.price_per_million_bytes, p.request);
+    if (unit === "input_seconds") return lowest(m?.input_price_per_second, p.request);
+    if (unit === "seconds") return lowest(m?.price_per_second, p.request);
+    return lowest(m?.price_per_1k_chars, m?.price_per_million_bytes, m?.input_price_per_second, m?.price_per_second, p.request);
+  }
+  if (type === "3d") {
+    const tierRates = m?.price_tiers && typeof m.price_tiers === "object" ? Object.values(m.price_tiers) : [];
+    return lowest(...tierRates) ?? lowest(p.request);
+  }
+  if (type === "image") {
+    const rate = lowest(p.image);
+    if (rate !== null) return rate;
+    const tp = p.token_pricing || {};
+    return lowest(tp.text_in, tp.image_in, tp.image_out, p.request);
+  }
+  if (type === "video") return lowest(p.request, m?.price_per_second);
+  return lowest(perMillion(p.prompt), perMillion(p.completion)) ?? lowest(p.request);
+}
+
+export function matchesModelPriceRange(price: number | null, range: string): boolean {
+  if (range === "all") return true;
+  if (price === null) return false;
+  if (range === "zero") return price === 0;
+  if (range === "lt1") return price > 0 && price < 1;
+  if (range === "1to5") return price >= 1 && price < 5;
+  if (range === "5to20") return price >= 5 && price < 20;
+  if (range === "gte20") return price >= 20;
+  return true;
+}
+
+export function compareModelPrice(a: any, b: any, order: "asc" | "desc"): number {
+  const priceA = modelStartingPrice(a);
+  const priceB = modelStartingPrice(b);
+  if (priceA === null) return priceB === null ? 0 : 1;
+  if (priceB === null) return -1;
+  return order === "asc" ? priceA - priceB : priceB - priceA;
+}
+
 // null when the discount does not apply, so callers fall back to list price.
 export function formatDiscountedPrice(m: any, discount: ModelDiscount): string | null {
   if (discount.type !== "percent" || discount.percent <= 0) return null;
