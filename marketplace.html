@@ -602,18 +602,6 @@
 			return parts.length ? parts.join(" · ") : null;
 		}
 
-		function formatPricing(m) {
-			if (["embedding", "decision"].includes(modelType(m))) return formatEmbeddingPrice(m);
-			if (modelType(m) === "realtime") return formatRealtimePrice(m);
-			if (modelType(m) === "audio") return formatAudioPrice(m);
-			const p = m?.pricing || {};
-			if (p.prompt != null && p.completion != null) {
-				const perMillion = (v) => (v * 1000000).toFixed(2);
-				return `In: $${perMillion(p.prompt)}/M · Out: $${perMillion(p.completion)}/M`;
-			}
-			return null;
-		}
-
 		function num(v) {
 			if (typeof v !== "number" && typeof v !== "string") return null;
 			if (typeof v === "string" && !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(v.trim())) return null;
@@ -719,7 +707,7 @@
 		}
 
 		function formatPrice(m) {
-			return formatModelPrice(m) || formatPricing(m) || "Pricing unavailable";
+			return formatModelPrice(m) || "Pricing unavailable";
 		}
 
 		// Starting list price in USD in the model's native billing unit.
