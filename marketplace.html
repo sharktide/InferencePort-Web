@@ -102,6 +102,7 @@
 			font-size: 0.875rem;
 			width: 100%;
 		}
+		.price-controls select:disabled { opacity: 0.55; cursor: not-allowed; }
 		.price-controls select:focus-visible {
 			outline: 2px solid var(--brand);
 			outline-offset: 2px;
@@ -670,16 +671,26 @@
 			// These read their own top-level rate fields, so they work without a `pricing` object.
 			if (["embedding", "decision"].includes(type)) return formatEmbeddingPrice(m);
 			if (type === "realtime") return formatRealtimePrice(m);
-			const pricing = m?.pricing;
-			if (!pricing) return null;
+			const pricing = m?.pricing || {};
 			if (type === "audio") {
 				const audio = formatAudioPrice(m);
 				if (audio) return audio;
 			}
-			if (type === "image" && pricing.image && pricing.image !== "0") return `$${parseFloat(pricing.image).toFixed(4)}/gen`;
+			if (type === "image") {
+				const tp = pricing.token_pricing;
+				if (tp && typeof tp === "object") {
+					const parts = [];
+					if (num(tp.text_in) != null && num(tp.text_in) !== 0) parts.push(`Text: ${num(tp.text_in).toFixed(2)}/M`);
+					if (num(tp.image_in) != null && num(tp.image_in) !== 0) parts.push(`Img In: ${num(tp.image_in).toFixed(2)}/M`);
+					if (num(tp.image_out) != null && num(tp.image_out) !== 0) parts.push(`Img Out: ${num(tp.image_out).toFixed(2)}/M`);
+					if (parts.length) return parts.join(" · ");
+				}
+				if (num(pricing.image) != null && num(pricing.image) !== 0) return `${num(pricing.image).toFixed(4)}/gen`;
+			}
 			if (type === "3d" || type === "3D") {
 				if (m.price_tiers) {
-					const values = Object.values(m.price_tiers).map((v) => parseFloat(v));
+					const values = Object.values(m.price_tiers).map(num).filter((v) => v !== null && v >= 0);
+					if (!values.length) return null;
 					const min = Math.min(...values);
 					const max = Math.max(...values);
 					if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}`;
@@ -1006,6 +1017,15 @@
 			document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
 			tab.classList.add("active");
 			activeFilter = tab.dataset.filter;
+			const onlyLocal = activeFilter === "local";
+			if (onlyLocal) {
+				priceRange = "all";
+				priceSort = "default";
+				document.getElementById("price-range").value = "all";
+				document.getElementById("price-sort").value = "default";
+			}
+			document.getElementById("price-range").disabled = onlyLocal;
+			document.getElementById("price-sort").disabled = onlyLocal;
 			currentPage = 1;
 			renderAll(document.getElementById("search-models").value);
 		});
