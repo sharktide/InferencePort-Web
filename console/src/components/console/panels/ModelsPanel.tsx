@@ -14,6 +14,7 @@ import {
   modelStartingPrice,
   matchesModelPriceRange,
   compareModelPrice,
+  modelType,
 } from "../../../lib/modelPricing";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
@@ -62,9 +63,8 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   const [threeError, setThreeError] = useState("");
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return !["embedding", "realtime", "decision"].includes(m?.type) && i.includes("text") && o.includes("text"); };
+  const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return modelType(m).toLowerCase() === "text" && i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
-  const modelType = (m: any) => { if (m.type) return m.type; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; if (o.includes("image")) return "image"; if (o.includes("video")) return "video"; if (o.includes("audio")) return "audio"; if (o.includes("3d")) return "3d"; if (o.includes("embedding")) return "embedding"; return "text"; };
   const modelDisplayName = (m: any) => {
     const name = m?.name || m?.id || "Unnamed model";
     if ((m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by) return `@${m.owned_by}/${name}`;
