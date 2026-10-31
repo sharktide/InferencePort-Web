@@ -143,14 +143,15 @@ export function formatModelPrice(m: any, pct = 1): string | null {
     const values = m?.price_tiers && typeof m.price_tiers === "object"
       ? Object.values(m.price_tiers).map(num).filter((v): v is number => v !== null)
       : [];
+    const parts: string[] = [];
     if (values.length) {
       const min = Math.min(...values) * pct;
       const max = Math.max(...values) * pct;
-      if (min !== max) return `$${min.toFixed(2)}-$${max.toFixed(2)}/model`;
-      return `$${min.toFixed(4)}/model`;
+      parts.push(min === max ? `${min.toFixed(4)}/model` : `${min.toFixed(2)}-${max.toFixed(2)}/model`);
     }
     const request = num(p.request);
-    return request === null ? null : `$${(request * pct).toFixed(4)}/model`;
+    if (request !== null) parts.push(`${parts.length ? "Request: " : ""}${(request * pct).toFixed(4)}/model`);
+    return parts.length ? parts.join(" · ") : null;
   }
 
   if (type === "video") {
