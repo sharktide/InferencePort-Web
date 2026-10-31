@@ -616,7 +616,7 @@
 
 		function num(v) {
 			if (typeof v !== "number" && typeof v !== "string") return null;
-			if (typeof v === "string" && !/^[+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?$/.test(v.trim())) return null;
+			if (typeof v === "string" && !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(v.trim())) return null;
 			const n = typeof v === "number" ? v : Number(v.trim());
 			return Number.isFinite(n) && n >= 0 ? n : null;
 		}
