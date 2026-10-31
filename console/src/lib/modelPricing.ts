@@ -43,11 +43,12 @@ const fmtRate = (v: number): string => {
 export function modelType(m: any): string {
   if (m?.type) return String(m.type);
   const o = Array.isArray(m?.output_modalities) ? m.output_modalities : [];
+  // Keep inferred modality precedence identical to the public Marketplace.
   if (o.includes("embedding")) return "embedding";
+  if (o.includes("3d")) return "3d";
   if (o.includes("image")) return "image";
   if (o.includes("video")) return "video";
   if (o.includes("audio")) return "audio";
-  if (o.includes("3d")) return "3d";
   return "text";
 }
 
@@ -117,33 +118,51 @@ export function formatRealtimePrice(m: any, pct = 1): string | null {
   return parts.length ? parts.join(" · ") : null;
 }
 
+// Published text and multimodal token rates may accompany any primary
+// billing unit. Keep every visible charge rather than hiding positive fees
+// behind zero-valued token or generation rates.
+const tokenPriceParts = (p: any, pct: number): string[] => {
+  const parts: string[] = [];
+  const inRate = perMillionTokens(p.prompt);
+  const outRate = perMillionTokens(p.completion);
+  if (inRate !== null) parts.push(`In: $${fmtRate(inRate * pct)}/M`);
+  if (outRate !== null) parts.push(`Out: $${fmtRate(outRate * pct)}/M`);
+  const tp = p.token_pricing || {};
+  for (const [key, label] of [["text_in", "Text"], ["image_in", "Img In"], ["image_out", "Img Out"]]) {
+    const rate = num(tp[key]);
+    if (rate !== null) parts.push(`${label}: $${fmtRate(rate * pct)}/M tokens`);
+  }
+  return parts;
+};
+
+const tokenStartingRates = (p: any): Array<number | null> => {
+  const tp = p.token_pricing || {};
+  return [
+    perMillionTokens(p.prompt), perMillionTokens(p.completion),
+    num(tp.text_in), num(tp.image_in), num(tp.image_out),
+  ];
+};
+
 // pct scales every rate (used for reward discounts); 1 keeps list prices.
 export function formatModelPrice(m: any, pct = 1): string | null {
   const type = modelType(m).toLowerCase();
   if (type === "embedding" || type === "decision") return formatEmbeddingPrice(m, pct);
   if (type === "realtime") return formatRealtimePrice(m, pct);
-  if (type === "audio") return formatAudioPrice(m, pct);
-
   const p = m?.pricing || {};
-  if (type === "image") {
-    const tp = p.token_pricing || {};
-    const parts: string[] = [];
-    for (const [key, label] of [["text_in", "Text"], ["image_in", "Img In"], ["image_out", "Img Out"]]) {
-      const rate = num(tp[key]);
-      if (rate !== null) parts.push(`${label}: $${fmtRate(rate * pct)}/M tokens`);
-    }
-    const perImage = num(p.image);
-    const perRequest = num(p.request);
-    if (perImage !== null) parts.push(`$${fmtRate(perImage * pct)}/gen`);
-    if (perRequest !== null) parts.push(`$${fmtRate(perRequest * pct)}/request`);
-    return parts.length ? parts.join(" · ") : null;
-  }
+  const parts: string[] = [];
 
-  if (type === "3d") {
+  if (type === "audio") {
+    const audio = formatAudioPrice(m, pct);
+    if (audio) parts.push(audio);
+  } else if (type === "image") {
+    const image = num(p.image);
+    const request = num(p.request);
+    if (image !== null) parts.push(`$${fmtRate(image * pct)}/gen`);
+    if (request !== null) parts.push(`$${fmtRate(request * pct)}/request`);
+  } else if (type === "3d") {
     const values = m?.price_tiers && typeof m.price_tiers === "object"
       ? Object.values(m.price_tiers).map(num).filter((v): v is number => v !== null)
       : [];
-    const parts: string[] = [];
     if (values.length) {
       const min = Math.min(...values) * pct;
       const max = Math.max(...values) * pct;
@@ -151,22 +170,18 @@ export function formatModelPrice(m: any, pct = 1): string | null {
     }
     const request = num(p.request);
     if (request !== null) parts.push(`${parts.length ? "Request: " : ""}$${(request * pct).toFixed(4)}/model`);
-    return parts.length ? parts.join(" · ") : null;
-  }
-
-  if (type === "video") {
+  } else if (type === "video") {
     const rate = lowestListedPrice(p.request, m?.price_per_second);
-    return rate === null ? null : `$${fmtRate(rate * pct)}/sec`;
+    if (rate !== null) parts.push(`$${fmtRate(rate * pct)}/sec`);
   }
-
-  const parts: string[] = [];
-  const inRate = perMillionTokens(p.prompt);
-  const outRate = perMillionTokens(p.completion);
-  if (inRate !== null) parts.push(`In: $${fmtRate(inRate * pct)}/M`);
-  if (outRate !== null) parts.push(`Out: $${fmtRate(outRate * pct)}/M`);
-  if (parts.length) return parts.join(" · ");
-  const request = num(p.request);
-  return request === null ? null : `$${fmtRate(request * pct)}/request`;
+  parts.push(...tokenPriceParts(p, pct));
+  // Text/agent models may also have per-request charges; never hide these
+  // behind zero prompt/completion rates.
+  if (!["audio", "image", "3d", "video"].includes(type)) {
+    const request = num(p.request);
+    if (request !== null) parts.push(`$${fmtRate(request * pct)}/request`);
+  }
+  return parts.length ? parts.join(" · ") : null;
 }
 
 // Legacy formatter entry point; share the same validated prices as filtering.
@@ -190,25 +205,24 @@ export function modelStartingPrice(m: any): number | null {
     const sec = num(m?.input_price_per_second);
     return lowestListedPrice(rates.text_in, rates.audio_in, rates.text_out, rates.audio_out, sec === null ? null : sec * 3600);
   }
+
+  const tokens = tokenStartingRates(p);
   if (type === "audio") {
     const unit = billingUnit(m);
-    // Do not mix a per-request rate into a per-character or per-byte price.
-    if (unit === "input_chars") return lowestListedPrice(m?.price_per_1k_chars);
-    if (unit === "input_bytes") return lowestListedPrice(m?.price_per_million_bytes);
-    if (unit === "input_seconds") return lowestListedPrice(m?.input_price_per_second, p.request);
-    if (unit === "seconds") return lowestListedPrice(m?.price_per_second, p.request);
-    return lowestListedPrice(p.request);
+    // Never compare a generic request rate with character/byte rates.
+    if (unit === "input_chars") return lowestListedPrice(m?.price_per_1k_chars, ...tokens);
+    if (unit === "input_bytes") return lowestListedPrice(m?.price_per_million_bytes, ...tokens);
+    if (unit === "input_seconds") return lowestListedPrice(m?.input_price_per_second, p.request, ...tokens);
+    if (unit === "seconds") return lowestListedPrice(m?.price_per_second, p.request, ...tokens);
+    return lowestListedPrice(p.request, ...tokens);
   }
   if (type === "3d") {
     const tiers = m?.price_tiers && typeof m.price_tiers === "object" ? Object.values(m.price_tiers) : [];
-    return lowestListedPrice(...tiers, p.request);
+    return lowestListedPrice(...tiers, p.request, ...tokens);
   }
-  if (type === "image") {
-    const tp = p.token_pricing || {};
-    return lowestListedPrice(p.image, tp.text_in, tp.image_in, tp.image_out, p.request);
-  }
-  if (type === "video") return lowestListedPrice(p.request, m?.price_per_second);
-  return lowestListedPrice(perMillionTokens(p.prompt), perMillionTokens(p.completion), p.request);
+  if (type === "image") return lowestListedPrice(p.image, p.request, ...tokens);
+  if (type === "video") return lowestListedPrice(p.request, m?.price_per_second, ...tokens);
+  return lowestListedPrice(p.request, ...tokens);
 }
 
 export function matchesModelPriceRange(price: number | null, range: string): boolean {
