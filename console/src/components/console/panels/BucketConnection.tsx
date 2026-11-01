@@ -58,7 +58,7 @@ export default function BucketConnection({ apiBase, buckets, selectedName, canAd
     {!endpoint.startsWith("https://") && <p>For SDK uploads and presigned URLs, use an HTTPS API endpoint. Unsigned payloads over HTTP are rejected. Local HTTPS deployments need a trusted certificate.</p>}
     <details className={ui.connectionHelp}><summary>Getting 403 Forbidden?</summary><ul>
       <li>An access-log status alone does not identify the cause. Check the S3 XML response’s Code and Message.</li>
-      <li>Use the issued S3 key pair from the same personal or organization workspace as the bucket. Check expiry, revocation, and beta access.</li>
+      <li>Use the issued S3 key pair from the same personal or organization workspace as the bucket. Check expiry, revocation, and account permissions.</li>
       <li>Keep <code>/s3/</code> in the endpoint, use path style and signing region <code>us-east-1</code>.</li>
       <li>A credential restricted to a key prefix cannot list the bucket root. List its allowed prefix instead, such as <code>s3://{bucket || "your-bucket"}/allowed-prefix/</code>.</li>
       <li>Check your credential’s bucket permissions and any IP restrictions. Browser navigation does not send an S3 signature.</li>

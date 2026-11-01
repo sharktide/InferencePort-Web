@@ -159,7 +159,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <div className={ui.header}><div className={ui.intro}>
       <h1 className={styles.heading}>Buckets</h1>
       <p>Workspace: {activeOrg?.name ?? "Personal"} · Private object storage</p>
-      <p role="status" aria-live="polite">{message || (catalog ? catalog.status === "not_available" ? "Buckets is not available on this server yet." : "Private beta · Hot storage in East US" : "Loading…")}</p>
+      <p role="status" aria-live="polite">{message || (catalog ? catalog.status === "not_available" ? "Buckets is not available on this server yet." : "Private object storage · Standard tier" : "Loading…")}</p>
       </div><button type="button" disabled={busy} onClick={() => void act(refresh)}>Refresh</button></div>
       <div role="tablist" aria-label="Bucket tools" className={ui.tabs}>
         {tabs.map((item, index) => <button key={item.id} type="button" role="tab" id={`bucket-tab-${item.id}`} aria-selected={tab === item.id} aria-controls={`bucket-panel-${item.id}`} tabIndex={tab === item.id ? 0 : -1} onClick={() => selectTab(item.id)} onKeyDown={(event) => {
@@ -197,7 +197,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         <label>Key prefix <input aria-label="Key prefix" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>{" "}<button disabled={busy}>Search</button>
       </form>
       {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
-      {canWrite && !pricingReady && <p role="status">Uploads are paused while verified Azure pricing is unavailable. Use Refresh to retry.</p>}
+      {canWrite && !pricingReady && <p role="status">Uploads are paused while verified pricing is unavailable. Use Refresh to retry.</p>}
       <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No objects match this prefix.</td></tr>}{entries.map((entry) => <tr key={entry.entry}>
         <td style={{ overflowWrap: "anywhere" }}>{entry.entry}</td><td>{bytes(entry.size_bytes)}</td><td><button disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>{" "}
           {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(objectPath(selected.name, entry.entry), { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
@@ -205,14 +205,14 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       {continuation && <button disabled={busy} onClick={() => void act(() => browse(selected, continuation))}>Next page</button>}
       {usage && <details className={ui.usage}><summary>Usage and retention</summary><ul>{usage.meters.map((meter) => <li key={meter.meter}>{meter.meter}: {meter.quantity}</li>)}</ul>
         <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p>
-      <p>Only Hot storage is enabled. Azure retention can keep deleted data billable; insufficient credits pauses new writes and does not delete objects.</p></details>}
+      <p>Retained versions and pending data can remain billable after deletion; insufficient credits pauses new writes and does not delete objects.</p></details>}
     </section>}
     </div>
     <div role="tabpanel" id="bucket-panel-connect" aria-labelledby="bucket-tab-connect" hidden={tab !== "connect"} className={ui.tabPanel}>
       {catalog && catalog.status !== "not_available" && <BucketConnection apiBase={apiBase} buckets={buckets} selectedName={selected?.name} canAdmin={canAdmin} onCredentials={() => selectTab("credentials")} />}
     </div>
     <div role="tabpanel" id="bucket-panel-credentials" aria-labelledby="bucket-tab-credentials" hidden={tab !== "credentials"} className={ui.tabPanel}>
-    {canAdmin && catalog?.status === "private_beta" && <section id="bucket-s3-credentials" className={`${styles.card} ${styles.wide}`}>
+    {canAdmin && catalog && catalog.status !== "not_available" && <section id="bucket-s3-credentials" className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>S3 credentials</h2>
       <div className={ui.credentialForm}>
       <label className={ui.checkbox}><input type="checkbox" checked={readOnlyKey} onChange={(event) => setReadOnlyKey(event.target.checked)} /> Read only</label>{" "}
@@ -238,12 +238,12 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     </div>
     <div role="tabpanel" id="bucket-panel-pricing" aria-labelledby="bucket-tab-pricing" hidden={tab !== "pricing"} className={ui.tabPanel}>
     <section className={`${styles.card} ${styles.wide}`}>
-      <h2 className={styles.heading}>Azure retail rates</h2>
+      <h2 className={styles.heading}>Storage pricing</h2>
       {catalog?.pricing?.meters && Object.keys(catalog.pricing.meters).length > 0 ? <>
-        <p>USD · East US · LRS · Hot · no markup</p><p>Rate version: <code style={{ overflowWrap: "anywhere" }}>{catalog.pricing.rate_version}</code></p>
-        <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Meter</th><th>Unit</th><th>Published bands (from / USD)</th><th>Effective date</th></tr></thead><tbody>{Object.entries(catalog.pricing.meters).map(([key, meter]) => <tr key={key}><td>{meter.name}</td><td>{meter.unit}</td><td>{meter.bands.map(([from, rate]) => `${from}: $${rate}`).join("; ")}</td><td>{meter.effective_at}</td></tr>)}</tbody></table></div>
-      </> : <p>Verified Azure pricing is unavailable. Refresh to retry loading the current rates. Uploads are paused until pricing is verified.</p>}
-      <p>Charges include actual Azure calls, stored and retained data, retrieval and applicable transfer. Capacity and transfer bands are shared at the backing account level. Reserved-capacity discounts and independently funded promotions are unavailable.</p>
+        <p>USD · Standard storage · Billed from the first unit</p><p>Rate version: <code style={{ overflowWrap: "anywhere" }}>{catalog.pricing.rate_version}</code></p>
+        <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Meter</th><th>Unit</th><th>Volume bands (from / USD)</th><th>Effective date</th></tr></thead><tbody>{Object.entries(catalog.pricing.meters).map(([key, meter]) => <tr key={key}><td>{meter.name}</td><td>{meter.unit}</td><td>{meter.bands.map(([from, rate]) => `${from}: $${rate}`).join("; ")}</td><td>{meter.effective_at}</td></tr>)}</tbody></table></div>
+      </> : <p>Verified pricing is unavailable. Refresh to retry loading the current rates. Uploads are paused until pricing is verified.</p>}
+      <p>Charges cover stored and retained data, operations, and data transfer. Capacity and transfer volume bands are shared across the service. There is no free usage allowance.</p>
       <a href="https://docs.inferenceport.ai/api/buckets.html" target="_blank" rel="noreferrer">Buckets API and CLI guide</a>
     </section>
     </div>

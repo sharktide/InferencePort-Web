@@ -21,7 +21,7 @@ module.exports = async function layout(browser, url) {
         }
         const bucket = { id: 'fixture', name: 'hi-test', bytes_used: 8388608, bytes_reserved: 0, quota_bytes: 10737418240, status: 'active' };
         let data = { orgs: [] };
-        if (pathname.endsWith('/status')) data = { status: 'private_beta', object_writes_enabled: pricesReady, pricing: pricesReady ? { status: 'verified', rate_version: 'a'.repeat(64), meters: { capacity: { name: 'Hot LRS Data Stored', unit: '1 GB/Month', bands: [['0', '0.0208']], effective_at: '2026-11-01' } } } : { status: 'unavailable' } };
+        if (pathname.endsWith('/status')) data = { status: 'available', object_writes_enabled: pricesReady, pricing: pricesReady ? { status: 'verified', rate_version: 'a'.repeat(64), meters: { capacity: { name: 'Stored data', unit: '1 GB/Month', bands: [['0', '0.0312']], effective_at: '2026-11-01' } } } : { status: 'unavailable' } };
         else if (pathname.endsWith('/s3-credentials')) data = { credentials: populated ? [{ id: 'key', access_key_id: 'IPB_EXAMPLE_ONLY', expires_at: '2026-11-02T00:00:00Z', revoked_at: null }] : [] };
         else if (pathname.endsWith('/objects')) data = { objects: [{ entry: 'models/' + 'long-model-name-'.repeat(10) + '.bin', size_bytes: 8388608 }] };
         else if (pathname.endsWith('/usage')) data = { meters: [], settlements: [], held_credits: '0', carried_credits: '0', debited_credits: '0' };
@@ -79,7 +79,7 @@ module.exports = async function layout(browser, url) {
       await page.getByRole('button', { name: 'S3 credentials', exact: true }).click();
       assert.equal(await page.getByRole('tab', { name: 'Credentials', exact: true }).getAttribute('aria-selected'), 'true');
       await page.getByRole('tab', { name: 'Pricing', exact: true }).click();
-      await page.getByRole('heading', { name: 'Azure retail rates', exact: true }).waitFor();
+      await page.getByRole('heading', { name: 'Storage pricing', exact: true }).waitFor();
       assert.equal(await page.getByLabel('Bucket name', { exact: true }).isVisible(), false);
       await page.getByRole('tab', { name: 'Pricing', exact: true }).press('Home');
       assert.equal(await page.getByRole('tab', { name: 'Files', exact: true }).getAttribute('aria-selected'), 'true');
