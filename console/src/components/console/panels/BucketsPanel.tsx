@@ -42,7 +42,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   const canWrite = !activeOrg || ["owner", "admin", "member"].includes(activeOrg.role);
 
   const selection = activeSlug || "personal";
-  const contextKey = `${selection}:${session?.access_token || ""}`;
+  const contextKey = `${activeOrg?.id || selection}:${session?.access_token || ""}`;
   const contextRef = useRef(contextKey);
   contextRef.current = contextKey;
   const s3Path = workspace ? `/${workspace.owner_id}/s3/` : "";
@@ -149,6 +149,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
 
   async function download(entry: Entry) {
     if (!selected) return;
+    const downloadEpoch = refreshId.current;
     if (Number(entry.size_bytes) > 256 * 1024 ** 2) throw new Error("Use ipx bucket download or an S3 client for files over 256 MiB.");
     const response = await call(objectPath(s3Path, selected.name, entry.entry), {}, true);
     const declared = Number(response.headers.get("content-length"));
@@ -157,13 +158,13 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     const reader = response.body.getReader();
     const chunks: Uint8Array[] = []; let size = 0;
     while (true) {
-      if (contextRef.current !== contextKey) { await reader.cancel(); throw new Error("Workspace changed; download cancelled."); }
+      if (contextRef.current !== contextKey || refreshId.current !== downloadEpoch) { await reader.cancel(); throw new Error("Workspace changed; download cancelled."); }
       const { done, value } = await reader.read(); if (done) break;
       size += value.byteLength;
       if (size > 256 * 1024 ** 2) { await reader.cancel(); throw new Error("File exceeded the browser download limit. Use ipx or an S3 client."); }
       chunks.push(value);
     }
-    if (contextRef.current !== contextKey) throw new Error("Workspace changed; download cancelled.");
+    if (contextRef.current !== contextKey || refreshId.current !== downloadEpoch) throw new Error("Workspace changed; download cancelled.");
     const url = URL.createObjectURL(new Blob(chunks as BlobPart[]));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = entry.entry.split("/").pop() || "download";
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
