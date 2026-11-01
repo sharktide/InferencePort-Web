@@ -8,7 +8,7 @@ import BucketConnection from "./BucketConnection";
 
 type Bucket = { id: string; name: string; bytes_used: number; bytes_reserved: number; quota_bytes: number; status: string };
 type Entry = { entry: string; object_key: string; size_bytes: number; s3_etag: string };
-type Credential = { id: string; access_key_id: string; expires_at: string; revoked_at: string | null };
+type Credential = { id: string; access_key_id: string; expires_at: string; revoked_at: string | null; scopes?: { permissions?: string[]; key_prefixes?: string[] | null; bucket_ids?: string[] | null } };
 type Catalog = { status: string; endpoint: string; object_writes_enabled?: boolean; pricing: { status?: string; rate_version?: string; meters?: Record<string, { name: string; unit: string; bands: string[][]; effective_at: string }>; offers?: unknown[] } };
 const bytes = (value: number) => `${(Number(value) / 1024 ** 2).toLocaleString(undefined, { maximumFractionDigits: 2 })} MiB`;
 const xmlValue = (xml: string, tag: string) => new DOMParser().parseFromString(xml, "application/xml").getElementsByTagName(tag)[0]?.textContent ?? "";
@@ -17,6 +17,7 @@ const objectPath = (bucket: string, key: string) => `/s3/${encodeURIComponent(bu
 export default function BucketsPanel({ apiBase, session }: { apiBase: string; session: { access_token?: string } | null }) {
   const { activeOrg, activeSlug } = useOrgContext();
   const refreshId = useRef(0);
+  const [tab, setTab] = useState("files");
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [selected, setSelected] = useState<Bucket | null>(null);
@@ -76,6 +77,15 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     return () => { live = false; };
   }, [refresh]);
 
+  const tabs = [
+    { id: "files", label: "Files" }, { id: "connect", label: "Connect" },
+    ...(canAdmin ? [{ id: "credentials", label: "Credentials" }] : []), { id: "pricing", label: "Pricing" },
+  ];
+  function selectTab(id: string) {
+    if (id !== "credentials") setSecret(null);
+    setTab(id);
+  }
+
   async function act(work: () => Promise<void>) {
     setBusy(true); setMessage("");
     try { await work(); } catch (error) { setMessage(error instanceof Error ? error.message : "Request failed."); }
@@ -101,7 +111,9 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     try {
       for (let offset = 0, number = 1; offset < file.size || number === 1; offset += 8 * 1024 ** 2, number++) {
         const response = await call(`${path}?uploadId=${encodeURIComponent(uploadId)}&partNumber=${number}`, { method: "PUT", body: file.slice(offset, offset + 8 * 1024 ** 2) }, true);
-        parts.push({ number, etag: response.headers.get("etag") || "" });
+        const etag = response.headers.get("etag");
+        if (!etag) throw new Error("The upload response is missing its part receipt. The server must expose the ETag response header before this upload can complete.");
+        parts.push({ number, etag });
         setMessage(`Uploading ${file.name}: ${Math.min(file.size, offset + 8 * 1024 ** 2).toLocaleString()} / ${file.size.toLocaleString()} bytes`);
       }
       const doc = document.implementation.createDocument("", "CompleteMultipartUpload");
@@ -149,16 +161,26 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <p>Workspace: {activeOrg?.name ?? "Personal"} · Private object storage</p>
       <p role="status" aria-live="polite">{message || (catalog ? catalog.status === "not_available" ? "Buckets is not available on this server yet." : "Private beta · Hot storage in East US" : "Loading…")}</p>
       </div><button type="button" disabled={busy} onClick={() => void act(refresh)}>Refresh</button></div>
+      <div role="tablist" aria-label="Bucket tools" className={ui.tabs}>
+        {tabs.map((item, index) => <button key={item.id} type="button" role="tab" id={`bucket-tab-${item.id}`} aria-selected={tab === item.id} aria-controls={`bucket-panel-${item.id}`} tabIndex={tab === item.id ? 0 : -1} onClick={() => selectTab(item.id)} onKeyDown={(event) => {
+          const next = event.key === "ArrowRight" ? (index + 1) % tabs.length : event.key === "ArrowLeft" ? (index + tabs.length - 1) % tabs.length : event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : -1;
+          if (next >= 0) { event.preventDefault(); selectTab(tabs[next].id); document.getElementById(`bucket-tab-${tabs[next].id}`)?.focus(); }
+        }}>{item.label}</button>)}
+      </div>
+    </section>
+    <div role="tabpanel" id="bucket-panel-files" aria-labelledby="bucket-tab-files" hidden={tab !== "files"} className={ui.tabPanel}>
+    <section className={`${styles.card} ${styles.wide}`}>
+      <h2 className={styles.heading}>Your buckets</h2>
       {catalog && catalog.status !== "not_available" && <>
         <p>Bucket names are unique within this workspace. Other users and organizations can use the same name; your credentials select which workspace you access.</p>
-        {canAdmin && <form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
+        {canAdmin && <details className={ui.createBucket}><summary>Create a bucket</summary><form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
           await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3) }) });
           setName(""); await refresh();
         }); }}>
           <label>Bucket name <input aria-label="Bucket name" value={name} onChange={(e) => setName(e.target.value)} required minLength={3} maxLength={63} pattern="[a-z0-9][a-z0-9.-]+[a-z0-9]" /></label>{" "}
           <label>Quota (GiB) <input aria-label="Quota (GiB)" type="number" min="1" max="1024" value={quota} onChange={(e) => setQuota(e.target.value)} required /></label>{" "}
           <button disabled={busy} type="submit">Create bucket</button>
-        </form>}
+        </form></details>}
         <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Name</th><th>Used / quota</th><th>Status</th><th>Actions</th></tr></thead><tbody>
           {buckets.length === 0 && <tr><td colSpan={4} className={ui.empty}>No buckets yet. Create a bucket to start storing files.</td></tr>}
           {buckets.map((bucket) => <tr key={bucket.id}><td>{bucket.name}</td><td>{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td>{bucket.status}</td><td>
@@ -169,7 +191,6 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=1000&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...rows, ...page.buckets]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
       </>}
     </section>
-    {catalog && catalog.status !== "not_available" && <BucketConnection apiBase={apiBase} buckets={buckets} selectedName={selected?.name} canAdmin={canAdmin} />}
     {selected && <section className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>{selected.name}</h2>
       <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
@@ -182,17 +203,23 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
           {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(objectPath(selected.name, entry.entry), { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
       </tr>)}</tbody></table></div>
       {continuation && <button disabled={busy} onClick={() => void act(() => browse(selected, continuation))}>Next page</button>}
-      {usage && <><h3>Measured usage</h3><ul>{usage.meters.map((meter) => <li key={meter.meter}>{meter.meter}: {meter.quantity}</li>)}</ul>
-        <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p></>}
-      <p>Only Hot storage is enabled. Azure retention can keep deleted data billable; insufficient credits pauses new writes and does not delete objects.</p>
+      {usage && <details className={ui.usage}><summary>Usage and retention</summary><ul>{usage.meters.map((meter) => <li key={meter.meter}>{meter.meter}: {meter.quantity}</li>)}</ul>
+        <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p>
+      <p>Only Hot storage is enabled. Azure retention can keep deleted data billable; insufficient credits pauses new writes and does not delete objects.</p></details>}
     </section>}
+    </div>
+    <div role="tabpanel" id="bucket-panel-connect" aria-labelledby="bucket-tab-connect" hidden={tab !== "connect"} className={ui.tabPanel}>
+      {catalog && catalog.status !== "not_available" && <BucketConnection apiBase={apiBase} buckets={buckets} selectedName={selected?.name} canAdmin={canAdmin} onCredentials={() => selectTab("credentials")} />}
+    </div>
+    <div role="tabpanel" id="bucket-panel-credentials" aria-labelledby="bucket-tab-credentials" hidden={tab !== "credentials"} className={ui.tabPanel}>
     {canAdmin && catalog?.status === "private_beta" && <section id="bucket-s3-credentials" className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>S3 credentials</h2>
       <div className={ui.credentialForm}>
       <label className={ui.checkbox}><input type="checkbox" checked={readOnlyKey} onChange={(event) => setReadOnlyKey(event.target.checked)} /> Read only</label>{" "}
-      <label>Key prefix <input aria-label="Credential key prefix" value={keyPrefix} onChange={(event) => setKeyPrefix(event.target.value)} /></label>{" "}
+      <label>Object key prefix (optional) <input placeholder="e.g. models/" aria-label="Credential key prefix" value={keyPrefix} onChange={(event) => setKeyPrefix(event.target.value)} /></label>{" "}
       <label>Expires in <select aria-label="Credential expiry" value={keyTtl} onChange={(event) => setKeyTtl(event.target.value)}><option value="600">10 minutes</option><option value="86400">1 day</option><option value="2592000">30 days</option></select></label>
       </div>
+      <p>Leave the object key prefix blank for the whole bucket. A prefix restricts file access and root listings. This credential allows {readOnlyKey ? "listing and downloads" : "listing, downloads and uploads"} in {selected ? selected.name : "this workspace"}.</p>
       <button disabled={busy} onClick={() => void act(async () => {
         const value = await call("/v1/buckets/s3-credentials", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ permissions: readOnlyKey ? ["storage.read"] : ["storage.read", "storage.write"], bucket_ids: selected ? [selected.id] : null, key_prefixes: keyPrefix ? [keyPrefix] : null, expires_in: Number(keyTtl) }) });
         setSecret(value); await refresh();
@@ -202,12 +229,14 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         <label>Secret access key <input readOnly type="password" value={secret.secret_access_key} /></label>
         <button onClick={() => void navigator.clipboard.writeText(secret.secret_access_key)}>Copy secret</button>{" "}<button onClick={() => setSecret(null)}>Dismiss secret</button>
       </div>}
-      <ul className={ui.credentials}>{credentials.length === 0 && <li className={ui.empty}>No S3 credentials issued for this workspace.</li>}{credentials.map((credential) => <li key={credential.id}>{credential.access_key_id} · expires {credential.expires_at} · {credential.revoked_at ? "revoked" : <button disabled={busy} onClick={() => void act(async () => { await call(`/v1/buckets/s3-credentials/${credential.id}`, { method: "DELETE" }); if (secret?.id === credential.id) setSecret(null); await refresh(); })}>Revoke</button>}{!credential.revoked_at && <button disabled={busy} onClick={() => void act(async () => {
+      <ul className={ui.credentials}>{credentials.length === 0 && <li className={ui.empty}>No S3 credentials issued for this workspace.</li>}{credentials.map((credential) => <li key={credential.id}>{credential.access_key_id} · expires {credential.expires_at}<p>{credential.scopes?.permissions?.join(", ") || "Permissions not reported"} · {credential.scopes?.key_prefixes?.length ? `Restricted prefixes: ${credential.scopes.key_prefixes.join(", ")}` : "All object prefixes"} · {credential.scopes?.bucket_ids?.length ? `${credential.scopes.bucket_ids.length} selected bucket(s)` : "Workspace buckets"}</p>{credential.revoked_at ? "revoked" : <button disabled={busy} onClick={() => void act(async () => { await call(`/v1/buckets/s3-credentials/${credential.id}`, { method: "DELETE" }); if (secret?.id === credential.id) setSecret(null); await refresh(); })}>Revoke</button>}{!credential.revoked_at && <button disabled={busy} onClick={() => void act(async () => {
         const value = await call(`/v1/buckets/s3-credentials/${credential.id}/rotate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ revoke_previous: false }) });
         setSecret(value); await refresh(); setMessage("Rotation issued a new secret with the same scope. Revoke the old credential after updating your clients.");
       })}>Rotate</button>}</li>)}</ul>
       {credentialContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets/s3-credentials?continuation_token=${encodeURIComponent(credentialContinuation)}`); setCredentials((rows) => [...rows, ...page.credentials]); setCredentialContinuation(page.continuation_token); })}>More credentials</button>}
     </section>}
+    </div>
+    <div role="tabpanel" id="bucket-panel-pricing" aria-labelledby="bucket-tab-pricing" hidden={tab !== "pricing"} className={ui.tabPanel}>
     <section className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>Azure retail rates</h2>
       {catalog?.pricing?.meters && Object.keys(catalog.pricing.meters).length > 0 ? <>
@@ -217,5 +246,6 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <p>Charges include actual Azure calls, stored and retained data, retrieval and applicable transfer. Capacity and transfer bands are shared at the backing account level. Reserved-capacity discounts and independently funded promotions are unavailable.</p>
       <a href="https://docs.inferenceport.ai/api/buckets.html" target="_blank" rel="noreferrer">Buckets API and CLI guide</a>
     </section>
+    </div>
   </div>;
 }

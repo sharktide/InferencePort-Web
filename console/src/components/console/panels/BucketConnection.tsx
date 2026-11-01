@@ -6,11 +6,12 @@ import ui from "./BucketsPanel.module.css";
 
 const shellQuote = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
 
-export default function BucketConnection({ apiBase, buckets, selectedName, canAdmin }: {
+export default function BucketConnection({ apiBase, buckets, selectedName, canAdmin, onCredentials }: {
   apiBase: string;
   buckets: { name: string }[];
   selectedName?: string;
   canAdmin: boolean;
+  onCredentials: () => void;
 }) {
   const [choice, setChoice] = useState("");
   const [notice, setNotice] = useState("");
@@ -48,7 +49,7 @@ export default function BucketConnection({ apiBase, buckets, selectedName, canAd
       <p>For this bucket, set the endpoint to <code>{endpoint}</code> and the bucket to <code>{bucket}</code>. Do not append the bucket name to your client’s endpoint setting.</p>
     </> : <p>Create a bucket above to see its URI and ready-to-copy transfer commands.</p>}
     <h3>1. Get your S3 credentials</h3>
-    <p>{canAdmin ? <>Use <a href="#bucket-s3-credentials">S3 credentials below</a> to issue an access key ID and secret access key.</> : "Ask a workspace administrator for an S3 access key ID and secret access key scoped to your bucket."} Use both values in your S3 client. Your normal InferencePort API key and console login are separate credentials. The secret is shown only once.</p>
+    <p>{canAdmin ? <>Use <button type="button" className={ui.link} onClick={onCredentials}>S3 credentials</button> to issue an access key ID and secret access key.</> : "Ask a workspace administrator for an S3 access key ID and secret access key scoped to your bucket."} Use both values in your S3 client. Your normal InferencePort API key and console login are separate credentials. The secret is shown only once.</p>
     <p>A read-only credential can list and download. To upload, turn off “Read only” when issuing a credential.</p>
     <h3>2. Configure AWS CLI</h3>
     <p>Run the commands below. At the prompts, enter your issued S3 access key ID, secret access key, <code>us-east-1</code> for the default region, and <code>json</code> for output format. AWS CLI saves these values in your local AWS profile.</p>

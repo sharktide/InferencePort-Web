@@ -1,8 +1,18 @@
-.panel > section {
+.panel section {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
+.tabPanel { display: grid; grid-column: span 12; min-width: 0; gap: 1.5rem; }
+.tabPanel[hidden] { display: none; }
+.createBucket summary, .usage summary { cursor: pointer; font-weight: 600; padding: 0.5rem 0; }
+.createBucket form { margin-top: 1rem; }
+.usage p { margin-top: 0.75rem; }
+.tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+.tabs button { background: transparent; color: var(--text-2); border: 1px solid transparent; }
+.tabs button[aria-selected="true"] { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
+.tabs button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.panel .link { min-height: auto; display: inline; padding: 0; background: transparent; border: 0; color: var(--accent); text-decoration: underline; font: inherit; }
 
 .header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
 .intro { display: grid; gap: 0.5rem; min-width: 0; }
@@ -76,7 +86,7 @@
 .connectionHelp ul { padding-left: 1.25rem; margin-bottom: 0; display: grid; gap: 0.65rem; }
 
 @media (max-width: 700px) {
-  .panel > section { padding: 1.25rem; }
+  .panel section { padding: 1.25rem; }
   .header { flex-wrap: wrap; }
   .createForm, .credentialForm { grid-template-columns: minmax(0, 1fr); }
   .credentialForm .checkbox { padding-right: 0; }
