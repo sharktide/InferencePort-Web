@@ -28,8 +28,6 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const BUCKETS_PREVIEW = process.env.NEXT_PUBLIC_BUCKETS_PREVIEW === "1";
-
 const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
   { title: "Organization", ids: ["organizations"] },
@@ -78,8 +76,6 @@ export default function Sidebar({
       ]
     : PERSONAL_GROUPS.map((g) => ({ key: g.title, title: g.title, items: g.ids.map(item) }));
 
-  const visibleGroups = groups.map((g) => ({ ...g, items: g.items.filter((i) => i.id !== "buckets" || BUCKETS_PREVIEW) }));
-
   return (
     <>
       <div
@@ -93,7 +89,7 @@ export default function Sidebar({
         role="navigation"
       >
         <ContextSwitcher variant="sidebar" className={styles.contextHeader} />
-        {visibleGroups.map((group) => (
+        {groups.map((group) => (
           <div key={group.key} className={styles.navGroup} role="group" aria-label={group.title}>
             <span className={styles.consoleNavLabel} title={group.title}>{group.title}</span>
             {group.items.map((tab) => (
