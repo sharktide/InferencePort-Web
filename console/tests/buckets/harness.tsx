@@ -2,8 +2,13 @@
 import "../../src/styles/globals.css";
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { OrgProvider } from "../../src/components/console/OrgContext";
+import { OrgProvider, useOrgContext } from "../../src/components/console/OrgContext";
 import BucketsPanel from "../../src/components/console/panels/BucketsPanel";
+
+function WorkspaceControls() {
+  const { setActiveSlug } = useOrgContext();
+  return <nav aria-label="Test workspaces"><button onClick={() => setActiveSlug("acme")}>Select Acme</button><button onClick={() => setActiveSlug(null)}>Select Personal</button></nav>;
+}
 
 function Harness() {
   const [key, setKey] = useState("");
@@ -15,7 +20,7 @@ function Harness() {
   const session = { access_token: token };
   return <main style={{ maxWidth: 1400, padding: "24px", margin: "0 auto" }}><button onClick={() => setToken("")}>Change sandbox key</button>
     <OrgProvider session={session} apiBase={apiBase}>
-      <BucketsPanel apiBase={apiBase} session={session} />
+      <WorkspaceControls /><BucketsPanel apiBase={apiBase} session={session} />
     </OrgProvider></main>;
 }
 createRoot(document.getElementById("root")!).render(<Harness />);

@@ -26,6 +26,8 @@ export interface OrgContextValue {
   orgs: OrgSummary[] | null;
   activeSlug: string | null;
   activeOrg: OrgSummary | null;
+  /** False until an explicitly requested organization is resolved and authorized. */
+  workspaceReady: boolean;
   /** Set when the organization list could not be loaded; call refresh() to retry. */
   listError: string | null;
   /** Switch context. Pass null for the personal account. */
@@ -61,6 +63,7 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   const api = useMemo(() => createOrgApi(apiBase, () => tokenRef.current), [apiBase]);
 
   const [orgs, setOrgs] = useState<OrgSummary[] | null>(null);
+  const [orgsToken, setOrgsToken] = useState<string | undefined>();
   const [requested, setRequested] = useState<string | null>(() => (typeof window === "undefined" ? null : readSharedWorkspace() ?? readStored()));
 
   /* Browser history can restore a different organization's shared section link. */
@@ -82,6 +85,7 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
       const { orgs: list } = await api.list();
       if (tokenRef.current !== started) return; /* signed out or switched account while loading */
       setOrgs(list);
+      setOrgsToken(started);
       setListError(null);
     } catch (e) {
       if (tokenRef.current !== started) return;
@@ -99,14 +103,15 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   useEffect(() => {
     if (!signedIn) { setOrgs(null); setListError(null); return; }
     void refresh();
-  }, [signedIn, refresh]);
+  }, [signedIn, token, refresh]);
 
   /* The active org must be one the user belongs to; otherwise fall back to personal. */
   const activeOrg = useMemo(
-    () => (requested && orgs ? orgs.find((o) => o.slug === requested) ?? null : null),
-    [requested, orgs],
+    () => (requested && orgs && orgsToken === token ? orgs.find((o) => o.slug === requested) ?? null : null),
+    [requested, orgs, orgsToken, token],
   );
   const activeSlug = activeOrg?.slug ?? null;
+  const workspaceReady = !requested || activeOrg !== null;
 
   const setActiveSlug = useCallback((slug: string | null) => {
     setRequested(slug);
@@ -133,8 +138,8 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   }, [activeSlug, apiBase]);
 
   const value = useMemo<OrgContextValue>(
-    () => ({ orgs, activeSlug, activeOrg, listError, setActiveSlug, refresh, api }),
-    [orgs, activeSlug, activeOrg, listError, setActiveSlug, refresh, api],
+    () => ({ orgs, activeSlug, activeOrg, workspaceReady, listError, setActiveSlug, refresh, api }),
+    [orgs, activeSlug, activeOrg, workspaceReady, listError, setActiveSlug, refresh, api],
   );
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 }

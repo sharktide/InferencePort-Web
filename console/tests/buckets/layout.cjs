@@ -11,7 +11,7 @@ module.exports = async function layout(browser, url) {
       await page.route('https://localhost:58080/**', async (route) => {
         const target = new URL(route.request().url());
         const pathname = target.pathname;
-        if (pathname.startsWith('/s3/')) {
+        if (pathname.includes('/s3/')) {
           const headers = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS' };
           if (route.request().method() === 'DELETE') { aborted++; await route.fulfill({ status: 204, headers }); }
           else if (route.request().method() === 'PUT') await route.fulfill({ status: 200, body: '', headers: { ...headers, ETag: '"receipt-hidden-by-cors"' } });
@@ -21,7 +21,8 @@ module.exports = async function layout(browser, url) {
         }
         const bucket = { id: 'fixture', name: 'hi-test', bytes_used: 8388608, bytes_reserved: 0, quota_bytes: 10737418240, status: 'active' };
         let data = { orgs: [] };
-        if (pathname.endsWith('/status')) data = { status: 'available', object_writes_enabled: pricesReady, pricing: pricesReady ? { status: 'verified', rate_version: 'a'.repeat(64), meters: { capacity: { name: 'Stored data', unit: '1 GB/Month', bands: [['0', '0.0312']], effective_at: '2026-11-01' } } } : { status: 'unavailable' } };
+        if (pathname.endsWith('/workspace')) data = { owner_kind: 'user', owner_id: '11111111-1111-4111-8111-111111111111', endpoint: 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/' };
+        else if (pathname.endsWith('/status')) data = { status: 'available', object_writes_enabled: pricesReady, pricing: pricesReady ? { status: 'verified', rate_version: 'a'.repeat(64), meters: { capacity: { name: 'Stored data', unit: '1 GB/Month', bands: [['0', '0.0312']], effective_at: '2026-11-01' } } } : { status: 'unavailable' } };
         else if (pathname.endsWith('/s3-credentials')) data = { credentials: populated ? [{ id: 'key', access_key_id: 'IPB_EXAMPLE_ONLY', expires_at: '2026-11-02T00:00:00Z', revoked_at: null }] : [] };
         else if (pathname.endsWith('/objects')) data = { objects: [{ entry: 'models/' + 'long-model-name-'.repeat(10) + '.bin', size_bytes: 8388608 }] };
         else if (pathname.endsWith('/usage')) data = { meters: [], settlements: [], held_credits: '0', carried_credits: '0', debited_credits: '0' };
@@ -63,17 +64,17 @@ module.exports = async function layout(browser, url) {
       const label = await checkbox.locator('..').boundingBox();
       assert(box.width <= 20 && Math.abs(box.x - label.x) < 2 && Math.abs(box.y + box.height / 2 - label.y - label.height / 2) < 2, 'Checkbox stays next to its label');
       await page.getByRole('tab', { name: 'Connect', exact: true }).click();
-      assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), 'https://localhost:58080/s3/');
+      assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/');
       if (populated) {
         assert.equal(await page.getByLabel('Connection bucket').inputValue(), 'hi-test');
         assert.equal(await page.getByLabel('Bucket URI', { exact: true }).inputValue(), 's3://hi-test/');
-        assert.equal(await page.getByLabel('Bucket request URL', { exact: true }).inputValue(), 'https://localhost:58080/s3/hi-test/');
+        assert.equal(await page.getByLabel('Bucket request URL', { exact: true }).inputValue(), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/hi-test/');
         const listCommand = await page.getByRole('heading', { name: 'List files', exact: true }).locator('../..').locator('pre').textContent();
-        assert(listCommand.includes("--endpoint-url 'https://localhost:58080/s3/' s3 ls 's3://hi-test/'"));
+        assert(listCommand.includes("--endpoint-url 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/' s3 ls 's3://hi-test/'"));
       }
       await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
       await page.getByRole('button', { name: 'Copy s3 endpoint', exact: true }).click();
-      assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://localhost:58080/s3/');
+      assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/');
       await page.getByText('Getting 403 Forbidden?', { exact: true }).click();
       await page.getByText('An access-log status alone does not identify the cause.', { exact: false }).waitFor();
       await page.getByRole('button', { name: 'S3 credentials', exact: true }).click();
@@ -89,5 +90,6 @@ module.exports = async function layout(browser, url) {
       }
     } finally { await page.close(); }
   }
+  await require('./workspace.cjs')(browser, url);
   console.log('PASS layout: real console CSS, desktop/mobile, light/dark, empty/populated, aligned forms, checkbox and confined table scrolling');
 };

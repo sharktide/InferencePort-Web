@@ -6,10 +6,12 @@ import ui from "./BucketsPanel.module.css";
 
 const shellQuote = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
 
-export default function BucketConnection({ apiBase, buckets, selectedName, canAdmin, onCredentials }: {
+export default function BucketConnection({ apiBase, buckets, selectedName, workspaceId, workspaceKind, canAdmin, onCredentials }: {
   apiBase: string;
   buckets: { name: string }[];
   selectedName?: string;
+  workspaceId: string;
+  workspaceKind: string;
   canAdmin: boolean;
   onCredentials: () => void;
 }) {
@@ -17,7 +19,7 @@ export default function BucketConnection({ apiBase, buckets, selectedName, canAd
   const [notice, setNotice] = useState("");
   useEffect(() => { if (selectedName) setChoice(selectedName); }, [selectedName]);
   // Use the same API base as object transfers in this console, including local deployments.
-  const endpoint = `${apiBase.replace(/\/+$/, "")}/s3/`;
+  const endpoint = `${apiBase.replace(/\/+$/, "")}/${workspaceId}/s3/`;
   const bucket = buckets.some((item) => item.name === choice) ? choice : buckets[0]?.name || "";
   const uri = bucket ? `s3://${bucket}/` : "";
   const requestUrl = bucket ? endpoint + encodeURIComponent(bucket) + "/" : "";
@@ -38,8 +40,9 @@ export default function BucketConnection({ apiBase, buckets, selectedName, canAd
   }
   return <section className={`${styles.card} ${styles.wide}`} aria-labelledby="bucket-connection-title">
     <h2 id="bucket-connection-title" className={styles.heading}>Connect with an S3 client</h2>
-    <p>Every bucket uses the same S3 endpoint. Enter your bucket name separately in your client. These buckets are private; opening a bucket URL in a browser does not sign you in.</p>
-    <p>Names belong to a workspace: two users can both have a bucket named <code>hi-test</code>. The S3 key pair identifies which user or organization owns the bucket you connect to.</p>
+    <p>Every bucket in this workspace uses this S3 endpoint. Enter your bucket name separately in your client. These buckets are private; opening a bucket URL in a browser does not sign you in.</p>
+    <p>Names belong to a workspace: two users can both have a bucket named <code>hi-test</code>. This endpoint identifies the workspace, and your credentials must belong to it.</p>
+    <p>Workspace: {workspaceKind === "org" ? "Organization" : "Personal"} · <code>{workspaceId}</code></p>
     {field("S3 endpoint", endpoint)}
     <div className={ui.connectionSettings}><p><strong>Signing region:</strong> <code>us-east-1</code></p><p><strong>Addressing:</strong> Path style</p><p><strong>Authentication:</strong> AWS Signature V4</p></div>
     {buckets.length > 0 ? <>

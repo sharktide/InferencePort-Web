@@ -12,12 +12,13 @@ type Credential = { id: string; access_key_id: string; expires_at: string; revok
 type Catalog = { status: string; endpoint: string; object_writes_enabled?: boolean; pricing: { status?: string; rate_version?: string; meters?: Record<string, { name: string; unit: string; bands: string[][]; effective_at: string }>; offers?: unknown[] } };
 const bytes = (value: number) => `${(Number(value) / 1024 ** 2).toLocaleString(undefined, { maximumFractionDigits: 2 })} MiB`;
 const xmlValue = (xml: string, tag: string) => new DOMParser().parseFromString(xml, "application/xml").getElementsByTagName(tag)[0]?.textContent ?? "";
-const objectPath = (bucket: string, key: string) => `/s3/${encodeURIComponent(bucket)}/${encodeURIComponent(key).replace(/\./g, "%2E")}`;
+const objectPath = (endpoint: string, bucket: string, key: string) => `${endpoint}${encodeURIComponent(bucket)}/${encodeURIComponent(key).replace(/\./g, "%2E")}`;
 
 export default function BucketsPanel({ apiBase, session }: { apiBase: string; session: { access_token?: string } | null }) {
-  const { activeOrg, activeSlug } = useOrgContext();
+  const { activeOrg, activeSlug, workspaceReady, setActiveSlug, refresh: refreshOrgs } = useOrgContext();
   const refreshId = useRef(0);
   const [tab, setTab] = useState("files");
+  const [workspace, setWorkspace] = useState<{ owner_kind: string; owner_id: string; endpoint: string; selection: string } | null>(null);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [selected, setSelected] = useState<Bucket | null>(null);
@@ -40,13 +41,21 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   const pricingReady = catalog?.pricing?.status === "verified" && catalog?.object_writes_enabled !== false;
   const canWrite = !activeOrg || ["owner", "admin", "member"].includes(activeOrg.role);
 
+  const selection = activeSlug || "personal";
+  const contextKey = `${selection}:${session?.access_token || ""}`;
+  const contextRef = useRef(contextKey);
+  contextRef.current = contextKey;
+  const s3Path = workspace ? `/${workspace.owner_id}/s3/` : "";
   const call = useCallback(async (path: string, init: RequestInit = {}, raw = false) => {
+    if (!workspaceReady || contextRef.current !== contextKey) throw new Error("Wait for the selected workspace to load.");
+    const epoch = refreshId.current;
     const headers = new Headers(init.headers);
     if (session?.access_token) headers.set("Authorization", `Bearer ${session.access_token}`);
     if (activeSlug) headers.set("X-InferencePort-Org", activeSlug);
     const timeout = AbortSignal.timeout(90_000);
     const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
     const response = await fetch(`${apiBase.replace(/\/$/, "")}${path}`, { ...init, headers, signal, cache: "no-store" });
+    if (contextRef.current !== contextKey || epoch !== refreshId.current) throw new Error("Workspace changed; retry in the current workspace.");
     if (!response.ok) {
       const body = await response.text();
       let detail = "";
@@ -54,28 +63,32 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       throw new Error(detail || `Request failed (HTTP ${response.status}).`);
     }
     if (raw) return response;
-    return response.status === 204 ? null : response.json();
-  }, [apiBase, session?.access_token, activeSlug]);
+    const value = response.status === 204 ? null : await response.json();
+    if (contextRef.current !== contextKey || epoch !== refreshId.current) throw new Error("Workspace changed; retry in the current workspace.");
+    return value;
+  }, [apiBase, session?.access_token, activeSlug, workspaceReady, contextKey]);
 
   const refresh = useCallback(async () => {
     const requestId = ++refreshId.current;
-    const status: Catalog = await call("/v1/buckets/status");
+    const [status, scope]: [Catalog, { owner_kind: string; owner_id: string; endpoint: string }] = await Promise.all([call("/v1/buckets/status"), call("/v1/buckets/workspace")]);
     if (requestId !== refreshId.current) return;
     setCatalog(status);
+    setWorkspace({ ...scope, selection: contextKey });
     if (status.status !== "not_available") {
       const list = await call("/v1/buckets?limit=1000");
       if (requestId !== refreshId.current) return;
       setBuckets(list.buckets); setBucketContinuation(list.continuation_token);
       if (canAdmin) { const keys = await call("/v1/buckets/s3-credentials"); if (requestId === refreshId.current) { setCredentials(keys.credentials); setCredentialContinuation(keys.continuation_token); } }
     }
-  }, [call, canAdmin]);
+  }, [call, canAdmin, contextKey]);
 
   useEffect(() => {
     let live = true;
+    setWorkspace(null); setBusy(false); setMessage(""); setPrefix(""); setKeyPrefix(""); setReadOnlyKey(true); setName(""); setTab("files");
     setBuckets([]); setSelected(null); setEntries([]); setSecret(null); setUsage(null); setCredentials([]);
-    void refresh().catch((error) => { if (live) setMessage(error.message); });
-    return () => { live = false; };
-  }, [refresh]);
+    if (workspaceReady) void refresh().catch((error) => { if (live) setMessage(error.message); });
+    return () => { live = false; refreshId.current++; };
+  }, [refresh, workspaceReady]);
 
   const tabs = [
     { id: "files", label: "Files" }, { id: "connect", label: "Connect" },
@@ -88,8 +101,8 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
 
   async function act(work: () => Promise<void>) {
     setBusy(true); setMessage("");
-    try { await work(); } catch (error) { setMessage(error instanceof Error ? error.message : "Request failed."); }
-    finally { setBusy(false); }
+    try { await work(); } catch (error) { if (contextRef.current === contextKey) setMessage(error instanceof Error ? error.message : "Request failed."); }
+    finally { if (contextRef.current === contextKey) setBusy(false); }
   }
 
   async function browse(bucket: Bucket, token: string | null = null, nextPrefix = prefix) {
@@ -103,7 +116,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
 
   async function upload(file: File) {
     if (!selected) return;
-    const path = objectPath(selected.name, file.name);
+    const path = objectPath(s3Path, selected.name, file.name);
     const initiated = await call(`${path}?uploads`, { method: "POST", headers: { "Content-Type": file.type || "application/octet-stream" } }, true);
     const uploadId = xmlValue(await initiated.text(), "UploadId");
     if (!uploadId) throw new Error("Upload was initiated but no upload ID was returned. Check active multipart uploads before retrying.");
@@ -137,23 +150,27 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   async function download(entry: Entry) {
     if (!selected) return;
     if (Number(entry.size_bytes) > 256 * 1024 ** 2) throw new Error("Use ipx bucket download or an S3 client for files over 256 MiB.");
-    const response = await call(objectPath(selected.name, entry.entry), {}, true);
+    const response = await call(objectPath(s3Path, selected.name, entry.entry), {}, true);
     const declared = Number(response.headers.get("content-length"));
     if (declared > 256 * 1024 ** 2) { await response.body?.cancel(); throw new Error("File is now over 256 MiB. Use ipx or an S3 client."); }
     if (!response.body) throw new Error("Download stream unavailable.");
     const reader = response.body.getReader();
     const chunks: Uint8Array[] = []; let size = 0;
     while (true) {
+      if (contextRef.current !== contextKey) { await reader.cancel(); throw new Error("Workspace changed; download cancelled."); }
       const { done, value } = await reader.read(); if (done) break;
       size += value.byteLength;
       if (size > 256 * 1024 ** 2) { await reader.cancel(); throw new Error("File exceeded the browser download limit. Use ipx or an S3 client."); }
       chunks.push(value);
     }
+    if (contextRef.current !== contextKey) throw new Error("Workspace changed; download cancelled.");
     const url = URL.createObjectURL(new Blob(chunks as BlobPart[]));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = entry.entry.split("/").pop() || "download";
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
 
+  if (!workspaceReady) return <section className={styles.card}><h1>Buckets</h1><p>Waiting for the selected organization. No personal workspace is used while it loads.</p><button onClick={() => void refreshOrgs()}>Retry workspace</button><button onClick={() => setActiveSlug(null)}>Use personal workspace</button></section>;
+  if (!workspace || workspace.selection !== contextKey) return <section className={styles.card}><h1>Buckets</h1><p role="status">{message || "Loading workspace…"}</p><button onClick={() => void act(refresh)}>Retry</button></section>;
   return <div className={`${styles.panel} ${styles.active} ${ui.panel}`}>
     <section className={`${styles.card} ${styles.wide}`}>
       <div className={ui.header}><div className={ui.intro}>
@@ -200,7 +217,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       {canWrite && !pricingReady && <p role="status">Uploads are paused while verified pricing is unavailable. Use Refresh to retry.</p>}
       <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No objects match this prefix.</td></tr>}{entries.map((entry) => <tr key={entry.entry}>
         <td style={{ overflowWrap: "anywhere" }}>{entry.entry}</td><td>{bytes(entry.size_bytes)}</td><td><button disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>{" "}
-          {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(objectPath(selected.name, entry.entry), { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
+          {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(objectPath(s3Path, selected.name, entry.entry), { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
       </tr>)}</tbody></table></div>
       {continuation && <button disabled={busy} onClick={() => void act(() => browse(selected, continuation))}>Next page</button>}
       {usage && <details className={ui.usage}><summary>Usage and retention</summary><ul>{usage.meters.map((meter) => <li key={meter.meter}>{meter.meter}: {meter.quantity}</li>)}</ul>
@@ -209,7 +226,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     </section>}
     </div>
     <div role="tabpanel" id="bucket-panel-connect" aria-labelledby="bucket-tab-connect" hidden={tab !== "connect"} className={ui.tabPanel}>
-      {catalog && catalog.status !== "not_available" && <BucketConnection apiBase={apiBase} buckets={buckets} selectedName={selected?.name} canAdmin={canAdmin} onCredentials={() => selectTab("credentials")} />}
+      {catalog && catalog.status !== "not_available" && <BucketConnection apiBase={apiBase} buckets={buckets} selectedName={selected?.name} workspaceId={workspace.owner_id} workspaceKind={workspace.owner_kind} canAdmin={canAdmin} onCredentials={() => selectTab("credentials")} />}
     </div>
     <div role="tabpanel" id="bucket-panel-credentials" aria-labelledby="bucket-tab-credentials" hidden={tab !== "credentials"} className={ui.tabPanel}>
     {canAdmin && catalog && catalog.status !== "not_available" && <section id="bucket-s3-credentials" className={`${styles.card} ${styles.wide}`}>
