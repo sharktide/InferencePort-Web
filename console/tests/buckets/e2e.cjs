@@ -12,7 +12,7 @@ const { chromium } = require(path.join(deps, "@playwright/test"));
 
 (async () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "buckets-ui-"));
-  const credentials = JSON.parse(fs.readFileSync(process.env.BUCKETS_TEST_CREDENTIALS || path.resolve(__dirname, "../../../../InferencePort-Lightning/work/buckets-sandbox/credentials.json")));
+
   await esbuild.build({ entryPoints: [path.join(__dirname, "harness.tsx")], bundle: true, outfile: path.join(temp, "app.js"),
     jsx: "automatic", loader: { ".css": "local-css" }, define: { "process.env.NODE_ENV": '"development"' } });
   const server = http.createServer((request, response) => {
@@ -30,6 +30,7 @@ const { chromium } = require(path.join(deps, "@playwright/test"));
     for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => server.close(() => { fs.rmSync(temp, { recursive: true, force: true }); process.exit(0); }));
     return;
   }
+  const credentials = JSON.parse(fs.readFileSync(process.env.BUCKETS_TEST_CREDENTIALS || path.resolve(__dirname, "../../../../InferencePort-Lightning/work/buckets-sandbox/credentials.json")));
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({ ignoreHTTPSErrors: true });
@@ -53,7 +54,11 @@ const { chromium } = require(path.join(deps, "@playwright/test"));
     if (fs.readFileSync(file, "utf8") !== "browser model weights") throw new Error("Browser download mismatch");
     await page.getByRole("button", { name: `Issue for ${name}`, exact: true }).click();
     await page.getByText("Copy this secret now. It will not be shown again.", { exact: true }).waitFor();
+    const issuedAccessKey = await page.getByLabel("Access key ID").inputValue();
     await page.getByRole("button", { name: "Dismiss secret", exact: true }).click();
+    const credentialItem = page.locator("li").filter({ hasText: issuedAccessKey });
+    await credentialItem.getByRole("button", { name: "Revoke" }).click();
+    await credentialItem.getByText("revoked").waitFor();
     await objectRow.getByRole("button", { name: "Delete", exact: true }).click();
     await objectRow.waitFor({ state: "detached" });
     await bucketRow.getByRole("button", { name: "Delete", exact: true }).click();
