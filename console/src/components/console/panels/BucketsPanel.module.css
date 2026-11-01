@@ -1,0 +1,72 @@
+.panel > section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.intro { display: grid; gap: 0.5rem; min-width: 0; }
+.header button { flex-shrink: 0; }
+
+.panel h1, .panel h2, .panel h3, .panel p { margin: 0; }
+.panel p { line-height: 1.65; color: var(--text-2); }
+.panel h1, .panel h2 { overflow-wrap: anywhere; }
+.panel button { align-self: flex-start; min-height: 40px; max-width: 100%; overflow-wrap: anywhere; }
+.panel label { min-width: 0; }
+.panel input, .panel select { min-width: 0; min-height: 42px; }
+
+.createForm, .searchForm, .credentialForm {
+  display: grid;
+  align-items: end;
+  gap: 1rem;
+}
+.createForm { grid-template-columns: minmax(0, 1fr) minmax(120px, 180px) auto; }
+.createForm button, .searchForm button { align-self: end; }
+.searchForm { grid-template-columns: minmax(0, 1fr) auto; }
+.credentialForm { grid-template-columns: auto minmax(0, 1fr) minmax(140px, 200px); }
+.credentialForm .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 42px;
+  padding-right: 1rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  margin: 0;
+  flex: 0 0 16px;
+}
+
+.tableScroll {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+}
+.tableScroll:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tableScroll table { width: 100%; min-width: 580px; border-collapse: collapse; table-layout: fixed; text-align: left; font-size: 0.875rem; }
+.tableScroll th { background: var(--surface-2); color: var(--text-2); font-size: 0.8125rem; font-weight: 600; }
+.tableScroll th, .tableScroll td { padding: 0.85rem 1rem; vertical-align: middle; line-height: 1.6; }
+.tableScroll th { white-space: normal; }
+.tableScroll td { border-top: 1px solid var(--border); overflow-wrap: anywhere; }
+.tableScroll td:last-child { min-width: 160px; }
+.tableScroll td button { margin: 0.2rem 0.4rem 0.2rem 0; }
+.tableScroll .empty, .empty { color: var(--muted); padding: 1.25rem 1rem; }
+.credentials { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.credentials li { padding: 1rem; border: 1px solid var(--border); border-radius: var(--r-1); overflow-wrap: anywhere; line-height: 2; }
+.credentials button { margin-left: 0.5rem; }
+.secret { display: grid; gap: 1rem; padding: 1.25rem; background: var(--surface-2); border: 1px solid var(--brand); border-radius: var(--r-1); }
+.secret input { font-family: var(--mono); }
+
+@media (max-width: 700px) {
+  .panel > section { padding: 1.25rem; }
+  .header { flex-wrap: wrap; }
+  .createForm, .credentialForm { grid-template-columns: minmax(0, 1fr); }
+  .credentialForm .checkbox { padding-right: 0; }
+  .createForm button { width: 100%; }
+}

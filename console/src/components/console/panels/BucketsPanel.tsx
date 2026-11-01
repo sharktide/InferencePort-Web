@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useOrgContext } from "../OrgContext";
 import styles from "./Panel.module.css";
+import ui from "./BucketsPanel.module.css";
 
 type Bucket = { id: string; name: string; bytes_used: number; bytes_reserved: number; quota_bytes: number; status: string };
 type Entry = { entry: string; object_key: string; size_bytes: number; s3_etag: string };
@@ -139,14 +140,15 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
 
-  return <div className={`${styles.panel} ${styles.active}`}>
+  return <div className={`${styles.panel} ${styles.active} ${ui.panel}`}>
     <section className={`${styles.card} ${styles.wide}`}>
+      <div className={ui.header}><div className={ui.intro}>
       <h1 className={styles.heading}>Buckets</h1>
       <p>Workspace: {activeOrg?.name ?? "Personal"} · Private object storage</p>
       <p role="status" aria-live="polite">{message || (catalog ? catalog.status === "not_available" ? "Buckets is not available on this server yet." : "Private beta · Hot storage in East US" : "Loading…")}</p>
-      <button type="button" disabled={busy} onClick={() => void act(refresh)}>Refresh</button>
+      </div><button type="button" disabled={busy} onClick={() => void act(refresh)}>Refresh</button></div>
       {catalog && catalog.status !== "not_available" && <>
-        {canAdmin && <form onSubmit={(event) => { event.preventDefault(); void act(async () => {
+        {canAdmin && <form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
           await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3) }) });
           setName(""); await refresh();
         }); }}>
@@ -154,25 +156,26 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
           <label>Quota (GiB) <input aria-label="Quota (GiB)" type="number" min="1" max="1024" value={quota} onChange={(e) => setQuota(e.target.value)} required /></label>{" "}
           <button disabled={busy} type="submit">Create bucket</button>
         </form>}
-        <table><thead><tr><th>Name</th><th>Used / quota</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+        <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Name</th><th>Used / quota</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          {buckets.length === 0 && <tr><td colSpan={4} className={ui.empty}>No buckets yet. Create a bucket to start storing files.</td></tr>}
           {buckets.map((bucket) => <tr key={bucket.id}><td>{bucket.name}</td><td>{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td>{bucket.status}</td><td>
             <button type="button" disabled={busy} onClick={() => void act(() => browse(bucket))}>Browse</button>{" "}
             {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); if (selected?.id === bucket.id) setSelected(null); await refresh(); }); }}>Delete</button>}
           </td></tr>)}
-        </tbody></table>
+        </tbody></table></div>
         {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=1000&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...rows, ...page.buckets]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
       </>}
     </section>
     {selected && <section className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>{selected.name}</h2>
-      <form onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
+      <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
         <label>Key prefix <input aria-label="Key prefix" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>{" "}<button disabled={busy}>Search</button>
       </form>
       {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
-      <table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.map((entry) => <tr key={entry.entry}>
+      <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No objects match this prefix.</td></tr>}{entries.map((entry) => <tr key={entry.entry}>
         <td style={{ overflowWrap: "anywhere" }}>{entry.entry}</td><td>{bytes(entry.size_bytes)}</td><td><button disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>{" "}
           {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(objectPath(selected.name, entry.entry), { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
-      </tr>)}</tbody></table>
+      </tr>)}</tbody></table></div>
       {continuation && <button disabled={busy} onClick={() => void act(() => browse(selected, continuation))}>Next page</button>}
       {usage && <><h3>Measured usage</h3><ul>{usage.meters.map((meter) => <li key={meter.meter}>{meter.meter}: {meter.quantity}</li>)}</ul>
         <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p></>}
@@ -180,19 +183,21 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     </section>}
     {canAdmin && catalog?.status === "private_beta" && <section className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>S3 credentials</h2>
-      <label><input type="checkbox" checked={readOnlyKey} onChange={(event) => setReadOnlyKey(event.target.checked)} /> Read only</label>{" "}
+      <div className={ui.credentialForm}>
+      <label className={ui.checkbox}><input type="checkbox" checked={readOnlyKey} onChange={(event) => setReadOnlyKey(event.target.checked)} /> Read only</label>{" "}
       <label>Key prefix <input aria-label="Credential key prefix" value={keyPrefix} onChange={(event) => setKeyPrefix(event.target.value)} /></label>{" "}
       <label>Expires in <select aria-label="Credential expiry" value={keyTtl} onChange={(event) => setKeyTtl(event.target.value)}><option value="600">10 minutes</option><option value="86400">1 day</option><option value="2592000">30 days</option></select></label>
+      </div>
       <button disabled={busy} onClick={() => void act(async () => {
         const value = await call("/v1/buckets/s3-credentials", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ permissions: readOnlyKey ? ["storage.read"] : ["storage.read", "storage.write"], bucket_ids: selected ? [selected.id] : null, key_prefixes: keyPrefix ? [keyPrefix] : null, expires_in: Number(keyTtl) }) });
         setSecret(value); await refresh();
       })}>Issue {selected ? `for ${selected.name}` : "workspace credential"}</button>
-      {secret && <div role="status"><p>Copy this secret now. It will not be shown again.</p>
+      {secret && <div className={ui.secret} role="status"><p>Copy this secret now. It will not be shown again.</p>
         <label>Access key ID <input readOnly value={secret.access_key_id} /></label>
         <label>Secret access key <input readOnly type="password" value={secret.secret_access_key} /></label>
         <button onClick={() => void navigator.clipboard.writeText(secret.secret_access_key)}>Copy secret</button>{" "}<button onClick={() => setSecret(null)}>Dismiss secret</button>
       </div>}
-      <ul>{credentials.map((credential) => <li key={credential.id}>{credential.access_key_id} · expires {credential.expires_at} · {credential.revoked_at ? "revoked" : <button disabled={busy} onClick={() => void act(async () => { await call(`/v1/buckets/s3-credentials/${credential.id}`, { method: "DELETE" }); if (secret?.id === credential.id) setSecret(null); await refresh(); })}>Revoke</button>}{!credential.revoked_at && <button disabled={busy} onClick={() => void act(async () => {
+      <ul className={ui.credentials}>{credentials.length === 0 && <li className={ui.empty}>No S3 credentials issued for this workspace.</li>}{credentials.map((credential) => <li key={credential.id}>{credential.access_key_id} · expires {credential.expires_at} · {credential.revoked_at ? "revoked" : <button disabled={busy} onClick={() => void act(async () => { await call(`/v1/buckets/s3-credentials/${credential.id}`, { method: "DELETE" }); if (secret?.id === credential.id) setSecret(null); await refresh(); })}>Revoke</button>}{!credential.revoked_at && <button disabled={busy} onClick={() => void act(async () => {
         const value = await call(`/v1/buckets/s3-credentials/${credential.id}/rotate`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ revoke_previous: false }) });
         setSecret(value); await refresh(); setMessage("Rotation issued a new secret with the same scope. Revoke the old credential after updating your clients.");
       })}>Rotate</button>}</li>)}</ul>
@@ -202,7 +207,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <h2 className={styles.heading}>Azure retail rates</h2>
       {catalog?.pricing?.meters && Object.keys(catalog.pricing.meters).length > 0 ? <>
         <p>USD · East US · LRS · Hot · no markup</p><p>Rate version: <code style={{ overflowWrap: "anywhere" }}>{catalog.pricing.rate_version}</code></p>
-        <table><thead><tr><th>Meter</th><th>Unit</th><th>Published bands (from / USD)</th><th>Effective date</th></tr></thead><tbody>{Object.entries(catalog.pricing.meters).map(([key, meter]) => <tr key={key}><td>{meter.name}</td><td>{meter.unit}</td><td>{meter.bands.map(([from, rate]) => `${from}: $${rate}`).join("; ")}</td><td>{meter.effective_at}</td></tr>)}</tbody></table>
+        <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Meter</th><th>Unit</th><th>Published bands (from / USD)</th><th>Effective date</th></tr></thead><tbody>{Object.entries(catalog.pricing.meters).map(([key, meter]) => <tr key={key}><td>{meter.name}</td><td>{meter.unit}</td><td>{meter.bands.map(([from, rate]) => `${from}: $${rate}`).join("; ")}</td><td>{meter.effective_at}</td></tr>)}</tbody></table></div>
       </> : <p>No verified Azure retail rates have been published on this server.</p>}
       <p>Charges include actual Azure calls, stored and retained data, retrieval and applicable transfer. Capacity and transfer bands are shared at the backing account level. Reserved-capacity discounts and independently funded promotions are unavailable.</p>
       <a href="https://docs.inferenceport.ai/api/buckets.html" target="_blank" rel="noreferrer">Buckets API and CLI guide</a>

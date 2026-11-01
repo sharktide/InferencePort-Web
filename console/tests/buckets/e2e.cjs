@@ -14,20 +14,29 @@ const { chromium } = require(path.join(deps, "@playwright/test"));
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "buckets-ui-"));
 
   await esbuild.build({ entryPoints: [path.join(__dirname, "harness.tsx")], bundle: true, outfile: path.join(temp, "app.js"),
-    jsx: "automatic", loader: { ".css": "local-css" }, define: { "process.env.NODE_ENV": '"development"' } });
+    jsx: "automatic", loader: { ".css": "css", ".module.css": "local-css" }, define: { "process.env.NODE_ENV": '"development"' } });
   const server = http.createServer((request, response) => {
     if (request.url === "/app.js" || request.url === "/app.css") {
       response.setHeader("Content-Type", request.url.endsWith("js") ? "text/javascript" : "text/css");
       response.end(fs.readFileSync(path.join(temp, request.url.slice(1))));
     } else {
       response.setHeader("Content-Type", "text/html");
-      response.end('<!doctype html><html><head><link rel="stylesheet" href="/app.css"><style>body{font-family:system-ui;color:#182025;background:#f6f7fa}input,button{padding:8px;margin:5px}table{width:100%;text-align:left}td,th{padding:8px}section{padding:20px;margin:15px;background:white;border:1px solid #ddd} :root{--text:#182025;--text-2:#46525f;--surface:white;--surface-2:#f4f6f8;--border:#ddd;--r-2:8px;--r-1:4px}</style></head><body><div id="root"></div><script src="/app.js"></script></body></html>');
+      response.end('<!doctype html><html data-theme="light"><head><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/app.css"></head><body><div id="root"></div><script src="/app.js"></script></body></html>');
     }
   });
-  await new Promise((resolve) => server.listen(53001, "127.0.0.1", resolve));
+  await new Promise((resolve) => server.listen(Number(process.env.BUCKETS_TEST_PORT || 53001), "127.0.0.1", resolve));
   if (process.argv.includes("--serve")) {
     console.log("Local Buckets test console: http://127.0.0.1:53001 (use a generated sandbox key)");
     for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => server.close(() => { fs.rmSync(temp, { recursive: true, force: true }); process.exit(0); }));
+    return;
+  }
+  if (process.argv.includes("--layout")) {
+    const browser = await chromium.launch({ headless: true });
+    try {
+      await require("./layout.cjs")(browser, `http://127.0.0.1:${process.env.BUCKETS_TEST_PORT || 53001}`);
+    } finally {
+      await browser.close(); await new Promise((resolve) => server.close(resolve)); fs.rmSync(temp, { recursive: true, force: true });
+    }
     return;
   }
   const credentials = JSON.parse(fs.readFileSync(process.env.BUCKETS_TEST_CREDENTIALS || path.resolve(__dirname, "../../../../InferencePort-Lightning/work/buckets-sandbox/credentials.json")));
@@ -36,7 +45,7 @@ const { chromium } = require(path.join(deps, "@playwright/test"));
     const context = await browser.newContext({ ignoreHTTPSErrors: true });
     const page = await context.newPage();
     page.on("dialog", (dialog) => dialog.accept());
-    await page.goto("http://127.0.0.1:53001");
+    await page.goto(`http://127.0.0.1:${process.env.BUCKETS_TEST_PORT || 53001}`);
     await page.getByLabel("Sandbox API key").fill(credentials.user1_personal);
     await page.getByRole("button", { name: "Open sandbox" }).click();
     const name = "ui-e2e-" + randomUUID().slice(0, 12);

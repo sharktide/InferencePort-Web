@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test:pricing": "node --test tests/modelPricing.test.cjs",
     "test:buckets": "node tests/buckets/e2e.cjs",
+    "test:buckets:layout": "node tests/buckets/e2e.cjs --layout",
     "buckets:dev": "node tests/buckets/e2e.cjs --serve"
   },
   "dependencies": {
