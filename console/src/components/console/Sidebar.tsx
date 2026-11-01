@@ -32,12 +32,12 @@ const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
   { title: "Account", ids: ["account", "billing"] },
   { title: "Organization", ids: ["organizations"] },
   { title: "Explore", ids: ["models", "playground", "deploy", "rewards"] },
-  { title: "Build", ids: ["agents", "api-key", "usage", "gen-api", "payg-api", "mcp", "shield"] },
+  { title: "Build", ids: ["agents", "buckets", "api-key", "usage", "gen-api", "payg-api", "mcp", "shield"] },
   { title: "Access", ids: ["authorized-apps"] },
 ];
 
 /* Work tabs run billed to whichever context is active (the org header is set globally). */
-const WORK_IDS = ["models", "playground", "agents"];
+const WORK_IDS = ["models", "playground", "agents", "buckets"];
 const ORG_BUILD_IDS = ["deploy", "gen-api", "payg-api", "mcp", "shield"];
 const ORG_ACCOUNT_IDS = ["account", "organizations"];
 
