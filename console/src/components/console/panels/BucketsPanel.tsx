@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useOrgContext } from "../OrgContext";
 import styles from "./Panel.module.css";
 import ui from "./BucketsPanel.module.css";
+import BucketConnection from "./BucketConnection";
 
 type Bucket = { id: string; name: string; bytes_used: number; bytes_reserved: number; quota_bytes: number; status: string };
 type Entry = { entry: string; object_key: string; size_bytes: number; s3_etag: string };
@@ -166,6 +167,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=1000&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...rows, ...page.buckets]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
       </>}
     </section>
+    {catalog && catalog.status !== "not_available" && <BucketConnection apiBase={apiBase} buckets={buckets} selectedName={selected?.name} canAdmin={canAdmin} />}
     {selected && <section className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>{selected.name}</h2>
       <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
@@ -181,7 +183,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p></>}
       <p>Only Hot storage is enabled. Azure retention can keep deleted data billable; insufficient credits pauses new writes and does not delete objects.</p>
     </section>}
-    {canAdmin && catalog?.status === "private_beta" && <section className={`${styles.card} ${styles.wide}`}>
+    {canAdmin && catalog?.status === "private_beta" && <section id="bucket-s3-credentials" className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>S3 credentials</h2>
       <div className={ui.credentialForm}>
       <label className={ui.checkbox}><input type="checkbox" checked={readOnlyKey} onChange={(event) => setReadOnlyKey(event.target.checked)} /> Read only</label>{" "}

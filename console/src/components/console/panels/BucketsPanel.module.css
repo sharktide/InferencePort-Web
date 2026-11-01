@@ -63,10 +63,25 @@
 .secret { display: grid; gap: 1rem; padding: 1.25rem; background: var(--surface-2); border: 1px solid var(--brand); border-radius: var(--r-1); }
 .secret input { font-family: var(--mono); }
 
+.connectionField { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 0.75rem; }
+.connectionField input { font-family: var(--mono); font-size: 0.8125rem; }
+.connectionField button { align-self: end; }
+.connectionSettings { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; }
+.command { min-width: 0; border: 1px solid var(--border); border-radius: var(--r-1); overflow: hidden; }
+.commandHeader { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.75rem 1rem; background: var(--surface-2); }
+.command pre { margin: 0; padding: 1rem; overflow-x: auto; font-size: 0.8125rem; line-height: 1.8; }
+.command pre code { padding: 0; border: 0; background: transparent; font-size: inherit; }
+.connectionHelp { padding: 1rem; border: 1px solid var(--border); border-radius: var(--r-1); line-height: 1.7; }
+.connectionHelp summary { cursor: pointer; font-weight: 600; }
+.connectionHelp ul { padding-left: 1.25rem; margin-bottom: 0; display: grid; gap: 0.65rem; }
+
 @media (max-width: 700px) {
   .panel > section { padding: 1.25rem; }
   .header { flex-wrap: wrap; }
   .createForm, .credentialForm { grid-template-columns: minmax(0, 1fr); }
   .credentialForm .checkbox { padding-right: 0; }
   .createForm button { width: 100%; }
+  .connectionField { grid-template-columns: minmax(0, 1fr); }
+  .connectionField button { justify-self: start; }
+  .commandHeader { flex-wrap: wrap; }
 }

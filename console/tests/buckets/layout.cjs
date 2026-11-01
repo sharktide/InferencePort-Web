@@ -9,7 +9,7 @@ module.exports = async function layout(browser, url) {
     try {
       await page.route('https://localhost:58080/**', async (route) => {
         const pathname = new URL(route.request().url()).pathname;
-        const bucket = { id: 'fixture', name: 'model-weights', bytes_used: 8388608, bytes_reserved: 0, quota_bytes: 10737418240, status: 'active' };
+        const bucket = { id: 'fixture', name: 'hi-test', bytes_used: 8388608, bytes_reserved: 0, quota_bytes: 10737418240, status: 'active' };
         let data = { orgs: [] };
         if (pathname.endsWith('/status')) data = { status: 'private_beta', pricing: populated ? { rate_version: 'a'.repeat(64), meters: { capacity: { name: 'Hot LRS Data Stored', unit: '1 GB/Month', bands: [['0', '0.0208']], effective_at: '2026-11-01' } } } : {} };
         else if (pathname.endsWith('/s3-credentials')) data = { credentials: populated ? [{ id: 'key', access_key_id: 'IPB_EXAMPLE_ONLY', expires_at: '2026-11-02T00:00:00Z', revoked_at: null }] : [] };
@@ -25,6 +25,19 @@ module.exports = async function layout(browser, url) {
       await page.getByText('Read only', { exact: true }).waitFor();
       if (populated) await page.getByRole('button', { name: 'Browse', exact: true }).click();
       else await page.getByText('No buckets yet. Create a bucket to start storing files.').waitFor();
+      assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), 'https://localhost:58080/s3/');
+      if (populated) {
+        assert.equal(await page.getByLabel('Connection bucket').inputValue(), 'hi-test');
+        assert.equal(await page.getByLabel('Bucket URI', { exact: true }).inputValue(), 's3://hi-test/');
+        assert.equal(await page.getByLabel('Bucket request URL', { exact: true }).inputValue(), 'https://localhost:58080/s3/hi-test/');
+        const listCommand = await page.getByRole('heading', { name: 'List files', exact: true }).locator('../..').locator('pre').textContent();
+        assert(listCommand.includes("--endpoint-url 'https://localhost:58080/s3/' s3 ls 's3://hi-test/'"));
+      }
+      await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+      await page.getByRole('button', { name: 'Copy s3 endpoint', exact: true }).click();
+      assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://localhost:58080/s3/');
+      await page.getByText('Getting 403 Forbidden?', { exact: true }).click();
+      await page.getByText('An access-log status alone does not identify the cause.', { exact: false }).waitFor();
       const name = await page.getByLabel('Bucket name', { exact: true }).boundingBox();
       const quota = await page.getByLabel('Quota (GiB)').boundingBox();
       assert(name && quota);
