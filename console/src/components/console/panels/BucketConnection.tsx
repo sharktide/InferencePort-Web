@@ -38,6 +38,7 @@ export default function BucketConnection({ apiBase, buckets, selectedName, canAd
   return <section className={`${styles.card} ${styles.wide}`} aria-labelledby="bucket-connection-title">
     <h2 id="bucket-connection-title" className={styles.heading}>Connect with an S3 client</h2>
     <p>Every bucket uses the same S3 endpoint. Enter your bucket name separately in your client. These buckets are private; opening a bucket URL in a browser does not sign you in.</p>
+    <p>Names belong to a workspace: two users can both have a bucket named <code>hi-test</code>. The S3 key pair identifies which user or organization owns the bucket you connect to.</p>
     {field("S3 endpoint", endpoint)}
     <div className={ui.connectionSettings}><p><strong>Signing region:</strong> <code>us-east-1</code></p><p><strong>Addressing:</strong> Path style</p><p><strong>Authentication:</strong> AWS Signature V4</p></div>
     {buckets.length > 0 ? <>

@@ -9,7 +9,7 @@ import BucketConnection from "./BucketConnection";
 type Bucket = { id: string; name: string; bytes_used: number; bytes_reserved: number; quota_bytes: number; status: string };
 type Entry = { entry: string; object_key: string; size_bytes: number; s3_etag: string };
 type Credential = { id: string; access_key_id: string; expires_at: string; revoked_at: string | null };
-type Catalog = { status: string; endpoint: string; pricing: { rate_version?: string; meters?: Record<string, { name: string; unit: string; bands: string[][]; effective_at: string }>; offers?: unknown[] } };
+type Catalog = { status: string; endpoint: string; object_writes_enabled?: boolean; pricing: { status?: string; rate_version?: string; meters?: Record<string, { name: string; unit: string; bands: string[][]; effective_at: string }>; offers?: unknown[] } };
 const bytes = (value: number) => `${(Number(value) / 1024 ** 2).toLocaleString(undefined, { maximumFractionDigits: 2 })} MiB`;
 const xmlValue = (xml: string, tag: string) => new DOMParser().parseFromString(xml, "application/xml").getElementsByTagName(tag)[0]?.textContent ?? "";
 const objectPath = (bucket: string, key: string) => `/s3/${encodeURIComponent(bucket)}/${encodeURIComponent(key).replace(/\./g, "%2E")}`;
@@ -36,6 +36,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   const [message, setMessage] = useState("");
   const [usage, setUsage] = useState<{ meters: { meter: string; quantity: string }[]; settlements: { amount_credits: string }[]; held_credits: string; carried_credits: string; debited_credits: string } | null>(null);
   const canAdmin = !activeOrg || ["owner", "admin"].includes(activeOrg.role);
+  const pricingReady = catalog?.pricing?.status === "verified" && catalog?.object_writes_enabled !== false;
   const canWrite = !activeOrg || ["owner", "admin", "member"].includes(activeOrg.role);
 
   const call = useCallback(async (path: string, init: RequestInit = {}, raw = false) => {
@@ -149,6 +150,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <p role="status" aria-live="polite">{message || (catalog ? catalog.status === "not_available" ? "Buckets is not available on this server yet." : "Private beta · Hot storage in East US" : "Loading…")}</p>
       </div><button type="button" disabled={busy} onClick={() => void act(refresh)}>Refresh</button></div>
       {catalog && catalog.status !== "not_available" && <>
+        <p>Bucket names are unique within this workspace. Other users and organizations can use the same name; your credentials select which workspace you access.</p>
         {canAdmin && <form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
           await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3) }) });
           setName(""); await refresh();
@@ -173,7 +175,8 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
         <label>Key prefix <input aria-label="Key prefix" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>{" "}<button disabled={busy}>Search</button>
       </form>
-      {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
+      {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
+      {canWrite && !pricingReady && <p role="status">Uploads are paused while verified Azure pricing is unavailable. Use Refresh to retry.</p>}
       <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No objects match this prefix.</td></tr>}{entries.map((entry) => <tr key={entry.entry}>
         <td style={{ overflowWrap: "anywhere" }}>{entry.entry}</td><td>{bytes(entry.size_bytes)}</td><td><button disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>{" "}
           {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(objectPath(selected.name, entry.entry), { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
@@ -210,7 +213,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       {catalog?.pricing?.meters && Object.keys(catalog.pricing.meters).length > 0 ? <>
         <p>USD · East US · LRS · Hot · no markup</p><p>Rate version: <code style={{ overflowWrap: "anywhere" }}>{catalog.pricing.rate_version}</code></p>
         <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Meter</th><th>Unit</th><th>Published bands (from / USD)</th><th>Effective date</th></tr></thead><tbody>{Object.entries(catalog.pricing.meters).map(([key, meter]) => <tr key={key}><td>{meter.name}</td><td>{meter.unit}</td><td>{meter.bands.map(([from, rate]) => `${from}: $${rate}`).join("; ")}</td><td>{meter.effective_at}</td></tr>)}</tbody></table></div>
-      </> : <p>No verified Azure retail rates have been published on this server.</p>}
+      </> : <p>Verified Azure pricing is unavailable. Refresh to retry loading the current rates. Uploads are paused until pricing is verified.</p>}
       <p>Charges include actual Azure calls, stored and retained data, retrieval and applicable transfer. Capacity and transfer bands are shared at the backing account level. Reserved-capacity discounts and independently funded promotions are unavailable.</p>
       <a href="https://docs.inferenceport.ai/api/buckets.html" target="_blank" rel="noreferrer">Buckets API and CLI guide</a>
     </section>
