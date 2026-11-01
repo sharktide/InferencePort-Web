@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useOrgContext } from "../OrgContext";
 import styles from "./Panel.module.css";
 
@@ -14,6 +14,7 @@ const objectPath = (bucket: string, key: string) => `/s3/${encodeURIComponent(bu
 
 export default function BucketsPanel({ apiBase, session }: { apiBase: string; session: { access_token?: string } | null }) {
   const { activeOrg, activeSlug } = useOrgContext();
+  const refreshId = useRef(0);
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [selected, setSelected] = useState<Bucket | null>(null);
@@ -39,7 +40,9 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     const headers = new Headers(init.headers);
     if (session?.access_token) headers.set("Authorization", `Bearer ${session.access_token}`);
     if (activeSlug) headers.set("X-InferencePort-Org", activeSlug);
-    const response = await fetch(`${apiBase.replace(/\/$/, "")}${path}`, { ...init, headers, cache: "no-store" });
+    const timeout = AbortSignal.timeout(90_000);
+    const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
+    const response = await fetch(`${apiBase.replace(/\/$/, "")}${path}`, { ...init, headers, signal, cache: "no-store" });
     if (!response.ok) {
       const body = await response.text();
       let detail = "";
@@ -51,12 +54,15 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   }, [apiBase, session?.access_token, activeSlug]);
 
   const refresh = useCallback(async () => {
+    const requestId = ++refreshId.current;
     const status: Catalog = await call("/v1/buckets/status");
+    if (requestId !== refreshId.current) return;
     setCatalog(status);
     if (status.status !== "not_available") {
       const list = await call("/v1/buckets?limit=1000");
+      if (requestId !== refreshId.current) return;
       setBuckets(list.buckets); setBucketContinuation(list.continuation_token);
-      if (canAdmin) { const keys = await call("/v1/buckets/s3-credentials"); setCredentials(keys.credentials); setCredentialContinuation(keys.continuation_token); }
+      if (canAdmin) { const keys = await call("/v1/buckets/s3-credentials"); if (requestId === refreshId.current) { setCredentials(keys.credentials); setCredentialContinuation(keys.continuation_token); } }
     }
   }, [call, canAdmin]);
 
@@ -74,11 +80,11 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   }
 
   async function browse(bucket: Bucket, token: string | null = null, nextPrefix = prefix) {
-    setSelected(bucket);
+    setSelected(null); setEntries([]); setContinuation(null); setUsage(null);
     const query = new URLSearchParams({ prefix: nextPrefix, max_keys: "100" });
     if (token) query.set("continuation_token", token);
     const result = await call(`/v1/buckets/${bucket.id}/objects?${query}`);
-    setEntries(result.objects); setContinuation(result.continuation_token);
+    setSelected(bucket); setEntries(result.objects); setContinuation(result.continuation_token);
     setUsage(await call(`/v1/buckets/${bucket.id}/usage`));
   }
 
@@ -87,6 +93,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     const path = objectPath(selected.name, file.name);
     const initiated = await call(`${path}?uploads`, { method: "POST", headers: { "Content-Type": file.type || "application/octet-stream" } }, true);
     const uploadId = xmlValue(await initiated.text(), "UploadId");
+    if (!uploadId) throw new Error("Upload was initiated but no upload ID was returned. Check active multipart uploads before retrying.");
     const parts: { number: number; etag: string }[] = [];
     try {
       for (let offset = 0, number = 1; offset < file.size || number === 1; offset += 8 * 1024 ** 2, number++) {
@@ -102,19 +109,32 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         doc.documentElement.appendChild(part);
       }
       await call(`${path}?uploadId=${encodeURIComponent(uploadId)}`, { method: "POST", body: new XMLSerializer().serializeToString(doc), headers: { "Content-Type": "application/xml" } }, true);
-      setMessage(`Uploaded ${file.name}.`);
-      await browse(selected); await refresh();
     } catch (error) {
-      await call(`${path}?uploadId=${encodeURIComponent(uploadId)}`, { method: "DELETE" }, true).catch(() => undefined);
+      try { await call(`${path}?uploadId=${encodeURIComponent(uploadId)}`, { method: "DELETE" }, true); }
+      catch { throw new Error(`${error instanceof Error ? error.message : "Upload failed"}; cleanup also failed. Check incomplete uploads before retrying.`); }
       throw error;
     }
+    setMessage(`Uploaded ${file.name}.`);
+    try { await browse(selected); await refresh(); }
+    catch { setMessage(`Uploaded ${file.name}, but refreshing the listing failed. Use Refresh rather than uploading again.`); }
   }
 
   async function download(entry: Entry) {
     if (!selected) return;
     if (Number(entry.size_bytes) > 256 * 1024 ** 2) throw new Error("Use ipx bucket download or an S3 client for files over 256 MiB.");
     const response = await call(objectPath(selected.name, entry.entry), {}, true);
-    const url = URL.createObjectURL(await response.blob());
+    const declared = Number(response.headers.get("content-length"));
+    if (declared > 256 * 1024 ** 2) { await response.body?.cancel(); throw new Error("File is now over 256 MiB. Use ipx or an S3 client."); }
+    if (!response.body) throw new Error("Download stream unavailable.");
+    const reader = response.body.getReader();
+    const chunks: Uint8Array[] = []; let size = 0;
+    while (true) {
+      const { done, value } = await reader.read(); if (done) break;
+      size += value.byteLength;
+      if (size > 256 * 1024 ** 2) { await reader.cancel(); throw new Error("File exceeded the browser download limit. Use ipx or an S3 client."); }
+      chunks.push(value);
+    }
+    const url = URL.createObjectURL(new Blob(chunks as BlobPart[]));
     const anchor = document.createElement("a"); anchor.href = url; anchor.download = entry.entry.split("/").pop() || "download";
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
   }
@@ -146,7 +166,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     {selected && <section className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>{selected.name}</h2>
       <form onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
-        <label>Key prefix <input aria-label="Key prefix" value={prefix} onChange={(e) => setPrefix(e.target.value)} /></label>{" "}<button disabled={busy}>Search</button>
+        <label>Key prefix <input aria-label="Key prefix" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>{" "}<button disabled={busy}>Search</button>
       </form>
       {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
       <table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.map((entry) => <tr key={entry.entry}>
