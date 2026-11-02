@@ -91,5 +91,6 @@ module.exports = async function layout(browser, url) {
     } finally { await page.close(); }
   }
   await require('./workspace.cjs')(browser, url);
+  await require('./mutations.cjs')(browser, url);
   console.log('PASS layout: real console CSS, desktop/mobile, light/dark, empty/populated, aligned forms, checkbox and confined table scrolling');
 };

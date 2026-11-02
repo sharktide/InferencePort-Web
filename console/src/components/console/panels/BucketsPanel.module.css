@@ -95,3 +95,6 @@
   .connectionField button { justify-self: start; }
   .commandHeader { flex-wrap: wrap; }
 }
+
+.settingsForm { display: grid; gap: 1rem; max-width: 720px; }
+.settingsForm .checkbox { display: flex; align-items: center; gap: 0.6rem; }

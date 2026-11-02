@@ -6,8 +6,8 @@ import ui from "./BucketsPanel.module.css";
 
 const shellQuote = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
 
-export default function BucketConnection({ apiBase, buckets, selectedName, workspaceId, workspaceKind, canAdmin, onCredentials }: {
-  apiBase: string;
+export default function BucketConnection({ endpoint, buckets, selectedName, workspaceId, workspaceKind, canAdmin, onCredentials }: {
+  endpoint: string;
   buckets: { name: string }[];
   selectedName?: string;
   workspaceId: string;
@@ -18,8 +18,6 @@ export default function BucketConnection({ apiBase, buckets, selectedName, works
   const [choice, setChoice] = useState("");
   const [notice, setNotice] = useState("");
   useEffect(() => { if (selectedName) setChoice(selectedName); }, [selectedName]);
-  // Use the same API base as object transfers in this console, including local deployments.
-  const endpoint = `${apiBase.replace(/\/+$/, "")}/${workspaceId}/s3/`;
   const bucket = buckets.some((item) => item.name === choice) ? choice : buckets[0]?.name || "";
   const uri = bucket ? `s3://${bucket}/` : "";
   const requestUrl = bucket ? endpoint + encodeURIComponent(bucket) + "/" : "";

@@ -23,7 +23,7 @@ module.exports = async function workspace(browser, url) {
       data = { orgs: [{ id: org, slug: 'acme', name: 'Acme', role: 'owner' }] };
     } else {
       calls.push({ pathname, selected });
-      if (pathname.endsWith('/workspace')) data = { owner_id: selected ? org : user, owner_kind: selected ? 'org' : 'user' };
+      if (pathname.endsWith('/workspace')) data = { owner_id: selected ? org : user, owner_kind: selected ? 'org' : 'user', endpoint: `https://localhost:58080/${selected ? org : user}/s3/` };
       else if (pathname.endsWith('/status')) data = { status: 'available', pricing: { status: 'unavailable' } };
       else if (pathname.endsWith('/s3-credentials')) data = { credentials: [] };
       else if (pathname === '/v1/buckets') {
