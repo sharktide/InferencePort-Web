@@ -6,12 +6,35 @@ import styles from "./Panel.module.css";
 import ui from "./BucketsPanel.module.css";
 import BucketConnection from "./BucketConnection";
 import BucketSettings from "./BucketSettings";
+import BucketDialog from "./BucketDialog";
 
 type Bucket = { id: string; name: string; bytes_used: number; bytes_reserved: number; quota_bytes: number; status: string };
 type Entry = { entry: string; object_key: string; size_bytes: number; s3_etag: string };
 type Credential = { id: string; access_key_id: string; expires_at: string; revoked_at: string | null; scopes?: { permissions?: string[]; key_prefixes?: string[] | null; bucket_ids?: string[] | null } };
 type Catalog = { status: string; endpoint: string; object_writes_enabled?: boolean; pricing: { status?: string; rate_version?: string; meters?: Record<string, { name: string; unit: string; bands: string[][]; effective_at: string }>; offers?: unknown[] } };
-const bytes = (value: number) => `${(Number(value) / 1024 ** 2).toLocaleString(undefined, { maximumFractionDigits: 2 })} MiB`;
+const bytes = (value: number) => {
+  const size = Number(value);
+  if (!Number.isFinite(size)) return "—";
+  if (size < 1024) return `${size.toLocaleString()} B`;
+  const index = Math.min(4, Math.floor(Math.log(Math.abs(size)) / Math.log(1024)));
+  return `${(size / 1024 ** index).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${["B", "KiB", "MiB", "GiB", "TiB"][index]}`;
+};
+const formatDate = (value: string) => {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return "Date unavailable";
+  const dateOnly = /^\\d{4}-\\d{2}-\\d{2}$/.test(value);
+  return new Intl.DateTimeFormat(undefined, dateOnly ? { dateStyle: "medium", timeZone: "UTC" } : { dateStyle: "medium", timeStyle: "short" }).format(date);
+};
+const price = (value: string) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? `${number.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 8 })}` : value;
+};
+const unitLabel = (unit: string) => unit === "10K" ? "10,000 operations" : unit.replace(/^1\\s*/, "").replace(/GB\\/Month/i, "GB-month").trim();
+const formatThreshold = (value: string, unit: string) => {
+  const number = Number(value);
+  const label = Number.isFinite(number) ? number.toLocaleString("en-US", { maximumFractionDigits: 2 }) : value;
+  return `From ${label} ${unitLabel(unit)}`;
+};
 const xmlValue = (xml: string, tag: string) => new DOMParser().parseFromString(xml, "application/xml").getElementsByTagName(tag)[0]?.textContent ?? "";
 const objectPath = (endpoint: string, bucket: string, key: string) => `${endpoint}${encodeURIComponent(bucket)}/${encodeURIComponent(key).replace(/\./g, "%2E")}`;
 
@@ -19,6 +42,9 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   const { activeOrg, activeSlug, workspaceReady, workspaceError, setActiveSlug, refresh: refreshOrgs } = useOrgContext();
   const refreshId = useRef(0);
   const [editing, setEditing] = useState<Bucket | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [filesLoading, setFilesLoading] = useState(false);
+  const browseId = useRef(0);
   const credentialAttempt = useRef<{ path: string; body: string; key: string } | null>(null);
   const [tab, setTab] = useState("files");
   const [workspace, setWorkspace] = useState<{ owner_kind: string; owner_id: string; endpoint: string; selection: string } | null>(null);
@@ -37,6 +63,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   const [readOnlyKey, setReadOnlyKey] = useState(true);
   const [keyPrefix, setKeyPrefix] = useState("");
   const [keyTtl, setKeyTtl] = useState("86400");
+  const [credentialBucketId, setCredentialBucketId] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [usage, setUsage] = useState<{ meters: { meter: string; quantity: string }[]; settlements: { amount_credits: string }[]; held_credits: string; carried_credits: string; debited_credits: string } | null>(null);
@@ -90,7 +117,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
 
   useEffect(() => {
     let live = true; mounted.current = true;
-    setEditing(null); credentialAttempt.current = null; setBucketContinuation(null); setCredentialContinuation(null); setContinuation(null);
+    setEditing(null); setCreating(false); browseId.current++; setFilesLoading(false); setCredentialBucketId(""); credentialAttempt.current = null; setBucketContinuation(null); setCredentialContinuation(null); setContinuation(null);
     setWorkspace(null); setBusy(false); setMessage(""); setPrefix(""); setKeyPrefix(""); setReadOnlyKey(true); setName(""); setTab("files");
     setBuckets([]); setSelected(null); setEntries([]); setSecret(null); setUsage(null); setCredentials([]);
     if (workspaceReady) void refresh().catch((error) => { if (live) setMessage(error.message); });
@@ -103,6 +130,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   ];
   function selectTab(id: string) {
     if (id !== "credentials") setSecret(null);
+    if (id !== "files") { browseId.current++; setSelected(null); setEditing(null); setCreating(false); }
     setTab(id);
   }
 
@@ -112,13 +140,26 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     finally { if (contextRef.current === contextKey) setBusy(false); }
   }
 
+  function closeBrowse() {
+    browseId.current++;
+    setSelected(null); setEntries([]); setUsage(null); setContinuation(null); setPrefix(""); setFilesLoading(false);
+  }
+
   async function browse(bucket: Bucket, token: string | null = null, nextPrefix = prefix) {
-    setSelected(null); setEntries([]); setContinuation(null); setUsage(null);
+    const requestId = ++browseId.current;
+    setSelected(bucket); setFilesLoading(true);
+    if (!token) { setEntries([]); setContinuation(null); setUsage(null); }
     const query = new URLSearchParams({ prefix: nextPrefix, max_keys: "100" });
     if (token) query.set("continuation_token", token);
-    const result = await call(`/v1/buckets/${bucket.id}/objects?${query}`);
-    setSelected(bucket); setEntries(result.objects); setContinuation(result.continuation_token);
-    setUsage(await call(`/v1/buckets/${bucket.id}/usage`));
+    try {
+      const result = await call(`/v1/buckets/${bucket.id}/objects?${query}`);
+      if (requestId !== browseId.current || !isCurrent()) return;
+      setEntries(result.objects); setContinuation(result.continuation_token);
+      const nextUsage = await call(`/v1/buckets/${bucket.id}/usage`);
+      if (requestId === browseId.current && isCurrent()) setUsage(nextUsage);
+    } finally {
+      if (requestId === browseId.current && isCurrent()) setFilesLoading(false);
+    }
   }
 
   async function issueCredential(path: string, body: string) {
@@ -223,7 +264,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <div className={ui.header}><div className={ui.intro}>
       <h1 className={styles.heading}>Buckets</h1>
       <p>Workspace: {activeOrg?.name ?? "Personal"} · Private object storage</p>
-      <p role="status" aria-live="polite">{message || (catalog ? catalog.status === "not_available" ? "Buckets is not available on this server yet." : "Private object storage · Standard tier" : "Loading…")}</p>
+      <p role="status" aria-live="polite">{message || (catalog?.status === "not_available" ? "Buckets is not available on this server yet." : "Standard storage · Private by default")}</p>
       </div><button type="button" disabled={busy} onClick={() => void act(refresh)}>Refresh</button></div>
       <div role="tablist" aria-label="Bucket tools" className={ui.tabs}>
         {tabs.map((item, index) => <button key={item.id} type="button" role="tab" id={`bucket-tab-${item.id}`} aria-selected={tab === item.id} aria-controls={`bucket-panel-${item.id}`} tabIndex={tab === item.id ? 0 : -1} onClick={() => selectTab(item.id)} onKeyDown={(event) => {
