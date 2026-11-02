@@ -55,6 +55,11 @@ module.exports = async function layout(browser, url) {
       }
       assert(await page.getByRole('dialog').evaluate((element) => element.getBoundingClientRect().width <= innerWidth), 'Modal must fit viewport');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Wide content must scroll within its table, not the page');
+      // Escape closes an idle dialog; busy dialogs must not be dismissed mid-mutation.
+      await page.keyboard.press('Escape');
+      await page.getByRole('dialog').waitFor({ state: 'hidden' });
+      await page.getByRole('button', { name: /Create bucket/ }).click();
+      await page.getByRole('dialog', { name: 'Create a bucket' }).waitFor();
       await page.getByRole('button', { name: 'Cancel', exact: true }).click();
       await page.getByRole('dialog').waitFor({ state: 'hidden' });
       if (populated && pricesReady && width === 1440 && theme === 'dark') {
