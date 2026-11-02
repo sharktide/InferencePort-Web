@@ -188,6 +188,8 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
 
   async function upload(file: File) {
     if (!selected) return;
+    const browseEpoch = browseId.current;
+    const stillBrowsing = () => isCurrent() && browseEpoch === browseId.current;
     const path = objectPath(s3Path, selected.name, file.name);
     const requestKey = crypto.randomUUID();
     let uploadId = "";
@@ -201,13 +203,13 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     let completed = false;
     try {
       uploadId = await initiate();
-      if (!isCurrent()) throw new Error("Workspace changed; upload cancelled.");
+      if (!stillBrowsing()) throw new Error("Bucket view closed or workspace changed; upload cancelled.");
       for (let offset = 0, number = 1; offset < file.size || number === 1; offset += 8 * 1024 ** 2, number++) {
         const response = await call(`${path}?uploadId=${encodeURIComponent(uploadId)}&partNumber=${number}`, { method: "PUT", body: file.slice(offset, offset + 8 * 1024 ** 2) }, true);
         const etag = response.headers.get("etag");
         if (!etag) throw new Error("The upload response is missing its part receipt. The server must expose the ETag response header before this upload can complete.");
         parts.push({ number, etag });
-        if (isCurrent()) setMessage(`Uploading ${file.name}: ${Math.min(file.size, offset + 8 * 1024 ** 2).toLocaleString()} / ${file.size.toLocaleString()} bytes`);
+        if (stillBrowsing()) setMessage(`Uploading ${file.name}: ${Math.min(file.size, offset + 8 * 1024 ** 2).toLocaleString()} / ${file.size.toLocaleString()} bytes`);
       }
       const doc = document.implementation.createDocument("", "CompleteMultipartUpload");
       for (const item of parts) {
@@ -216,7 +218,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         const etag = doc.createElement("ETag"); etag.textContent = item.etag; part.appendChild(etag);
         doc.documentElement.appendChild(part);
       }
-      if (!isCurrent()) throw new Error("Workspace changed; upload cancelled.");
+      if (!stillBrowsing()) throw new Error("Bucket view closed or workspace changed; upload cancelled.");
       await call(`${path}?uploadId=${encodeURIComponent(uploadId)}`, { method: "POST", body: new XMLSerializer().serializeToString(doc), headers: { "Content-Type": "application/xml" } }, true, true);
       completed = true;
     } catch (error) {
@@ -227,10 +229,10 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       } catch { throw new Error(`${error instanceof Error ? error.message : "Upload failed"}; cleanup also failed. The server expires incomplete uploads; retry when the connection recovers.`); }
       throw error;
     }
-    if (completed && isCurrent()) {
+    if (completed && stillBrowsing()) {
       setMessage(`Uploaded ${file.name}.`);
       try { await browse(selected); await refresh(); }
-      catch { if (isCurrent()) setMessage(`Uploaded ${file.name}, but refreshing the listing failed. Use Refresh rather than uploading again.`); }
+      catch { if (stillBrowsing()) setMessage(`Uploaded ${file.name}, but refreshing the listing failed. Use Refresh rather than uploading again.`); }
     }
   }
 
