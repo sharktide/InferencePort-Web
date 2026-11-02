@@ -22,14 +22,14 @@ const bytes = (value: number) => {
 const formatDate = (value: string) => {
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return "Date unavailable";
-  const dateOnly = /^\\d{4}-\\d{2}-\\d{2}$/.test(value);
+  const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(value);
   return new Intl.DateTimeFormat(undefined, dateOnly ? { dateStyle: "medium", timeZone: "UTC" } : { dateStyle: "medium", timeStyle: "short" }).format(date);
 };
 const price = (value: string) => {
   const number = Number(value);
-  return Number.isFinite(number) ? `${number.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 8 })}` : value;
+  return Number.isFinite(number) ? "$" + number.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 8 }) : value;
 };
-const unitLabel = (unit: string) => unit === "10K" ? "10,000 operations" : unit.replace(/^1\\s*/, "").replace(/GB\\/Month/i, "GB-month").trim();
+const unitLabel = (unit: string) => unit === "10K" ? "10,000 operations" : unit.replace(/^1\s*/, "").replace("GB/Month", "GB-month").trim();
 const formatThreshold = (value: string, unit: string) => {
   const number = Number(value);
   const label = Number.isFinite(number) ? number.toLocaleString("en-US", { maximumFractionDigits: 2 }) : value;
