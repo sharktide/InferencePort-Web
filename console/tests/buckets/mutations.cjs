@@ -51,7 +51,7 @@ module.exports = async function mutations(browser, url) {
       await page.getByRole('cell', { name: 'organization-only', exact: true }).waitFor();
       if (['issue', 'rotate', 'lost-credential'].includes(scenario)) {
         await page.getByRole('tab', { name: 'Credentials', exact: true }).click();
-        await page.getByRole('button', { name: scenario === 'rotate' ? 'Rotate' : 'Issue workspace credential', exact: true }).click();
+        await page.getByRole('button', { name: scenario === 'rotate' ? 'Rotate key' : 'Issue workspace credential', exact: true }).click();
       } else {
         await page.getByRole('button', { name: 'Browse', exact: true }).click();
         await page.getByLabel('Upload file').setInputFiles({ name: 'fixture.bin', mimeType: 'application/octet-stream', buffer: Buffer.from('fixture') });
@@ -70,6 +70,11 @@ module.exports = async function mutations(browser, url) {
         assert(requestKeys[0] && requestKeys[0] === requestKeys[1], 'Reconciliation must reuse the request UUID');
       } else {
         await seen;
+        if (['initiate', 'part'].includes(scenario)) {
+          // Explicitly close the modal during the pending transfer, then change workspace.
+          await page.keyboard.press('Escape');
+          await page.getByRole('dialog').waitFor({ state: 'hidden' });
+        }
         const unavailable = scenario === 'issue' && !remount;
         await page.getByRole('button', { name: unavailable ? 'Select unavailable organization' : 'Select Personal', exact: true }).click();
         if (unavailable) await page.getByRole('status').filter({ hasText: 'You no longer have access' }).waitFor();
