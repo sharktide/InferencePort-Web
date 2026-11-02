@@ -30,10 +30,10 @@
   align-items: end;
   gap: 1rem;
 }
-.createForm { grid-template-columns: minmax(0, 1fr) minmax(120px, 180px) auto; }
+.createForm { grid-template-columns: minmax(0, 1fr); }
 .createForm button, .searchForm button { align-self: end; }
 .searchForm { grid-template-columns: minmax(0, 1fr) auto; }
-.credentialForm { grid-template-columns: auto minmax(0, 1fr) minmax(140px, 200px); }
+.credentialForm { grid-template-columns: minmax(145px, 1fr) auto minmax(175px, 1fr) minmax(140px, 180px); }
 .credentialForm .checkbox {
   display: flex;
   align-items: center;
@@ -69,7 +69,7 @@
 .tableScroll .empty, .empty { color: var(--muted); padding: 1.25rem 1rem; }
 .credentials { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
 .credentials li { padding: 1rem; border: 1px solid var(--border); border-radius: var(--r-1); overflow-wrap: anywhere; line-height: 2; }
-.credentials button { margin-left: 0.5rem; }
+.credentials button { margin: 0; }
 .secret { display: grid; gap: 1rem; padding: 1.25rem; background: var(--surface-2); border: 1px solid var(--brand); border-radius: var(--r-1); }
 .secret input { font-family: var(--mono); }
 
@@ -98,3 +98,101 @@
 
 .settingsForm { display: grid; gap: 1rem; max-width: 720px; }
 .settingsForm .checkbox { display: flex; align-items: center; gap: 0.6rem; }
+
+/* Storage management: actions are discoverable, dialogs avoid expanding the page. */
+.sectionHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.sectionHeading > div { min-width: 0; }
+.sectionHeading h2 { margin-bottom: 0.25rem; }
+.sectionHeading button { white-space: nowrap; }
+.helperText { color: var(--text-2); font-size: 0.875rem; line-height: 1.5; }
+.statusPill { display: inline-flex; align-items: center; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 0.25rem 0.7rem; font-size: 0.8125rem; font-weight: 600; white-space: nowrap; }
+.actionCell { white-space: normal; }
+.actionCell button { white-space: nowrap; }
+.bucketTable th:nth-child(1) { width: 23%; }
+.bucketTable th:nth-child(2) { width: 25%; }
+.bucketTable th:nth-child(3) { width: 18%; }
+.bucketTable th:nth-child(4) { width: 34%; }
+.objectTable th:nth-child(1) { width: 52%; }
+.objectTable th:nth-child(2) { width: 16%; }
+.objectTable th:nth-child(3) { width: 32%; }
+.objectKey { overflow-wrap: anywhere; }
+.credentialItem { display: grid; gap: 0.65rem; line-height: 1.5 !important; }
+.credentialHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.credentialIdentity { display: grid; gap: 0.25rem; min-width: 0; }
+.credentialIdentity strong { font-family: var(--mono); font-size: 0.875rem; overflow-wrap: anywhere; }
+.credentialIdentity span { color: var(--text-2); font-size: 0.8125rem; }
+.credentialActions { display: flex; gap: 0.55rem; flex-wrap: wrap; }
+.credentialActions button { margin: 0; }
+.priceGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.priceCard { min-width: 0; border: 1px solid var(--border); border-radius: var(--r-1); overflow: hidden; display: flex; flex-direction: column; }
+.priceCardHeader { padding: 1rem; background: var(--surface-2); display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
+.priceCardHeader h3 { font-size: 0.95rem; margin: 0; }
+.priceCardHeader span { color: var(--text-2); font-size: 0.8125rem; }
+.priceTiers { padding: 0.25rem 1rem; }
+.priceTier { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; padding: 0.8rem 0; border-bottom: 1px solid var(--border); }
+.priceTier:last-child { border-bottom: 0; }
+.priceTier span { color: var(--text-2); font-size: 0.84rem; overflow-wrap: anywhere; }
+.priceTier strong { color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 0.9rem; }
+.priceCard .helperText { padding: 0.4rem 1rem 0; }
+.priceCard .priceEffective { padding: 0.5rem 1rem 1rem; margin-top: auto; font-size: 0.78rem; }
+.rateVersion { display: block; overflow-wrap: anywhere; margin-top: 0.5rem; font-size: 0.75rem; }
+
+/* Portals render outside .panel: style their controls and content independently. */
+.dialogBackdrop { position: fixed; inset: 0; z-index: 2100; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.68); padding: 1rem; }
+.dialog { width: min(880px, 100%); max-height: calc(100dvh - 2rem); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); color: var(--text); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.dialog:focus { outline: none; }
+.dialogHeader { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-shrink: 0; padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--surface); }
+.dialogTitleGroup { display: grid; gap: 0.35rem; min-width: 0; }
+.dialogHeader h2 { margin: 0; font-size: 1.2rem; font-weight: 650; line-height: 1.3; overflow-wrap: anywhere; }
+.dialogHeader p { margin: 0; font-size: 0.875rem; color: var(--text-2); }
+.dialogClose { flex-shrink: 0; min-width: 40px; min-height: 40px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); color: var(--text); cursor: pointer; }
+.dialogBody { display: grid; gap: 1.25rem; overflow-y: auto; overscroll-behavior: contain; padding: 1.5rem; min-width: 0; }
+.dialogBody p { margin: 0; line-height: 1.55; color: var(--text-2); }
+.dialogBody label { display: grid; gap: 0.45rem; min-width: 0; font-size: 0.875rem; font-weight: 600; color: var(--text-2); }
+.dialogBody input, .dialogBody select { width: 100%; min-width: 0; min-height: 42px; padding: 0.6rem 0.8rem; border: 1px solid var(--border-strong); border-radius: var(--r-1); background: var(--surface); color: var(--text); }
+.dialogBody input[type="file"] { height: auto; }
+.dialogBody button { min-height: 40px; }
+.dialogBody input:focus-visible, .dialogBody button:focus-visible, .dialogClose:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.dialogBody .tableScroll { width: 100%; }
+.dialogActions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.5rem; }
+.modalSection { display: grid; gap: 1.2rem; min-width: 0; }
+.modalSection > h2 { margin: 0; }
+.uploadLabel { display: grid; gap: 0.4rem; }
+.dialogBody .settingsForm { max-width: none; }
+.dialogBody .settingsForm .checkbox { display: flex; flex-direction: row; align-items: center; gap: 0.6rem; }
+.dialogBody .settingsForm .checkbox input { width: 18px; min-height: 18px; height: 18px; }
+.dialogBody .searchForm { grid-template-columns: minmax(0, 1fr) auto; }
+.dialogBody .searchForm button { align-self: end; }
+.dialog .tableScroll { overflow-x: auto; }
+@media (max-width: 900px) { .priceGrid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 700px) {
+  .panel section { padding: 1rem; }
+  .header { gap: 0.8rem; }
+  .tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tabs button { width: 100%; justify-content: center; }
+  .sectionHeading { align-items: stretch; }
+  .sectionHeading button { width: 100%; }
+  .credentialForm { grid-template-columns: minmax(0, 1fr); }
+  .credentialForm .checkbox { min-height: 30px; }
+  .credentialHeader { align-items: flex-start; }
+  .credentialActions button { flex: 1 1 120px; }
+  .priceTier { gap: 0.4rem; }
+  .dialogBackdrop { padding: 0; align-items: stretch; }
+  .dialog { width: 100%; max-height: 100dvh; height: 100dvh; border-radius: 0; border: 0; }
+  .dialogHeader { padding: 1rem; }
+  .dialogBody { padding: 1rem; }
+  .dialogBody .searchForm { grid-template-columns: minmax(0, 1fr); }
+  .dialogBody .searchForm button { width: 100%; }
+  .dialogBody .tableScroll, .tableScroll:has(.bucketTable) { overflow: visible; border: 0; }
+  .bucketTable, .objectTable { min-width: 0 !important; display: block; width: 100%; }
+  .bucketTable thead, .objectTable thead { display: none; }
+  .bucketTable tbody, .objectTable tbody { display: grid; gap: 0.75rem; }
+  .bucketTable tr, .objectTable tr { display: grid; gap: 0.55rem; border: 1px solid var(--border); border-radius: var(--r-1); padding: 0.9rem; min-width: 0; }
+  .bucketTable td, .objectTable td { display: block; border: 0; padding: 0; min-width: 0 !important; overflow-wrap: anywhere; }
+  .bucketTable td[data-label]::before, .objectTable td[data-label]::before { content: attr(data-label); display: block; font-size: 0.73rem; font-weight: 600; color: var(--text-2); margin-bottom: 0.25rem; }
+  .bucketTable td.actionCell, .objectTable td.actionCell { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .bucketTable td.actionCell::before, .objectTable td.actionCell::before { width: 100%; flex-basis: 100%; }
+  .bucketTable td button, .objectTable td button { margin: 0; flex: 1 1 auto; }
+  .bucketTable tr td[colspan], .objectTable tr td[colspan] { padding: 0.65rem; }
+  .tableScroll:not(:has(.bucketTable)):not(:has(.objectTable)) { overflow-x: auto; }
+}
