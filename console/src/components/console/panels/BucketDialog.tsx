@@ -17,6 +17,8 @@ export default function BucketDialog({ title, description, onClose, children, bu
   const dialog = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  const busyRef = useRef(busy);
+  busyRef.current = busy;
   const [ready, setReady] = useState(false);
   useEffect(() => { setReady(true); }, []);
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function BucketDialog({ title, description, onClose, children, bu
     document.body.style.overflow = "hidden";
     dialog.current?.focus();
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") { event.preventDefault(); onCloseRef.current(); return; }
+      if (event.key === "Escape") { event.preventDefault(); if (!busyRef.current) onCloseRef.current(); return; }
       if (event.key !== "Tab" || !dialog.current) return;
       const focusable = Array.from(dialog.current.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')).filter(element => element.getClientRects().length > 0);
       if (!focusable.length) { event.preventDefault(); return; }
