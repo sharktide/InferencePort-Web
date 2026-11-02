@@ -275,51 +275,68 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     </section>
     <div role="tabpanel" id="bucket-panel-files" aria-labelledby="bucket-tab-files" hidden={tab !== "files"} className={ui.tabPanel}>
     <section className={`${styles.card} ${styles.wide}`}>
-      <h2 className={styles.heading}>Your buckets</h2>
+      <div className={ui.sectionHeading}><div><h2 className={styles.heading}>Your buckets</h2><p>Manage storage, files and access within this workspace.</p></div>{canAdmin && <button type="button" onClick={() => setCreating(true)} disabled={busy}>+ Create bucket</button>}</div>
       {catalog && catalog.status !== "not_available" && <>
-        <p>Bucket names are unique within this workspace. Other users and organizations can use the same name; your credentials select which workspace you access.</p>
-        {canAdmin && <details className={ui.createBucket}><summary>Create a bucket</summary><form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
-          await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3) }) });
-          setName(""); await refresh();
-        }); }}>
-          <label>Bucket name <input aria-label="Bucket name" value={name} onChange={(e) => setName(e.target.value)} required minLength={3} maxLength={63} pattern="[a-z0-9][a-z0-9.-]+[a-z0-9]" /></label>{" "}
-          <label>Quota (GiB) <input aria-label="Quota (GiB)" type="number" min="1" max="1024" value={quota} onChange={(e) => setQuota(e.target.value)} required /></label>{" "}
-          <button disabled={busy} type="submit">Create bucket</button>
-        </form></details>}
-        <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Name</th><th>Used / quota</th><th>Status</th><th>Actions</th></tr></thead><tbody>
-          {buckets.length === 0 && <tr><td colSpan={4} className={ui.empty}>No buckets yet. Create a bucket to start storing files.</td></tr>}
-          {buckets.map((bucket) => <tr key={bucket.id}><td>{bucket.name}</td><td>{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td>{bucket.status}</td><td>
+        <p className={ui.helperText}>Bucket names are unique within this workspace. Your S3 credentials determine which workspace you can access.</p>
+        <div className={ui.tableScroll} tabIndex={0}><table className={ui.bucketTable}><thead><tr><th>Name</th><th>Used / quota</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+          {buckets.length === 0 && <tr><td colSpan={4} className={ui.empty}>No buckets yet. Use Create bucket to get started.</td></tr>}
+          {buckets.map((bucket) => <tr key={bucket.id}><td data-label="Bucket"><strong>{bucket.name}</strong></td><td data-label="Storage">{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td data-label="Status"><span className={ui.statusPill}>{bucket.status === "read_only" ? "Uploads paused" : bucket.status === "active" ? "Active" : bucket.status}</span></td><td data-label="Actions" className={ui.actionCell}>
             <button type="button" disabled={busy} onClick={() => void act(() => browse(bucket))}>Browse</button>{" "}
             {canAdmin && <button type="button" disabled={busy} onClick={() => setEditing(bucket)}>Settings</button>}{" "}
-            {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); if (selected?.id === bucket.id) setSelected(null); await refresh(); }); }}>Delete</button>}
+            {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); if (selected?.id === bucket.id) closeBrowse(); await refresh(); }); }}>Delete</button>}
           </td></tr>)}
         </tbody></table></div>
         {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=1000&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...rows, ...page.buckets]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
       </>}
     </section>
-    {editing && canAdmin && <BucketSettings key={editing.id} bucket={editing} busy={busy} onCancel={() => setEditing(null)} onSave={(changes) => void act(async () => {
-      const updated = await call(`/v1/buckets/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(changes) });
-      if (selected?.id === updated.id) setSelected(updated);
-      setBuckets((rows) => rows.map((row) => row.id === updated.id ? updated : row));
-      setEditing(null); setMessage("Bucket settings saved."); await refresh();
-    })} />}
-    {selected && <section className={`${styles.card} ${styles.wide}`}>
-      <h2 className={styles.heading}>{selected.name}</h2>
-      <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
-        <label>Key prefix <input aria-label="Key prefix" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>{" "}<button disabled={busy}>Search</button>
+    {creating && canAdmin && <BucketDialog title="Create a bucket" description="Create private S3-compatible storage in this workspace." busy={busy} onClose={() => setCreating(false)}>
+      <form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
+        await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3) }) });
+        setName(""); setCreating(false); await refresh();
+      }); }}>
+        <label>Bucket name <input aria-label="Bucket name" value={name} onChange={(e) => setName(e.target.value)} required minLength={3} maxLength={63} pattern="[a-z0-9][a-z0-9.-]+[a-z0-9]" placeholder="e.g. model-weights" /></label>
+        <label>Maximum size (GiB) <input aria-label="Quota (GiB)" type="number" min="1" max="1024" value={quota} onChange={(e) => setQuota(e.target.value)} required /></label>
+        <p className={ui.helperText}>Only stored data, operations and transfer are billed. The size limit doesn't reserve capacity.</p>
+        {message && <p role="status">{message}</p>}
+        <div className={ui.dialogActions}><button type="button" disabled={busy} onClick={() => setCreating(false)}>Cancel</button><button disabled={busy} type="submit">Create bucket</button></div>
       </form>
-      {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady || selected.status !== "active"} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
-      {canWrite && selected.status === "read_only" && <p role="status">Uploads are paused for this bucket. {canAdmin ? "Open Settings to resume uploads." : "Ask a workspace owner or administrator to resume uploads."}</p>}
-      {canWrite && selected.status === "active" && !pricingReady && <p role="status">Uploads are paused while verified pricing is unavailable. Use Refresh to retry.</p>}
-      <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No objects match this prefix.</td></tr>}{entries.map((entry) => <tr key={entry.entry}>
-        <td style={{ overflowWrap: "anywhere" }}>{entry.entry}</td><td>{bytes(entry.size_bytes)}</td><td><button disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>{" "}
-          {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(`/v1/buckets/${selected.id}/object?${new URLSearchParams({ key: entry.entry })}`, { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
-      </tr>)}</tbody></table></div>
-      {continuation && <button disabled={busy} onClick={() => void act(() => browse(selected, continuation))}>Next page</button>}
-      {usage && <details className={ui.usage}><summary>Usage and retention</summary><ul>{usage.meters.map((meter) => <li key={meter.meter}>{meter.meter}: {meter.quantity}</li>)}</ul>
-        <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p>
-      <p>Retained versions and pending data can remain billable after deletion; insufficient credits pauses new writes and does not delete objects.</p></details>}
-    </section>}
+    </BucketDialog>}
+    {editing && canAdmin && <BucketDialog title={`Settings · ${editing.name}`} description="Manage bucket name, storage limit and upload availability." busy={busy} onClose={() => setEditing(null)}>
+      <BucketSettings key={editing.id} bucket={editing} busy={busy} onCancel={() => setEditing(null)} onSave={(changes) => void act(async () => {
+        const updated = await call(`/v1/buckets/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(changes) });
+        if (selected?.id === updated.id) setSelected(updated);
+        setBuckets((rows) => rows.map((row) => row.id === updated.id ? updated : row));
+        setEditing(null); setMessage("Bucket settings saved."); await refresh();
+      })} />
+      {message && <p role="status">{message}</p>}
+    </BucketDialog>}
+    {selected && <BucketDialog title={`Files · ${selected.name}`} description="Browse, upload and manage objects in this bucket." busy={busy} onClose={closeBrowse}>
+      <div className={ui.modalSection}>
+        <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
+          <label>Key prefix <input aria-label="Key prefix" placeholder="Search by prefix (optional)" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>
+          <button disabled={busy} type="submit">Search</button>
+        </form>
+        {canWrite && <label className={ui.uploadLabel}>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady || selected.status !== "active"} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
+        {canWrite && selected.status === "read_only" && <p role="status">Uploads are paused. {canAdmin ? "Open Settings to resume uploads." : "Ask a workspace administrator to resume uploads."}</p>}
+        {canWrite && selected.status === "active" && !pricingReady && <p role="status">Uploads are paused until verified pricing is available. Refresh to retry.</p>}
+        {message && <p role="status">{message}</p>}
+        {filesLoading && <p role="status">Loading files…</p>}
+        <div className={ui.tableScroll} tabIndex={0}><table className={ui.objectTable}><thead><tr><th>Object key</th><th>Size</th><th>Actions</th></tr></thead><tbody>
+          {!filesLoading && entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No files match this prefix.</td></tr>}
+          {entries.map((entry) => <tr key={entry.entry}>
+            <td data-label="Object key" className={ui.objectKey}>{entry.entry}</td><td data-label="Size">{bytes(entry.size_bytes)}</td>
+            <td data-label="Actions" className={ui.actionCell}><button type="button" disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>
+              {canWrite && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(`/v1/buckets/${selected.id}/object?${new URLSearchParams({ key: entry.entry })}`, { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
+          </tr>)}
+        </tbody></table></div>
+        {continuation && <button disabled={busy} onClick={() => void act(() => browse(selected, continuation))}>Next page</button>}
+        {usage && <details className={ui.usage}><summary>Usage and retention</summary>
+          <ul>{usage.meters.map((meter) => <li key={meter.meter}>{meter.meter.replace(/_/g, " ")}: {Number(meter.quantity).toLocaleString()}</li>)}</ul>
+          <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p>
+          <p>Retained versions and pending data can remain billable after deletion; insufficient credits pauses new writes and does not delete objects.</p>
+        </details>}
+      </div>
+    </BucketDialog>}
     </div>
     <div role="tabpanel" id="bucket-panel-connect" aria-labelledby="bucket-tab-connect" hidden={tab !== "connect"} className={ui.tabPanel}>
       {catalog && catalog.status !== "not_available" && <BucketConnection endpoint={workspace.endpoint} buckets={buckets} selectedName={selected?.name} workspaceId={workspace.owner_id} workspaceKind={workspace.owner_kind} canAdmin={canAdmin} onCredentials={() => selectTab("credentials")} />}
