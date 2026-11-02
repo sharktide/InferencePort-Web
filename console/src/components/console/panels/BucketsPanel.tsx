@@ -344,15 +344,17 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     <div role="tabpanel" id="bucket-panel-credentials" aria-labelledby="bucket-tab-credentials" hidden={tab !== "credentials"} className={ui.tabPanel}>
     {canAdmin && catalog && catalog.status !== "not_available" && <section id="bucket-s3-credentials" className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>S3 credentials</h2>
+      <p>Create restricted access keys for S3 clients. Each new secret is only shown once.</p>
       <div className={ui.credentialForm}>
+      <label>Bucket access <select aria-label="Credential bucket access" value={credentialBucketId} onChange={(event) => setCredentialBucketId(event.target.value)}><option value="">All workspace buckets</option>{buckets.map((bucket) => <option key={bucket.id} value={bucket.id}>{bucket.name}</option>)}</select></label>
       <label className={ui.checkbox}><input type="checkbox" checked={readOnlyKey} onChange={(event) => setReadOnlyKey(event.target.checked)} /> Read only</label>{" "}
       <label>Object key prefix (optional) <input placeholder="e.g. models/" aria-label="Credential key prefix" value={keyPrefix} onChange={(event) => setKeyPrefix(event.target.value)} /></label>{" "}
       <label>Expires in <select aria-label="Credential expiry" value={keyTtl} onChange={(event) => setKeyTtl(event.target.value)}><option value="600">10 minutes</option><option value="86400">1 day</option><option value="2592000">30 days</option></select></label>
       </div>
-      <p>Leave the object key prefix blank for the whole bucket. A prefix restricts file access and root listings. This credential allows {readOnlyKey ? "listing and downloads" : "listing, downloads and uploads"} in {selected ? selected.name : "this workspace"}.</p>
+      <p>Leave the object key prefix blank for the whole bucket. A prefix restricts file access and root listings. This credential allows {readOnlyKey ? "listing and downloads" : "listing, downloads and uploads"} in {buckets.find(bucket => bucket.id === credentialBucketId)?.name || "all workspace buckets"}.</p>
       <button disabled={busy} onClick={() => void act(async () => {
-        await issueCredential("/v1/buckets/s3-credentials", JSON.stringify({ permissions: readOnlyKey ? ["storage.read"] : ["storage.read", "storage.write"], bucket_ids: selected ? [selected.id] : null, key_prefixes: keyPrefix ? [keyPrefix] : null, expires_in: Number(keyTtl) }));
-      })}>Issue {selected ? `for ${selected.name}` : "workspace credential"}</button>
+        await issueCredential("/v1/buckets/s3-credentials", JSON.stringify({ permissions: readOnlyKey ? ["storage.read"] : ["storage.read", "storage.write"], bucket_ids: credentialBucketId ? [credentialBucketId] : null, key_prefixes: keyPrefix ? [keyPrefix] : null, expires_in: Number(keyTtl) }));
+      })}>Issue {credentialBucketId ? "bucket credential" : "workspace credential"}</button>
       {secret && <div className={ui.secret} role="status"><p>Copy this secret now. It will not be shown again.</p>
         <label>Access key ID <input readOnly value={secret.access_key_id} /></label>
         <label>Secret access key <input readOnly type="password" value={secret.secret_access_key} /></label>
@@ -367,10 +369,31 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         if (receipt.credential && !receipt.credential.revoked_at) await call(`/v1/buckets/s3-credentials/${receipt.credential.id}`, { method: "DELETE" });
         credentialAttempt.current = null; await refresh();
       })}>Cancel pending credential request</button>}
-      <ul className={ui.credentials}>{credentials.length === 0 && <li className={ui.empty}>No S3 credentials issued for this workspace.</li>}{credentials.map((credential) => <li key={credential.id}>{credential.access_key_id} · expires {credential.expires_at}<p>{credential.scopes?.permissions?.join(", ") || "Permissions not reported"} · {credential.scopes?.key_prefixes?.length ? `Restricted prefixes: ${credential.scopes.key_prefixes.join(", ")}` : "All object prefixes"} · {credential.scopes?.bucket_ids?.length ? `${credential.scopes.bucket_ids.length} selected bucket(s)` : "Workspace buckets"}</p>{credential.revoked_at ? "revoked" : <button disabled={busy} onClick={() => void act(async () => { await call(`/v1/buckets/s3-credentials/${credential.id}`, { method: "DELETE" }); if (secret?.id === credential.id) setSecret(null); await refresh(); })}>Revoke</button>}{!credential.revoked_at && <button disabled={busy} onClick={() => void act(async () => {
-        await issueCredential(`/v1/buckets/s3-credentials/${credential.id}/rotate`, JSON.stringify({ revoke_previous: false }));
-        if (isCurrent()) setMessage("Rotation issued a new secret with the same scope. Revoke the old credential after updating your clients.");
-      })}>Rotate</button>}</li>)}</ul>
+      <ul className={ui.credentials}>
+        {credentials.length === 0 && <li className={ui.empty}>No S3 credentials issued for this workspace.</li>}
+        {credentials.map((credential) => {
+          const expired = Number.isFinite(Date.parse(credential.expires_at)) && Date.parse(credential.expires_at) <= Date.now();
+          const inactive = Boolean(credential.revoked_at);
+          const rights = credential.scopes?.permissions?.includes("storage.write") ? "Read and write" : credential.scopes?.permissions?.includes("storage.read") ? "Read only" : "Permissions not reported";
+          return <li key={credential.id} className={ui.credentialItem}>
+            <div className={ui.credentialHeader}>
+              <div className={ui.credentialIdentity}><strong>{credential.access_key_id}</strong><span>Expires {formatDate(credential.expires_at)}</span></div>
+              <span className={ui.statusPill}>{inactive ? "Revoked" : expired ? "Expired" : "Active"}</span>
+            </div>
+            <p>{rights} · {credential.scopes?.key_prefixes?.length ? `Prefixes: ${credential.scopes.key_prefixes.join(", ")}` : "All prefixes"} · {credential.scopes?.bucket_ids?.length ? `${credential.scopes.bucket_ids.length} selected bucket(s)` : "All workspace buckets"}</p>
+            {!inactive && <div className={ui.credentialActions}>
+              <button type="button" disabled={busy} onClick={() => void act(async () => {
+                await issueCredential(`/v1/buckets/s3-credentials/${credential.id}/rotate`, JSON.stringify({ revoke_previous: false }));
+                if (isCurrent()) setMessage("New secret issued. Update your clients and revoke the old credential.");
+              })}>Rotate key</button>
+              <button type="button" disabled={busy} onClick={() => { if (window.confirm("Revoke this S3 credential? Clients using it will lose access.")) void act(async () => {
+                await call(`/v1/buckets/s3-credentials/${credential.id}`, { method: "DELETE" });
+                if (secret?.id === credential.id) setSecret(null); await refresh();
+              }); }}>Revoke key</button>
+            </div>}
+          </li>;
+        })}
+      </ul>
       {credentialContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets/s3-credentials?continuation_token=${encodeURIComponent(credentialContinuation)}`); setCredentials((rows) => [...rows, ...page.credentials]); setCredentialContinuation(page.continuation_token); })}>More credentials</button>}
     </section>}
     </div>
@@ -378,8 +401,16 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     <section className={`${styles.card} ${styles.wide}`}>
       <h2 className={styles.heading}>Storage pricing</h2>
       {catalog?.pricing?.meters && Object.keys(catalog.pricing.meters).length > 0 ? <>
-        <p>USD · Standard storage · Billed from the first unit</p><p>Rate version: <code style={{ overflowWrap: "anywhere" }}>{catalog.pricing.rate_version}</code></p>
-        <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Meter</th><th>Unit</th><th>Volume bands (from / USD)</th><th>Effective date</th></tr></thead><tbody>{Object.entries(catalog.pricing.meters).map(([key, meter]) => <tr key={key}><td>{meter.name}</td><td>{meter.unit}</td><td>{meter.bands.map(([from, rate]) => `${from}: $${rate}`).join("; ")}</td><td>{meter.effective_at}</td></tr>)}</tbody></table></div>
+        <p>USD · Standard storage · Usage-based pricing</p>
+        <div className={ui.priceGrid}>{Object.entries(catalog.pricing.meters).map(([key, meter]) =>
+          <article key={key} className={ui.priceCard}>
+            <div className={ui.priceCardHeader}><h3>{meter.name}</h3><span>Per {unitLabel(meter.unit)}</span></div>
+            <div className={ui.priceTiers}>{meter.bands.map(([from, rate], index) =>
+              <div className={ui.priceTier} key={index}><span>{index === 0 && Number(from) === 0 ? "Starting rate" : formatThreshold(from, meter.unit)}</span><strong>{price(rate)}</strong></div>)}</div>
+            <p className={ui.helperText}>Each rate applies from its listed usage threshold.</p>
+            <p className={ui.priceEffective}>Effective {formatDate(meter.effective_at)}</p>
+          </article>)}</div>
+        {catalog.pricing.rate_version && <details className={ui.usage}><summary>Technical rate version</summary><code className={ui.rateVersion}>{catalog.pricing.rate_version}</code></details>}
       </> : <p>Verified pricing is unavailable. Refresh to retry loading the current rates. Uploads are paused until pricing is verified.</p>}
       <p>Charges cover stored and retained data, operations, and data transfer. Capacity and transfer volume bands are shared across the service. There is no free usage allowance.</p>
       <a href="https://docs.inferenceport.ai/api/buckets.html" target="_blank" rel="noreferrer">Buckets API and CLI guide</a>
