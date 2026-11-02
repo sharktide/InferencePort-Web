@@ -259,6 +259,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     {editing && canAdmin && <BucketSettings key={editing.id} bucket={editing} busy={busy} onCancel={() => setEditing(null)} onSave={(changes) => void act(async () => {
       const updated = await call(`/v1/buckets/${editing.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(changes) });
       if (selected?.id === updated.id) setSelected(updated);
+      setBuckets((rows) => rows.map((row) => row.id === updated.id ? updated : row));
       setEditing(null); setMessage("Bucket settings saved."); await refresh();
     })} />}
     {selected && <section className={`${styles.card} ${styles.wide}`}>
@@ -266,8 +267,9 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
         <label>Key prefix <input aria-label="Key prefix" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>{" "}<button disabled={busy}>Search</button>
       </form>
-      {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
-      {canWrite && !pricingReady && <p role="status">Uploads are paused while verified pricing is unavailable. Use Refresh to retry.</p>}
+      {canWrite && <label>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady || selected.status !== "active"} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
+      {canWrite && selected.status === "read_only" && <p role="status">Uploads are paused for this bucket. {canAdmin ? "Open Settings to resume uploads." : "Ask a workspace owner or administrator to resume uploads."}</p>}
+      {canWrite && selected.status === "active" && !pricingReady && <p role="status">Uploads are paused while verified pricing is unavailable. Use Refresh to retry.</p>}
       <div className={ui.tableScroll} tabIndex={0}><table><thead><tr><th>Key</th><th>Size</th><th>Actions</th></tr></thead><tbody>{entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No objects match this prefix.</td></tr>}{entries.map((entry) => <tr key={entry.entry}>
         <td style={{ overflowWrap: "anywhere" }}>{entry.entry}</td><td>{bytes(entry.size_bytes)}</td><td><button disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>{" "}
           {canWrite && <button disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(`/v1/buckets/${selected.id}/object?${new URLSearchParams({ key: entry.entry })}`, { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
