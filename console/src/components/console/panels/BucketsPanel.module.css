@@ -30,7 +30,8 @@
   align-items: end;
   gap: 1rem;
 }
-.createForm { grid-template-columns: minmax(0, 1fr); }
+.createForm { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.createForm > p, .createForm > .dialogActions { grid-column: 1 / -1; }
 .createForm button, .searchForm button { align-self: end; }
 .searchForm { grid-template-columns: minmax(0, 1fr) auto; }
 .credentialForm { grid-template-columns: minmax(145px, 1fr) auto minmax(175px, 1fr) minmax(140px, 180px); }
