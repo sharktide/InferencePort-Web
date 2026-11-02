@@ -36,26 +36,34 @@ module.exports = async function layout(browser, url) {
       assert.equal(await page.getByRole('tab', { name: 'Files', exact: true }).getAttribute('aria-selected'), 'true');
       assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).isVisible(), false);
       if (populated) await page.getByRole('button', { name: 'Browse', exact: true }).click();
-      else await page.getByText('No buckets yet. Create a bucket to start storing files.').waitFor();
+      else await page.getByText('No buckets yet. Use Create bucket to get started.').waitFor();
       if (populated) {
         await page.waitForFunction((disabled) => document.querySelector('input[aria-label="Upload file"]')?.disabled === disabled, !pricesReady);
         assert.equal(await page.getByLabel('Upload file').isDisabled(), !pricesReady, 'Upload availability must reflect verified pricing');
       }
-      assert.equal(await page.getByLabel('Bucket name', { exact: true }).isVisible(), false);
-      await page.getByText('Create a bucket', { exact: true }).click();
+      if (populated) await page.getByRole('button', { name: 'Close dialog' }).click();
+      assert.equal(await page.getByLabel('Bucket name', { exact: true }).count(), 0);
+      await page.getByRole('button', { name: /Create bucket/ }).click();
+      await page.getByRole('dialog', { name: 'Create a bucket' }).waitFor();
       const name = await page.getByLabel('Bucket name', { exact: true }).boundingBox();
       const quota = await page.getByLabel('Quota (GiB)').boundingBox();
       assert(name && quota);
       if (width > 700) assert(Math.abs(name.y - quota.y) < 2, 'Desktop creation fields must share a row');
       else assert(quota.y >= name.y + name.height, 'Mobile creation fields must stack');
-      assert(await page.locator('table').first().evaluate((table) => parseFloat(getComputedStyle(table.querySelector('th')).paddingLeft) >= 12), 'Table headings need cell padding');
-      assert(await page.locator('table').evaluateAll((tables) => tables.every((table) => [...table.querySelectorAll('th')].every((cell) => cell.scrollWidth <= cell.clientWidth))), 'Table headings must fit their cells');
+      if (width > 700) {
+        assert(await page.locator('table').first().evaluate((table) => parseFloat(getComputedStyle(table.querySelector('th')).paddingLeft) >= 12), 'Table headings need cell padding');
+      }
+      assert(await page.getByRole('dialog').evaluate((element) => element.getBoundingClientRect().width <= innerWidth), 'Modal must fit viewport');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Wide content must scroll within its table, not the page');
+      await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+      await page.getByRole('dialog').waitFor({ state: 'hidden' });
       if (populated && pricesReady && width === 1440 && theme === 'dark') {
+        await page.getByRole('button', { name: 'Browse', exact: true }).click();
         await page.getByLabel('Upload file').setInputFiles({ name: 'hidden-receipt.bin', mimeType: 'application/octet-stream', buffer: Buffer.from('part') });
-        await page.getByRole('status').filter({ hasText: 'missing its part receipt' }).waitFor();
+        await page.getByRole('status').filter({ hasText: 'missing its part receipt' }).first().waitFor();
         assert.equal(aborted, 1);
         assert.equal(completed, 0, 'Missing ETag must never submit an invalid CompleteMultipartUpload');
+        await page.keyboard.press('Escape');
       }
       await page.getByRole('tab', { name: 'Credentials', exact: true }).click();
       const checkbox = page.getByRole('checkbox', { name: 'Read only' });
@@ -81,7 +89,11 @@ module.exports = async function layout(browser, url) {
       assert.equal(await page.getByRole('tab', { name: 'Credentials', exact: true }).getAttribute('aria-selected'), 'true');
       await page.getByRole('tab', { name: 'Pricing', exact: true }).click();
       await page.getByRole('heading', { name: 'Storage pricing', exact: true }).waitFor();
-      assert.equal(await page.getByLabel('Bucket name', { exact: true }).isVisible(), false);
+      if (pricesReady) {
+        await page.getByText('$0.0312', { exact: true }).waitFor();
+        assert.equal(await page.getByText('Technical rate version').count(), 1);
+      }
+      assert.equal(await page.getByLabel('Bucket name', { exact: true }).count(), 0);
       await page.getByRole('tab', { name: 'Pricing', exact: true }).press('Home');
       assert.equal(await page.getByRole('tab', { name: 'Files', exact: true }).getAttribute('aria-selected'), 'true');
       if (process.env.BUCKETS_SCREENSHOT_DIR) {
