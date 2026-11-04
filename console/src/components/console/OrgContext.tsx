@@ -26,6 +26,9 @@ export interface OrgContextValue {
   orgs: OrgSummary[] | null;
   activeSlug: string | null;
   activeOrg: OrgSummary | null;
+  /** False until an explicitly requested organization is resolved and authorized. */
+  workspaceReady: boolean;
+  workspaceError: string | null;
   /** Set when the organization list could not be loaded; call refresh() to retry. */
   listError: string | null;
   /** Switch context. Pass null for the personal account. */
@@ -61,6 +64,7 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   const api = useMemo(() => createOrgApi(apiBase, () => tokenRef.current), [apiBase]);
 
   const [orgs, setOrgs] = useState<OrgSummary[] | null>(null);
+  const [orgsToken, setOrgsToken] = useState<string | undefined>();
   const [requested, setRequested] = useState<string | null>(() => (typeof window === "undefined" ? null : readSharedWorkspace() ?? readStored()));
 
   /* Browser history can restore a different organization's shared section link. */
@@ -75,17 +79,20 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
 
   const [listError, setListError] = useState<string | null>(null);
 
+  const discoveryId = useRef(0);
   const refresh = useCallback(async () => {
+    const attempt = ++discoveryId.current;
     const started = tokenRef.current;
     if (!started) { setOrgs(null); setListError(null); return; }
     try {
       const { orgs: list } = await api.list();
-      if (tokenRef.current !== started) return; /* signed out or switched account while loading */
+      if (tokenRef.current !== started || attempt !== discoveryId.current) return; /* signed out or switched account while loading */
       setOrgs(list);
+      setOrgsToken(started);
       setListError(null);
     } catch (e) {
-      if (tokenRef.current !== started) return;
-      setListError(e instanceof Error ? e.message : "Could not load your organizations");
+      if (tokenRef.current !== started || attempt !== discoveryId.current) return;
+      setListError(e instanceof DOMException && ["AbortError", "TimeoutError"].includes(e.name) ? "Loading organizations timed out. Retry or choose your personal workspace." : e instanceof Error ? e.message : "Could not load your organizations");
     }
   }, [api]);
 
@@ -99,14 +106,16 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   useEffect(() => {
     if (!signedIn) { setOrgs(null); setListError(null); return; }
     void refresh();
-  }, [signedIn, refresh]);
+  }, [signedIn, token, refresh]);
 
   /* The active org must be one the user belongs to; otherwise fall back to personal. */
   const activeOrg = useMemo(
-    () => (requested && orgs ? orgs.find((o) => o.slug === requested) ?? null : null),
-    [requested, orgs],
+    () => (requested && orgs && orgsToken === token ? orgs.find((o) => o.slug === requested) ?? null : null),
+    [requested, orgs, orgsToken, token],
   );
   const activeSlug = activeOrg?.slug ?? null;
+  const workspaceReady = !requested || activeOrg !== null;
+  const workspaceError = requested && !activeOrg ? (listError || (orgsToken === token && orgs !== null ? "You no longer have access to the selected organization. Choose another workspace or use your personal workspace." : null)) : null;
 
   const setActiveSlug = useCallback((slug: string | null) => {
     setRequested(slug);
@@ -133,8 +142,8 @@ export function OrgProvider({ session, apiBase, children }: { session: any; apiB
   }, [activeSlug, apiBase]);
 
   const value = useMemo<OrgContextValue>(
-    () => ({ orgs, activeSlug, activeOrg, listError, setActiveSlug, refresh, api }),
-    [orgs, activeSlug, activeOrg, listError, setActiveSlug, refresh, api],
+    () => ({ orgs, activeSlug, activeOrg, workspaceReady, workspaceError, listError, setActiveSlug, refresh, api }),
+    [orgs, activeSlug, activeOrg, workspaceReady, workspaceError, listError, setActiveSlug, refresh, api],
   );
   return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 }
