@@ -44,7 +44,7 @@ module.exports = async function workspace(browser, url) {
     await page.getByRole('cell', { name: 'organization-only', exact: true }).waitFor();
     assert(calls.every(call => call.selected));
     await page.getByRole('tab', { name: 'Connect', exact: true }).click();
-    assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), `https://localhost:58080/${org}/s3/`);
+    assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), `https://localhost:58080/${org}/s3`);
     delayOld = true;
     await page.getByRole('button', { name: 'Refresh', exact: true }).click();
     await oldSeen;
@@ -52,7 +52,7 @@ module.exports = async function workspace(browser, url) {
     await page.getByRole('cell', { name: 'personal-only', exact: true }).waitFor();
     releaseOld();
     await page.getByRole('tab', { name: 'Connect', exact: true }).click();
-    assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), `https://localhost:58080/${user}/s3/`);
+    assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), `https://localhost:58080/${user}/s3`);
     await page.getByRole('tab', { name: 'Files', exact: true }).click();
     assert.equal(await page.getByRole('cell', { name: 'organization-only', exact: true }).count(), 0);
     await page.getByRole('cell', { name: 'personal-only', exact: true }).waitFor();
