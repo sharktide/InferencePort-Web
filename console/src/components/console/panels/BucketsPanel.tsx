@@ -114,7 +114,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     setCatalog(status);
     setWorkspace({ ...scope, selection: contextKey });
     if (status.status !== "not_available") {
-      const list = await call("/v1/buckets?limit=1000");
+      const list = await call("/v1/buckets?limit=100");
       if (requestId !== refreshId.current) return;
       setBuckets(list.buckets); setBucketContinuation(list.continuation_token);
       if (canAdmin) { const keys = await call("/v1/buckets/s3-credentials"); if (requestId === refreshId.current) { setCredentials(keys.credentials); setCredentialContinuation(keys.continuation_token); } }
@@ -197,6 +197,9 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     const browseEpoch = browseId.current;
     const stillBrowsing = () => isCurrent() && browseEpoch === browseId.current;
     if (!file.name || encodedBytes(file.name) > MAX_OBJECT_KEY_BYTES) throw new Error("Object key (filename) must be 1–1,024 UTF-8 bytes. Use an S3 client to choose a shorter key.");
+    // Keep browser transfers beneath S3's 10k multipart ceiling and avoid
+    // making the console responsible for very long, failure-prone uploads.
+    if (file.size > 64 * 1024 ** 3) throw new Error("Browser uploads are limited to 64 GiB. Use ipx or an S3 client for larger objects.");
     const path = objectPath(s3Path, selected.name, file.name);
     const requestKey = crypto.randomUUID();
     let uploadId = "";
@@ -295,7 +298,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
             {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); if (selected?.id === bucket.id) closeBrowse(); await refresh(); }); }}>Delete</button>}
           </td></tr>)}
         </tbody></table></div>
-        {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=1000&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...rows, ...page.buckets]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
+        {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=100&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...rows, ...page.buckets]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
       </>}
     </section>
     {creating && canAdmin && <BucketDialog title="Create a bucket" description="Create private S3-compatible storage in this workspace." busy={busy} onClose={() => setCreating(false)}>
