@@ -77,17 +77,17 @@ module.exports = async function layout(browser, url) {
       const label = await checkbox.locator('..').boundingBox();
       assert(box.width <= 20 && Math.abs(box.x - label.x) < 2 && Math.abs(box.y + box.height / 2 - label.y - label.height / 2) < 2, 'Checkbox stays next to its label');
       await page.getByRole('tab', { name: 'Connect', exact: true }).click();
-      assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/');
+      assert.equal(await page.getByLabel('S3 endpoint', { exact: true }).inputValue(), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3');
       if (populated) {
         assert.equal(await page.getByLabel('Connection bucket').inputValue(), 'hi-test');
         assert.equal(await page.getByLabel('Bucket URI', { exact: true }).inputValue(), 's3://hi-test/');
         assert.equal(await page.getByLabel('Bucket request URL', { exact: true }).inputValue(), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/hi-test/');
         const listCommand = await page.getByRole('heading', { name: 'List files', exact: true }).locator('../..').locator('pre').textContent();
-        assert(listCommand.includes("--endpoint-url 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/' s3 ls 's3://hi-test/'"));
+        assert(listCommand.includes("--endpoint-url 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3' s3 ls 's3://hi-test/'"));
       }
       await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
       await page.getByRole('button', { name: 'Copy s3 endpoint', exact: true }).click();
-      assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3/');
+      assert.equal(await page.evaluate(() => navigator.clipboard.readText()), 'https://localhost:58080/11111111-1111-4111-8111-111111111111/s3');
       await page.getByText('Getting 403 Forbidden?', { exact: true }).click();
       await page.getByText('An access-log status alone does not identify the cause.', { exact: false }).waitFor();
       await page.getByRole('button', { name: 'S3 credentials', exact: true }).click();
