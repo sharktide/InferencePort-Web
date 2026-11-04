@@ -37,6 +37,12 @@ const formatThreshold = (value: string, unit: string) => {
 };
 const xmlValue = (xml: string, tag: string) => new DOMParser().parseFromString(xml, "application/xml").getElementsByTagName(tag)[0]?.textContent ?? "";
 const objectPath = (endpoint: string, bucket: string, key: string) => `${endpoint}${encodeURIComponent(bucket)}/${encodeURIComponent(key).replace(/\./g, "%2E")}`;
+const encodedBytes = (value: string) => new TextEncoder().encode(value).length;
+const MAX_OBJECT_KEY_BYTES = 1024;
+const MAX_CREDENTIAL_PREFIX_BYTES = 256;
+const validScopePrefix = (value: string) => encodedBytes(value) <= MAX_CREDENTIAL_PREFIX_BYTES
+  && !Array.from(value).some((char) => char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127);
+
 
 export default function BucketsPanel({ apiBase, session }: { apiBase: string; session: { access_token?: string } | null }) {
   const { activeOrg, activeSlug, workspaceReady, workspaceError, setActiveSlug, refresh: refreshOrgs } = useOrgContext();
@@ -190,6 +196,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     if (!selected) return;
     const browseEpoch = browseId.current;
     const stillBrowsing = () => isCurrent() && browseEpoch === browseId.current;
+    if (!file.name || encodedBytes(file.name) > MAX_OBJECT_KEY_BYTES) throw new Error("Object key (filename) must be 1–1,024 UTF-8 bytes. Use an S3 client to choose a shorter key.");
     const path = objectPath(s3Path, selected.name, file.name);
     const requestKey = crypto.randomUUID();
     let uploadId = "";
@@ -297,6 +304,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         setName(""); setCreating(false); await refresh();
       }); }}>
         <label>Bucket name <input aria-label="Bucket name" value={name} onChange={(e) => setName(e.target.value)} required minLength={3} maxLength={63} pattern="[a-z0-9][a-z0-9.-]+[a-z0-9]" placeholder="e.g. model-weights" /></label>
+        <p className={ui.helperText}>3–63 lowercase letters, digits, dots or hyphens. Avoid consecutive dots and IP-address-style names.</p>
         <label>Maximum size (GiB) <input aria-label="Quota (GiB)" type="number" min="1" max="1024" value={quota} onChange={(e) => setQuota(e.target.value)} required /></label>
         <p className={ui.helperText}>Only stored data, operations and transfer are billed. The size limit doesn't reserve capacity.</p>
         {message && <p role="status">{message}</p>}
@@ -315,7 +323,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     {selected && <BucketDialog title={`Files · ${selected.name}`} description="Browse, upload and manage objects in this bucket." busy={busy} onClose={closeBrowse}>
       <div className={ui.modalSection}>
         <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
-          <label>Key prefix <input aria-label="Key prefix" placeholder="Search by prefix (optional)" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>
+          <label>Key prefix <input aria-label="Key prefix" maxLength={1024} placeholder="Search by prefix (optional)" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>
           <button disabled={busy} type="submit">Search</button>
         </form>
         {canWrite && <label className={ui.uploadLabel}>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady || selected.status !== "active"} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
@@ -350,11 +358,13 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       <div className={ui.credentialForm}>
       <label>Bucket access <select aria-label="Credential bucket access" value={credentialBucketId} onChange={(event) => setCredentialBucketId(event.target.value)}><option value="">All workspace buckets</option>{buckets.map((bucket) => <option key={bucket.id} value={bucket.id}>{bucket.name}</option>)}</select></label>
       <label className={ui.checkbox}><input type="checkbox" checked={readOnlyKey} onChange={(event) => setReadOnlyKey(event.target.checked)} /> Read only</label>{" "}
-      <label>Object key prefix (optional) <input placeholder="e.g. models/" aria-label="Credential key prefix" value={keyPrefix} onChange={(event) => setKeyPrefix(event.target.value)} /></label>{" "}
+      <label>Object key prefix (optional) <input placeholder="e.g. models/" aria-label="Credential key prefix" maxLength={256} value={keyPrefix} onChange={(event) => setKeyPrefix(event.target.value)} /></label>{" "}
       <label>Expires in <select aria-label="Credential expiry" value={keyTtl} onChange={(event) => setKeyTtl(event.target.value)}><option value="600">10 minutes</option><option value="86400">1 day</option><option value="2592000">30 days</option></select></label>
       </div>
+      <p className={ui.helperText}>Credential prefixes are limited to 256 UTF-8 bytes, without control characters. API-created credentials can specify up to 16 prefixes.</p>
+      {!validScopePrefix(keyPrefix) && <p role="alert">Shorten the prefix to 256 UTF-8 bytes and remove control characters.</p>}
       <p>Leave the object key prefix blank for the whole bucket. A prefix restricts file access and root listings. This credential allows {readOnlyKey ? "listing and downloads" : "listing, downloads and uploads"} in {buckets.find(bucket => bucket.id === credentialBucketId)?.name || "all workspace buckets"}.</p>
-      <button disabled={busy} onClick={() => void act(async () => {
+      <button disabled={busy || !validScopePrefix(keyPrefix)} onClick={() => void act(async () => {
         await issueCredential("/v1/buckets/s3-credentials", JSON.stringify({ permissions: readOnlyKey ? ["storage.read"] : ["storage.read", "storage.write"], bucket_ids: credentialBucketId ? [credentialBucketId] : null, key_prefixes: keyPrefix ? [keyPrefix] : null, expires_in: Number(keyTtl) }));
       })}>Issue {credentialBucketId ? "bucket credential" : "workspace credential"}</button>
       {secret && <div className={ui.secret} role="status"><p>Copy this secret now. It will not be shown again.</p>
