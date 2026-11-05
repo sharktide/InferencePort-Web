@@ -8,8 +8,8 @@ import BucketConnection from "./BucketConnection";
 import BucketSettings from "./BucketSettings";
 import BucketDialog from "./BucketDialog";
 
-type Bucket = { id: string; name: string; bytes_used: number; bytes_reserved: number; quota_bytes: number; status: string };
-type Entry = { entry: string; object_key: string; size_bytes: number; s3_etag: string };
+type Bucket = { id: string; name: string; bytes_used: number; bytes_reserved: number; quota_bytes: number; status: string; visibility?: "private" | "public" };
+type Entry = { entry: string; object_key: string; size_bytes: number; s3_etag: string; public_url?: string };
 type Credential = { id: string; access_key_id: string; expires_at: string; revoked_at: string | null; scopes?: { permissions?: string[]; key_prefixes?: string[] | null; bucket_ids?: string[] | null } };
 type Catalog = { status: string; endpoint: string; object_writes_enabled?: boolean; pricing: { status?: string; rate_version?: string; meters?: Record<string, { name: string; unit: string; bands: string[][]; effective_at: string }>; offers?: unknown[] } };
 const bytes = (value: number) => {
@@ -47,6 +47,7 @@ const validScopePrefix = (value: string) => encodedBytes(value) <= MAX_CREDENTIA
 export default function BucketsPanel({ apiBase, session }: { apiBase: string; session: { access_token?: string } | null }) {
   const { activeOrg, activeSlug, workspaceReady, workspaceError, setActiveSlug, refresh: refreshOrgs } = useOrgContext();
   const refreshId = useRef(0);
+  const recentBucketId = useRef<string | null>(null);
   const [editing, setEditing] = useState<Bucket | null>(null);
   const [creating, setCreating] = useState(false);
   const [filesLoading, setFilesLoading] = useState(false);
@@ -66,6 +67,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   const [continuation, setContinuation] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [quota, setQuota] = useState("10");
+  const [visibility, setVisibility] = useState<"private" | "public">("private");
   const [readOnlyKey, setReadOnlyKey] = useState(true);
   const [keyPrefix, setKeyPrefix] = useState("");
   const [keyTtl, setKeyTtl] = useState("86400");
@@ -97,7 +99,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       const body = await response.text();
       let detail = "";
       try { detail = JSON.parse(body).detail; } catch { detail = xmlValue(body, "Message"); }
-      throw new Error(detail || `Request failed (HTTP ${response.status}).`);
+      throw Object.assign(new Error(detail || `Request failed (HTTP ${response.status}).`), { status: response.status });
     }
     if (raw) return response;
     const value = response.status === 204 ? null : await response.json();
@@ -116,6 +118,14 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     if (status.status !== "not_available") {
       const list = await call("/v1/buckets?limit=100");
       if (requestId !== refreshId.current) return;
+      // Keep the most recently created bucket visible even beyond page one.
+      // Refetch by ID so refresh also observes external deletion and settings.
+      const recent = recentBucketId.current;
+      if (recent && !list.buckets.some((bucket: Bucket) => bucket.id === recent)) {
+        try { list.buckets.unshift(await call(`/v1/buckets/${recent}`)); }
+        catch (error) { if ((error as { status?: number }).status !== 404) throw error; recentBucketId.current = null; }
+      }
+      if (requestId !== refreshId.current) return;
       setBuckets(list.buckets); setBucketContinuation(list.continuation_token);
       if (canAdmin) { const keys = await call("/v1/buckets/s3-credentials"); if (requestId === refreshId.current) { setCredentials(keys.credentials); setCredentialContinuation(keys.continuation_token); } }
     }
@@ -123,8 +133,8 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
 
   useEffect(() => {
     let live = true; mounted.current = true;
-    setEditing(null); setCreating(false); browseId.current++; setFilesLoading(false); setCredentialBucketId(""); credentialAttempt.current = null; setBucketContinuation(null); setCredentialContinuation(null); setContinuation(null);
-    setWorkspace(null); setBusy(false); setMessage(""); setPrefix(""); setKeyPrefix(""); setReadOnlyKey(true); setName(""); setTab("files");
+    recentBucketId.current = null; setEditing(null); setCreating(false); browseId.current++; setFilesLoading(false); setCredentialBucketId(""); credentialAttempt.current = null; setBucketContinuation(null); setCredentialContinuation(null); setContinuation(null);
+    setWorkspace(null); setBusy(false); setMessage(""); setPrefix(""); setKeyPrefix(""); setReadOnlyKey(true); setName(""); setVisibility("private"); setTab("files");
     setBuckets([]); setSelected(null); setEntries([]); setSecret(null); setUsage(null); setCredentials([]);
     if (workspaceReady) void refresh().catch((error) => { if (live) setMessage(error.message); });
     return () => { live = false; mounted.current = false; refreshId.current++; };
@@ -287,29 +297,32 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     </section>
     <div role="tabpanel" id="bucket-panel-files" aria-labelledby="bucket-tab-files" hidden={tab !== "files"} className={ui.tabPanel}>
     <section className={`${styles.card} ${styles.wide}`}>
-      <div className={ui.sectionHeading}><div><h2 className={styles.heading}>Your buckets</h2><p>Manage storage, files and access within this workspace.</p></div>{canAdmin && <button type="button" onClick={() => setCreating(true)} disabled={busy}>+ Create bucket</button>}</div>
+      <div className={ui.sectionHeading}><div><h2 className={styles.heading}>Your buckets</h2><p>Manage storage, files and access within this workspace.</p></div>{canAdmin && <button type="button" onClick={() => { setVisibility("private"); setCreating(true); }} disabled={busy}>+ Create bucket</button>}</div>
       {catalog && catalog.status !== "not_available" && <>
         <p className={ui.helperText}>Bucket names are unique within this workspace. Your S3 credentials determine which workspace you can access.</p>
         <div className={ui.tableScroll} tabIndex={0}><table className={ui.bucketTable}><thead><tr><th>Name</th><th>Used / quota</th><th>Status</th><th>Actions</th></tr></thead><tbody>
           {buckets.length === 0 && <tr><td colSpan={4} className={ui.empty}>No buckets yet. Use Create bucket to get started.</td></tr>}
-          {buckets.map((bucket) => <tr key={bucket.id}><td data-label="Bucket"><strong>{bucket.name}</strong></td><td data-label="Storage">{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td data-label="Status"><span className={ui.statusPill}>{bucket.status === "read_only" ? "Uploads paused" : bucket.status === "active" ? "Active" : bucket.status}</span></td><td data-label="Actions" className={ui.actionCell}>
+          {buckets.map((bucket) => <tr key={bucket.id}><td data-label="Bucket"><strong>{bucket.name}</strong></td><td data-label="Storage">{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td data-label="Status"><span className={ui.statusPill}>{bucket.status === "read_only" ? "Uploads paused" : bucket.status === "active" ? "Active" : bucket.status}</span>{" "}<span className={ui.statusPill}>{bucket.visibility === "public" ? "Public" : "Private"}</span></td><td data-label="Actions" className={ui.actionCell}>
             <button type="button" disabled={busy} onClick={() => void act(() => browse(bucket))}>Browse</button>{" "}
             {canAdmin && <button type="button" disabled={busy} onClick={() => setEditing(bucket)}>Settings</button>}{" "}
-            {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); if (selected?.id === bucket.id) closeBrowse(); await refresh(); }); }}>Delete</button>}
+            {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); if (recentBucketId.current === bucket.id) recentBucketId.current = null; if (selected?.id === bucket.id) closeBrowse(); await refresh(); }); }}>Delete</button>}
           </td></tr>)}
         </tbody></table></div>
-        {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=100&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...rows, ...page.buckets]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
+        {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=100&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...new Map([...rows, ...page.buckets].map((row: Bucket) => [row.id, row])).values()]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
       </>}
     </section>
-    {creating && canAdmin && <BucketDialog title="Create a bucket" description="Create private S3-compatible storage in this workspace." busy={busy} onClose={() => setCreating(false)}>
+    {creating && canAdmin && <BucketDialog title="Create a bucket" description="Create S3-compatible storage in this workspace. Buckets are private by default." busy={busy} onClose={() => setCreating(false)}>
       <form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
-        await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3) }) });
+        const created = await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3), visibility }) });
+        recentBucketId.current = created.id;
         setName(""); setCreating(false); await refresh();
       }); }}>
         <label>Bucket name <input aria-label="Bucket name" value={name} onChange={(e) => setName(e.target.value)} required minLength={3} maxLength={63} pattern="[a-z0-9][a-z0-9.-]+[a-z0-9]" placeholder="e.g. model-weights" /></label>
-        <p className={ui.helperText}>3–63 lowercase letters, digits, dots or hyphens. Avoid consecutive dots and IP-address-style names.</p>
         <label>Maximum size (GiB) <input aria-label="Quota (GiB)" type="number" min="1" max="1024" value={quota} onChange={(e) => setQuota(e.target.value)} required /></label>
+        <p className={ui.helperText}>3–63 lowercase letters, digits, dots or hyphens. Avoid consecutive dots and IP-address-style names.</p>
         <p className={ui.helperText}>Only stored data, operations and transfer are billed. The size limit doesn't reserve capacity.</p>
+        <label>Bucket access <select aria-label="Bucket access" value={visibility} onChange={(event) => setVisibility(event.target.value as "private" | "public")}><option value="private">Private</option><option value="public">Public</option></select></label>
+        <p className={ui.helperText}>{visibility === "public" ? "Anyone with a file URL can download it. Downloads are billed to this workspace. Uploads and listing still require permission." : "Only authorized users and credentials can download files."}</p>
         {message && <p role="status">{message}</p>}
         <div className={ui.dialogActions}><button type="button" disabled={busy} onClick={() => setCreating(false)}>Cancel</button><button disabled={busy} type="submit">Create bucket</button></div>
       </form>
@@ -338,7 +351,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
           {!filesLoading && entries.length === 0 && <tr><td colSpan={3} className={ui.empty}>No files match this prefix.</td></tr>}
           {entries.map((entry) => <tr key={entry.entry}>
             <td data-label="Object key" className={ui.objectKey}>{entry.entry}</td><td data-label="Size">{bytes(entry.size_bytes)}</td>
-            <td data-label="Actions" className={ui.actionCell}><button type="button" disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>
+            <td data-label="Actions" className={ui.actionCell}>{selected.visibility === "public" && entry.public_url && <button type="button" disabled={busy} onClick={() => void act(async () => { await navigator.clipboard.writeText(entry.public_url!); setMessage("Public URL copied. Anyone with this link can download the file."); })}>Copy public URL</button>}<button type="button" disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>
               {canWrite && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(`/v1/buckets/${selected.id}/object?${new URLSearchParams({ key: entry.entry })}`, { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
           </tr>)}
         </tbody></table></div>

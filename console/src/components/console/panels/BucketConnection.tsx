@@ -41,7 +41,7 @@ export default function BucketConnection({ endpoint, buckets, selectedName, work
   }
   return <section className={`${styles.card} ${styles.wide}`} aria-labelledby="bucket-connection-title">
     <h2 id="bucket-connection-title" className={styles.heading}>Connect with an S3 client</h2>
-    <p>Every bucket in this workspace uses this S3 endpoint. Enter your bucket name separately in your client. These buckets are private; opening a bucket URL in a browser does not sign you in.</p>
+    <p>Every bucket in this workspace uses this S3 endpoint. Enter your bucket name separately in your client. S3 clients require credentials for listing and management. For public buckets, use Copy public URL in the file browser to share an anonymous download link.</p>
     <p>Names belong to a workspace: two users can both have a bucket named <code>hi-test</code>. This endpoint identifies the workspace, and your credentials must belong to it.</p>
     <p>Workspace: {workspaceKind === "org" ? "Organization" : "Personal"} · <code>{workspaceId}</code></p>
     {field("S3 endpoint", clientEndpoint)}

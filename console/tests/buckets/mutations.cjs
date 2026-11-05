@@ -62,7 +62,7 @@ module.exports = async function mutations(browser, url) {
           assert.equal(await page.getByLabel('Secret access key', { exact: true }).inputValue(), 'fixture-secret');
           assert.equal(issues, 2);
         } else {
-          await page.getByRole('status').filter({ hasText: 'Upload initiation returned no upload ID' }).waitFor();
+          await page.getByRole('dialog').getByRole('status').filter({ hasText: 'Upload initiation returned no upload ID' }).waitFor();
           assert.equal(initiations, 2);
           assert(requests.some(r => r.method === 'DELETE' && r.query.includes('fixture-upload') && r.selected));
         }
@@ -71,12 +71,16 @@ module.exports = async function mutations(browser, url) {
       } else {
         await seen;
         if (['initiate', 'part'].includes(scenario)) {
-          // Explicitly close the modal during the pending transfer, then change workspace.
+          // The hardened dialog cannot dismiss an active transfer. Workspace
+          // identity can still change externally (session/org refresh); exercise it
+          // through the harness without pretending the backdrop is clickable.
           await page.keyboard.press('Escape');
-          await page.getByRole('dialog').waitFor({ state: 'hidden' });
+          assert.equal(await page.getByRole('dialog').isVisible(), true);
         }
         const unavailable = scenario === 'issue' && !remount;
-        await page.getByRole('button', { name: unavailable ? 'Select unavailable organization' : 'Select Personal', exact: true }).click();
+        const switcher = page.getByRole('button', { name: unavailable ? 'Select unavailable organization' : 'Select Personal', exact: true });
+        if (['initiate', 'part'].includes(scenario)) await switcher.evaluate(button => button.click());
+        else await switcher.click();
         if (unavailable) await page.getByRole('status').filter({ hasText: 'You no longer have access' }).waitFor();
         else await page.getByRole('cell', { name: 'personal-only', exact: true }).waitFor();
         const cleanup = page.waitForRequest(request => request.method() === 'DELETE' && (request.url().includes('new-credential') || request.url().includes('fixture-upload')));
