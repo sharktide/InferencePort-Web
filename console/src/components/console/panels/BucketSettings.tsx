@@ -8,7 +8,7 @@ export default function BucketSettings({ bucket, busy, onCancel, onSave }: {
   bucket: Bucket;
   busy: boolean;
   onCancel: () => void;
-  onSave: (changes: { name: string; quota_bytes: number; status: string; visibility: "private" | "public" }) => void;
+  onSave: (changes: Partial<{ name: string; quota_bytes: number; status: string; visibility: "private" | "public" }>) => void;
 }) {
   const [name, setName] = useState(bucket.name);
   const [quota, setQuota] = useState(String(Number(bucket.quota_bytes) / 1024 ** 3));
@@ -19,7 +19,14 @@ export default function BucketSettings({ bucket, busy, onCancel, onSave }: {
     <p>Renaming changes the bucket URL. Update your S3 clients to use the new name. Objects and bucket-scoped credentials stay attached.</p>
     <form className={ui.settingsForm} onSubmit={(event) => {
       event.preventDefault();
-      onSave({ name, quota_bytes: Math.round(Number(quota) * 1024 ** 3), status: readOnly ? "read_only" : "active", visibility });
+      const changes: Parameters<typeof onSave>[0] = {};
+      if (name !== bucket.name) changes.name = name;
+      const quotaBytes = Math.round(Number(quota) * 1024 ** 3);
+      if (quotaBytes !== Number(bucket.quota_bytes)) changes.quota_bytes = quotaBytes;
+      const status = readOnly ? "read_only" : "active";
+      if (status !== bucket.status) changes.status = status;
+      if (visibility !== (bucket.visibility || "private")) changes.visibility = visibility;
+      if (Object.keys(changes).length) onSave(changes); else onCancel();
     }}>
       <label>Bucket name <input aria-label="New bucket name" value={name} onChange={(event) => setName(event.target.value)} minLength={3} maxLength={63} pattern="[a-z0-9][a-z0-9.-]+[a-z0-9]" required /></label>
       <label>Maximum size (GiB) <input aria-label="Maximum bucket size (GiB)" type="number" min={minimum / 1024 ** 3} max="1024" step="any" value={quota} onChange={(event) => setQuota(event.target.value)} required /></label>

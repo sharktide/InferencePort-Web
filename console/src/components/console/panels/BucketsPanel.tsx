@@ -47,7 +47,8 @@ const validScopePrefix = (value: string) => encodedBytes(value) <= MAX_CREDENTIA
 export default function BucketsPanel({ apiBase, session }: { apiBase: string; session: { access_token?: string } | null }) {
   const { activeOrg, activeSlug, workspaceReady, workspaceError, setActiveSlug, refresh: refreshOrgs } = useOrgContext();
   const refreshId = useRef(0);
-  const recentBucketId = useRef<string | null>(null);
+  const recentBucketIds = useRef(new Set<string>());
+  const selectedRef = useRef<Bucket | null>(null);
   const [editing, setEditing] = useState<Bucket | null>(null);
   const [creating, setCreating] = useState(false);
   const [filesLoading, setFilesLoading] = useState(false);
@@ -58,6 +59,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [buckets, setBuckets] = useState<Bucket[]>([]);
   const [selected, setSelected] = useState<Bucket | null>(null);
+  selectedRef.current = selected;
   const [entries, setEntries] = useState<Entry[]>([]);
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [secret, setSecret] = useState<Record<string, string> | null>(null);
@@ -118,22 +120,30 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     if (status.status !== "not_available") {
       const list = await call("/v1/buckets?limit=100");
       if (requestId !== refreshId.current) return;
-      // Keep the most recently created bucket visible even beyond page one.
-      // Refetch by ID so refresh also observes external deletion and settings.
-      const recent = recentBucketId.current;
-      if (recent && !list.buckets.some((bucket: Bucket) => bucket.id === recent)) {
-        try { list.buckets.unshift(await call(`/v1/buckets/${recent}`)); }
-        catch (error) { if ((error as { status?: number }).status !== 404) throw error; recentBucketId.current = null; }
+      // Refresh off-page rows in bounded batches, including all buckets created
+      // during this workspace session and the currently browsed bucket.
+      const chosen = selectedRef.current;
+      const wanted = new Set([...recentBucketIds.current, ...(chosen ? [chosen.id] : [])]);
+      const missing = [...wanted].filter((id) => !list.buckets.some((bucket: Bucket) => bucket.id === id));
+      for (let offset = 0; offset < missing.length; offset += 100) {
+        const batch = await call("/v1/buckets/metadata", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ids: missing.slice(offset, offset + 100) }) });
+        list.buckets.push(...batch.buckets);
       }
       if (requestId !== refreshId.current) return;
+      for (const id of wanted) if (!list.buckets.some((bucket: Bucket) => bucket.id === id)) recentBucketIds.current.delete(id);
       setBuckets(list.buckets); setBucketContinuation(list.continuation_token);
+      if (chosen && selectedRef.current?.id === chosen.id) {
+        const updated = list.buckets.find((bucket: Bucket) => bucket.id === chosen.id) || null;
+        setSelected(updated);
+        if (!updated) { browseId.current++; setEntries([]); setUsage(null); setContinuation(null); setFilesLoading(false); }
+      }
       if (canAdmin) { const keys = await call("/v1/buckets/s3-credentials"); if (requestId === refreshId.current) { setCredentials(keys.credentials); setCredentialContinuation(keys.continuation_token); } }
     }
   }, [call, canAdmin, contextKey]);
 
   useEffect(() => {
     let live = true; mounted.current = true;
-    recentBucketId.current = null; setEditing(null); setCreating(false); browseId.current++; setFilesLoading(false); setCredentialBucketId(""); credentialAttempt.current = null; setBucketContinuation(null); setCredentialContinuation(null); setContinuation(null);
+    recentBucketIds.current.clear(); setEditing(null); setCreating(false); browseId.current++; setFilesLoading(false); setCredentialBucketId(""); credentialAttempt.current = null; setBucketContinuation(null); setCredentialContinuation(null); setContinuation(null);
     setWorkspace(null); setBusy(false); setMessage(""); setPrefix(""); setKeyPrefix(""); setReadOnlyKey(true); setName(""); setVisibility("private"); setTab("files");
     setBuckets([]); setSelected(null); setEntries([]); setSecret(null); setUsage(null); setCredentials([]);
     if (workspaceReady) void refresh().catch((error) => { if (live) setMessage(error.message); });
@@ -305,7 +315,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
           {buckets.map((bucket) => <tr key={bucket.id}><td data-label="Bucket"><strong>{bucket.name}</strong></td><td data-label="Storage">{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td data-label="Status"><span className={ui.statusPill}>{bucket.status === "read_only" ? "Uploads paused" : bucket.status === "active" ? "Active" : bucket.status}</span>{" "}<span className={ui.statusPill}>{bucket.visibility === "public" ? "Public" : "Private"}</span></td><td data-label="Actions" className={ui.actionCell}>
             <button type="button" disabled={busy} onClick={() => void act(() => browse(bucket))}>Browse</button>{" "}
             {canAdmin && <button type="button" disabled={busy} onClick={() => setEditing(bucket)}>Settings</button>}{" "}
-            {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); if (recentBucketId.current === bucket.id) recentBucketId.current = null; if (selected?.id === bucket.id) closeBrowse(); await refresh(); }); }}>Delete</button>}
+            {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); recentBucketIds.current.delete(bucket.id); if (selected?.id === bucket.id) closeBrowse(); await refresh(); }); }}>Delete</button>}
           </td></tr>)}
         </tbody></table></div>
         {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=100&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...new Map([...rows, ...page.buckets].map((row: Bucket) => [row.id, row])).values()]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
@@ -314,7 +324,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
     {creating && canAdmin && <BucketDialog title="Create a bucket" description="Create S3-compatible storage in this workspace. Buckets are private by default." busy={busy} onClose={() => setCreating(false)}>
       <form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
         const created = await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3), visibility }) });
-        recentBucketId.current = created.id;
+        recentBucketIds.current.add(created.id);
         setName(""); setCreating(false); await refresh();
       }); }}>
         <label>Bucket name <input aria-label="Bucket name" value={name} onChange={(e) => setName(e.target.value)} required minLength={3} maxLength={63} pattern="[a-z0-9][a-z0-9.-]+[a-z0-9]" placeholder="e.g. model-weights" /></label>
