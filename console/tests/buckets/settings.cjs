@@ -38,6 +38,7 @@ module.exports = async function settings(browser, url) {
     await page.getByLabel('Sandbox API key').fill('settings-fixture');
     await page.getByRole('button', { name: 'Open sandbox' }).click();
     await row('shared').getByRole('button', { name: 'Settings', exact: true }).click();
+    await page.getByText('Public links permit anonymous downloads unless a bucket policy denies them.', { exact: false }).waitFor();
     rows.set('shared', { ...rows.get('shared'), visibility: 'private' });
     await page.getByLabel('Maximum bucket size (GiB)').fill('20');
     await page.getByRole('button', { name: 'Save settings', exact: true }).click();
