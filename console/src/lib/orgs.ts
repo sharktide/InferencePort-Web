@@ -308,6 +308,7 @@ export function createOrgApi(apiBase: string, getToken: () => string | undefined
     const token = getToken();
     const res = await fetch(`${apiBase}/v1/orgs${path}`, {
       method,
+      signal: AbortSignal.timeout(path === "" ? 15_000 : 90_000),
       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
