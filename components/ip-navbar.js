@@ -18,11 +18,16 @@ class IpNavbar extends HTMLElement {
 		const mi = (href, ic, cls, title, desc) => `<a class="ipn-m ${cls}" href="${href}"><span class="ipn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">${IC[ic]}</svg></span><div><b>${title}</b><span>${desc}</span></div></a>`;
 		const MARK = `<svg class="ipn-mark" viewBox="170 30 320 565" fill="#FCD704" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg>`;
 		const CARET = `<svg class="ipn-caret" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5"/></svg>`;
+		const themeButton = (placement) => `<button type="button" class="ipn-theme ipn-theme-${placement}" data-site-theme-toggle aria-label="Dark mode" aria-pressed="false" title="Switch to dark mode">
+			<svg class="ipn-theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13Z"/></svg>
+			<svg class="ipn-theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+		</button>`;
 
 		this.innerHTML = `
 <header class="ipn" id="ipn">
 	<div class="ipn-bar">
 		<a class="ipn-brand" href="/index.html" aria-label="InferencePort AI home">${MARK}<span>InferencePort <em>AI</em></span></a>
+		${themeButton("mobile")}
 		<button class="ipn-burger" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="ipn-panel"><span></span></button>
 		<div class="ipn-panel" id="ipn-panel">
 			<ul class="ipn-links">
@@ -58,6 +63,7 @@ class IpNavbar extends HTMLElement {
 				<li><a class="ipn-link" href="https://docs.inferenceport.ai" target="_blank" rel="noopener">Docs</a></li>
 			</ul>
 			<div class="ipn-right">
+				${themeButton("desktop")}
 				<a class="ipn-ghost" href="/console">Open Console</a>
 				<a class="ipn-cta" href="/install.html#install">Download app</a>
 			</div>
@@ -67,6 +73,10 @@ class IpNavbar extends HTMLElement {
 <script data-goatcounter="https://ipai.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 `;
+		this.querySelectorAll("[data-site-theme-toggle]").forEach((button) => {
+			button.addEventListener("click", () => window.InferencePortSiteTheme?.toggle());
+		});
+		window.InferencePortSiteTheme?.syncButtons();
 		const root = this.querySelector("#ipn");
 		const burger = this.querySelector(".ipn-burger");
 		burger.addEventListener("click", () => {

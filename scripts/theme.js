@@ -1,47 +1,58 @@
-/*
-Copyright 2025 Rihaan Meher
+/* Marketing site theme preference (separate from console-theme).
+   Synchronous head script prevents a flash of the wrong appearance. */
+(function () {
+  "use strict";
+  const key = "site-theme";
+  const root = document.documentElement;
+  const system = typeof window.matchMedia === "function"
+    ? window.matchMedia("(prefers-color-scheme: dark)")
+    : null;
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+  function saved() {
+    try {
+      const value = window.localStorage.getItem(key);
+      return value === "dark" || value === "light" ? value : null;
+    } catch {
+      return null;
+    }
+  }
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  function preferred() {
+    return saved() || (system && system.matches ? "dark" : "light");
+  }
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+  function syncButtons() {
+    const dark = root.getAttribute("data-theme") === "dark";
+    document.querySelectorAll("[data-site-theme-toggle]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(dark));
+      button.setAttribute("title", dark ? "Switch to light mode" : "Switch to dark mode");
+    });
+  }
 
-function applySavedTheme() {
-	const savedTheme = localStorage.getItem("theme");
-	const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-	const theme = savedTheme || (prefersDark ? "dark" : "light");
-	document.documentElement.setAttribute("data-theme", "dark");
-	updateToggleButton(theme);
-}
+  function apply(value) {
+    const theme = value === "dark" ? "dark" : "light";
+    root.setAttribute("data-theme", theme);
+    root.setAttribute("data-bs-theme", theme);
+    root.style.colorScheme = theme;
+    syncButtons();
+    document.dispatchEvent(new CustomEvent("ip-theme-change", { detail: { theme } }));
+  }
 
-function toggleTheme() {
-	const current = document.documentElement.getAttribute("data-theme");
-	const newTheme = current === "dark" ? "light" : "dark";
-	document.documentElement.setAttribute("data-theme", newTheme);
-	localStorage.setItem("theme", newTheme);
-	updateToggleButton(newTheme);
-}
+  function toggle() {
+    const theme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    try { window.localStorage.setItem(key, theme); } catch { /* Still toggle for this visit. */ }
+    apply(theme);
+  }
 
-function updateToggleButton(currentTheme) {
-	const button = document.getElementById("theme-toggle");
-	if (button) {
-		button.textContent =
-			currentTheme === "dark" ? "Toggle Light mode" : "Toggle Dark mode";
-	}
-}
+  window.InferencePortSiteTheme = { toggle, syncButtons };
+  apply(preferred());
 
-function toggleMenu() {
-	document.querySelector('.nav-links').classList.toggle('show');
-}
-
-document.getElementById("theme-toggle")?.addEventListener("click", toggleTheme);
-
-window.onload = applySavedTheme;
+  function onSystemChange() { if (!saved()) apply(preferred()); }
+  if (system) {
+    if (system.addEventListener) system.addEventListener("change", onSystemChange);
+    else if (system.addListener) system.addListener(onSystemChange);
+  }
+  window.addEventListener("storage", (event) => {
+    if (event.key === key || event.key === null) apply(preferred());
+  });
+})();
