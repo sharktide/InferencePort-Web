@@ -11,6 +11,7 @@
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
 		rel="stylesheet" />
 	<link rel="stylesheet" href="styles/shared.css" />
+	<script src="scripts/theme.js"></script>
 	<script src="components/ip-navbar.js"></script>
 	<style>
 		.hero-section {
@@ -766,9 +767,19 @@
 		}
 
 		function isDarkMode() {
-			return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+			return document.documentElement.getAttribute("data-theme") === "dark";
 		}
 
+		document.addEventListener("ip-theme-change", () => {
+			document.querySelectorAll(".publisher-logo").forEach((logo) => {
+				const src = logo.getAttribute("src") || "";
+				if (!src.startsWith("https://cdn.brandfetch.io/")) return;
+				const url = new URL(src);
+				if (isDarkMode()) url.searchParams.set("theme", "dark");
+				else url.searchParams.delete("theme");
+				logo.src = url.toString();
+			});
+		});
 		function publisherLogoUrl(publisherUrl) {
 			if (!publisherUrl) return "";
 			if (publisherUrl === "inferenceport.ai") return "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png";
