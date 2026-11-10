@@ -218,7 +218,7 @@ a:hover { color: var(--ink); }
 @media (max-width: 991px) {
   .ipn-theme-mobile { display: inline-flex; margin-left: auto; }
   .ipn-theme-desktop { display: none; }
-  .ipn-burger { margin-left: 0; }
+  .ipn-bar > .ipn-burger { margin-left: 0; }
 }
 
 .ipn-burger { display: none; margin-left: auto; width: 40px; height: 40px; background: none; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; align-items: center; justify-content: center; }
