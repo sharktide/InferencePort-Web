@@ -25,7 +25,7 @@ import AgentsPanel from "./panels/AgentsPanel";
 import BucketsPanel from "./panels/BucketsPanel";
 import McpPanel from "./panels/McpPanel";
 import OrganizationsPanel from "./panels/OrganizationsPanel";
-import RewardsPanel from "./RewardsPanel";
+import PersistentRewardsPanel from "./PersistentRewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
 /* Personal-only sections. In organization mode the org sections (and the work tabs) replace them. */
@@ -382,7 +382,6 @@ function ConsoleFrame({
       buckets: <BucketsPanel key={`${activeOrg?.id ?? "personal"}:${session?.user?.id ?? "signed-out"}`} apiBase={apiBase} session={session} />,
       agents: <AgentsPanel session={session} apiBase={apiBase} />,
       organizations: <OrganizationsPanel session={session} />,
-      rewards: <RewardsPanel session={session} apiBase={apiBase} onUnclaimedCount={setUnclaimedRewards} />,
       "api-key": <ApiKeyPanel session={session} apiBase={apiBase} />,
       usage: <UsagePanel session={session} apiBase={apiBase} />,
       "gen-api": <GenApiPanel session={session} config={config} apiBase={apiBase} />,
@@ -416,11 +415,21 @@ function ConsoleFrame({
           unclaimedRewards={unclaimedRewards}
         />
         <main className={styles.consoleContent}>
+          {/* Rewards stays mounted after the first visit so switching tabs does not refetch or reset progress.
+              Keep it outside the keyed workspace frame; session changes still clear its user-scoped state. */}
+          <PersistentRewardsPanel
+            active={activeTab === "rewards"}
+            session={session}
+            apiBase={apiBase}
+            onUnclaimedCount={setUnclaimedRewards}
+          />
           {/* Org pages are keyed by org so no data from another org stays on screen. Work tabs (playground etc.) are NOT
               remounted on a context switch: the org header changes per request, and people keep their prompt. */}
-          <div key={WORK_TABS.has(activeTab) ? "work" : (orgs === null ? "init" : (activeSlug ?? "personal"))} className={styles.contextFrame}>
-            {renderSection(activeTab)}
-          </div>
+          {(!session || activeTab !== "rewards") && (
+            <div key={WORK_TABS.has(activeTab) ? "work" : (orgs === null ? "init" : (activeSlug ?? "personal"))} className={styles.contextFrame}>
+              {renderSection(activeTab)}
+            </div>
+          )}
         </main>
       </div>
     </div>
