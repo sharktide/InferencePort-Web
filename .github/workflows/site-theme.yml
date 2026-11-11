@@ -1,0 +1,37 @@
+name: Public site theme tests
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/theme.js'
+      - 'styles/shared.css'
+      - 'styles/site.css'
+      - 'components/ip-navbar.js'
+      - 'tests/site-theme.test.cjs'
+      - '**/*.html'
+      - '.github/workflows/site-theme.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/theme.js'
+      - 'styles/shared.css'
+      - 'styles/site.css'
+      - 'components/ip-navbar.js'
+      - 'tests/site-theme.test.cjs'
+      - '**/*.html'
+      - '.github/workflows/site-theme.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify site theme behavior and CSS contracts
+        run: node --test tests/site-theme.test.cjs

@@ -70,6 +70,52 @@
   --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
+/* Public-site palette. The console has its own styles and theme preference. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --brand: #8eabff;
+  --brand-hover: #a9beff;
+  --brand-ink: #a8bfff;
+  --brand-dim: rgba(142,171,255,.13);
+  --brand-border: rgba(142,171,255,.36);
+  --gold-ink: #f4db83;
+  --gold-dim: rgba(252,215,4,.12);
+  --gold-border: rgba(252,215,4,.36);
+  --purple-ink: #c5b0ff;
+  --purple-dim: rgba(165,133,250,.14);
+  --purple-border: rgba(165,133,250,.35);
+  --cyan-ink: #85e2f2;
+  --cyan-dim: rgba(64,201,224,.12);
+  --cyan-border: rgba(64,201,224,.33);
+  --success-dim: rgba(52,211,153,.13);
+  --success-border: rgba(52,211,153,.32);
+  --danger-dim: rgba(251,113,133,.13);
+  --danger-border: rgba(251,113,133,.32);
+  --bg: #101216;
+  --bg-alt: #181c23;
+  --paper: #161a20;
+  --surface: #1c2028;
+  --surface-hover: #272c37;
+  --ink: #f1f3f7;
+  --text: #f1f3f7;
+  --text-body: #c3cad5;
+  --text-muted: #a5afbe;
+  --muted: #a5afbe;
+  --border: #363c49;
+  --border-light: #2b303b;
+  --rule: #f1f3f7;
+  --shadow: 0 1px 0 rgba(0,0,0,.12);
+  --shadow-md: 0 16px 38px -18px rgba(0,0,0,.6);
+  --shadow-lg: 0 28px 54px -20px rgba(0,0,0,.62);
+  --bs-body-bg: var(--bg);
+  --bs-body-color: var(--text-body);
+  --bs-border-color: var(--border);
+  --bs-secondary-bg: var(--surface);
+  --bs-tertiary-bg: var(--bg-alt);
+  --bs-secondary-color: var(--text-muted);
+}
+:root[data-theme="light"] { color-scheme: light; }
+
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -155,6 +201,25 @@ a:hover { color: var(--ink); }
 .ipn-cta:hover { background: var(--ink); border-color: var(--ink); color: var(--gold); }
 .ipn-ghost { color: var(--ink); border: 1px solid var(--border); background: var(--bg); }
 .ipn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+
+/* Public-site dark-mode toggle: desktop action, compact mobile icon. */
+.ipn-theme {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 34px; height: 34px; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--ink); cursor: pointer; padding: 0;
+  transition: background .15s var(--ease), border-color .15s var(--ease);
+}
+.ipn-theme:hover { background: var(--surface-hover); border-color: var(--text-muted); }
+.ipn-theme svg { width: 17px; height: 17px; }
+.ipn-theme-sun, .ipn-theme-mobile { display: none; }
+:root[data-theme="dark"] .ipn-theme-sun { display: block; }
+:root[data-theme="dark"] .ipn-theme-moon { display: none; }
+@media (max-width: 991px) {
+  .ipn-theme-mobile { display: inline-flex; margin-left: auto; }
+  .ipn-theme-desktop { display: none; }
+  .ipn-bar > .ipn-burger { margin-left: 0; }
+}
 
 .ipn-burger { display: none; margin-left: auto; width: 40px; height: 40px; background: none; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; align-items: center; justify-content: center; }
 .ipn-burger span, .ipn-burger span::before, .ipn-burger span::after { display: block; width: 16px; height: 1.5px; background: var(--ink); content: ""; position: relative; }
@@ -334,4 +399,95 @@ html, body { overflow-x: clip; }
   .ipn-mega { grid-template-columns: minmax(0, 1fr); padding: 0 0 8px; gap: 4px; }
   .ipn-col h5 { margin: 14px 0 4px; }
   .ipn-m { padding: 8px 0 !important; }
+}
+
+/* High-contrast dark surfaces and legacy accent pills. */
+:root[data-theme="dark"] .ipn { border-bottom-color: var(--border); }
+:root[data-theme="dark"] .ipn-menu { border-color: var(--border); }
+:root[data-theme="dark"] .ipn-cta,
+:root[data-theme="dark"] .btn-brand,
+:root[data-theme="dark"] .btn-hero-download { color: #0b0f1a; }
+:root[data-theme="dark"] .ipn-cta:hover { background: var(--night); color: var(--gold); }
+:root[data-theme="dark"] .btn-ghost:hover,
+:root[data-theme="dark"] .btn-hero-solutions:hover { color: var(--bg); }
+:root[data-theme="dark"] .tag-local,
+:root[data-theme="dark"] .spec .s { color: #70ebbb; }
+:root[data-theme="dark"] .ipn-m.c-shield { --c-ink: #ff9999; }
+:root[data-theme="dark"] .spec-bar,
+:root[data-theme="dark"] .map-acct,
+:root[data-theme="dark"] .rung.hl { background: var(--night); }
+:root[data-theme="dark"] .pill-text { color: #73e4d4; }
+:root[data-theme="dark"] .pill-image { color: #f6c177; }
+:root[data-theme="dark"] .pill-video { color: #ffa3a3; }
+:root[data-theme="dark"] .pill-audio { color: #ceadff; }
+:root[data-theme="dark"] .pill-3d { color: #9fbfff; }
+:root[data-theme="dark"] .pill-realtime { color: #f9a8d4; }
+:root[data-theme="dark"] .pill-decision,
+:root[data-theme="dark"] .filter-tab[data-filter="decision"].active { color: #bef264; }
+:root[data-theme="dark"] .text-dark { color: var(--ink) !important; }
+:root[data-theme="dark"] .bg-white { background: var(--surface) !important; }
+
+/* A clean white wordmark with a slim gold underline, rather than a
+   yellow rectangle behind the "AI" characters. */
+:root[data-theme="dark"] .ipn-brand em {
+  display: inline-block;
+  position: relative;
+  color: #eef1f5;
+  background: none;
+}
+:root[data-theme="dark"] .ipn-brand em::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 3px;
+  background: var(--gold);
+  pointer-events: none;
+}
+
+/* Restrained marker stripes in dark mode, never full yellow-filled words.
+   The light-mode treatment remains unchanged. */
+:root[data-theme="dark"] .section-title .accent,
+:root[data-theme="dark"] .hero-title .accent,
+:root[data-theme="dark"] .page-hero h1 .accent {
+  color: #eef1f5 !important;
+  background: linear-gradient(to bottom, transparent 84%, var(--gold) 84%, var(--gold) 96%, transparent 96%) !important;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Dark-mode overrides for legacy primary actions that hardcode white text.
+   Higher specificity than page-local hover rules. */
+:root[data-theme="dark"] .btn-submit,
+:root[data-theme="dark"] .btn-submit:hover,
+:root[data-theme="dark"] .btn-launch,
+:root[data-theme="dark"] .btn-launch:hover,
+:root[data-theme="dark"] .btn-plan-primary,
+:root[data-theme="dark"] .btn-plan-primary:hover {
+  color: #101827;
+}
+
+/* Every model capability pill needs a readable dark-mode foreground. */
+:root[data-theme="dark"] .pill-p2g {
+  color: #d2b6ff; background: rgba(168,85,247,.19);
+}
+:root[data-theme="dark"] .pill-local {
+  color: #91e3ed; background: rgba(8,145,178,.19);
+}
+:root[data-theme="dark"] .pill-embedding {
+  color: #b7bdff; background: rgba(99,102,241,.2);
+}
+:root[data-theme="dark"] .pill-thinking {
+  color: #d8baff; background: rgba(168,85,247,.2);
+}
+:root[data-theme="dark"] .pill-tools {
+  color: #92e2b3; background: rgba(22,163,74,.18);
+}
+:root[data-theme="dark"] .pill-vision {
+  color: #f6e08c; background: rgba(234,179,8,.17);
+}
+:root[data-theme="dark"] .btn-hero-chat:hover {
+  color: #ffe18a;
+  background: rgba(252,215,4,.19);
 }

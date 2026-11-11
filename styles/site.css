@@ -380,3 +380,41 @@
 .pc h3 { font-size: 1.1rem; } .pc p { font-size: .88rem; }
 @media (max-width: 1100px) { .pgrid, .pgrid:has(> :nth-child(3):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .pgrid, .pgrid:has(> :nth-child(3):last-child) { grid-template-columns: minmax(0, 1fr); } }
+
+/* Dark-mode contrast refinement: keep the hero prominent with subtle
+   yellow marker stripes and softer card/box chrome. */
+:root[data-theme="dark"] .hx h1,
+:root[data-theme="dark"] .h-title { color: #eef1f5; }
+
+:root[data-theme="dark"] .hx h1 em,
+:root[data-theme="dark"] .h-title em {
+  color: #eef1f5;
+  background: linear-gradient(to bottom, transparent 84%, var(--gold) 84%, var(--gold) 96%, transparent 96%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* The product cards and smaller box headings should sit below the hero in hierarchy. */
+:root[data-theme="dark"] .pc h3,
+:root[data-theme="dark"] .surf h3,
+:root[data-theme="dark"] .ledger-row h3,
+:root[data-theme="dark"] .cap h3,
+:root[data-theme="dark"] .rung h3,
+:root[data-theme="dark"] .pr h3,
+:root[data-theme="dark"] .night .idx-list li b {
+  color: #cdd5df;
+}
+
+/* A slate title bar with soft gray labels instead of a near-white header strip. */
+:root[data-theme="dark"] .panel-h,
+:root[data-theme="dark"] .spec-bar {
+  background: #252b34;
+  border-bottom-color: var(--border);
+  color: #c0cad7;
+}
+:root[data-theme="dark"] .win-bar {
+  background: #252b34;
+  border-bottom-color: var(--border);
+  color: #c0cad7;
+}
+:root[data-theme="dark"] .map-acct { color: #cdd5df; }
