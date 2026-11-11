@@ -8,6 +8,7 @@ on:
       - 'styles/site.css'
       - 'components/ip-navbar.js'
       - 'tests/site-theme.test.cjs'
+      - 'tests/marketing-sections.test.cjs'
       - '**/*.html'
       - '.github/workflows/site-theme.yml'
   push:
@@ -33,5 +34,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify site theme behavior and CSS contracts
-        run: node --test tests/site-theme.test.cjs
+      - name: Verify public site theme and feature sections
+        run: node --test tests/site-theme.test.cjs tests/marketing-sections.test.cjs

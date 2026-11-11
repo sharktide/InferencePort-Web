@@ -418,3 +418,194 @@
   color: #c0cad7;
 }
 :root[data-theme="dark"] .map-acct { color: #cdd5df; }
+
+
+/* ── Buckets: an illustrative S3 workspace, not a fabricated dashboard ── */
+.c-buckets {
+  --c: var(--cyan);
+  --c-dim: var(--cyan-dim);
+  --c-ink: var(--cyan-ink);
+  --c-line: var(--cyan-border);
+}
+.product-stage {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font: 500 .65rem/1.2 var(--mono);
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+.bucket-demo {
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: 8px 8px 0 var(--cyan);
+}
+.bucket-demo-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  align-items: center;
+  justify-content: space-between;
+  background: #18212e;
+  color: #d7dfeb;
+  padding: 13px 18px;
+  font: 600 .68rem/1.4 var(--mono);
+  letter-spacing: .07em;
+}
+.bucket-demo-bar span:last-child {
+  color: #f1d56c;
+}
+.bucket-endpoint {
+  display: grid;
+  gap: 7px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.bucket-label {
+  color: var(--text-muted);
+  font: 600 .7rem/1.4 var(--mono);
+  letter-spacing: .075em;
+  text-transform: uppercase;
+}
+.bucket-endpoint code {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  font: 500 .77rem/1.6 var(--mono);
+  overflow-wrap: anywhere;
+}
+.bucket-hint {
+  color: var(--text-muted);
+  font: 500 .73rem/1.45 var(--mono);
+}
+.bucket-files { padding: 0 20px 8px; }
+.bucket-files-heading,
+.bucket-file {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.bucket-files-heading {
+  padding: 18px 0 12px;
+}
+.bucket-files-heading span:first-child {
+  color: var(--ink);
+  font-weight: 750;
+  letter-spacing: -.02em;
+}
+.bucket-files-heading span:last-child {
+  color: var(--text-muted);
+  font: 500 .7rem/1.4 var(--mono);
+}
+.bucket-file {
+  min-height: 47px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-light);
+}
+.bucket-file > span {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bucket-file svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: var(--cyan-ink);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.bucket-file b {
+  color: var(--text-body);
+  font-size: .82rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.bucket-file small {
+  flex: none;
+  color: var(--text-muted);
+  font: 500 .67rem/1.45 var(--mono);
+  text-align: right;
+}
+.bucket-demo-foot,
+.agent-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+}
+.bucket-demo-foot {
+  border-top: 1px solid var(--border);
+  background: var(--paper);
+}
+.bucket-demo-foot span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-right: 1px solid var(--border);
+  padding: 14px 12px;
+  font-size: .72rem;
+  line-height: 1.4;
+  color: var(--text-body);
+}
+.bucket-demo-foot span:last-child { border-right: 0; }
+.bucket-demo-foot b,
+.agent-flow b {
+  color: var(--cyan-ink);
+  font: 700 .68rem var(--mono);
+}
+.agent-flow {
+  border-top: 1px solid var(--border);
+  padding: 0 8px;
+}
+.agent-flow span {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 6px;
+  color: var(--text-body);
+  font-size: .73rem;
+  text-align: center;
+}
+.agent-flow b { color: var(--purple-ink); }
+.feature-aside {
+  margin: 18px 0 0 !important;
+  color: var(--text-muted) !important;
+  font-size: .85rem !important;
+  line-height: 1.55 !important;
+}
+.org-policy-note {
+  padding: 11px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--paper);
+  color: var(--text-muted);
+  font: 500 .7rem/1.45 var(--mono);
+}
+@media (max-width: 600px) {
+  .bucket-demo { box-shadow: 5px 5px 0 var(--cyan); }
+  .bucket-endpoint { padding: 16px; }
+  .bucket-files { padding: 0 16px 6px; }
+  .bucket-file { align-items: flex-start; }
+  .bucket-file small { max-width: 32%; }
+  .bucket-demo-foot { grid-template-columns: minmax(0, 1fr); }
+  .bucket-demo-foot span { border-right: 0; border-bottom: 1px solid var(--border); padding: 10px 16px; }
+  .bucket-demo-foot span:last-child { border-bottom: 0; }
+  .agent-flow { grid-template-columns: minmax(0, 1fr); }
+  .agent-flow span { justify-content: flex-start; padding: 9px 12px; }
+}
+
+/* Match the existing softened dark-mode typography and surfaces. */
+:root[data-theme="dark"] .bucket-demo-bar { background: #252b34; color: #c0cad7; }
+:root[data-theme="dark"] .bucket-demo-bar span:last-child { color: #f2dc87; }
+:root[data-theme="dark"] .bucket-file svg { stroke: #85e2f2; }
