@@ -167,17 +167,18 @@
 @media (max-width: 960px) { .caps { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .caps { grid-template-columns: 1fr; } }
 
-/* Keep the homepage hero CTA's offset golden in both themes (not white in dark mode). */
-.hx .btn-brand { box-shadow: 3px 3px 0 #c9a900; }
-.hx .btn-brand:hover { box-shadow: 1px 1px 0 #c9a900; }
+/* Only dark mode uses a golden offset; light mode retains the existing button shadows. */
+:root[data-theme="dark"] .hx .btn-brand,
+:root[data-theme="dark"] .closer .btn-brand { box-shadow: 3px 3px 0 #c9a900; }
+:root[data-theme="dark"] .hx .btn-brand:hover,
+:root[data-theme="dark"] .closer .btn-brand:hover { box-shadow: 1px 1px 0 #c9a900; }
 
 /* ── Closing band ── */
 .closer { position: relative; overflow: hidden; padding: 112px 0; background: var(--night); color: #aab2c3; border-top: 1px solid var(--night); }
 .closer h2 { color: #fff; font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; margin: 0; max-width: 16ch; }
 .closer p { max-width: 54ch; font-size: 1.02rem; line-height: 1.65; margin: 22px 0 0; }
-/* A warmer offset keeps the yellow CTA cohesive against the dark closing band. */
-.closer .btn-brand { box-shadow: 3px 3px 0 #c9a900; border-color: var(--gold); }
-.closer .btn-brand:hover { box-shadow: 1px 1px 0 #c9a900; }
+.closer .btn-brand { box-shadow: 3px 3px 0 #fff; border-color: var(--gold); }
+.closer .btn-brand:hover { box-shadow: 1px 1px 0 #fff; }
 .closer .btn-ghost { background: transparent; color: #fff; border-color: #475170; }
 .closer .btn-ghost:hover { background: #fff; color: var(--ink); }
 
