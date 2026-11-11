@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>InferencePort AI — AI platform: local models, hosted chat, one API, console and team controls</title>
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-		<meta name="description" content="InferencePort AI gives you cloud & local AI models through the Cloud Platform and the Self-Hosted Platform. Chat with Lightning at 1,000 words/sec, self-host models for your team, use the Pay-to-Go API, and detect fraud with AI Shield. Open-source and cross-platform." />
+		<meta name="description" content="InferencePort AI combines one multimodal API, managed agents, S3-compatible Buckets storage, AI Shield and organization controls with hosted and local models." />
 		<meta name="keywords" content="AI API, cloud AI models, local AI, self-hosted AI, Ollama, Lightning AI, text generation, image generation, video generation, AI fraud detection, AI Shield, open source AI, InferencePort" />
 		<meta name="robots" content="index, follow" />
 		<link rel="canonical" href="https://inferenceport.ai/" />
@@ -47,6 +47,8 @@
 				"AI image, video, and audio generation",
 				"Pay-to-Go API for metered production workloads, including embeddings and realtime voice",
 				"AI Shield fraud detection",
+				"S3-compatible Buckets storage for model weights and artifacts",
+				"Managed agents with MCP tools and organization workspaces",
 				"Model marketplace",
 				"Cross-platform (Windows, macOS, Linux)"
 			],
@@ -108,7 +110,7 @@
 				<div class="sh">
 					<div class="k">The platform</div>
 					<h2>Everything you need to ship AI &mdash; and run it responsibly.</h2>
-					<p>Eleven products on one account, one wallet and one set of keys. Start with one; add the rest as you grow.</p>
+					<p>Twelve ways to build, run and manage AI from the same account, with shared cloud billing and workspace controls. Start with one; add the rest as you grow.</p>
 				</div>
 				<div class="grp">Build</div>
 				<div class="pgrid">
@@ -129,6 +131,7 @@
 					<a class="pc c-shield" href="#shield"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div><span class="tagline">AI Shield</span><h3>Stop fraud and abuse</h3><p>Risk scores and decisions for sign-ups, content, prompts and requests in one call.</p><span class="more">Learn more &rarr;</span></a>
 					<a class="pc c-org" href="#organizations"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M16 5.5a3 3 0 010 5.8M18 14.5c1.9.8 3 2.8 3 5.5"/></svg></div><span class="tagline">Organizations</span><h3>Run AI for a whole team</h3><p>Shared wallet, budgets, roles, SSO, audit and app policy.</p><span class="more">Learn more &rarr;</span></a>
 					<a class="pc c-console" href="#console"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18"/><path d="M9 3v18M13 9h5M13 14h5"/></svg></div><span class="tagline">Developer console</span><h3>The control room</h3><p>Keys, credits, usage, playground and agents in the browser.</p><span class="more">Learn more &rarr;</span></a>
+					<a class="pc c-buckets" href="#buckets"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/></svg></div><span class="tagline">Buckets &middot; Preview</span><h3>Storage for AI workloads</h3><p>S3-compatible object storage for model weights, datasets and outputs, in personal or team workspaces.</p><span class="more">Explore Buckets &rarr;</span></a>
 				</div>
 			</div>
 		</section>
@@ -176,15 +179,16 @@
 					<div class="ftext">
 						<div class="pill-l">Managed agents</div>
 						<h2>Launch AI agents without running any infrastructure.</h2>
-						<p>Define an agent once &mdash; a model, instructions and the tools it can use &mdash; and InferencePort hosts it. Your app calls it through the same API as any model.</p>
+						<p>Build a reusable assistant for support, internal workflows or your product. Select a model, define its instructions, connect tools where needed and call your hosted agent through the existing chat API.</p>
 						<ul class="checks">
-							<li><b>Hosted for you.</b> Pick a backing model, write a system prompt, and attach MCP servers for tools.</li>
+							<li><b>Define the behavior.</b> Choose the backing model and the instructions it should follow.</li>
+							<li><b>Attach MCP tools.</b> Connect HTTP or SSE MCP servers when you need external actions or data; choose a model that supports tool calling.</li>
 							<li><b>Call it like a model.</b> Use <span class="mono">agent/&lt;username&gt;/&lt;agent-id&gt;</span> with the chat completions API.</li>
-							<li><b>Share or keep private.</b> Publish to the registry, list it as unlisted, or keep it to yourself.</li>
-							<li><b>You choose who pays.</b> Callers pay for their own usage, or you cover it as the owner.</li>
-							<li><b>Built for teams.</b> Invite collaborators and run agents under your organization&rsquo;s wallet and policies.</li>
+							<li><b>Control distribution.</b> Keep agents private, share unlisted links or publish to the registry; invite collaborators.</li>
+							<li><b>Choose who pays.</b> Bill callers or the owner, and work under an organization&rsquo;s wallet and policies where applicable.</li>
 						</ul>
-						<div class="flinks"><a class="btn-brand" href="/console">Create an agent</a><a class="btn-ghost" href="ipx.html">Manage with ipx</a></div>
+						<div class="flinks"><a class="btn-brand" href="/console/agents">Create an agent</a><a class="btn-ghost" href="ipx.html">Manage with ipx</a></div>
+						<p class="feature-aside">One configuration, multiple entry points: your app, an API request or a teammate with access.</p>
 					</div>
 					<div class="panel" style="--c:var(--purple)">
 						<div class="panel-h"><span>Agent &middot; support-bot</span><span>Published</span></div>
@@ -194,6 +198,9 @@
 						<div class="krow"><span>Visibility</span><span class="sel">Public &middot; Published</span></div>
 						<div class="krow"><span>Who pays</span><span class="sel">Caller pays</span></div>
 						<div class="chips"><span class="chip y">model: agent/acme/support-bot</span></div>
+						<div class="agent-flow" aria-label="Managed agent workflow">
+							<span><b>01</b> Configure</span><span><b>02</b> Connect tools</span><span><b>03</b> Call via API</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -254,8 +261,39 @@
 			</div>
 		</section>
 
+		<!-- ═════════ BUCKETS ═════════ -->
+		<section class="blk alt" id="buckets">
+			<div class="wrap">
+				<div class="frow rev c-buckets">
+					<div class="ftext">
+						<div class="pill-l">Buckets <span class="product-stage">Preview</span></div>
+						<h2>Object storage that fits your model workflow.</h2>
+						<p>Keep model weights, datasets and generated artifacts next to the rest of your AI infrastructure. Buckets brings an S3-compatible storage gateway to your personal or organization workspace, with Azure Blob Storage underneath.</p>
+						<ul class="checks">
+							<li><b>Use familiar S3 clients.</b> Connect AWS CLI or S3-compatible SDKs using your workspace endpoint and AWS Signature V4 credentials.</li>
+							<li><b>Control who can access what.</b> Issue scoped, revocable S3 credentials and restrict access by bucket, permission or object prefix.</li>
+							<li><b>Personal or organization storage.</b> Keep assets attached to the right workspace rather than managing a separate storage account.</li>
+							<li><b>Usage-based pricing.</b> Review storage, requests and data transfer charges from the console. No free storage allowance is assumed.</li>
+						</ul>
+						<div class="flinks"><a class="btn-brand" href="/console/buckets">Open Buckets</a><a class="btn-ghost" href="https://docs.inferenceport.ai/api/buckets.html" target="_blank" rel="noopener">Connection guide</a></div>
+					</div>
+					<div class="bucket-demo" aria-label="Illustrative Buckets file browser">
+						<div class="bucket-demo-bar"><span>BUCKETS / PERSONAL WORKSPACE</span><span>PREVIEW</span></div>
+						<div class="bucket-endpoint"><span class="bucket-label">S3 workspace endpoint</span><code>api.inferenceport.ai/<wbr>workspace-id/<wbr>s3</code><span class="bucket-hint">Path-style addressing &middot; SigV4</span></div>
+						<div class="bucket-files">
+							<div class="bucket-files-heading"><span>model-artifacts</span><span>Example contents</span></div>
+							<div class="bucket-file"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h7l2 2h9v11H3z"/></svg><b>weights/</b></span><small>Folder</small></div>
+							<div class="bucket-file"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 2h10l5 5v15H5zM15 2v6h5"/></svg><b>checkpoint.safetensors</b></span><small>Model weights</small></div>
+							<div class="bucket-file"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 2h10l5 5v15H5zM15 2v6h5"/></svg><b>training-data.jsonl</b></span><small>Dataset</small></div>
+						</div>
+						<div class="bucket-demo-foot"><span><b>01</b> Create a bucket</span><span><b>02</b> Issue credentials</span><span><b>03</b> Connect your client</span></div>
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<!-- ═════════ SHIELD ═════════ -->
-		<section class="blk alt" id="shield">
+		<section class="blk" id="shield">
 			<div class="wrap">
 				<div class="frow rev c-shield">
 					<div class="ftext">
@@ -288,7 +326,7 @@
 			</div>
 		</section>
 		<!-- ═════════ CLI ═════════ -->
-		<section class="blk" id="cli">
+		<section class="blk alt" id="cli">
 			<div class="wrap">
 				<div class="frow c-api">
 					<div class="ftext">
@@ -296,7 +334,7 @@
 						<h2>The whole platform, scriptable.</h2>
 						<p>ipx is one native binary for your terminal, servers and CI. Anything you can do in the console or the app, you can automate.</p>
 						<ul class="checks">
-							<li><b>Everything covered.</b> Chat and media generation, Pay-to-Go, organizations, agents, Council, deployments, local models and Shield.</li>
+							<li><b>Platform workflows.</b> Chat and media generation, Pay-to-Go, organizations, agents, Council, deployments, Buckets, local models and Shield.</li>
 							<li><b>Made for CI.</b> <span class="mono">--json</span> on every command, stdin support and exit codes that gate pipelines.</li>
 							<li><b>Easy install.</b> pip, npm, cargo, a shell script, or a prebuilt binary.</li>
 						</ul>
@@ -315,7 +353,7 @@
 		</section>
 
 		<!-- ═════════ CONSOLE ═════════ -->
-		<section class="blk alt" id="console">
+		<section class="blk" id="console">
 			<div class="wrap">
 				<div class="frow rev c-console">
 					<div class="ftext">
@@ -327,6 +365,7 @@
 							<li><b>Playground.</b> Try text, image, video, audio, embedding and realtime models before you write code.</li>
 							<li><b>Usage.</b> Per-model usage and cost over time.</li>
 							<li><b>Agents and MCP.</b> Build agents with a model, prompt and MCP servers; keep them private or publish them.</li>
+							<li><b>Buckets (Preview).</b> Manage S3-compatible object storage and workspace-scoped credentials for artifacts and model weights.</li>
 							<li><b>Shield and more.</b> Manage AI Shield, authorized apps, and rewards.</li>
 							<li><b>Organizations.</b> Switch into a team workspace from the same sidebar.</li>
 						</ul>
@@ -338,7 +377,7 @@
 							<div class="side">
 								<small>Account</small><div>Account</div><div>Billing</div>
 								<small>Explore</small><div>Models</div><div>Playground</div>
-								<small>Build</small><div>Agents</div><div>API key</div><div class="on">Usage</div><div>Pay-to-Go API</div><div>MCP</div><div>Shield</div>
+								<small>Build</small><div>Agents</div><div>Buckets</div><div>API key</div><div class="on">Usage</div><div>Pay-to-Go API</div><div>MCP</div><div>Shield</div>
 							</div>
 							<div class="main">
 								<div class="stat3"><div><b>12.4k</b><span>Requests</span></div><div><b>$18.20</b><span>Spend</span></div><div><b>6</b><span>Models</span></div></div>
@@ -350,35 +389,38 @@
 			</div>
 		</section>
 		<!-- ═════════ ORGANIZATIONS ═════════ -->
-		<section class="blk" id="organizations">
+		<section class="blk alt" id="organizations">
 			<div class="wrap">
 				<div class="frow c-org">
 					<div class="ftext">
 						<div class="pill-l">Organizations</div>
 						<h2>Give a whole team AI, with the controls IT expects.</h2>
-						<p>Organizations live inside the console. Members share one credit wallet while admins set budgets, policies and security &mdash; billed per seat, free for up to 3 members.</p>
+						<p>Give developers one workspace instead of scattered accounts and API keys. Share a credit wallet, set guardrails for teams, and review usage from the same console. Organization plans start free for up to three members.</p>
 						<ul class="checks">
-							<li><b>Shared wallet and budgets.</b> Per-member and per-key limits, spend caps and alerts.</li>
-							<li><b>Roles.</b> Owner, admin, billing manager, auditor and member.</li>
-							<li><b>SSO and security.</b> SAML single sign-on, enforced SSO, verified domains and IP allowlists.</li>
-							<li><b>Audit log.</b> Exportable, with streaming to your SIEM on Team plans.</li>
-							<li><b>Desktop app policy.</b> Choose cloud or local-only, which models can be pulled, tools, and who can host servers.</li>
+							<li><b>One billing workspace.</b> Shared credits, per-member and per-key budgets, spend caps and alerts.</li>
+							<li><b>Clear responsibilities.</b> Owners, admins, billing managers, auditors and members have distinct access.</li>
+							<li><b>Guardrails for API usage.</b> Restrict models, modalities and keys; apply rate limits and network restrictions.</li>
+							<li><b>Enterprise access.</b> SAML SSO, verified domains and enforced login policies where available on your plan.</li>
+							<li><b>Audit and reporting.</b> Track activity and per-model usage; export logs and stream events to your SIEM on eligible plans.</li>
+							<li><b>Desktop policies.</b> Define cloud versus local access, model pulls, custom tools and server hosting for members.</li>
 						</ul>
 						<div class="flinks"><a class="btn-brand" href="pricing.html#organizations">Organization plans</a><a class="btn-ghost" href="platform.html#organizations">How it works</a></div>
 					</div>
 					<div class="panel" style="--c:var(--cyan)">
 						<div class="panel-h"><span>Organization &middot; Desktop app policy</span><span>Admins</span></div>
+						<div class="krow"><span>Workspace billing</span><span class="sel">Shared wallet</span></div>
 						<div class="krow"><span>Cloud (Lightning) models</span><span class="sel">Allow</span></div>
 						<div class="krow"><span>Model downloads</span><span class="sel">Allow-list</span></div>
 						<div class="krow"><span>Imports and custom tools</span><span class="tog"></span></div>
 						<div class="krow"><span>Members can host a server</span><span class="sel">Admins only</span></div>
 						<div class="krow"><span>Bill Lightning to the organization</span><span class="tog on"></span></div>
+						<div class="org-policy-note">Illustrative policy settings &middot; manage from your organization workspace</div>
 					</div>
 				</div>
 			</div>
 		</section>
 		<!-- ═════════ DESKTOP APP ═════════ -->
-		<section class="blk alt" id="app">
+		<section class="blk" id="app">
 			<div class="wrap">
 				<div class="frow c-app">
 					<div class="ftext">
