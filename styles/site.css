@@ -171,8 +171,9 @@
 .closer { position: relative; overflow: hidden; padding: 112px 0; background: var(--night); color: #aab2c3; border-top: 1px solid var(--night); }
 .closer h2 { color: #fff; font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 800; letter-spacing: -0.05em; line-height: 1; margin: 0; max-width: 16ch; }
 .closer p { max-width: 54ch; font-size: 1.02rem; line-height: 1.65; margin: 22px 0 0; }
-.closer .btn-brand { box-shadow: 3px 3px 0 #fff; border-color: var(--gold); }
-.closer .btn-brand:hover { box-shadow: 1px 1px 0 #fff; }
+/* A warmer offset keeps the yellow CTA cohesive against the dark closing band. */
+.closer .btn-brand { box-shadow: 3px 3px 0 #c9a900; border-color: var(--gold); }
+.closer .btn-brand:hover { box-shadow: 1px 1px 0 #c9a900; }
 .closer .btn-ghost { background: transparent; color: #fff; border-color: #475170; }
 .closer .btn-ghost:hover { background: #fff; color: var(--ink); }
 
