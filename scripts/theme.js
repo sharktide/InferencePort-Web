@@ -19,6 +19,7 @@ limitations under the License.
 (function () {
   "use strict";
   const key = "site-theme";
+  let inMemoryChoice = null; // Explicit choice for sessions where storage is blocked.
   const root = document.documentElement;
   const system = typeof window.matchMedia === "function"
     ? window.matchMedia("(prefers-color-scheme: dark)")
@@ -34,7 +35,7 @@ limitations under the License.
   }
 
   function preferred() {
-    return saved() || (system && system.matches ? "dark" : "light");
+    return saved() || inMemoryChoice || (system && system.matches ? "dark" : "light");
   }
 
   function syncButtons() {
@@ -54,21 +55,45 @@ limitations under the License.
     document.dispatchEvent(new CustomEvent("ip-theme-change", { detail: { theme } }));
   }
 
-  function toggle() {
-    const theme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    try { window.localStorage.setItem(key, theme); } catch { /* Still toggle for this visit. */ }
+  function performToggle() {
+    // Read the latest shared preference, not the possibly stale tab DOM.
+    const current = saved() || inMemoryChoice || root.getAttribute("data-theme");
+    const theme = current === "dark" ? "light" : "dark";
+    inMemoryChoice = theme;
+    try { window.localStorage.setItem(key, theme); } catch { /* Keep the in-memory choice. */ }
     apply(theme);
+  }
+
+  function toggle() {
+    // Where supported, serialize cross-tab read/modify/write to prevent lost
+    // toggles. Older browsers still re-read storage before every toggle.
+    const locks = window.navigator && window.navigator.locks;
+    if (locks && typeof locks.request === "function") {
+      let entered = false;
+      try {
+        return locks.request("inferenceport-site-theme", () => {
+          entered = true;
+          performToggle();
+        }).catch(() => { if (!entered) performToggle(); });
+      } catch {
+        return performToggle();
+      }
+    }
+    return performToggle();
   }
 
   window.InferencePortSiteTheme = { toggle, syncButtons };
   apply(preferred());
 
-  function onSystemChange() { if (!saved()) apply(preferred()); }
+  function onSystemChange() { if (!saved() && !inMemoryChoice) apply(preferred()); }
   if (system) {
     if (system.addEventListener) system.addEventListener("change", onSystemChange);
     else if (system.addListener) system.addListener(onSystemChange);
   }
   window.addEventListener("storage", (event) => {
-    if (event.key === key || event.key === null) apply(preferred());
+    if (event.key === key || event.key === null) {
+      inMemoryChoice = null;
+      apply(preferred());
+    }
   });
 })();

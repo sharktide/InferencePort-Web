@@ -8,7 +8,8 @@ const vm = require("node:vm");
 const root = path.resolve(__dirname, "..");
 const script = fs.readFileSync(path.join(root, "scripts/theme.js"), "utf8");
 
-function harness({ stored = null, systemDark = false, blockedStorage = false } = {}) {
+function harness({ stored = null, systemDark = false, blockedStorage = false, sharedStorage = null, locks = null } = {}) {
+  const backing = sharedStorage || { value: stored };
   const attrs = {};
   const buttonAttrs = {};
   const listeners = {};
@@ -28,16 +29,17 @@ function harness({ stored = null, systemDark = false, blockedStorage = false } =
   const localStorage = {
     getItem: () => {
       if (blockedStorage) throw new Error("Storage disabled");
-      return stored;
+      return backing.value;
     },
     setItem: (key, value) => {
       if (blockedStorage) throw new Error("Storage disabled");
       writes[key] = value;
-      stored = value;
+      backing.value = value;
     },
   };
   const window = {
     localStorage,
+    navigator: locks ? { locks } : {},
     matchMedia: (query) => {
       assert.equal(query, "(prefers-color-scheme: dark)");
       return media;
@@ -61,7 +63,7 @@ function harness({ stored = null, systemDark = false, blockedStorage = false } =
   vm.runInNewContext(script, { document, window, CustomEvent });
   return {
     attrs, buttonAttrs, writes, window, pageEvents,
-    setStored(value) { stored = value; },
+    setStored(value) { backing.value = value; },
     setSystemDark(value) { media.matches = value; mediaListeners.change(); },
     onStorage(key) { listeners.storage({ key }); },
   };
@@ -96,10 +98,35 @@ test("manual theme wins, persists, and updates accessible state", () => {
   assert.equal(h.pageEvents.at(-1).detail.theme, "light");
 });
 
-test("storage-denied browsers can still switch appearance", () => {
+test("storage-denied browsers honor an explicit choice even after OS changes", () => {
   const h = harness({ systemDark: false, blockedStorage: true });
   assert.doesNotThrow(() => h.window.InferencePortSiteTheme.toggle());
   assert.equal(h.attrs["data-theme"], "dark");
+  h.setSystemDark(true);
+  h.setSystemDark(false);
+  assert.equal(h.attrs["data-theme"], "dark", "manual session choice must win");
+});
+
+test("simultaneous toggles in separate tabs serialize through Web Locks", async () => {
+  const sharedStorage = { value: "light" };
+  let previous = Promise.resolve();
+  const locks = {
+    request(name, callback) {
+      assert.equal(name, "inferenceport-site-theme");
+      const result = previous.then(callback);
+      previous = result.catch(() => {});
+      return result;
+    },
+  };
+  const a = harness({ sharedStorage, locks });
+  const b = harness({ sharedStorage, locks });
+  await Promise.all([
+    a.window.InferencePortSiteTheme.toggle(),
+    b.window.InferencePortSiteTheme.toggle(),
+  ]);
+  assert.equal(sharedStorage.value, "light", "two toggles should cancel each other");
+  a.onStorage("site-theme");
+  assert.equal(a.attrs["data-theme"], "light");
 });
 
 test("all public-navbar pages initialize the theme before the navbar", () => {
@@ -117,7 +144,11 @@ test("all public-navbar pages initialize the theme before the navbar", () => {
     assert.equal(navTags.length, 1, page + " must include navbar once");
     assert.ok(themeTags[0].index < navTags[0].index, page + " must initialize appearance before nav");
   }
-  assert.match(fs.readFileSync(path.join(root, "redirect.html"), "utf8"), /scripts\/theme\.js/);
+  const redirect = fs.readFileSync(path.join(root, "redirect.html"), "utf8");
+  const head = redirect.match(/<head\\b[^>]*>([\\s\\S]*?)<\\/head>/i)?.[1];
+  assert.ok(head, "redirect page must have a document head");
+  assert.match(head, /<script\\s+src="scripts\\/theme\\.js"\\s*><\\/script>/i,
+    "redirect must execute the theme helper in the head");
   const navbar = fs.readFileSync(path.join(root, "components/ip-navbar.js"), "utf8");
   assert.match(navbar, /themeButton\("desktop"\)/);
   assert.match(navbar, /themeButton\("mobile"\)/);
@@ -149,4 +180,17 @@ test("dark-mode yellow highlights and box headers use readable, muted text", () 
   }
   assert.ok(contrast("#eef1f5", "#101216") >= 7, "hero text must remain readable on the dark canvas");
   assert.ok(contrast("#c0cad7", "#252b34") >= 7, "panel header text must contrast with slate");
+});
+
+test("dark-mode primary actions, marketplace pills and chat hover are legible", () => {
+  const shared = fs.readFileSync(path.join(root, "styles/shared.css"), "utf8");
+  for (const cssClass of ["btn-submit", "btn-launch", "btn-plan-primary"]) {
+    assert.ok(shared.includes(`:root[data-theme="dark"] .${cssClass}:hover`),
+      cssClass + " needs a dark-mode hover color");
+  }
+  for (const pill of ["p2g", "local", "embedding", "thinking", "tools", "vision"]) {
+    assert.ok(shared.includes(`:root[data-theme="dark"] .pill-${pill}`),
+      pill + " must have a dark-mode color");
+  }
+  assert.match(shared, /:root\[data-theme="dark"\] \.btn-hero-chat:hover\s*\{/);
 });

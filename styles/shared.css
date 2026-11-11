@@ -456,3 +456,38 @@ html, body { overflow-x: clip; }
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
+
+/* Dark-mode overrides for legacy primary actions that hardcode white text.
+   Higher specificity than page-local hover rules. */
+:root[data-theme="dark"] .btn-submit,
+:root[data-theme="dark"] .btn-submit:hover,
+:root[data-theme="dark"] .btn-launch,
+:root[data-theme="dark"] .btn-launch:hover,
+:root[data-theme="dark"] .btn-plan-primary,
+:root[data-theme="dark"] .btn-plan-primary:hover {
+  color: #101827;
+}
+
+/* Every model capability pill needs a readable dark-mode foreground. */
+:root[data-theme="dark"] .pill-p2g {
+  color: #d2b6ff; background: rgba(168,85,247,.19);
+}
+:root[data-theme="dark"] .pill-local {
+  color: #91e3ed; background: rgba(8,145,178,.19);
+}
+:root[data-theme="dark"] .pill-embedding {
+  color: #b7bdff; background: rgba(99,102,241,.2);
+}
+:root[data-theme="dark"] .pill-thinking {
+  color: #d8baff; background: rgba(168,85,247,.2);
+}
+:root[data-theme="dark"] .pill-tools {
+  color: #92e2b3; background: rgba(22,163,74,.18);
+}
+:root[data-theme="dark"] .pill-vision {
+  color: #f6e08c; background: rgba(234,179,8,.17);
+}
+:root[data-theme="dark"] .btn-hero-chat:hover {
+  color: #ffe18a;
+  background: rgba(252,215,4,.19);
+}
