@@ -427,12 +427,32 @@ html, body { overflow-x: clip; }
 :root[data-theme="dark"] .text-dark { color: var(--ink) !important; }
 :root[data-theme="dark"] .bg-white { background: var(--surface) !important; }
 
-/* Keep highlighted marketing text dark enough to read on yellow in dark mode. */
+/* A clean white wordmark with a slim gold underline, rather than a
+   yellow rectangle behind the "AI" characters. */
+:root[data-theme="dark"] .ipn-brand em {
+  display: inline-block;
+  position: relative;
+  color: #eef1f5;
+  background: none;
+}
+:root[data-theme="dark"] .ipn-brand em::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 3px;
+  background: var(--gold);
+  pointer-events: none;
+}
+
+/* Restrained marker stripes in dark mode, never full yellow-filled words.
+   The light-mode treatment remains unchanged. */
 :root[data-theme="dark"] .section-title .accent,
 :root[data-theme="dark"] .hero-title .accent,
 :root[data-theme="dark"] .page-hero h1 .accent {
-  background: var(--gold) !important;
-  color: #282d36 !important;
+  color: #eef1f5 !important;
+  background: linear-gradient(to bottom, transparent 84%, var(--gold) 84%, var(--gold) 96%, transparent 96%) !important;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }

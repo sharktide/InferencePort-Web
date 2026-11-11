@@ -127,12 +127,15 @@ test("dark-mode yellow highlights and box headers use readable, muted text", () 
   const site = fs.readFileSync(path.join(root, "styles/site.css"), "utf8");
   const shared = fs.readFileSync(path.join(root, "styles/shared.css"), "utf8");
   assert.match(site, /:root\[data-theme="dark"\] \.hx h1 em,/);
-  assert.match(site, /color: #282d36;\s+background: var\(--gold\);/);
+  assert.match(site, /color: #eef1f5;\s+background: linear-gradient\(to bottom, transparent 84%, var\(--gold\) 84%, var\(--gold\) 96%, transparent 96%\);/);
   assert.match(site, /:root\[data-theme="dark"\] \.pc h3,/);
   assert.match(site, /:root\[data-theme="dark"\] \.panel-h,/);
   assert.match(site, /background: #252b34;\s+border-bottom-color: var\(--border\);\s+color: #c0cad7;/);
   assert.match(shared, /:root\[data-theme="dark"\] \.hero-title \.accent,/);
-  assert.match(shared, /color: #282d36 !important;/);
+  assert.match(shared, /:root\[data-theme="dark"\] \.ipn-brand em::after/);
+  assert.match(shared, /height: 3px;\s+background: var\(--gold\);/);
+  assert.match(shared, /color: #eef1f5 !important;\s+background: linear-gradient\(to bottom, transparent 84%/);
+  assert.doesNotMatch(shared, /background: var\(--gold\) !important;\s+color: #282d36/);
 
   // Contrast checks for the two explicit dark-mode color pairings.
   function luminance(hex) {
@@ -144,6 +147,6 @@ test("dark-mode yellow highlights and box headers use readable, muted text", () 
     const [bright, dark] = [luminance(first), luminance(second)].sort((a, b) => b - a);
     return (bright + 0.05) / (dark + 0.05);
   }
-  assert.ok(contrast("#282d36", "#fcd704") >= 7, "highlight ink must contrast with yellow");
+  assert.ok(contrast("#eef1f5", "#101216") >= 7, "hero text must remain readable on the dark canvas");
   assert.ok(contrast("#c0cad7", "#252b34") >= 7, "panel header text must contrast with slate");
 });
