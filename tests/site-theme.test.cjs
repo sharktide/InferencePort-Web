@@ -145,9 +145,9 @@ test("all public-navbar pages initialize the theme before the navbar", () => {
     assert.ok(themeTags[0].index < navTags[0].index, page + " must initialize appearance before nav");
   }
   const redirect = fs.readFileSync(path.join(root, "redirect.html"), "utf8");
-  const head = redirect.match(/<head\\b[^>]*>([\\s\\S]*?)<\\/head>/i)?.[1];
+  const head = redirect.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1];
   assert.ok(head, "redirect page must have a document head");
-  assert.match(head, /<script\\s+src="scripts\\/theme\\.js"\\s*><\\/script>/i,
+  assert.match(head, /<script\s+src="scripts\/theme\.js"\s*><\/script>/i,
     "redirect must execute the theme helper in the head");
   const navbar = fs.readFileSync(path.join(root, "components/ip-navbar.js"), "utf8");
   assert.match(navbar, /themeButton\("desktop"\)/);
