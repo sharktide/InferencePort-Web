@@ -19,6 +19,7 @@ on:
       - 'styles/site.css'
       - 'components/ip-navbar.js'
       - 'tests/site-theme.test.cjs'
+      - 'tests/marketing-sections.test.cjs'
       - '**/*.html'
       - '.github/workflows/site-theme.yml'
 
