@@ -426,3 +426,13 @@ html, body { overflow-x: clip; }
 :root[data-theme="dark"] .filter-tab[data-filter="decision"].active { color: #bef264; }
 :root[data-theme="dark"] .text-dark { color: var(--ink) !important; }
 :root[data-theme="dark"] .bg-white { background: var(--surface) !important; }
+
+/* Keep highlighted marketing text dark enough to read on yellow in dark mode. */
+:root[data-theme="dark"] .section-title .accent,
+:root[data-theme="dark"] .hero-title .accent,
+:root[data-theme="dark"] .page-hero h1 .accent {
+  background: var(--gold) !important;
+  color: #282d36 !important;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}

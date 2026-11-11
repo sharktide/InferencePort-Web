@@ -122,3 +122,28 @@ test("all public-navbar pages initialize the theme before the navbar", () => {
   assert.match(navbar, /themeButton\("desktop"\)/);
   assert.match(navbar, /themeButton\("mobile"\)/);
 });
+
+test("dark-mode yellow highlights and box headers use readable, muted text", () => {
+  const site = fs.readFileSync(path.join(root, "styles/site.css"), "utf8");
+  const shared = fs.readFileSync(path.join(root, "styles/shared.css"), "utf8");
+  assert.match(site, /:root\[data-theme="dark"\] \.hx h1 em,/);
+  assert.match(site, /color: #282d36;\s+background: var\(--gold\);/);
+  assert.match(site, /:root\[data-theme="dark"\] \.pc h3,/);
+  assert.match(site, /:root\[data-theme="dark"\] \.panel-h,/);
+  assert.match(site, /background: #252b34;\s+border-bottom-color: var\(--border\);\s+color: #c0cad7;/);
+  assert.match(shared, /:root\[data-theme="dark"\] \.hero-title \.accent,/);
+  assert.match(shared, /color: #282d36 !important;/);
+
+  // Contrast checks for the two explicit dark-mode color pairings.
+  function luminance(hex) {
+    const channels = hex.slice(1).match(/.{2}/g).map((part) => parseInt(part, 16) / 255);
+    return channels.map((v) => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
+      .reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0);
+  }
+  function contrast(first, second) {
+    const [bright, dark] = [luminance(first), luminance(second)].sort((a, b) => b - a);
+    return (bright + 0.05) / (dark + 0.05);
+  }
+  assert.ok(contrast("#282d36", "#fcd704") >= 7, "highlight ink must contrast with yellow");
+  assert.ok(contrast("#c0cad7", "#252b34") >= 7, "panel header text must contrast with slate");
+});
