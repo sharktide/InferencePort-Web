@@ -7,6 +7,7 @@ class IpNavbar extends HTMLElement {
 		agents: `<rect x="4" y="8" width="16" height="11"/><path d="M12 4v4M9 13h.01M15 13h.01M9 16h6"/>`,
 		council: `<circle cx="12" cy="6" r="2.6"/><circle cx="5.5" cy="17" r="2.6"/><circle cx="18.5" cy="17" r="2.6"/><path d="M10.6 8.4L7 14.5M13.4 8.4L17 14.5M8.2 17h7.6"/>`,
 		deploy: `<rect x="3" y="4" width="18" height="6"/><rect x="3" y="14" width="18" height="6"/><path d="M7 7h.01M7 17h.01"/>`,
+		buckets: `<path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/>`,
 		cli: `<rect x="3" y="4" width="18" height="16"/><path d="M7 9l3 3-3 3M12 15h5"/>`,
 		app: `<rect x="3" y="4" width="18" height="12"/><path d="M8 20h8M12 16v4"/>`,
 		chat: `<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>`,
@@ -44,6 +45,7 @@ class IpNavbar extends HTMLElement {
 							</div>
 							<div class="ipn-col"><h5>Run</h5>
 								${mi("/index.html#deploy","deploy","c-org","Model Deployments","Deploy any open model on demand and use it from the API.")}
+								${mi("/index.html#buckets","buckets","c-buckets","Buckets (Preview)","S3-compatible storage for model weights, datasets and artifacts.")}
 								${mi("/install.html","app","c-app","Desktop App","Local models, self-hosted servers and tools on your own hardware.")}
 								${mi("/lightning.html","chat","c-chat","Lightning Chat","Hosted chat at up to 1,000 words/sec in the app or browser.")}
 								${mi("/marketplace.html","catalog","c-app","Model Catalog","Every cloud and local model across five modalities.")}
