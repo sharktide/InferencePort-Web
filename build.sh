@@ -17,7 +17,7 @@ if [ -d "api" ]; then
     cp -r "api" dist/
 fi
 # Copy root static files
-for f in index.html platform.html ipx.html pricing.html lightning.html verifyemail.html marketplace.html redirect.html tools.html security.html decision.html shield.html install.html reset.html openapp.html authcallback.html robots.txt sitemap.xml llms.txt CNAME LICENSE icon.png; do
+for f in index.html platform.html ipx.html pricing.html lightning.html c8a0b912c8e34c1493f1734c916c7ad3.txt verifyemail.html marketplace.html redirect.html tools.html security.html decision.html shield.html install.html reset.html openapp.html authcallback.html robots.txt sitemap.xml llms.txt CNAME LICENSE icon.png; do
   [ -f "$f" ] && cp "$f" dist/
 done
 
