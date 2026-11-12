@@ -1,0 +1,43 @@
+# InferencePort AI
+
+> InferencePort AI is an AI platform for builders and teams: cloud and local models, an OpenAI-compatible Pay-to-Go API, hosted Lightning chat, managed agents, a Council MCP, on-demand deployments, AI Shield, a desktop app, a CLI, and organization controls.
+
+InferencePort AI runs models on your own hardware, in the cloud, or both, governed from one account and one console. The desktop app is for using models, the Developer Console is for operating them, and Organizations are for governing them for a team.
+
+## Start here
+
+- [Home](https://inferenceport.ai/): Overview of the platform, products, pricing, and how the app, console, and organizations connect.
+- [Platform guide](https://inferenceport.ai/platform.html): What the desktop app, Developer Console, and Organizations are, who each is for, and how they connect.
+- [Install the desktop app](https://inferenceport.ai/install.html): Download for Windows, macOS, and Linux, including CUDA, ROCm, and NVIDIA Jetson builds; run local models and host a server for your team.
+- [Pricing](https://inferenceport.ai/pricing.html): Free, AI Light, AI Core, AI Creator, AI Professional, Pay-to-Go, and organization plans (Starter, Team, Enterprise).
+- [Developer Console](https://inferenceport.ai/console/): Web console for API keys, wallet, usage, playgrounds, Shield, agents, and organizations.
+
+## Products
+
+- [Pay-to-Go API](https://inferenceport.ai/index.html#api): One OpenAI-compatible endpoint for text, image, video, audio, 3D, embeddings, decisions, and realtime voice.
+- [Decision models](https://inferenceport.ai/decision.html): Classify, score, and evaluate typed questions with probabilities through `POST /v1/systemone`.
+- [Managed agents](https://inferenceport.ai/index.html#agents): Host agents on your prompt, model, and MCP tools, and call them like a model.
+- [Council MCP](https://inferenceport.ai/index.html#council): A council of models, cross-reviewed into one answer, inside any MCP client.
+- [Model deployments](https://inferenceport.ai/index.html#deploy): Deploy any open model on demand and use it from the API.
+- [Lightning](https://inferenceport.ai/lightning.html): Lightning Text v2 streams up to 1,000 words per second, and Lightning Image Turbo is the default image model.
+- [Model marketplace](https://inferenceport.ai/marketplace.html): Browse cloud and local models across text, image, video, audio, 3D, embeddings, decisions, and realtime.
+- [AI Shield](https://inferenceport.ai/shield.html): Fraud, abuse, bot, prompt-attack, account-takeover, web-attack, upload, and data-leak detection in one API.
+- [ipx CLI](https://inferenceport.ai/ipx.html): Chat, generate media, call the Pay-to-Go API, manage organizations, deploy models, run agents and Council MCP, host local models, and run Shield from the terminal and CI.
+- [Tool marketplace](https://inferenceport.ai/tools.html): Discover tools and open InferencePort AI with a deep link to import by tool UUID.
+- [Pollinations partnership](https://inferenceport.ai/partnerships/pollinations.html): Fast, affordable text-to-3D generation with Pollinations.ai.
+
+## Documentation and resources
+
+- [Documentation](https://docs.inferenceport.ai): Product and API documentation.
+- [GitHub](https://github.com/sharktide/inferenceport-ai): Source code, issues, and releases.
+- [System health](https://stats.uptimerobot.com/N1MpjMQC4U): Service status.
+- [Sitemap](https://inferenceport.ai/sitemap.xml): Indexable pages on this site.
+
+## Company and legal
+
+- [Security, privacy, and terms](https://inferenceport.ai/security.html): Security safeguards, privacy policy, COPPA and FERPA disclosures, terms of service, refund and cancellation policy, and contact information.
+- [Contact](mailto:feedback@inferenceport.ai): feedback@inferenceport.ai
+
+## Optional
+
+- [robots.txt](https://inferenceport.ai/robots.txt): Crawling rules for this site.
