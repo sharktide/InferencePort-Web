@@ -23,7 +23,7 @@ $files = @(
     "index.html", "platform.html", "ipx.html", "pricing.html", "lightning.html", "marketplace.html", 
     "redirect.html", "tools.html", 
     "security.html", "decision.html", "shield.html", "install.html", "reset.html", "verifyemail.html",
-    "openapp.html", "authcallback.html", "robots.txt", "sitemap.xml", 
+    "openapp.html", "authcallback.html", "robots.txt", "sitemap.xml", "llms.txt",
     "CNAME", "LICENSE", "icon.png"
 )
 
