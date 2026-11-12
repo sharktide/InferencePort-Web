@@ -24,7 +24,7 @@ $files = @(
     "redirect.html", "tools.html", 
     "security.html", "decision.html", "shield.html", "install.html", "reset.html", "verifyemail.html",
     "openapp.html", "authcallback.html", "robots.txt", "sitemap.xml", "llms.txt",
-    "CNAME", "LICENSE", "icon.png"
+    "CNAME", "LICENSE", "icon.png", "c8a0b912c8e34c1493f1734c916c7ad3.txt"
 )
 
 foreach ($f in $files) {
