@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "../Panel.module.css";
 import shared from "./orgs.module.css";
 import manage from "./manage.module.css";
+import UsageBreakdownView, { countLabel, creditsLabel } from "../UsageBreakdownView";
 import type { OrgApi, OrgDetail, UsageBreakdown, UsageDimension } from "../../../../lib/orgs";
 import { Callout, errorText } from "./shared";
-import { EMAIL_RE, fmtCredits, planHint } from "./LimitsEditor";
+import { EMAIL_RE, planHint } from "./LimitsEditor";
 
 interface Props {
   api: OrgApi;
@@ -16,16 +17,13 @@ interface Props {
 }
 
 type Notice = { tone: "ok" | "error"; text: string } | null;
-
-const RANGES = [7, 30, 90] as const;
+const RANGES = [1, 7, 30, 90, 365] as const;
 const DIMENSIONS: { key: UsageDimension; label: string }[] = [
   { key: "user", label: "Members" },
   { key: "key", label: "API keys" },
   { key: "model", label: "Models" },
   { key: "day", label: "Days" },
 ];
-
-const pct = (n: number, total: number) => (total > 0 ? Math.round((n / total) * 1000) / 10 : 0);
 
 export default function UsageTab({ api, org }: Props) {
   const ent = org.entitlements;
@@ -36,39 +34,43 @@ export default function UsageTab({ api, org }: Props) {
 
   const [days, setDays] = useState<number>(30);
   const [by, setBy] = useState<UsageDimension>("user");
-  const [data, setData] = useState<UsageBreakdown | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState<{ key: string; value: UsageBreakdown } | null>(null);
+  const [loadError, setLoadError] = useState<{ key: string; text: string } | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
   const [notice, setNotice] = useState<Notice>(null);
-  const [busy, setBusy] = useState<"export" | "report" | null>(null);
+  const [busy, setBusy] = useState<"csv" | "json" | "report" | null>(null);
   const [reportTo, setReportTo] = useState("");
+
+  const requestKey = [org.slug, days, by, reloadToken].join(":");
+  const data = loaded?.key === requestKey ? loaded.value : null;
+  const error = loadError?.key === requestKey ? loadError.text : null;
 
   useEffect(() => {
     let live = true;
-    setLoadError(null);
-    api
-      .usage(org.slug, { days, by })
-      .then((res) => { if (live) setData(res); })
-      .catch((e) => { if (live) { setData(null); setLoadError(errorText(e)); } });
+    api.usage(org.slug, { days, by })
+      .then((result) => { if (live) { setLoaded({ key: requestKey, value: result }); setLoadError(null); } })
+      .catch((err) => { if (live) { setLoaded(null); setLoadError({ key: requestKey, text: errorText(err) }); } });
     return () => { live = false; };
-  }, [api, org.slug, days, by, reloadToken]);
+  }, [api, org.slug, days, by, reloadToken, requestKey]);
 
-  const exportCsv = async () => {
-    setBusy("export");
+  const download = async (format: "csv" | "json") => {
+    if (exportLock || busy) return;
+    setBusy(format);
     setNotice(null);
     try {
-      const text = await api.usageExport(org.slug, days, "csv");
-      const url = URL.createObjectURL(new Blob([text], { type: "text/csv;charset=utf-8" }));
+      const response = await api.usageExport(org.slug, days, format);
+      const mime = format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8";
+      const url = URL.createObjectURL(new Blob([response], { type: mime }));
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${org.slug}-usage-${days}d.csv`;
+      a.download = org.slug + "-usage-" + days + "d." + format;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 10_000); // revoking immediately can cancel the download in Safari/Firefox
-      setNotice({ tone: "ok", text: `Exported the last ${days} days as CSV.` });
-    } catch (e) {
-      setNotice({ tone: "error", text: errorText(e) });
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+      setNotice({ tone: "ok", text: "Exported " + days + " days of organization usage as " + format.toUpperCase() + "." });
+    } catch (err) {
+      setNotice({ tone: "error", text: errorText(err) });
     } finally {
       setBusy(null);
     }
@@ -77,169 +79,105 @@ export default function UsageTab({ api, org }: Props) {
   const sendReport = async () => {
     const to = reportTo.trim().toLowerCase();
     if (to && !EMAIL_RE.test(to)) return setNotice({ tone: "error", text: "Enter a valid email address, or leave it blank to send to yourself." });
+    if (reportLock || busy) return;
     setBusy("report");
     setNotice(null);
     try {
       const res = await api.sendUsageReport(org.slug, { days, ...(to ? { to } : {}) });
-      setNotice({ tone: "ok", text: `Usage report for the last ${days} days sent to ${res.sent_to}.` });
-    } catch (e) {
-      setNotice({ tone: "error", text: errorText(e) });
+      setNotice({ tone: "ok", text: "Usage report for the last " + days + " days sent to " + res.sent_to + "." });
+    } catch (err) {
+      setNotice({ tone: "error", text: errorText(err) });
     } finally {
       setBusy(null);
     }
   };
 
   const buckets = data?.buckets ?? [];
-  const maxCredits = buckets.reduce((m, b) => Math.max(m, b.credits), 0);
-  const total = data?.total_credits ?? 0;
+  const totalCredits = data?.total_credits ?? 0;
   const totalRequests = data?.total_requests ?? 0;
 
   return (
     <div className={styles.stack}>
       <div className={shared.sectionHead}>
-        <span className={shared.sectionTitle}>Usage</span>
-        <span className={`${styles.muted} ${styles.tiny}`}>
-          {canReadAll ? "Organization-wide" : "Your usage"}
-        </span>
+        <span className={shared.sectionTitle}>Organization usage analytics</span>
+        <span className={styles.muted}>{canReadAll ? "All organization usage" : "Your organization usage only"}</span>
       </div>
-
-      {!canReadAll && (
-        <p className={`${styles.muted} ${styles.tiny}`}>Your role shows only your own usage in this organization.</p>
-      )}
+      <p className={styles.muted}>
+        Explore credits consumed and requests by member, API key, model, or day.
+        {!canReadAll && " Your role only allows you to see your own activity. Ask an owner or administrator for an organization-wide report."}
+      </p>
 
       <div className={manage.toolbar}>
         <div className={manage.toolbarGroup}>
           <label className={shared.field}>
-            Range
+            Time range
             <select value={days} onChange={(e) => setDays(Number(e.target.value))}>
-              {RANGES.map((r) => <option key={r} value={r}>Last {r} days</option>)}
+              {RANGES.map((r) => <option key={r} value={r}>Last {r} {r === 1 ? "day" : "days"}</option>)}
             </select>
           </label>
+          <button className="ghost" type="button" onClick={() => setReloadToken((n) => n + 1)}>Refresh</button>
         </div>
-        <div className={manage.segmented} role="group" aria-label="Group usage by">
-          {DIMENSIONS.map((d) => (
-            <button
-              key={d.key}
-              type="button"
-              className={manage.segment}
-              aria-pressed={by === d.key}
-              onClick={() => setBy(d.key)}
-            >
-              {d.label}
-            </button>
+        <div className={manage.segmented} role="group" aria-label="Group organization usage by">
+          {DIMENSIONS.map((dimension) => (
+            <button key={dimension.key} type="button" className={manage.segment}
+              aria-pressed={by === dimension.key} onClick={() => setBy(dimension.key)}>{dimension.label}</button>
           ))}
         </div>
       </div>
 
       {notice && <Callout tone={notice.tone}>{notice.text}</Callout>}
-
-      {loadError && (
+      {error && (
         <div className={styles.stack}>
-          <Callout tone="error">{loadError}</Callout>
-          <div><button type="button" className="ghost" onClick={() => setReloadToken((n) => n + 1)}>Retry</button></div>
+          <Callout tone="error">Could not load organization usage: {error}</Callout>
+          <div><button type="button" className="ghost" onClick={() => setReloadToken((n) => n + 1)}>Try again</button></div>
         </div>
       )}
-      {!data && !loadError && <p className={styles.muted}>Loading usage…</p>}
-
+      {!data && !error && <p className={styles.muted} role="status">Loading usage breakdown…</p>}
       {data && (
         <>
           <div className={manage.statGrid}>
-            <div className={manage.stat}>
-              <span className={manage.statLabel}>Credits used</span>
-              <span className={manage.statValue}>{fmtCredits(total)}</span>
-            </div>
-            <div className={manage.stat}>
-              <span className={manage.statLabel}>Requests</span>
-              <span className={manage.statValue}>{totalRequests.toLocaleString()}</span>
-            </div>
-            <div className={manage.stat}>
-              <span className={manage.statLabel}>Groups</span>
-              <span className={manage.statValue}>{buckets.length}</span>
-            </div>
+            <div className={manage.stat}><span className={manage.statLabel}>Credits used</span><strong className={manage.statValue}>{creditsLabel(totalCredits)}</strong></div>
+            <div className={manage.stat}><span className={manage.statLabel}>Requests billed</span><strong className={manage.statValue}>{countLabel(totalRequests)}</strong></div>
+            <div className={manage.stat}><span className={manage.statLabel}>Credits per request</span><strong className={manage.statValue}>{creditsLabel(totalRequests ? totalCredits / totalRequests : 0)}</strong></div>
+            <div className={manage.stat}><span className={manage.statLabel}>Active {DIMENSIONS.find((d) => d.key === by)?.label.toLowerCase()}</span><strong className={manage.statValue}>{countLabel(buckets.length)}</strong></div>
           </div>
-
-          {buckets.length === 0 ? (
-            <p className={styles.muted}>No usage in the last {days} days.</p>
-          ) : (
-            <>
-              <div className={manage.bars} role="list" aria-label={`Credits by ${DIMENSIONS.find((d) => d.key === by)?.label ?? by}`}>
-                {buckets.map((b) => (
-                  <div key={b.key} className={manage.barRow} role="listitem">
-                    <span className={manage.barLabel}>{b.label}</span>
-                    <span className={manage.barTrack} aria-hidden="true">
-                      <span className={manage.barFill} style={{ display: "block", width: `${maxCredits > 0 ? (b.credits / maxCredits) * 100 : 0}%` }} />
-                    </span>
-                    <span className={manage.barValue}>{fmtCredits(b.credits)} · {pct(b.credits, total)}%</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className={shared.tableWrap}>
-                <table className={shared.table}>
-                  <thead>
-                    <tr>
-                      <th scope="col">{DIMENSIONS.find((d) => d.key === by)?.label ?? "Group"}</th>
-                      <th scope="col">Credits</th>
-                      <th scope="col">Requests</th>
-                      <th scope="col">Share</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {buckets.map((b) => (
-                      <tr key={b.key}>
-                        <td className={shared.wrapAnywhere}>{b.label}</td>
-                        <td data-label="Credits">{fmtCredits(b.credits)}</td>
-                        <td data-label="Requests">{b.requests.toLocaleString()}</td>
-                        <td data-label="Share">{pct(b.credits, total)}%</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
+          <UsageBreakdownView key={by} rows={buckets} totalCredits={totalCredits} totalRequests={totalRequests}
+            dimensionLabel={DIMENSIONS.find((d) => d.key === by)?.label ?? "Group"} dateDimension={by === "day"} />
+          <p className={manage.hintText}>
+            Figures reflect organization wallet debits recorded by the server, not personal-wallet usage.
+            Switching groups changes how the same usage is grouped, not the total.
+          </p>
         </>
       )}
 
-      <div className={shared.sectionHead}>
-        <span className={shared.sectionTitle}>Export and reports</span>
-      </div>
+      <div className={shared.sectionHead}><span className={shared.sectionTitle}>Export and reports</span></div>
+      <p className={styles.muted}>Download detailed charges for the selected range, or send a report by email. These actions depend on your plan and role.</p>
       <div className={manage.toolbar}>
         <div className={manage.toolbarGroup}>
-          <button
-            type="button"
-            className="ghost"
-            onClick={exportCsv}
-            disabled={!!exportLock || busy !== null}
-            title={exportLock ?? undefined}
-          >
-            {busy === "export" ? "Exporting…" : "Export CSV"}
+          <button type="button" className="ghost" onClick={() => void download("csv")} disabled={!!exportLock || !!busy} title={exportLock ?? undefined}>
+            {busy === "csv" ? "Exporting…" : "Export CSV"}
           </button>
-          {exportLock && <span className={manage.lockHint}>{exportLock}</span>}
+          <button type="button" className="ghost" onClick={() => void download("json")} disabled={!!exportLock || !!busy} title={exportLock ?? undefined}>
+            {busy === "json" ? "Exporting…" : "Export JSON"}
+          </button>
         </div>
+        {exportLock && <span className={manage.lockHint}>{exportLock}</span>}
       </div>
-
       <div className={manage.toolbar}>
         <div className={manage.toolbarGroup}>
           <label className={shared.field}>
-            Send report to (optional)
-            <input
-              type="email"
-              maxLength={254}
-              placeholder="Your email"
-              value={reportTo}
-              disabled={!!reportLock || busy !== null}
-              onChange={(e) => setReportTo(e.target.value)}
-            />
+            Report recipient (optional)
+            <input type="email" maxLength={254} placeholder="Your account email"
+              value={reportTo} disabled={!!reportLock || !!busy} onChange={(e) => setReportTo(e.target.value)} />
           </label>
-          <button type="button" onClick={sendReport} disabled={!!reportLock || busy !== null}>
+          <button type="button" onClick={() => void sendReport()} disabled={!!reportLock || !!busy}>
             {busy === "report" ? "Sending…" : "Email report"}
           </button>
         </div>
         {reportLock && <span className={manage.lockHint}>{reportLock}</span>}
       </div>
       <p className={manage.hintText}>
-        Reports and exports cover the selected range and include the member, key, model and day for each charge. The recipient must be a billing address for this organization or your own email.
+        Exports contain charge-level records (including member, key, model, and date). Recipients must be your email or an authorized organization billing address.
       </p>
     </div>
   );
