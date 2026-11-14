@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import styles from "../Panel.module.css";
 import shared from "./orgs.module.css";
 import manage from "./manage.module.css";
+import ui from "./UsageServices.module.css";
 import UsageBreakdownView, { countLabel, creditsLabel } from "../UsageBreakdownView";
 import UsageCharts, { type UsageMetric } from "../UsageCharts";
-import type { OrgApi, OrgDetail, UsageBreakdown, UsageDimension } from "../../../../lib/orgs";
+import type { OrgApi, OrgDetail, UsageBreakdown, UsageDimension, UsageService } from "../../../../lib/orgs";
 import { Callout, errorText } from "./shared";
 import { EMAIL_RE, planHint } from "./LimitsEditor";
 
@@ -20,11 +21,28 @@ interface Props {
 type Notice = { tone: "ok" | "error"; text: string } | null;
 const RANGES = [1, 7, 30, 90, 365] as const;
 const DIMENSIONS: { key: UsageDimension; label: string }[] = [
+  { key: "model", label: "Models" },
+  { key: "resource", label: "Buckets / deployments" },
+  { key: "service", label: "Services" },
   { key: "user", label: "Members" },
   { key: "key", label: "API keys" },
-  { key: "model", label: "Models" },
   { key: "day", label: "Days" },
 ];
+const SERVICES: { key: UsageService; name: string; hint: string }[] = [
+  { key: "all", name: "All services", hint: "Total wallet charges" },
+  { key: "api", name: "Model API", hint: "Inference and generation" },
+  { key: "storage", name: "Buckets storage", hint: "Storage and transfer charges" },
+  { key: "deployment", name: "Featherless hosting", hint: "Deployment hosting fees" },
+  { key: "other", name: "Other charges", hint: "Unclassified billable events" },
+];
+function defaultDimension(service: UsageService): UsageDimension {
+  return service === "api" ? "model" : service === "all" ? "service" : "resource";
+}
+function dimensionsFor(service: UsageService): UsageDimension[] {
+  return service === "api" ? ["model", "user", "key", "day"] :
+    service === "all" ? ["service", "user", "key", "day"] : ["resource", "user", "key", "day"];
+}
+
 
 export default function UsageTab({ api, org }: Props) {
   const ent = org.entitlements;
@@ -34,7 +52,10 @@ export default function UsageTab({ api, org }: Props) {
   const reportLock = !ent.usage_reports ? planHint("usage_reports") : !canExport ? "Your role cannot email usage reports." : null;
 
   const [days, setDays] = useState<number>(30);
-  const [by, setBy] = useState<UsageDimension>("user");
+  const [service, setService] = useState<UsageService>("api");
+  const [by, setBy] = useState<UsageDimension>("model");
+  const [summaryLoaded, setSummaryLoaded] = useState<{ key: string; value: UsageBreakdown } | null>(null);
+  const [summaryError, setSummaryError] = useState<{ key: string; text: string } | null>(null);
   const [metric, setMetric] = useState<UsageMetric>("credits");
   const [dailyLoaded, setDailyLoaded] = useState<{ key: string; value: UsageBreakdown } | null>(null);
   const [dailyError, setDailyError] = useState<{ key: string; text: string } | null>(null);
@@ -45,31 +66,51 @@ export default function UsageTab({ api, org }: Props) {
   const [busy, setBusy] = useState<"csv" | "json" | "report" | null>(null);
   const [reportTo, setReportTo] = useState("");
 
-  const requestKey = [org.slug, days, by, reloadToken].join(":");
-  const dayKey = [org.slug, days, reloadToken].join(":");
+  const requestKey = [org.slug, days, service, by, reloadToken].join(":");
+  const dayKey = [org.slug, days, service, reloadToken].join(":");
+  const summaryKey = [org.slug, days, reloadToken].join(":");
+  const summaryData = summaryLoaded?.key === summaryKey ? summaryLoaded.value : null;
+  const summaryFailure = summaryError?.key === summaryKey ? summaryError.text : null;
   const dayData = dailyLoaded?.key === dayKey ? dailyLoaded.value : null;
   const dayError = dailyError?.key === dayKey ? dailyError.text : null;
-  const data = by === "day" ? dayData : loaded?.key === requestKey ? loaded.value : null;
-  const error = by === "day" ? dayError : loadError?.key === requestKey ? loadError.text : null;
+  const data = by === "day" ? dayData : (service === "all" && by === "service") ? summaryData : loaded?.key === requestKey ? loaded.value : null;
+  const error = by === "day" ? dayError : (service === "all" && by === "service") ? summaryFailure : loadError?.key === requestKey ? loadError.text : null;
+  const dimensionLabel = DIMENSIONS.find((d) => d.key === by)?.label ?? "Group";
+  const eventLabel = service === "api" ? "requests" : "charge events";
+  const serviceName = SERVICES.find((s) => s.key === service)?.name ?? "Service";
+  const selectedDimensions = dimensionsFor(service);
+  const selectService = (next: UsageService) => {
+    setService(next);
+    setBy(defaultDimension(next));
+  };
 
   useEffect(() => {
-    if (by === "day") return;
+    if (by === "day" || (service === "all" && by === "service")) return;
     let live = true;
-    api.usage(org.slug, { days, by })
+    api.usage(org.slug, { days, by, service })
       .then((result) => { if (live) { setLoaded({ key: requestKey, value: result }); setLoadError(null); } })
       .catch((err) => { if (live) { setLoaded(null); setLoadError({ key: requestKey, text: errorText(err) }); } });
     return () => { live = false; };
-  }, [api, org.slug, days, by, reloadToken, requestKey]);
+  }, [api, org.slug, days, by, service, reloadToken, requestKey]);
 
   // The server scopes this daily series using the exact same organization permissions as the selected breakdown.
   // Load it separately so changing members/keys/models does not reset the time chart or incur duplicate day requests.
   useEffect(() => {
     let live = true;
-    api.usage(org.slug, { days, by: "day" })
+    api.usage(org.slug, { days, by: "day", service })
       .then((value) => { if (live) { setDailyLoaded({ key: dayKey, value }); setDailyError(null); } })
       .catch((err) => { if (live) { setDailyLoaded(null); setDailyError({ key: dayKey, text: errorText(err) }); } });
     return () => { live = false; };
-  }, [api, org.slug, days, reloadToken, dayKey]);
+  }, [api, org.slug, days, service, reloadToken, dayKey]);
+
+  // The all-services view is the authoritative wallet breakdown, including charges without an actor.
+  useEffect(() => {
+    let live = true;
+    api.usage(org.slug, { days, by: "service", service: "all" })
+      .then((value) => { if (live) { setSummaryLoaded({ key: summaryKey, value }); setSummaryError(null); } })
+      .catch((err) => { if (live) { setSummaryLoaded(null); setSummaryError({ key: summaryKey, text: errorText(err) }); } });
+    return () => { live = false; };
+  }, [api, org.slug, days, reloadToken, summaryKey]);
 
   const download = async (format: "csv" | "json") => {
     if (exportLock || busy) return;
@@ -121,10 +162,32 @@ export default function UsageTab({ api, org }: Props) {
         <span className={styles.muted}>{canReadAll ? "All organization usage" : "Your organization usage only"}</span>
       </div>
       <p className={styles.muted}>
-        Explore credits consumed and requests by member, API key, model, or day.
-        {!canReadAll && " Your role only allows you to see your own activity. Ask an owner or administrator for an organization-wide report."}
+        Keep model API inference separate from Buckets storage, Featherless hosting, and other wallet charges.
+        {!canReadAll && " Your role only allows you to see charges attributed to your account, not organization-wide totals."}
       </p>
 
+      <div className={ui.serviceCards} role="group" aria-label="Choose billed service">
+        {SERVICES.map((option) => {
+          const bucket = summaryData?.buckets.find((item) => item.key === option.key);
+          const credits = option.key === "all" ? summaryData?.total_credits : bucket?.credits;
+          const events = option.key === "all" ? summaryData?.total_charge_events ?? summaryData?.total_requests
+            : bucket?.charge_events ?? bucket?.requests;
+          return (
+            <button key={option.key} type="button" className={ui.card}
+              aria-pressed={service === option.key} onClick={() => selectService(option.key)}>
+              <span className={ui.cardLabel}>{option.name}</span>
+              <strong className={ui.cardValue}>{summaryData ? creditsLabel(credits ?? 0) : "—"}</strong>
+              <span className={ui.cardHint}>{summaryData ? countLabel(events ?? 0) + " charges" : "Loading totals…"} · {option.hint}</span>
+            </button>
+          );
+        })}
+      </div>
+      {summaryFailure && <Callout tone="error">Could not load service totals: {summaryFailure}. The server must support service-aware organization usage.</Callout>}
+
+      <div className={ui.filterHead}>
+        <span className={ui.filterTitle}>{serviceName} breakdown</span>
+        <span className={ui.note}>Choose how to group this service's charges</span>
+      </div>
       <div className={manage.toolbar}>
         <div className={manage.toolbarGroup}>
           <label className={shared.field}>
@@ -136,7 +199,7 @@ export default function UsageTab({ api, org }: Props) {
           <button className="ghost" type="button" onClick={() => setReloadToken((n) => n + 1)}>Refresh</button>
         </div>
         <div className={manage.segmented} role="group" aria-label="Group organization usage by">
-          {DIMENSIONS.map((dimension) => (
+          {DIMENSIONS.filter((d) => selectedDimensions.includes(d.key)).map((dimension) => (
             <button key={dimension.key} type="button" className={manage.segment}
               aria-pressed={by === dimension.key} onClick={() => setBy(dimension.key)}>{dimension.label}</button>
           ))}
@@ -154,26 +217,28 @@ export default function UsageTab({ api, org }: Props) {
       {data && (
         <>
           <div className={manage.statGrid}>
-            <div className={manage.stat}><span className={manage.statLabel}>Credits used</span><strong className={manage.statValue}>{creditsLabel(totalCredits)}</strong></div>
-            <div className={manage.stat}><span className={manage.statLabel}>Requests billed</span><strong className={manage.statValue}>{countLabel(totalRequests)}</strong></div>
-            <div className={manage.stat}><span className={manage.statLabel}>Credits per request</span><strong className={manage.statValue}>{creditsLabel(totalRequests ? totalCredits / totalRequests : 0)}</strong></div>
-            <div className={manage.stat}><span className={manage.statLabel}>Active {DIMENSIONS.find((d) => d.key === by)?.label.toLowerCase()}</span><strong className={manage.statValue}>{countLabel(buckets.length)}</strong></div>
+            <div className={manage.stat}><span className={manage.statLabel}>{serviceName} · credits</span><strong className={manage.statValue}>{creditsLabel(totalCredits)}</strong></div>
+            <div className={manage.stat}><span className={manage.statLabel}>{service === "api" ? "Billable inference events" : "Billed charge events"}</span><strong className={manage.statValue}>{countLabel(totalRequests)}</strong></div>
+            <div className={manage.stat}><span className={manage.statLabel}>Credits per {service === "api" ? "inference event" : "charge"}</span><strong className={manage.statValue}>{creditsLabel(totalRequests ? totalCredits / totalRequests : 0)}</strong></div>
+            <div className={manage.stat}><span className={manage.statLabel}>Active {dimensionLabel.toLowerCase()} groups</span><strong className={manage.statValue}>{countLabel(buckets.length)}</strong></div>
           </div>
           <UsageCharts breakdown={buckets} timeline={dayData?.buckets ?? null} range={days === 1 ? "1d" : days === 7 ? "7d" : days === 30 ? "30d" : days === 90 ? "90d" : "365d"}
-            dimensionLabel={DIMENSIONS.find((d) => d.key === by)?.label ?? "Group"}
+            dimensionLabel={dimensionLabel} eventLabel={eventLabel}
             metric={metric} onMetricChange={setMetric} timelineError={dayError} />
           <UsageBreakdownView key={by} rows={buckets} totalCredits={totalCredits} totalRequests={totalRequests}
-            dimensionLabel={DIMENSIONS.find((d) => d.key === by)?.label ?? "Group"} dateDimension={by === "day"}
+            dimensionLabel={dimensionLabel} dateDimension={by === "day"} eventLabel={eventLabel}
             metric={metric} onMetricChange={setMetric} />
           <p className={manage.hintText}>
-            Figures reflect organization wallet debits recorded by the server, not personal-wallet usage.
-            Switching groups changes how the same usage is grouped, not the total.
+            Data comes from actual organization-wallet debit records for {serviceName.toLowerCase()} only.
+            Counts represent charged ledger events (not necessarily distinct HTTP requests).
+            Storage is grouped by bucket and Featherless hosting by deployment, rather than being shown as models.
+            Personal wallet charges are excluded.
           </p>
         </>
       )}
 
       <div className={shared.sectionHead}><span className={shared.sectionTitle}>Export and reports</span></div>
-      <p className={styles.muted}>Download detailed charges for the selected range, or send a report by email. These actions depend on your plan and role.</p>
+      <p className={styles.muted}>Download detailed charges across all services for the selected time range (not just the selected category), or send a report by email. These actions depend on your plan and role.</p>
       <div className={manage.toolbar}>
         <div className={manage.toolbarGroup}>
           <button type="button" className="ghost" onClick={() => void download("csv")} disabled={!!exportLock || !!busy} title={exportLock ?? undefined}>
