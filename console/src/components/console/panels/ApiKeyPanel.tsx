@@ -43,7 +43,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
       if (seq !== newestRefresh.current || token !== activeTokenRef.current) return;
       setKeys(r.items || []);
       setKeysOwnerToken(token);
-      setStatus("Use a generated key as Bearer token when calling Lightning.");
+      setStatus("");
     } catch (e: any) {
       if (seq === newestRefresh.current && token === activeTokenRef.current) setStatus(`Error: ${e.message}`);
     }
@@ -82,6 +82,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     setKeyExpiry("");
     setCreateLimits(emptyDraft());
     setAdvancedOpen(false);
+    setStatus("");
     setRestrictionSupport("loading");
     void refresh();
     void probeCapabilities();
@@ -244,7 +245,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
                     : <>Unable to verify API key capabilities. <button type="button" className="ghost" onClick={probeCapabilities}>Retry</button></>}
                 </p>
               )}
-              <p className={`${styles.muted} ${styles.tiny}`} role="status">{status}</p>
+              {status && <p className={`${styles.muted} ${styles.tiny}`} role="status">{status}</p>}
             </div>
           </div>
           {reveal && (
