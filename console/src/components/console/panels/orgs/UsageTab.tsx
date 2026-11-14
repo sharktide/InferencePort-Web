@@ -5,6 +5,7 @@ import styles from "../Panel.module.css";
 import shared from "./orgs.module.css";
 import manage from "./manage.module.css";
 import UsageBreakdownView, { countLabel, creditsLabel } from "../UsageBreakdownView";
+import UsageCharts, { type UsageMetric } from "../UsageCharts";
 import type { OrgApi, OrgDetail, UsageBreakdown, UsageDimension } from "../../../../lib/orgs";
 import { Callout, errorText } from "./shared";
 import { EMAIL_RE, planHint } from "./LimitsEditor";
@@ -34,6 +35,9 @@ export default function UsageTab({ api, org }: Props) {
 
   const [days, setDays] = useState<number>(30);
   const [by, setBy] = useState<UsageDimension>("user");
+  const [metric, setMetric] = useState<UsageMetric>("credits");
+  const [dailyLoaded, setDailyLoaded] = useState<{ key: string; value: UsageBreakdown } | null>(null);
+  const [dailyError, setDailyError] = useState<{ key: string; text: string } | null>(null);
   const [loaded, setLoaded] = useState<{ key: string; value: UsageBreakdown } | null>(null);
   const [loadError, setLoadError] = useState<{ key: string; text: string } | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
@@ -42,16 +46,30 @@ export default function UsageTab({ api, org }: Props) {
   const [reportTo, setReportTo] = useState("");
 
   const requestKey = [org.slug, days, by, reloadToken].join(":");
-  const data = loaded?.key === requestKey ? loaded.value : null;
-  const error = loadError?.key === requestKey ? loadError.text : null;
+  const dayKey = [org.slug, days, reloadToken].join(":");
+  const dayData = dailyLoaded?.key === dayKey ? dailyLoaded.value : null;
+  const dayError = dailyError?.key === dayKey ? dailyError.text : null;
+  const data = by === "day" ? dayData : loaded?.key === requestKey ? loaded.value : null;
+  const error = by === "day" ? dayError : loadError?.key === requestKey ? loadError.text : null;
 
   useEffect(() => {
+    if (by === "day") return;
     let live = true;
     api.usage(org.slug, { days, by })
       .then((result) => { if (live) { setLoaded({ key: requestKey, value: result }); setLoadError(null); } })
       .catch((err) => { if (live) { setLoaded(null); setLoadError({ key: requestKey, text: errorText(err) }); } });
     return () => { live = false; };
   }, [api, org.slug, days, by, reloadToken, requestKey]);
+
+  // The server scopes this daily series using the exact same organization permissions as the selected breakdown.
+  // Load it separately so changing members/keys/models does not reset the time chart or incur duplicate day requests.
+  useEffect(() => {
+    let live = true;
+    api.usage(org.slug, { days, by: "day" })
+      .then((value) => { if (live) { setDailyLoaded({ key: dayKey, value }); setDailyError(null); } })
+      .catch((err) => { if (live) { setDailyLoaded(null); setDailyError({ key: dayKey, text: errorText(err) }); } });
+    return () => { live = false; };
+  }, [api, org.slug, days, reloadToken, dayKey]);
 
   const download = async (format: "csv" | "json") => {
     if (exportLock || busy) return;
@@ -141,8 +159,12 @@ export default function UsageTab({ api, org }: Props) {
             <div className={manage.stat}><span className={manage.statLabel}>Credits per request</span><strong className={manage.statValue}>{creditsLabel(totalRequests ? totalCredits / totalRequests : 0)}</strong></div>
             <div className={manage.stat}><span className={manage.statLabel}>Active {DIMENSIONS.find((d) => d.key === by)?.label.toLowerCase()}</span><strong className={manage.statValue}>{countLabel(buckets.length)}</strong></div>
           </div>
+          <UsageCharts breakdown={buckets} timeline={dayData?.buckets ?? null} range={days === 1 ? "1d" : days === 7 ? "7d" : days === 30 ? "30d" : days === 90 ? "90d" : "365d"}
+            dimensionLabel={DIMENSIONS.find((d) => d.key === by)?.label ?? "Group"}
+            metric={metric} onMetricChange={setMetric} timelineError={dayError} />
           <UsageBreakdownView key={by} rows={buckets} totalCredits={totalCredits} totalRequests={totalRequests}
-            dimensionLabel={DIMENSIONS.find((d) => d.key === by)?.label ?? "Group"} dateDimension={by === "day"} />
+            dimensionLabel={DIMENSIONS.find((d) => d.key === by)?.label ?? "Group"} dateDimension={by === "day"}
+            metric={metric} onMetricChange={setMetric} />
           <p className={manage.hintText}>
             Figures reflect organization wallet debits recorded by the server, not personal-wallet usage.
             Switching groups changes how the same usage is grouped, not the total.
