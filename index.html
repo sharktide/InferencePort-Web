@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InferencePort AI — AI APIs, deployments, storage and security</title>
-  <meta name="description" content="One OpenAI-compatible API for multimodal models, with managed agents, model deployments, S3-compatible storage, Shield security, and workspace controls." />
+  <title>InferencePort AI — One API for models, agents and infrastructure</title>
+  <meta name="description" content="Build with text, image, video, audio and 3D models through one API. Add managed agents, model deployments, storage, security and team controls." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://inferenceport.ai/" />
   <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
@@ -41,25 +41,33 @@
   <a class="lp-skip" href="#main-content">Skip to content</a>
   <ip-navbar active="home"></ip-navbar>
   <main class="lp" id="main-content">
-    <!-- Hero: one primary action and a genuine API request. -->
+    <!-- Strong hierarchy, useful sample code and a deliberately compact product story. -->
     <section class="lp-hero" aria-labelledby="lp-title">
-      <div class="lp-wrap lp-hero-grid">
-        <div class="lp-hero-copy">
-          <p class="lp-overline"><span class="lp-dot" aria-hidden="true"></span> Unified AI infrastructure</p>
-          <h1 id="lp-title">Build with AI.<br /><span>Run it on your terms.</span></h1>
-          <p class="lp-lead">One OpenAI-compatible API for text, image, video, audio and 3D. Add managed agents, on-demand deployments, storage and security when your application needs them.</p>
-          <div class="lp-actions">
-            <a class="lp-button lp-button-primary" href="/console">Get an API key <span aria-hidden="true">↗</span></a>
-            <a class="lp-button lp-button-secondary" href="marketplace.html">Explore models</a>
+      <div class="lp-wrap">
+        <div class="lp-hero-overline"><span><i class="lp-bolt" aria-hidden="true">ϟ</i> INFERENCEPORT / AI INFRASTRUCTURE</span><span>BUILD · DEPLOY · SECURE</span></div>
+        <div class="lp-hero-grid">
+          <div class="lp-hero-copy">
+            <h1 id="lp-title">Models are<br />just the start.<br /><em>Build the rest.</em></h1>
+            <p>One OpenAI-compatible API for text, image, video, audio, 3D and more. Deploy models, run agents, store artifacts and protect requests without juggling five different platforms.</p>
+            <div class="lp-actions">
+              <a class="lp-button lp-button-primary" href="/console">Start building <span aria-hidden="true">↗</span></a>
+              <a class="lp-button lp-button-outline" href="marketplace.html">Browse models <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="lp-hero-meta"><span>Free to get started</span><span>Usage-based API billing</span><span>One account for your team</span></div>
           </div>
-          <p class="lp-hero-note">Start free. API usage is billed by model, separately from chat plans.</p>
-        </div>
-        <div class="lp-terminal" aria-label="Example InferencePort API request">
-          <div class="lp-terminal-top">
-            <span><span class="lp-terminal-indicator" aria-hidden="true"></span> Quickstart</span>
-            <span>HTTP / curl</span>
-          </div>
-          <pre id="lp-request"><code>curl https://api.inferenceport.ai/v1/chat/completions \
+          <div class="lp-code" aria-label="Copyable API quickstart examples">
+            <div class="lp-code-heading">
+              <div class="lp-code-filename"><span class="lp-code-light" aria-hidden="true"></span><strong>Quickstart</strong> <span>/ API</span></div>
+              <a href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Documentation ↗</a>
+            </div>
+            <div class="lp-code-tabs" role="tablist" aria-label="Example API requests">
+              <button type="button" role="tab" id="lp-tab-text" aria-controls="lp-panel-text" aria-selected="true" tabindex="0" data-example-tab="text">Text</button>
+              <button type="button" role="tab" id="lp-tab-image" aria-controls="lp-panel-image" aria-selected="false" tabindex="-1" data-example-tab="image">Image</button>
+              <button type="button" role="tab" id="lp-tab-embedding" aria-controls="lp-panel-embedding" aria-selected="false" tabindex="-1" data-example-tab="embedding">Embeddings</button>
+            </div>
+            <div class="lp-code-example" id="lp-panel-text" role="tabpanel" aria-labelledby="lp-tab-text" data-example-panel="text">
+              <div class="lp-code-hint">POST /v1/chat/completions</div>
+              <pre><code>curl https://api.inferenceport.ai/v1/chat/completions \
   -H "Authorization: Bearer $IP_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -68,149 +76,178 @@
       {"role": "user", "content": "Hello"}
     ]
   }'</code></pre>
-          <div class="lp-terminal-bottom">
-            <span>Uses an existing text model in the catalog</span>
-            <button class="lp-copy" type="button" data-copy-request aria-label="Copy example API request">Copy request</button>
+            </div>
+            <div class="lp-code-example" id="lp-panel-image" role="tabpanel" aria-labelledby="lp-tab-image" data-example-panel="image" hidden>
+              <div class="lp-code-hint">POST /v1/images/generations</div>
+              <pre><code>curl https://api.inferenceport.ai/v1/images/generations \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "lightning-image-turbo",
+    "prompt": "An architectural model on a desk"
+  }'</code></pre>
+            </div>
+            <div class="lp-code-example" id="lp-panel-embedding" role="tabpanel" aria-labelledby="lp-tab-embedding" data-example-panel="embedding" hidden>
+              <div class="lp-code-hint">POST /v1/embeddings</div>
+              <pre><code>curl https://api.inferenceport.ai/v1/embeddings \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "text-embedding-3-small",
+    "input": "Make this searchable."
+  }'</code></pre>
+            </div>
+            <div class="lp-code-bottom"><span>Real model IDs · Replace $IP_API_KEY</span><button type="button" class="lp-copy" data-copy-request>Copy request <span aria-hidden="true">↗</span></button></div>
+            <div class="lp-copy-status" role="status" aria-live="polite"></div>
           </div>
-          <span class="lp-copy-status" id="lp-copy-status" role="status" aria-live="polite"></span>
         </div>
-      </div>
-      <div class="lp-wrap lp-capability-strip" aria-label="Supported model modalities">
-        <span>Text</span><span>Image</span><span>Video</span><span>Audio</span><span>3D</span>
-        <a href="marketplace.html">See the model catalog <span aria-hidden="true">↗</span></a>
+        <div class="lp-hero-bottom">
+          <span>One API key.</span><span>Text / Images / Video / Audio / 3D / Embeddings / Realtime / Decisions</span>
+          <a href="decision.html">Explore decision models ↗</a>
+        </div>
       </div>
     </section>
 
-    <!-- A short product directory instead of twelve oversized marketing cards. -->
-    <section class="lp-section lp-platform" id="products" aria-labelledby="lp-platform-title">
+    <section class="lp-section lp-models" id="api" aria-labelledby="lp-models-title">
       <div class="lp-wrap">
-        <div class="lp-intro">
-          <p class="lp-label">01 / Platform</p>
-          <h2 id="lp-platform-title">Start with a model.<br />Add the rest as you grow.</h2>
-          <p>Use the services you need without stitching together separate accounts, API keys and billing dashboards.</p>
+        <div class="lp-section-heading">
+          <div><p class="lp-kicker">THE MODEL LAYER</p><h2 id="lp-models-title">Use the model you need.<br /><span>Not the provider's entire stack.</span></h2></div>
+          <div class="lp-heading-aside"><p>Switch models without reinventing your integration. Use our IDs or supported publisher-qualified aliases.</p><a href="marketplace.html">Open the model catalog <span aria-hidden="true">↗</span></a></div>
         </div>
-        <div class="lp-pillars">
-          <article class="lp-pillar">
-            <p class="lp-pillar-index">01 — BUILD</p>
-            <h3>Everything your app needs to think.</h3>
-            <p>Call models with familiar SDKs. Package repeatable tasks as agents, or orchestrate multiple models with Council.</p>
-            <div class="lp-feature-links" aria-label="Build products">
-              <a id="api" href="marketplace.html">Multimodal API <span aria-hidden="true">↗</span></a>
-              <a id="agents" href="/console/agents">Managed agents <span aria-hidden="true">↗</span></a>
-              <a id="council" href="ipx.html">Council MCP <span aria-hidden="true">↗</span></a>
-              <a id="cli" href="ipx.html">ipx CLI <span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
-          <article class="lp-pillar">
-            <p class="lp-pillar-index">02 — RUN</p>
-            <h3>Infrastructure beyond inference.</h3>
-            <p>Deploy open models, store weights and generated assets, and choose between hosted and local experiences.</p>
-            <div class="lp-feature-links" aria-label="Run products">
-              <a id="deploy" href="/console">Model deployments <span aria-hidden="true">↗</span></a>
-              <a id="buckets" href="/console/buckets">Buckets <small>Preview</small><span aria-hidden="true">↗</span></a>
-              <a id="catalog" href="marketplace.html">Model catalog <span aria-hidden="true">↗</span></a>
-              <a id="lightning" href="lightning.html">Lightning chat <span aria-hidden="true">↗</span></a>
-              <a id="app" href="install.html">Desktop &amp; local AI <span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
-          <article class="lp-pillar">
-            <p class="lp-pillar-index">03 — OPERATE</p>
-            <h3>Stay in control in production.</h3>
-            <p>Set budgets and access policies, inspect usage, and add risk scoring to your application's sensitive flows.</p>
-            <div class="lp-feature-links" aria-label="Operate products">
-              <a id="shield" href="shield.html">AI Shield <span aria-hidden="true">↗</span></a>
-              <a href="decision.html">Decision models <span aria-hidden="true">↗</span></a>
-              <a id="organizations" href="platform.html#organizations">Organizations <span aria-hidden="true">↗</span></a>
-              <a id="console" href="/console">Developer console <span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
+        <div class="lp-model-ledger" aria-label="Examples from the InferencePort model catalog">
+          <div class="lp-model-ledger-head"><span>MODEL / API ID</span><span>TYPE</span><span>USE IT FOR</span></div>
+          <a href="marketplace.html"><strong>deepseek-v4.1-flash-1017<small>DeepSeek V4.1 Flash 1017</small></strong><span>Text</span><span>Reasoning &amp; coding <b aria-hidden="true">↗</b></span></a>
+          <a href="marketplace.html"><strong>gemini-4-carbon<small>Google Gemini 4 Carbon</small></strong><span>Text</span><span>Multimodal applications <b aria-hidden="true">↗</b></span></a>
+          <a href="marketplace.html"><strong>lightning-image-turbo<small>InferencePort Lightning Image Turbo</small></strong><span>Image</span><span>Image generation <b aria-hidden="true">↗</b></span></a>
+          <a href="marketplace.html"><strong>text-embedding-3-small<small>OpenAI Text Embedding 3 Small</small></strong><span>Embeddings</span><span>Search &amp; retrieval <b aria-hidden="true">↗</b></span></a>
         </div>
-        <p class="lp-below-grid">Want the full breakdown? <a href="platform.html">Explore the platform <span aria-hidden="true">↗</span></a></p>
+        <div class="lp-model-bottom"><span>OpenAI-compatible clients · Streaming and tool calling on supported models · Usage tracked in the console</span><a href="/console">Get your API key ↗</a></div>
       </div>
     </section>
 
-    <section class="lp-section lp-workflow" id="workflow" aria-labelledby="lp-workflow-title">
-      <div class="lp-wrap lp-workflow-grid">
-        <div>
-          <p class="lp-label">02 / From prototype to production</p>
-          <h2 id="lp-workflow-title">Keep the same API as your stack grows.</h2>
-          <p class="lp-section-lead">Integrate with an OpenAI-compatible client, choose the model that fits each request, and add deployment, storage or security services without changing platforms.</p>
-          <a class="lp-text-link" href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Explore the documentation <span aria-hidden="true">↗</span></a>
-        </div>
-        <div class="lp-request-path" aria-label="Simplified API request flow">
-          <p class="lp-diagram-label">Request path <span>Simplified</span></p>
-          <div class="lp-path-node"><span class="lp-path-index">01</span><div><b>Your application</b><small>Existing SDK or direct HTTP request</small></div></div>
-          <div class="lp-path-connector" aria-hidden="true"></div>
-          <div class="lp-path-node lp-path-node-active"><span class="lp-path-index">02</span><div><b>InferencePort API</b><small>One key · model selection · usage metering</small></div></div>
-          <div class="lp-path-connector" aria-hidden="true"></div>
-          <div class="lp-path-node"><span class="lp-path-index">03</span><div><b>Selected model</b><small>Response delivered back to your app</small></div></div>
-          <p class="lp-diagram-foot">Add agents, Shield, and workspace policies as needed.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="lp-section lp-details" aria-labelledby="lp-details-title">
+    <section class="lp-section lp-stack" id="products" aria-labelledby="lp-stack-title">
       <div class="lp-wrap">
-        <div class="lp-intro lp-intro-compact">
-          <p class="lp-label">03 / Built for real workloads</p>
-          <h2 id="lp-details-title">More than a model endpoint.</h2>
+        <div class="lp-stack-heading"><div><p class="lp-kicker">THE REST OF YOUR STACK</p><h2 id="lp-stack-title">Inference is step one.<br /><span>We cover what comes next.</span></h2></div><p>Keep building when the prototype turns into a product. These services work with the same InferencePort account.</p></div>
+        <div class="lp-stack-layout">
+          <article class="lp-stack-feature" id="agents">
+            <div class="lp-feature-top"><span>01 / MANAGED AGENTS</span><span class="lp-feature-mark" aria-hidden="true">↗</span></div>
+            <div><h3>Give your model a job.<br /><span>Give it tools.</span></h3><p>Configure instructions, choose a backing model, attach MCP tools and call your agent through the chat API. No separate agent hosting setup.</p></div>
+            <div class="lp-agent-flow" aria-label="Managed agent workflow">
+              <span>Choose a model</span><i aria-hidden="true">→</i><span>Connect MCP tools</span><i aria-hidden="true">→</i><span>Call via API</span>
+            </div>
+            <div class="lp-agent-code"><span>MODEL IDENTIFIER</span><code>agent/&lt;username&gt;/&lt;agent-id&gt;</code></div>
+            <a class="lp-feature-link" href="/console/agents">Create an agent <span aria-hidden="true">↗</span></a>
+          </article>
+          <div class="lp-stack-side">
+            <article class="lp-stack-mini" id="deploy">
+              <span class="lp-mini-number">02 / DEPLOYMENTS</span>
+              <h3>Need a specific open model?</h3>
+              <p>Deploy it on demand and use it from the same API. Manage deployments in your console or workspace.</p>
+              <a href="/console">Explore deployments ↗</a>
+            </article>
+            <article class="lp-stack-mini lp-stack-mini-gold" id="buckets">
+              <span class="lp-mini-number">03 / BUCKETS <small>PREVIEW</small></span>
+              <h3>Model files have a home, too.</h3>
+              <p>S3-compatible object storage for weights, datasets and generated assets. Personal and organization workspaces.</p>
+              <a href="https://docs.inferenceport.ai/api/buckets.html">Explore Buckets ↗</a>
+            </article>
+          </div>
         </div>
-        <div class="lp-detail-rows">
-          <div class="lp-detail-row">
-            <span class="lp-detail-num">A</span><div><h3>Deploy without owning the serving stack.</h3><p>Bring an open model online on demand, then call it from your applications.</p></div>
-            <a href="/console">Explore deployments <span aria-hidden="true">↗</span></a>
-          </div>
-          <div class="lp-detail-row">
-            <span class="lp-detail-num">B</span><div><h3>Keep model assets close to your workflow.</h3><p>Buckets (Preview) provides S3-compatible storage for weights, datasets, and outputs in personal or organization workspaces.</p></div>
-            <a href="https://docs.inferenceport.ai/api/buckets.html">Explore Buckets <span aria-hidden="true">↗</span></a>
-          </div>
-          <div class="lp-detail-row">
-            <span class="lp-detail-num">C</span><div><h3>Protect requests and manage your team.</h3><p>Use Shield for fraud and abuse signals, with shared wallets, budgets, roles, SSO and audit controls for organizations.</p></div>
-            <a href="shield.html">Explore Shield <span aria-hidden="true">↗</span></a>
-          </div>
+        <div class="lp-stack-lower">
+          <article class="lp-stack-horizontal" id="shield">
+            <div class="lp-horizontal-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 20 6v6c0 4-3.3 7.6-8 9-4.7-1.4-8-5-8-9V6l8-3Z"/><path d="m8.5 12 2.3 2.3 4.7-5"/></svg></div>
+            <div><span class="lp-mini-number">04 / SHIELD</span><h3>Security belongs in the request path.</h3><p>Screen risky sign-ups, abusive content and prompt attacks with risk signals and decision APIs.</p></div>
+            <a href="shield.html">See Shield ↗</a>
+          </article>
+          <article class="lp-stack-horizontal" id="organizations">
+            <div class="lp-horizontal-symbol" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16"/><path d="M8 4v16m4-11h5m-5 5h5"/></svg></div>
+            <div><span class="lp-mini-number">05 / WORKSPACES</span><h3>Shared work. Separate controls.</h3><p>Team billing, API key limits, budgets, role-based access, SSO and organization usage analytics.</p></div>
+            <a href="platform.html#organizations">Explore teams ↗</a>
+          </article>
         </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-workflow" aria-labelledby="lp-workflow-title">
+      <div class="lp-wrap">
+        <div class="lp-workflow-header"><div><p class="lp-kicker">HOW IT FITS TOGETHER</p><h2 id="lp-workflow-title">One account.<br />Multiple useful tools.</h2></div><p>Use the parts you need. Your API models, hosted agents, deployment charges and storage live alongside the controls you use to run them.</p></div>
+        <div class="lp-workflow-map">
+          <div class="lp-workflow-name">INFERENCEPORT <span>WORKSPACE</span></div>
+          <div class="lp-workflow-services">
+            <a href="marketplace.html"><b>MODEL API</b><span>Text · Images · Audio · Video · 3D</span></a>
+            <a href="/console/agents"><b>AGENTS</b><span>Model + prompts + MCP tools</span></a>
+            <a href="/console/buckets"><b>BUCKETS</b><span>Weights · Data · Outputs</span></a>
+            <a href="shield.html"><b>SHIELD</b><span>Risk scoring · Abuse signals</span></a>
+          </div>
+          <div class="lp-workflow-base" id="console"><span>DEVELOPER CONSOLE</span><span>Keys / Usage / Credits / Budgets / Workspace settings</span><a href="/console">Open ↗</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-more" aria-labelledby="lp-more-title">
+      <div class="lp-wrap">
+        <div class="lp-more-head"><p class="lp-kicker">BEYOND THE API</p><h2 id="lp-more-title">The tools are part of the platform.</h2></div>
+        <div class="lp-more-grid">
+          <a class="lp-more-item" id="council" href="ipx.html"><span>01 / COUNCIL MCP</span><h3>More than one model's opinion.</h3><p>Let models answer and cross-review through an MCP client.</p><strong>Explore Council ↗</strong></a>
+          <a class="lp-more-item" id="cli" href="ipx.html"><span>02 / IPX CLI</span><h3>Your workflow, in the terminal.</h3><p>Access models, agents, organization tools and security from the command line.</p><strong>Explore ipx ↗</strong></a>
+          <a class="lp-more-item" id="lightning" href="lightning.html"><span>03 / LIGHTNING CHAT</span><h3>Want to chat, not integrate?</h3><p>Use hosted models from your browser or desktop app, with a separate chat subscription.</p><strong>Try Lightning ↗</strong></a>
+          <a class="lp-more-item" id="app" href="install.html"><span>04 / DESKTOP APP</span><h3>Work locally when you want to.</h3><p>Run local models on your own machine, with optional cloud access and tools.</p><strong>Download the app ↗</strong></a>
+        </div>
+        <div class="lp-more-bottom" id="catalog"><span>Need something specific?</span><a href="marketplace.html">Full model catalog ↗</a><a href="decision.html">Decision models ↗</a><a href="tools.html">Tool registry ↗</a><a href="platform.html">Platform details ↗</a></div>
       </div>
     </section>
 
     <section class="lp-section lp-pricing" id="pricing" aria-labelledby="lp-pricing-title">
-      <div class="lp-wrap">
-        <div class="lp-intro lp-intro-compact">
-          <p class="lp-label">04 / Pricing</p>
-          <h2 id="lp-pricing-title">Clear costs for different ways to build.</h2>
-          <p>API usage, chat subscriptions and team plans serve different needs. Choose what fits.</p>
-        </div>
-        <div class="lp-pricing-grid">
-          <div><p class="lp-price-type">Model API</p><h3>Pay per request.</h3><p>Prepaid API credits and model-specific rates. See what each model costs before you call it.</p><a href="marketplace.html">View model pricing <span aria-hidden="true">↗</span></a></div>
-          <div><p class="lp-price-type">Chat &amp; desktop</p><h3>Start free.</h3><p>Hosted chat subscriptions have their own limits; local model use runs on your hardware.</p><a href="pricing.html">Compare chat plans <span aria-hidden="true">↗</span></a></div>
-          <div><p class="lp-price-type">Organizations</p><h3>Manage team spend.</h3><p>Shared billing and workspace controls, with plans sized for different teams.</p><a href="pricing.html#organizations">See organization plans <span aria-hidden="true">↗</span></a></div>
+      <div class="lp-wrap lp-pricing-layout">
+        <div><p class="lp-kicker">STRAIGHTFORWARD BILLING</p><h2 id="lp-pricing-title">Start small.<br />Scale without surprises.</h2><p>Different workflows have different billing. API requests use credits, chat has its own plans, and organization usage is tracked by workspace.</p><a href="pricing.html" class="lp-standalone-link">View all pricing ↗</a></div>
+        <div class="lp-pricing-rows">
+          <a href="marketplace.html"><span>MODEL API</span><div><strong>Pay by usage</strong><small>Model-specific rates. Credit wallet. Usage breakdown.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="pricing.html"><span>CHAT &amp; DESKTOP</span><div><strong>Free to start</strong><small>Subscription tiers for hosted chat. Local models on your hardware.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="pricing.html#organizations"><span>ORGANIZATIONS</span><div><strong>Work as a team</strong><small>Shared billing, budgets, access and reporting.</small></div><b aria-hidden="true">↗</b></a>
         </div>
       </div>
     </section>
   </main>
-  <section class="lp-closing" aria-labelledby="lp-closing-title">
-    <div class="lp-wrap lp-closing-inner">
-      <div><p class="lp-label">Get building</p><h2 id="lp-closing-title">Your next request starts here.</h2><p>Create an API key, select a model, and start building with the tools you already use.</p></div>
-      <div class="lp-actions"><a class="lp-button lp-button-primary" href="/console">Open the console <span aria-hidden="true">↗</span></a><a class="lp-button lp-button-secondary" href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Read the docs</a></div>
-    </div>
-  </section>
+  <section class="lp-closing" aria-labelledby="lp-closing-title"><div class="lp-wrap lp-closing-grid"><div><p class="lp-kicker">NEXT REQUEST / YOURS</p><h2 id="lp-closing-title">Build something that ships.</h2></div><div><p>Get a key, choose a model and make your first request. Keep the rest of the infrastructure close when you need it.</p><div class="lp-actions"><a class="lp-button lp-button-dark" href="/console">Get started ↗</a><a class="lp-button lp-button-clear" href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Read the docs ↗</a></div></div></div></section>
   <ip-footer></ip-footer>
   <script>
-    (() => {
-      const button = document.querySelector("[data-copy-request]");
-      const code = document.querySelector("#lp-request code");
-      const status = document.querySelector("#lp-copy-status");
-      if (!button || !code || !status) return;
-      button.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(code.textContent.trim());
-          button.textContent = "Copied";
-          status.textContent = "Request copied to clipboard";
-        } catch {
-          status.textContent = "Clipboard unavailable. Select and copy the request above.";
-        }
-        window.setTimeout(() => { button.textContent = "Copy request"; status.textContent = ""; }, 2400);
+  (() => {
+    const tabs = [...document.querySelectorAll("[data-example-tab]")];
+    const panels = [...document.querySelectorAll("[data-example-panel]")];
+    const copyButton = document.querySelector("[data-copy-request]");
+    const status = document.querySelector(".lp-copy-status");
+    function selectTab(key, focus = false) {
+      tabs.forEach(tab => {
+        const active = tab.dataset.exampleTab === key;
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
+        if (active && focus) tab.focus();
       });
-    })();
+      panels.forEach(panel => { panel.hidden = panel.dataset.examplePanel !== key; });
+    }
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => selectTab(tab.dataset.exampleTab));
+      tab.addEventListener("keydown", (event) => {
+        const offset = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (!offset && event.key !== "Home" && event.key !== "End") return;
+        event.preventDefault();
+        const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (index + offset + tabs.length) % tabs.length;
+        selectTab(tabs[next].dataset.exampleTab, true);
+      });
+    });
+    copyButton?.addEventListener("click", async () => {
+      const active = panels.find(panel => !panel.hidden);
+      const code = active?.querySelector("code")?.textContent?.trim();
+      if (!code) return;
+      try {
+        await navigator.clipboard.writeText(code);
+        status.textContent = "Request copied.";
+        copyButton.textContent = "Copied";
+      } catch {
+        status.textContent = "Clipboard unavailable. Select the request and copy it manually.";
+      }
+    });
+  })();
   </script>
 </body>
 </html>
