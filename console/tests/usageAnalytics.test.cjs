@@ -50,6 +50,8 @@ test("dimensions retain the same totals and group UTC days consistently", () => 
 test("CSV quotes input and neutralizes spreadsheet formulas", () => {
   assert.equal(csvCell("=HYPERLINK(1)"), "\"'=HYPERLINK(1)\"");
   assert.equal(csvCell("-SUM(2)"), "\"'-SUM(2)\"");
+  assert.equal(csvCell("  \n =SUM(1)"), "\"'  \n =SUM(1)\"");
+  assert.equal(csvCell("\t@SUM(3)"), "\"'\t@SUM(3)\"");
   assert.equal(csvCell("hello,\"world\""), "\"hello,\"\"world\"\"\"");
   const result = usageCsv([{ entry_type: "usage", delta_credits: -1, model: "=unsafe", usage_kind: "text" }]);
   assert.ok(result.includes("\"'=unsafe\""));
