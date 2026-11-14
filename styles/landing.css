@@ -405,3 +405,6 @@
   .lp-experience-links { grid-template-columns:1fr; }
   .lp-experience-links > article { padding:22px 20px; }
 }
+
+.lp-mini-links { display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;margin-top:auto; }
+.lp-mini-links a { margin-top:0; }
