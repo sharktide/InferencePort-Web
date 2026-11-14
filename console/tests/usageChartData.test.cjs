@@ -66,22 +66,22 @@ test("donut hover styling never changes the SVG segment's hit geometry", () => {
 
 test("service selector cards wrap at mobile width instead of leaking outside the viewport", () => {
   const css = fs.readFileSync(path.join(__dirname, "../src/components/console/panels/orgs/UsageServices.module.css"), "utf8");
-  const card = css.match(/\\.card\\s*\\{([^}]*)\\}/);
+  const card = css.match(/\.card\s*\{([^}]*)\}/);
   assert.ok(card);
-  assert.match(card[1], /white-space:\\s*normal/);
-  assert.match(card[1], /min-width:\\s*0/);
-  assert.match(css, /@media\\s*\\(max-width:\\s*600px\\)[\\s\\S]*?\\.serviceCards\\s*\\{\\s*grid-template-columns:\\s*minmax\\(0,\\s*1fr\\)/);
-  assert.match(css, /\\.cardHint\\s*\\{[^}]*overflow-wrap:\\s*anywhere/);
+  assert.match(card[1], /white-space:\s*normal/);
+  assert.match(card[1], /min-width:\s*0/);
+  assert.match(css, /@media\s*\(max-width:\s*600px\)[\s\S]*?\.serviceCards\s*\{\s*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  assert.match(css, /\.cardHint\s*\{[^}]*overflow-wrap:\s*anywhere/);
 });
 
 test("donut legend uses the button grid and preserves model labels on phones", () => {
   const css = fs.readFileSync(path.join(__dirname, "../src/components/console/panels/UsageCharts.module.css"), "utf8");
-  const item = css.match(/\\.legend li\\s*\\{([^}]*)\\}/);
-  const button = css.match(/\\.legendButton\\s*\\{([^}]*)\\}/);
+  const item = css.match(/\.legend li\s*\{([^}]*)\}/);
+  const button = css.match(/\.legendButton\s*\{([^}]*)\}/);
   assert.ok(item && button);
-  assert.match(item[1], /display:\\s*block/);
+  assert.match(item[1], /display:\s*block/);
   assert.doesNotMatch(item[1], /grid-template-columns/);
   assert.match(button[1], /grid-template-columns:/);
-  assert.match(button[1], /white-space:\\s*normal/);
-  assert.match(css, /\\.legendLabel\\s*\\{\\s*white-space:\\s*normal;\\s*overflow-wrap:\\s*anywhere;/);
+  assert.match(button[1], /white-space:\s*normal/);
+  assert.match(css, /\.legendLabel\s*\{\s*white-space:\s*normal;\s*overflow-wrap:\s*anywhere;/);
 });
