@@ -11,7 +11,8 @@
     "test:buckets": "node tests/buckets/e2e.cjs",
     "test:buckets:layout": "node tests/buckets/e2e.cjs --layout",
     "buckets:dev": "node tests/buckets/e2e.cjs --serve",
-    "test:rewards": "node tests/rewards/e2e.cjs"
+    "test:rewards": "node tests/rewards/e2e.cjs",
+    "test:usage": "node --test tests/usageAnalytics.test.cjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
