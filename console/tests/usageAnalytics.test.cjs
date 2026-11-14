@@ -81,3 +81,15 @@ test("storage and hosting fees never count as model API inference", () => {
   assert.ok(csv.includes("Buckets storage"));
   assert.ok(csv.includes("Featherless hosting"));
 });
+
+test("distinct bucket IDs are never merged by abbreviated display labels", () => {
+  const prefix = "0123456789ab";
+  const a = { entry_type: "usage", usage_kind: "storage", delta_credits: -0.4, metadata: { bucket_id: prefix + "-first" } };
+  const b = { entry_type: "usage", usage_kind: "storage", delta_credits: -0.7, metadata: { bucket_id: prefix + "-second" } };
+  const groups = usageGroups([a, b], "resource");
+  assert.equal(groups.length, 2);
+  assert.equal(groups[0].label, "Bucket " + prefix);
+  assert.equal(groups[1].label, "Bucket " + prefix);
+  assert.equal(groups[0].credits + groups[1].credits, 1.1);
+  assert.ok(usageCsv([a]).includes(prefix + "-first"));
+});
