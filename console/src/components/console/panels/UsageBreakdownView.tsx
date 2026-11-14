@@ -35,6 +35,8 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
   const [sort, setSort] = useState<Sort>(dateDimension ? "date" : "credits");
   const [search, setSearch] = useState("");
   const [visible, setVisible] = useState(25);
+  const [hovered, setHovered] = useState<string | null>(null);
+  const [pinned, setPinned] = useState<string | null>(null);
 
   const results = useMemo(() => {
     const q = search.trim().toLocaleLowerCase();
@@ -50,6 +52,7 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
   const chartRows = dateDimension && sort === "date" ? results.slice(-10) : [...results].sort((a, b) => b[activeMetric] - a[activeMetric]).slice(0, 10);
   const maxValue = Math.max(0, ...chartRows.map((row) => row[activeMetric]));
   const total = activeMetric === "credits" ? totalCredits : totalRequests;
+  const inspected = results.find((r) => r.key === (hovered ?? pinned));
 
   return (
     <div className={s.layout}>
@@ -68,7 +71,7 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
         <label className={s.field}>Sort
           <select value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
             <option value="credits">Most credits</option>
-            <option value="requests">Most requests</option>
+            <option value="requests">Most {eventLabel === "requests" ? "requests" : "charges"}</option>
             <option value="name">Name A–Z</option>
             {dateDimension && <option value="date">Oldest first</option>}
           </select>
@@ -91,13 +94,28 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
               return (
                 <div key={row.key} className={s.barRow}>
                   <span className={s.barLabel} title={row.label}>{row.label}</span>
-                  <div className={s.barTrack} role="img" aria-label={row.label + ": " + (activeMetric === "credits" ? creditsLabel(value) + " credits" : countLabel(value) + " " + eventLabel)}>
+                  <button type="button" className={s.barTrack} aria-pressed={pinned === row.key}
+                    aria-label={row.label + ": " + creditsLabel(row.credits) + " credits and " + countLabel(row.requests) + " " + eventLabel}
+                    onMouseEnter={() => setHovered(row.key)} onMouseLeave={() => setHovered(null)}
+                    onFocus={() => setHovered(row.key)} onBlur={() => setHovered(null)}
+                    onClick={() => setPinned((current) => current === row.key ? null : row.key)}>
                     <span className={s.barFill} style={{ width: (maxValue > 0 ? value / maxValue * 100 : 0) + "%" }} />
-                  </div>
+                  </button>
                   <strong className={s.barAmount}>{activeMetric === "credits" ? creditsLabel(value) : countLabel(value)}</strong>
                 </div>
               );
             })}
+          </div>
+          <div className={s.barDetails} aria-live="polite" aria-atomic="true">
+            {inspected ? (
+              <>
+                <strong>{inspected.label}</strong>
+                <span>{creditsLabel(inspected.credits)} credits</span>
+                <span>{countLabel(inspected.requests)} {eventLabel}</span>
+                <span>{pct(inspected[activeMetric], total).toFixed(1)}% of selected {activeMetric === "credits" ? "credits" : eventLabel}</span>
+                {pinned === inspected.key && <button type="button" onClick={() => setPinned(null)}>Clear selection</button>}
+              </>
+            ) : <span>Hover, focus or click a group bar to inspect its credits, {eventLabel} and share.</span>}
           </div>
           <div className={s.tableWrap}>
             <table className={s.table}>
