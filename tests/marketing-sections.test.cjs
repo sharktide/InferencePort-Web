@@ -1,4 +1,4 @@
-/** Static content checks for Buckets, Agents and Organizations marketing sections. */
+/** Homepage content and accessibility contracts for the compact landing page. */
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -7,49 +7,74 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const read = (name) => fs.readFileSync(path.join(root, name), "utf8");
 const home = read("index.html");
-const site = read("styles/site.css");
+const css = read("styles/landing.css");
 const navbar = read("components/ip-navbar.js");
-const platform = read("platform.html");
 
-test("feature anchors and product catalog stay in sync", () => {
-  const ids = [...home.matchAll(/<section\b[^>]*\bid="([^"]+)"/g)].map((m) => m[1]);
-  for (const id of ["agents", "organizations", "buckets", "deploy", "console"]) {
-    assert.equal(ids.filter((candidate) => candidate === id).length, 1, id + " section must be unique");
+test("navbar deep links still resolve to unique homepage anchors", () => {
+  const ids = [...home.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(ids.length, new Set(ids).size, "duplicate HTML ids");
+  for (const id of [
+    "api", "agents", "council", "cli", "deploy", "buckets", "catalog",
+    "lightning", "app", "shield", "organizations", "console", "pricing",
+  ]) {
+    assert.ok(ids.includes(id), "Missing anchor: #" + id);
   }
-  const productGrid = home.split('<!-- ═════════ PRODUCTS ═════════ -->')[1].split('<!-- ═════════ API ═════════ -->')[0];
-  assert.equal([...productGrid.matchAll(/<a class="pc c-/g)].length, 12);
-  assert.match(productGrid, /href="#buckets"/);
   assert.match(navbar, /"\/index\.html#buckets"/);
-  assert.match(navbar, /buckets: `<path /);
+  assert.match(navbar, /"\/index\.html#agents"/);
+  assert.match(home, /href="\/console\/buckets"/);
+  assert.match(home, /href="\/console\/agents"/);
 });
 
-test("Buckets preview explains workspace-scoped S3 connections accurately", () => {
-  const section = home.split('<section class="blk alt" id="buckets">')[1].split('<!-- ═════════ SHIELD ═════════ -->')[0];
-  assert.ok(section, "Buckets section should render");
-  for (const content of ["S3-compatible", "Azure Blob Storage", "AWS Signature V4", "personal or organization", "Preview"]) {
-    assert.ok(section.includes(content), "Missing Buckets detail: " + content);
+test("homepage replaces repetitive marketing cards with a shorter structure", () => {
+  const sections = [...home.matchAll(/<section\b/g)].length;
+  assert.ok(sections <= 7, "Landing page has too many major sections: " + sections);
+  assert.equal([...home.matchAll(/class="lp-pillar"/g)].length, 3);
+  for (const oldPattern of [/class="pc c-/, /class="checks"/, /class="panel"/, /class="chip y"/]) {
+    assert.doesNotMatch(home, oldPattern, "Obsolete repetitive marketing UI found");
   }
-  assert.match(section, /href="\/console\/buckets"/);
-  assert.match(section, /href="https:\/\/docs\.inferenceport\.ai\/api\/buckets\.html"/);
-  assert.match(section, /Illustrative Buckets file browser/);
-  assert.match(platform, /<b>Buckets \(Preview\)<\/b>/);
+  assert.match(home, /<h1 id="lp-title">/);
+  assert.match(home, /<a class="lp-skip" href="#main-content">/);
+  assert.match(home, /<main class="lp" id="main-content">/);
 });
 
-test("Agents and Organizations explain their workflows, not just product names", () => {
-  for (const fragment of [
-    "agent/&lt;username&gt;/&lt;agent-id&gt;",
-    "MCP tools", "tool calling", "Call via API", "Choose who pays"
-  ]) assert.ok(home.includes(fragment), "Missing agent flow: " + fragment);
-  for (const fragment of ["Shared wallet", "Guardrails for API usage", "SAML SSO", "Audit and reporting", "Desktop policies"]) {
-    assert.ok(home.includes(fragment), "Missing organization detail: " + fragment);
+test("hero API request includes a real text model and required headers", () => {
+  const example = home.match(/<pre id="lp-request"><code>([\s\S]*?)<\/code><\/pre>/)?.[1];
+  assert.ok(example, "Missing copyable request example");
+  assert.match(example, /https:\/\/api\.inferenceport\.ai\/v1\/chat\/completions/);
+  assert.match(example, /Authorization: Bearer \$IP_API_KEY/);
+  assert.match(example, /Content-Type: application\/json/);
+  const body = example.match(/-d '([\s\S]*?)'\s*$/)?.[1];
+  assert.ok(body, "Missing JSON request body");
+  const parsed = JSON.parse(body);
+  assert.equal(parsed.model, "deepseek-v4.1-flash-1017");
+  assert.deepEqual(parsed.messages, [{ role: "user", content: "Hello" }]);
+  assert.match(home, /data-copy-request/);
+  assert.match(home, /navigator\.clipboard\.writeText/);
+});
+
+test("products and pricing remain specific without fictional trust signals", () => {
+  for (const copy of [
+    "OpenAI-compatible", "Buckets", "Preview", "S3-compatible",
+    "Managed agents", "Council MCP", "AI Shield", "Organizations",
+    "Model API", "Chat &amp; desktop", "Shared billing",
+  ]) {
+    assert.match(home.toLowerCase(), new RegExp(copy.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
+  assert.match(home, /href="https:\/\/docs\.inferenceport\.ai\/api\/buckets\.html"/);
+  assert.match(home, /href="pricing\.html#organizations"/);
+  assert.doesNotMatch(home, /agent\/acme\/support-bot|Illustrative Buckets file browser/);
 });
 
-test("Buckets UI remains usable on small screens and dark backgrounds", () => {
-  for (const token of [
-    ".bucket-demo", ".bucket-endpoint code", "overflow-wrap: anywhere;",
-    ".bucket-demo-foot", ".agent-flow", "@media (max-width: 600px)",
-    ':root[data-theme="dark"] .bucket-demo-bar'
-  ]) assert.ok(site.includes(token), "Missing presentation token: " + token);
-  assert.match(home, /id="buckets"/);
+test("scoped responsive styles support light and dark themes", () => {
+  assert.match(home, /href="styles\/shared\.css"/);
+  assert.match(home, /href="styles\/landing\.css"/);
+  assert.doesNotMatch(home, /href="styles\/site\.css"/);
+  assert.match(css, /\.lp-hero-grid/);
+  assert.match(css, /\.lp-pillars/);
+  assert.match(css, /@media \(max-width: 760px\)/);
+  assert.match(css, /@media \(max-width: 480px\)/);
+  assert.match(css, /var\(--bg\)/);
+  assert.match(css, /var\(--border\)/);
+  assert.match(css, /\.lp-copy:focus-visible/);
+  assert.match(css, /prefers-reduced-motion/);
 });
