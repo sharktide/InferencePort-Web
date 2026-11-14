@@ -9,7 +9,7 @@ export interface UsageBreakdownRow {
   credits: number;
   requests: number;
 }
-type Metric = "credits" | "requests";
+export type Metric = "credits" | "requests";
 type Sort = "credits" | "requests" | "name" | "date";
 
 export const creditsLabel = (value: number) =>
@@ -24,10 +24,13 @@ interface Props {
   totalRequests: number;
   dimensionLabel: string;
   dateDimension?: boolean;
+  metric?: Metric;
+  onMetricChange?: (metric: Metric) => void;
 }
 
-export default function UsageBreakdownView({ rows, totalCredits, totalRequests, dimensionLabel, dateDimension = false }: Props) {
-  const [metric, setMetric] = useState<Metric>("credits");
+export default function UsageBreakdownView({ rows, totalCredits, totalRequests, dimensionLabel, dateDimension = false, metric, onMetricChange }: Props) {
+  const [internalMetric, setInternalMetric] = useState<Metric>("credits");
+  const activeMetric = metric ?? internalMetric;
   const [sort, setSort] = useState<Sort>(dateDimension ? "date" : "credits");
   const [search, setSearch] = useState("");
   const [visible, setVisible] = useState(25);
@@ -43,21 +46,21 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
     });
   }, [rows, search, sort, dateDimension]);
 
-  const chartRows = dateDimension && sort === "date" ? results.slice(-10) : [...results].sort((a, b) => b[metric] - a[metric]).slice(0, 10);
-  const maxValue = Math.max(0, ...chartRows.map((row) => row[metric]));
-  const total = metric === "credits" ? totalCredits : totalRequests;
+  const chartRows = dateDimension && sort === "date" ? results.slice(-10) : [...results].sort((a, b) => b[activeMetric] - a[metric]).slice(0, 10);
+  const maxValue = Math.max(0, ...chartRows.map((row) => row[activeMetric]));
+  const total = activeMetric === "credits" ? totalCredits : totalRequests;
 
   return (
     <div className={s.layout}>
       <div className={s.controls}>
-        <fieldset className={s.metricField}>
+        {!onMetricChange && <fieldset className={s.metricField}>
           <legend>Compare by</legend>
           <div className={s.toggle}>
             {(["credits", "requests"] as const).map((name) => (
-              <button key={name} type="button" aria-pressed={metric === name} onClick={() => setMetric(name)}>{name === "credits" ? "Credits" : "Requests"}</button>
+              <button key={name} type="button" aria-pressed={activeMetric === name} onClick={() => setInternalMetric(name)}>{name === "credits" ? "Credits" : "Requests"}</button>
             ))}
           </div>
-        </fieldset>
+        </fieldset>}
         <label className={s.field}>Search {dimensionLabel.toLowerCase()}
           <input type="search" placeholder={"Find " + dimensionLabel.toLowerCase()} value={search} onChange={(e) => { setSearch(e.target.value); setVisible(25); }} />
         </label>
@@ -81,30 +84,30 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
       ) : (
         <>
           <div className={s.chart} aria-label={dimensionLabel + " breakdown"}>
-            <div className={s.chartHead}><strong>{metric === "credits" ? "Credits used" : "Requests"}</strong><span>{dateDimension && sort === "date" ? "Latest " + chartRows.length + " days" : "Top " + chartRows.length + " groups"}</span></div>
+            <div className={s.chartHead}><strong>{activeMetric === "credits" ? "Credits used" : "Requests"}</strong><span>{dateDimension && sort === "date" ? "Latest " + chartRows.length + " days" : "Top " + chartRows.length + " groups"}</span></div>
             {chartRows.map((row) => {
-              const value = row[metric];
+              const value = row[activeMetric];
               return (
                 <div key={row.key} className={s.barRow}>
                   <span className={s.barLabel} title={row.label}>{row.label}</span>
-                  <div className={s.barTrack} role="img" aria-label={row.label + ": " + (metric === "credits" ? creditsLabel(value) + " credits" : countLabel(value) + " requests")}>
+                  <div className={s.barTrack} role="img" aria-label={row.label + ": " + (activeMetric === "credits" ? creditsLabel(value) + " credits" : countLabel(value) + " requests")}>
                     <span className={s.barFill} style={{ width: (maxValue > 0 ? value / maxValue * 100 : 0) + "%" }} />
                   </div>
-                  <strong className={s.barAmount}>{metric === "credits" ? creditsLabel(value) : countLabel(value)}</strong>
+                  <strong className={s.barAmount}>{activeMetric === "credits" ? creditsLabel(value) : countLabel(value)}</strong>
                 </div>
               );
             })}
           </div>
           <div className={s.tableWrap}>
             <table className={s.table}>
-              <thead><tr><th scope="col">{dimensionLabel}</th><th scope="col">Credits</th><th scope="col">Requests</th><th scope="col">Share of {metric}</th></tr></thead>
+              <thead><tr><th scope="col">{dimensionLabel}</th><th scope="col">Credits</th><th scope="col">Requests</th><th scope="col">Share of {activeMetric}</th></tr></thead>
               <tbody>
                 {results.slice(0, visible).map((row) => (
                   <tr key={row.key}>
                     <th scope="row">{row.label}</th>
                     <td data-label="Credits">{creditsLabel(row.credits)}</td>
                     <td data-label="Requests">{countLabel(row.requests)}</td>
-                    <td data-label={"Share of " + metric}>{pct(row[metric], total).toFixed(1)}%</td>
+                    <td data-label={"Share of " + activeMetric}>{pct(row[activeMetric], total).toFixed(1)}%</td>
                   </tr>
                 ))}
               </tbody>
