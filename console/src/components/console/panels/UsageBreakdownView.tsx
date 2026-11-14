@@ -43,9 +43,9 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
     });
   }, [rows, search, sort, dateDimension]);
 
-  const maxValue = Math.max(0, ...results.slice(0, 10).map((row) => row[metric]));
+  const chartRows = dateDimension && sort === "date" ? results.slice(-10) : results.slice(0, 10);
+  const maxValue = Math.max(0, ...chartRows.map((row) => row[metric]));
   const total = metric === "credits" ? totalCredits : totalRequests;
-  const chartRows = results.slice(0, 10);
 
   return (
     <div className={s.layout}>
@@ -81,7 +81,7 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
       ) : (
         <>
           <div className={s.chart} aria-label={dimensionLabel + " breakdown"}>
-            <div className={s.chartHead}><strong>{metric === "credits" ? "Credits used" : "Requests"}</strong><span>Top {chartRows.length} groups</span></div>
+            <div className={s.chartHead}><strong>{metric === "credits" ? "Credits used" : "Requests"}</strong><span>{dateDimension && sort === "date" ? "Latest " + chartRows.length + " days" : "Top " + chartRows.length + " groups"}</span></div>
             {chartRows.map((row) => {
               const value = row[metric];
               return (
