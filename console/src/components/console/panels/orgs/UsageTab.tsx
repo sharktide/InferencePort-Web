@@ -44,7 +44,7 @@ function dimensionsFor(service: UsageService): UsageDimension[] {
 }
 
 
-export default function UsageTab({ api, org }: Props) {
+export default function UsageTab({ api, org, userId }: Props) {
   const ent = org.entitlements;
   const canReadAll = org.caps.includes("usage.read_all");
   const canExport = org.caps.includes("usage.export");
@@ -66,9 +66,9 @@ export default function UsageTab({ api, org }: Props) {
   const [busy, setBusy] = useState<"csv" | "json" | "report" | null>(null);
   const [reportTo, setReportTo] = useState("");
 
-  const requestKey = [org.slug, days, service, by, reloadToken].join(":");
-  const dayKey = [org.slug, days, service, reloadToken].join(":");
-  const summaryKey = [org.slug, days, reloadToken].join(":");
+  const requestKey = [org.slug, userId, org.role, days, service, by, reloadToken].join(":");
+  const dayKey = [org.slug, userId, org.role, days, service, reloadToken].join(":");
+  const summaryKey = [org.slug, userId, org.role, days, reloadToken].join(":");
   const summaryData = summaryLoaded?.key === summaryKey ? summaryLoaded.value : null;
   const summaryFailure = summaryError?.key === summaryKey ? summaryError.text : null;
   const dayData = dailyLoaded?.key === dayKey ? dailyLoaded.value : null;
@@ -91,7 +91,7 @@ export default function UsageTab({ api, org }: Props) {
       .then((result) => { if (live) { setLoaded({ key: requestKey, value: result }); setLoadError(null); } })
       .catch((err) => { if (live) { setLoaded(null); setLoadError({ key: requestKey, text: errorText(err) }); } });
     return () => { live = false; };
-  }, [api, org.slug, days, by, service, reloadToken, requestKey]);
+  }, [api, org.slug, org.role, userId, days, by, service, reloadToken, requestKey]);
 
   // The server scopes this daily series using the exact same organization permissions as the selected breakdown.
   // Load it separately so changing members/keys/models does not reset the time chart or incur duplicate day requests.
@@ -101,7 +101,7 @@ export default function UsageTab({ api, org }: Props) {
       .then((value) => { if (live) { setDailyLoaded({ key: dayKey, value }); setDailyError(null); } })
       .catch((err) => { if (live) { setDailyLoaded(null); setDailyError({ key: dayKey, text: errorText(err) }); } });
     return () => { live = false; };
-  }, [api, org.slug, days, service, reloadToken, dayKey]);
+  }, [api, org.slug, org.role, userId, days, service, reloadToken, dayKey]);
 
   // The all-services view is the authoritative wallet breakdown, including charges without an actor.
   useEffect(() => {
@@ -110,7 +110,7 @@ export default function UsageTab({ api, org }: Props) {
       .then((value) => { if (live) { setSummaryLoaded({ key: summaryKey, value }); setSummaryError(null); } })
       .catch((err) => { if (live) { setSummaryLoaded(null); setSummaryError({ key: summaryKey, text: errorText(err) }); } });
     return () => { live = false; };
-  }, [api, org.slug, days, reloadToken, summaryKey]);
+  }, [api, org.slug, org.role, userId, days, reloadToken, summaryKey]);
 
   const download = async (format: "csv" | "json") => {
     if (exportLock || busy) return;
@@ -222,10 +222,10 @@ export default function UsageTab({ api, org }: Props) {
             <div className={manage.stat}><span className={manage.statLabel}>Credits per {service === "api" ? "inference event" : "charge"}</span><strong className={manage.statValue}>{creditsLabel(totalRequests ? totalCredits / totalRequests : 0)}</strong></div>
             <div className={manage.stat}><span className={manage.statLabel}>Active {dimensionLabel.toLowerCase()} groups</span><strong className={manage.statValue}>{countLabel(buckets.length)}</strong></div>
           </div>
-          <UsageCharts breakdown={buckets} timeline={dayData?.buckets ?? null} range={days === 1 ? "1d" : days === 7 ? "7d" : days === 30 ? "30d" : days === 90 ? "90d" : "365d"}
+          <UsageCharts key={requestKey} breakdown={buckets} timeline={dayData?.buckets ?? null} range={days === 1 ? "1d" : days === 7 ? "7d" : days === 30 ? "30d" : days === 90 ? "90d" : "365d"}
             dimensionLabel={dimensionLabel} eventLabel={eventLabel}
             metric={metric} onMetricChange={setMetric} timelineError={dayError} />
-          <UsageBreakdownView key={by} rows={buckets} totalCredits={totalCredits} totalRequests={totalRequests}
+          <UsageBreakdownView key={requestKey} rows={buckets} totalCredits={totalCredits} totalRequests={totalRequests}
             dimensionLabel={dimensionLabel} dateDimension={by === "day"} eventLabel={eventLabel}
             metric={metric} onMetricChange={setMetric} />
           <p className={manage.hintText}>
