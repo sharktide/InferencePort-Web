@@ -227,7 +227,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
                   <div className={styles.apiKeyForm}>
                     <div className={styles.heading}>Edit restrictions — {k.name}</div>
                     <LimitsEditor idPrefix={`personal-key-${k.id}`} draft={editing?.draft ?? emptyDraft()}
-                      onChange={(draft) => setEditing((current) => current?.id === k.id ? { ...current, draft } : current)}
+                      onChange={(draft) => setEditing((current) => current && current.id === k.id ? { ...current, draft } : current)}
                       fields={["budget", "models", "modalities"]} disabled={busy} />
                     <div className={styles.row}>
                       <button type="button" onClick={saveLimits} disabled={busy}>Save limits</button>
