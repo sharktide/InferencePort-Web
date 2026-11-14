@@ -32,7 +32,7 @@ test("API demo uses registered model IDs and parseable real request examples", (
     image: { endpoint: "/v1/images/generations", id: "lightning-image-turbo", field: "prompt" },
     embedding: { endpoint: "/v1/embeddings", id: "text-embedding-3-small", field: "input" },
   };
-  for (const [type, code] of examples) {
+  for (const [, type, code] of examples) {
     const expected = models[type];
     assert.ok(expected, "Unknown example tab: " + type);
     assert.ok(code.includes("https://api.inferenceport.ai" + expected.endpoint));
