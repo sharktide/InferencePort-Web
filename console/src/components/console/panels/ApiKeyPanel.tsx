@@ -110,7 +110,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
       const restrictions = restrictionSupport === "supported" ? getLimits(createLimits) : {};
       const r = await fj("/v1/lightning-api-keys", {
         method: "POST", headers: authH(),
-        body: JSON.stringify({ name: keyName.trim(), expiresAt: keyExpiry.trim() || null, ...restrictions }),
+        body: JSON.stringify({ name: keyName.trim(), expiresAt: keyExpiry.trim() ? new Date(keyExpiry).toISOString() : null, ...restrictions }),
       });
       if (!r?.apiKey || !r?.rawKey) throw new Error("Could not create API key");
       setKeyName(""); setKeyExpiry(""); setCreateLimits(emptyDraft()); setAdvancedOpen(false);
