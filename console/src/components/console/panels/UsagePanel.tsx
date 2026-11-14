@@ -47,6 +47,8 @@ export default function UsagePanel({ session, apiBase }: Props) {
   const [reload, setReload] = useState(0);
   const meterState = meters?.sourceKey === sourceKey ? meters : null;
   const walletState = wallet?.sourceKey === sourceKey ? wallet : null;
+  const genUsage = meterState?.data ?? null;
+  const ledger = walletState?.data ?? null;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -80,17 +82,17 @@ export default function UsagePanel({ session, apiBase }: Props) {
   return (
     <div className={styles.panel + " " + styles.active}>
       <section className={styles.card + " " + styles.wide}>
-        <PersonalUsageDashboard key={sourceKey} session={session} apiBase={apiBase} />
+        <PersonalUsageDashboard session={session} apiBase={apiBase} />
       </section>
 
       <section className={styles.card + " " + styles.wide}>
         <div className={styles.heading}>Generation plan limits <button type="button" className="ghost" style={{ float: "right" }} onClick={() => setReload((n) => n + 1)}>Refresh</button></div>
         <p className={styles.muted}>Subscription generation allowances are separate from pay-as-you-go credits.</p>
         {meterState?.error && <p className={styles.muted} role="alert">Unable to load plan limits: {meterState.error}</p>}
-        {!meterState ? <p className={styles.muted}>Loading plan usage…</p> : meterState.data ? (
+        {!meterState ? <p className={styles.muted}>Loading plan usage…</p> : genUsage ? (
           <div className={styles.statGrid}>
             {meterList.map(({ label, key }) => {
-              const meter = meterState.data[key];
+              const meter = genUsage[key];
               const percent = meterPercent(meter);
               return (
                 <div key={key} className={styles.statArticle + " " + styles.meterArticle}>
@@ -115,8 +117,8 @@ export default function UsagePanel({ session, apiBase }: Props) {
           <div className={styles.ledgerHeader}><span>Transaction</span><span>Credit change</span><span>Units</span><span>Date</span></div>
           {walletState?.error && <p role="alert" className={styles.muted}>Unable to load wallet history: {walletState.error}</p>}
           {!walletState ? <p className={styles.muted}>Loading wallet transactions…</p>
-            : walletState.data === null ? <button type="button" className="ghost" onClick={() => setReload((n) => n + 1)}>Retry wallet history</button>
-            : walletState.data.length === 0 ? <p className={styles.muted}>No recent wallet entries.</p> : walletState.data.map((entry, index) => (
+            : ledger === null ? <button type="button" className="ghost" onClick={() => setReload((n) => n + 1)}>Retry wallet history</button>
+            : ledger.length === 0 ? <p className={styles.muted}>No recent wallet entries.</p> : ledger.map((entry, index) => (
             <div key={entry.id || index} className={styles.ledgerRow}>
               <div><strong>{entry.entry_type || "Transaction"}</strong><div className={styles.muted}>{entry.usage_kind || "—"}</div></div>
               <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>
