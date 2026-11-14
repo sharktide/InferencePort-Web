@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import UsageBreakdownView, { countLabel, creditsLabel } from "./UsageBreakdownView";
-import { recentUsage, totals, usageCsv, usageGroups, type UsageGroupBy, type UsageLedgerRow, type UsagePeriod } from "../../../lib/usageAnalytics";
+import UsageCharts, { type UsageMetric } from "./UsageCharts";
+import { recentUsage, totals, usageCsv, usageGroups, usageHours, type UsageGroupBy, type UsageLedgerRow, type UsagePeriod } from "../../../lib/usageAnalytics";
 import s from "./PersonalUsageDashboard.module.css";
 
 interface Props { session: { access_token?: string } | null; apiBase: string }
@@ -29,6 +30,7 @@ export default function PersonalUsageDashboard({ session, apiBase }: Props) {
   const [reload, setReload] = useState(0);
   const [period, setPeriod] = useState<UsagePeriod>("30d");
   const [by, setBy] = useState<UsageGroupBy>("model");
+  const [metric, setMetric] = useState<UsageMetric>("credits");
   const [modelFilter, setModelFilter] = useState("");
   const [showRows, setShowRows] = useState(25);
 
@@ -62,6 +64,7 @@ export default function PersonalUsageDashboard({ session, apiBase }: Props) {
     modelFilter ? usage.filter((e) => (e.model?.trim() || "Unspecified model") === modelFilter) : usage,
   [usage, modelFilter]);
   const grouping = useMemo(() => usageGroups(selected, by), [selected, by]);
+  const timeline = useMemo(() => period === "24h" ? usageHours(selected) : usageGroups(selected, "day"), [selected, period]);
   const summary = useMemo(() => totals(selected), [selected]);
   const topModel = useMemo(() => usageGroups(selected, "model").sort((a, b) => b.credits - a.credits)[0], [selected]);
   const recent = useMemo(() => [...selected].sort((a, b) =>
@@ -124,6 +127,8 @@ export default function PersonalUsageDashboard({ session, apiBase }: Props) {
             {entries.length >= LIMIT ? " Older records may be excluded; these are not lifetime totals." : " Use “All loaded” to view all the available records."}
             {" "}All times in your local timezone; day groupings use UTC dates.
           </div>
+          <UsageCharts breakdown={grouping} timeline={timeline} range={period} dimensionLabel={dimensionLabel}
+            metric={metric} onMetricChange={setMetric} />
           <div className={s.subheading}>
             <h4>Usage breakdown</h4>
             <div className={s.segmented} role="group" aria-label="Group personal usage by">
@@ -133,7 +138,8 @@ export default function PersonalUsageDashboard({ session, apiBase }: Props) {
             </div>
           </div>
           <UsageBreakdownView key={by} rows={grouping} totalCredits={summary.credits}
-            totalRequests={summary.requests} dimensionLabel={dimensionLabel} dateDimension={by === "day"} />
+            totalRequests={summary.requests} dimensionLabel={dimensionLabel} dateDimension={by === "day"}
+            metric={metric} onMetricChange={setMetric} />
 
           <div className={s.subheading}><h4>Recent requests</h4><span>{dateLabel} · {countLabel(recent.length)} loaded usage records</span></div>
           {recent.length === 0 ? <p className={s.empty}>No requests match these filters.</p> : (
