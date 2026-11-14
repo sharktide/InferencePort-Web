@@ -26,9 +26,10 @@
 .bars { flex: 1; position: relative; display: flex; align-items: flex-end; min-height: 210px; gap: 3px; border-bottom: 1px solid var(--border); }
 .gridTop, .gridMiddle { position: absolute; left: 0; right: 0; height: 1px; background: var(--border); pointer-events: none; }
 .gridTop { top: 0; }.gridMiddle { top: 42%; }
-.slot { position: relative; flex: 1; height: 185px; display: flex; justify-content: flex-end; align-items: center; flex-direction: column; min-width: 0; outline-offset: 2px; cursor: default; }
+.slot { appearance: none; border: 0; background: transparent; padding: 0; border-radius: 2px; position: relative; flex: 1; height: 185px; display: flex; justify-content: flex-end; align-items: center; flex-direction: column; min-width: 0; outline-offset: 2px; cursor: pointer; }
 .bar { display: block; width: min(75%, 24px); flex-shrink: 0; background: var(--brand); border-radius: 3px 3px 0 0; transition: opacity .14s ease; }
-.slot:hover .bar, .slot:focus-visible .bar { opacity: .65; }
+.slot:hover .bar, .slot:focus-visible .bar { opacity: .72; box-shadow: inset 0 0 0 1px var(--text-2); }
+.slotSelected .bar { box-shadow: inset 0 0 0 2px var(--text); }
 .axisLabel { position: absolute; top: calc(100% + 7px); font-size: .64rem; line-height: 1.2; color: var(--muted); white-space: nowrap; transform: rotate(-30deg); transform-origin: top center; }
 .donutLayout { display: grid; grid-template-columns: minmax(130px, 190px) minmax(0, 1fr); gap: .7rem; align-items: center; min-width: 0; flex: 1; }
 .donut { position: relative; width: 100%; max-width: 190px; aspect-ratio: 1; justify-self: center; }
@@ -45,3 +46,17 @@
 @media (max-width: 1100px) { .panels { grid-template-columns: 1fr; } }
 @media (max-width: 580px) { .panel { padding: .8rem; } .donutLayout { grid-template-columns: 1fr; }.donut { max-width: 185px; }.legend { grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem 1rem; } }
 @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+
+.inspect { display: flex; flex-wrap: wrap; gap: .45rem 1rem; align-items: center; min-height: 44px; padding: .7rem .8rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); color: var(--text-2); font-size: .75rem; }
+.inspect strong { color: var(--text); overflow-wrap: anywhere; }
+.inspect span { font-variant-numeric: tabular-nums; }
+.inspectHint { color: var(--muted); }
+.clear { border: 0; background: transparent; color: var(--text); text-decoration: underline; font-size: .75rem; cursor: pointer; padding: .15rem .3rem; }
+.arc { cursor: pointer; stroke-linecap: butt; transition: opacity .16s ease, stroke-width .16s ease; outline: none; }
+.arc:hover, .arc:focus-visible, .arcActive { stroke-width: 27px; opacity: .85; }
+.arc:focus-visible { filter: drop-shadow(0 0 2px var(--text)); }
+.legendButton { display: grid; width: 100%; min-width: 0; grid-template-columns: 10px minmax(0,1fr) auto; gap: .25rem .5rem; align-items: center; text-align: left; border: 1px solid transparent; border-radius: var(--r-0); background: transparent; padding: .28rem; cursor: pointer; font-size: .77rem; }
+.legendButton:hover, .legendButton:focus-visible, .legendActive { background: var(--surface-2); border-color: var(--border); }
+.legendButton strong { color: var(--text-2); font-weight: 650; font-variant-numeric: tabular-nums; }
+.legendButton small { grid-column: 2 / -1; color: var(--muted); font-size: .7rem; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .arc { transition: none; } }
