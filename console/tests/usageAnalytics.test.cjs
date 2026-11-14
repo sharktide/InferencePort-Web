@@ -1,0 +1,95 @@
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+const ts = require("typescript");
+
+const source = fs.readFileSync(path.join(__dirname, "../src/lib/usageAnalytics.ts"), "utf8");
+const compiled = ts.transpileModule(source, {
+  compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
+}).outputText;
+const moduleContext = { exports: {} };
+vm.runInNewContext(compiled, { exports: moduleContext.exports, module: moduleContext, Date, Map, Number, String, Array, RegExp });
+const { amountSpent, recentUsage, usageGroups, usageService, usageResource, totals, csvCell, usageCsv } = moduleContext.exports;
+
+const now = Date.parse("2026-11-13T20:00:00Z");
+const entries = [
+  { id: "a", entry_type: "usage", model: "m-one", usage_kind: "text", delta_credits: -1.5, units: 100, created_at: "2026-11-13T18:00:00Z" },
+  { id: "b", entry_type: "usage", model: "m-one", usage_kind: "text", delta_credits: -0.5, created_at: "2026-11-12T18:00:00Z" },
+  { id: "c", entry_type: "usage", model: "m-two", usage_kind: "image", delta_credits: -3, created_at: "2026-11-01T18:00:00Z" },
+  { id: "d", entry_type: "purchase", model: "m-two", delta_credits: 10, created_at: "2026-11-13T19:00:00Z" },
+  { id: "e", entry_type: "adjustment", model: "m-two", delta_credits: 2, created_at: "2026-11-13T19:00:00Z" },
+  { id: "f", entry_type: "deployment", model: "m-three", delta_credits: 0, created_at: "2026-11-13T18:00:00Z" },
+];
+
+test("personal aggregation excludes purchases, deployments and refunds", () => {
+  const usage = recentUsage(entries, "all", now);
+  assert.equal(usage.length, 3);
+  assert.equal(totals(usage).credits, 5);
+  assert.equal(totals(usage).requests, 3);
+  assert.equal(amountSpent({ entry_type: "usage", delta_credits: 2 }), 0);
+});
+
+test("relative periods use timestamps rather than page-local dates", () => {
+  assert.equal(recentUsage(entries, "24h", now).length, 1);
+  assert.equal(recentUsage(entries, "7d", now).length, 2);
+  assert.equal(recentUsage(entries, "30d", now).length, 3);
+  assert.equal(recentUsage([{ entry_type: "usage", delta_credits: -1 }], "24h", now).length, 0);
+});
+
+test("dimensions retain the same totals and group UTC days consistently", () => {
+  const usage = recentUsage(entries, "all", now);
+  const models = usageGroups(usage, "model");
+  assert.equal(models.find((r) => r.key === "m-one").credits, 2);
+  assert.equal(models.find((r) => r.key === "m-one").requests, 2);
+  assert.equal(usageGroups(usage, "modality").find((r) => r.key === "image").credits, 3);
+  assert.equal(usageGroups(usage, "day").find((r) => r.key === "2026-11-13").requests, 1);
+});
+
+test("CSV quotes input and neutralizes spreadsheet formulas", () => {
+  assert.equal(csvCell("=HYPERLINK(1)"), "\"'=HYPERLINK(1)\"");
+  assert.equal(csvCell("-SUM(2)"), "\"'-SUM(2)\"");
+  assert.equal(csvCell("  \n =SUM(1)"), "\"'  \n =SUM(1)\"");
+  assert.equal(csvCell("\t@SUM(3)"), "\"'\t@SUM(3)\"");
+  assert.equal(csvCell("hello,\"world\""), "\"hello,\"\"world\"\"\"");
+  const result = usageCsv([{ entry_type: "usage", delta_credits: -1, model: "=unsafe", usage_kind: "text" }]);
+  assert.ok(result.includes("\"'=unsafe\""));
+  assert.ok(result.includes("\"1.0000\""));
+});
+
+test("storage and hosting fees never count as model API inference", () => {
+  const charges = [
+    { entry_type: "usage", usage_kind: "text", model: "gemini", delta_credits: -1.25 },
+    { entry_type: "usage", usage_kind: "storage", source: "buckets", model: "storage", metadata: { bucket_id: "bucket-123" }, delta_credits: -2 },
+    { entry_type: "usage", usage_kind: "deployment", source: "v1_deploy_fee", model: "featherless-deployed",
+      metadata: { deployment_id: "deploy-456" }, delta_credits: -10 },
+    { entry_type: "usage", usage_kind: "custom", model: "unclassified", delta_credits: -0.5 },
+  ];
+  assert.equal(usageService(charges[0]), "api");
+  assert.equal(usageService(charges[1]), "storage");
+  assert.equal(usageService(charges[2]), "deployment");
+  assert.equal(usageService(charges[3]), "other");
+  const groups = usageGroups(charges, "service");
+  assert.equal(groups.find((r) => r.key === "api").credits, 1.25);
+  assert.equal(groups.find((r) => r.key === "storage").credits, 2);
+  assert.equal(groups.find((r) => r.key === "deployment").credits, 10);
+  assert.equal(usageResource(charges[1]), "Bucket bucket-123");
+  assert.equal(usageResource(charges[2]), "Deployment deploy-456");
+  assert.equal(totals(charges).credits, 13.75);
+  const csv = usageCsv(charges);
+  assert.ok(csv.includes("Buckets storage"));
+  assert.ok(csv.includes("Featherless hosting"));
+});
+
+test("distinct bucket IDs are never merged by abbreviated display labels", () => {
+  const prefix = "0123456789ab";
+  const a = { entry_type: "usage", usage_kind: "storage", delta_credits: -0.4, metadata: { bucket_id: prefix + "-first" } };
+  const b = { entry_type: "usage", usage_kind: "storage", delta_credits: -0.7, metadata: { bucket_id: prefix + "-second" } };
+  const groups = usageGroups([a, b], "resource");
+  assert.equal(groups.length, 2);
+  assert.equal(groups[0].label, "Bucket " + prefix);
+  assert.equal(groups[1].label, "Bucket " + prefix);
+  assert.equal(groups[0].credits + groups[1].credits, 1.1);
+  assert.ok(usageCsv([a]).includes(prefix + "-first"));
+});

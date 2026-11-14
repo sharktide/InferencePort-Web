@@ -1,0 +1,57 @@
+name: Console usage analytics
+
+on:
+  pull_request:
+    paths:
+      - 'console/src/components/console/panels/Usage*.tsx'
+      - 'console/src/components/console/panels/Usage*.css'
+      - 'console/src/components/console/panels/PersonalUsageDashboard.*'
+      - 'console/src/components/console/panels/orgs/UsageTab.tsx'
+      - 'console/src/components/console/panels/orgs/UsageServices.module.css'
+      - 'console/src/lib/usageAnalytics.ts'
+      - 'console/src/lib/usageChartData.ts'
+      - 'console/src/lib/orgs.ts'
+      - 'console/tests/usageAnalytics.test.cjs'
+      - 'console/tests/usageChartData.test.cjs'
+      - 'console/package.json'
+      - 'console/package-lock.json'
+      - '.github/workflows/console-usage.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'console/src/components/console/panels/Usage*.tsx'
+      - 'console/src/components/console/panels/Usage*.css'
+      - 'console/src/components/console/panels/PersonalUsageDashboard.*'
+      - 'console/src/components/console/panels/orgs/UsageTab.tsx'
+      - 'console/src/components/console/panels/orgs/UsageServices.module.css'
+      - 'console/src/lib/usageAnalytics.ts'
+      - 'console/src/lib/usageChartData.ts'
+      - 'console/src/lib/orgs.ts'
+      - 'console/tests/usageAnalytics.test.cjs'
+      - 'console/tests/usageChartData.test.cjs'
+      - 'console/package.json'
+      - 'console/package-lock.json'
+      - '.github/workflows/console-usage.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: console
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: console/package-lock.json
+      - run: npm ci
+      - name: Usage analytics regression tests
+        run: npm run test:usage
+      - name: TypeScript validation
+        run: npx tsc --noEmit

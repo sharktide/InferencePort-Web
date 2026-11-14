@@ -1,0 +1,64 @@
+.root {
+  --usage-color-1: #3b82f6;
+  --usage-color-2: #16a085;
+  --usage-color-3: #8b5cf6;
+  --usage-color-4: #db8b30;
+  --usage-color-5: #d65e80;
+  --usage-color-6: #79919f;
+  display: grid; gap: 1rem; min-width: 0;
+}
+.topline { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.topline h4 { margin: 0; font-size: 1rem; color: var(--text); }
+.topline p { margin: .25rem 0 0; color: var(--text-2); font-size: .8rem; }
+.metric { display: inline-flex; gap: 2px; padding: 3px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-1); }
+.metric button { border: 0; background: transparent; padding: .45rem .9rem; border-radius: var(--r-0); color: var(--text-2); cursor: pointer; font-size: .8rem; font-weight: 650; }
+.metric button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 0 0 1px var(--border); }
+.panels { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: .8rem; }
+.panel { min-width: 0; display: flex; flex-direction: column; padding: 1rem; gap: 1rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface); }
+.panelTitle { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+.panelTitle h5 { margin: 0; color: var(--text); font-size: .875rem; font-weight: 650; }
+.panelTitle p, .hint { margin: .2rem 0 0; color: var(--muted); font-size: .7rem; }
+.hint { text-align: right; }
+.empty { flex: 1; margin: 0; min-height: 170px; display: flex; align-items: center; justify-content: center; color: var(--text-2); background: var(--surface-2); padding: 1rem; font-size: .8rem; border-radius: var(--r-1); text-align: center; }
+.scroll { overflow-x: auto; max-width: 100%; padding-bottom: .45rem; }
+.plot { display: flex; min-height: 210px; gap: .6rem; }
+.guide { height: 185px; padding-bottom: 15px; display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; color: var(--muted); font-size: .68rem; font-variant-numeric: tabular-nums; }
+.bars { flex: 1; position: relative; display: flex; align-items: flex-end; min-height: 210px; gap: 3px; border-bottom: 1px solid var(--border); }
+.gridTop, .gridMiddle { position: absolute; left: 0; right: 0; height: 1px; background: var(--border); pointer-events: none; }
+.gridTop { top: 0; }.gridMiddle { top: 42%; }
+.slot { appearance: none; border: 0; background: transparent; padding: 0; border-radius: 2px; position: relative; flex: 1; height: 185px; display: flex; justify-content: flex-end; align-items: center; flex-direction: column; min-width: 0; outline-offset: 2px; cursor: pointer; }
+.bar { display: block; width: min(75%, 24px); flex-shrink: 0; background: var(--brand); border-radius: 3px 3px 0 0; transition: opacity .14s ease; }
+.slot:hover .bar, .slot:focus-visible .bar { opacity: .72; box-shadow: inset 0 0 0 1px var(--text-2); }
+.slotSelected .bar { box-shadow: inset 0 0 0 2px var(--text); }
+.axisLabel { position: absolute; top: calc(100% + 7px); font-size: .64rem; line-height: 1.2; color: var(--muted); white-space: nowrap; transform: rotate(-30deg); transform-origin: top center; }
+.donutLayout { display: grid; grid-template-columns: minmax(130px, 190px) minmax(0, 1fr); gap: .7rem; align-items: center; min-width: 0; flex: 1; }
+.donut { position: relative; width: 100%; max-width: 190px; aspect-ratio: 1; justify-self: center; }
+.donut svg { display: block; width: 100%; height: 100%; }
+.donutText { position: absolute; left: 23%; top: 32%; width: 54%; height: 36%; display: flex; flex-direction: column; gap: .15rem; justify-content: center; align-items: center; text-align: center; pointer-events: none; }
+.donutText strong { color: var(--text); font-size: clamp(.8rem, 1.7vw, 1.25rem); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; line-height: 1.15; }
+.donutText span { color: var(--muted); font-size: .75rem; }
+.legend { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; min-width: 0; }
+.legend li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: .25rem .5rem; align-items: center; font-size: .77rem; min-width: 0; }
+.dot { width: 9px; height: 9px; border-radius: 3px; }
+.legendLabel { color: var(--text); min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.legend strong { color: var(--text-2); font-weight: 650; font-variant-numeric: tabular-nums; }
+.legend small { grid-column: 2 / -1; color: var(--muted); font-size: .7rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 1100px) { .panels { grid-template-columns: 1fr; } }
+@media (max-width: 580px) { .panel { padding: .8rem; } .donutLayout { grid-template-columns: 1fr; }.donut { max-width: 185px; }.legend { grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem 1rem; } }
+@media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+
+.inspect { min-height: 76px; display: flex; flex-wrap: wrap; gap: .45rem 1rem; align-items: center; min-height: 44px; padding: .7rem .8rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); color: var(--text-2); font-size: .75rem; }
+.inspect strong { color: var(--text); overflow-wrap: anywhere; }
+.inspect span { font-variant-numeric: tabular-nums; }
+.inspectHint { color: var(--muted); }
+.clear { border: 0; background: transparent; color: var(--text); text-decoration: underline; font-size: .75rem; cursor: pointer; padding: .15rem .3rem; }
+/* Never change SVG stroke width or hit geometry on hover: it causes pointer enter/leave
+   oscillation at donut-segment edges, especially when the first slice dominates. */
+.arc { cursor: pointer; stroke-linecap: butt; transition: opacity .16s ease; outline: none; }
+.arc:hover, .arc:focus-visible, .arcActive { opacity: .8; }
+.arc:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.legendButton { display: grid; width: 100%; min-width: 0; grid-template-columns: 10px minmax(0,1fr) auto; gap: .25rem .5rem; align-items: center; text-align: left; border: 1px solid transparent; border-radius: var(--r-0); background: transparent; padding: .28rem; cursor: pointer; font-size: .77rem; }
+.legendButton:hover, .legendButton:focus-visible, .legendActive { background: var(--surface-2); border-color: var(--border); }
+.legendButton strong { color: var(--text-2); font-weight: 650; font-variant-numeric: tabular-nums; }
+.legendButton small { grid-column: 2 / -1; color: var(--muted); font-size: .7rem; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { .arc { transition: none; } }
