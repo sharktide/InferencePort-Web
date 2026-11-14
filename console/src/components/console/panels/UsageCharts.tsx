@@ -170,15 +170,17 @@ export default function UsageCharts({
                   ))}
                 </ul>
               </div>
-              {activeSlice && (
-                <div className={s.inspect} aria-live="polite" aria-atomic="true">
-                  <strong>{activeSlice.label}</strong>
-                  <span>{creditsLabel(activeSlice.credits)} credits</span>
-                  <span>{numberLabel(activeSlice.requests)} {eventLabel}</span>
-                  <span>{activeSlice.share.toFixed(1)}% of total {metric === "credits" ? "credits" : eventLabel}</span>
-                  {pinnedSlice === activeSlice.key && <button className={s.clear} type="button" onClick={() => setPinnedSlice(null)}>Clear selection</button>}
-                </div>
-              )}
+              <div className={s.inspect} aria-live="polite" aria-atomic="true">
+                {activeSlice ? (
+                  <>
+                    <strong>{activeSlice.label}</strong>
+                    <span>{creditsLabel(activeSlice.credits)} credits</span>
+                    <span>{numberLabel(activeSlice.requests)} {eventLabel}</span>
+                    <span>{activeSlice.share.toFixed(1)}% of total {metric === "credits" ? "credits" : eventLabel}</span>
+                    {pinnedSlice === activeSlice.key && <button className={s.clear} type="button" onClick={() => setPinnedSlice(null)}>Clear selection</button>}
+                  </>
+                ) : <span className={s.inspectHint}>Hover, focus or select a slice to see its credits, {eventLabel} and share.</span>}
+              </div>
             </>
           )}
         </div>
