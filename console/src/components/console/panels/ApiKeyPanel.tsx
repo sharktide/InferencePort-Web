@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import { useModal } from "../../Modal";
 import LimitsEditor, { draftFrom, emptyDraft, parseDraft, type LimitsDraft } from "./orgs/LimitsEditor";
@@ -15,7 +15,12 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   const [status, setStatus] = useState("Sign in to create and manage Lightning API keys.");
   const [reveal, setReveal] = useState<{ raw: string; name: string } | null>(null);
   const [busy, setBusy] = useState(false);
-  const [restrictionSupport, setRestrictionSupport] = useState(false);
+  const [restrictionSupport, setRestrictionSupport] = useState<"loading" | "supported" | "unsupported" | "error">("loading");
+  const newestRefresh = useRef(0);
+  const newestProbe = useRef(0);
+  const activeToken = session?.access_token as string | undefined;
+  const activeTokenRef = useRef(activeToken);
+  activeTokenRef.current = activeToken;
   const [createLimits, setCreateLimits] = useState<LimitsDraft>(emptyDraft);
   const [editing, setEditing] = useState<{ id: string; name: string; draft: LimitsDraft } | null>(null);
 
@@ -24,19 +29,55 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   const fmt = (v: string | null) => { if (!v) return "Never"; const d = new Date(v); return Number.isNaN(d.getTime()) ? v : d.toLocaleString(); };
 
   const refresh = useCallback(async () => {
-    if (!session?.access_token) { setKeys([]); setStatus("Sign in to create and manage Lightning API keys."); return; }
+    const token = activeToken;
+    const seq = ++newestRefresh.current;
+    if (!token) { setKeys([]); setStatus("Sign in to create and manage Lightning API keys."); return; }
     try {
-      const [r, supported] = await Promise.all([
-        fj("/v1/lightning-api-keys", { headers: authH() }),
-        fj("/v1/lightning-api-keys/capabilities", { headers: authH() }).then((v) => v.personalKeyRestrictions === true).catch(() => false),
-      ]);
+      const r = await fj("/v1/lightning-api-keys", {
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+      if (seq !== newestRefresh.current || token !== activeTokenRef.current) return;
       setKeys(r.items || []);
-      setRestrictionSupport(supported);
       setStatus("Use a generated key as Bearer token when calling Lightning.");
-    } catch (e: any) { setStatus(`Error: ${e.message}`); }
-  }, [session, apiBase]);
+    } catch (e: any) {
+      if (seq === newestRefresh.current && token === activeTokenRef.current) setStatus(`Error: ${e.message}`);
+    }
+  }, [activeToken, apiBase]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  const probeCapabilities = useCallback(async () => {
+    const token = activeToken;
+    const seq = ++newestProbe.current;
+    if (!token) return setRestrictionSupport("unsupported");
+    setRestrictionSupport("loading");
+    try {
+      // Only an explicit 404 means an older server. Network/5xx errors must
+      // never quietly create an unrestricted key.
+      const res = await fetch(`${apiBase}/v1/lightning-api-keys/capabilities`, {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(7000),
+      });
+      if (seq !== newestProbe.current || token !== activeTokenRef.current) return;
+      if (res.status === 404) { setRestrictionSupport("unsupported"); return; }
+      if (!res.ok) { setRestrictionSupport("error"); return; }
+      const data = await res.json();
+      setRestrictionSupport(data?.personalKeyRestrictions === true ? "supported" : "error");
+    } catch {
+      if (seq === newestProbe.current && token === activeTokenRef.current) setRestrictionSupport("error");
+    }
+  }, [activeToken, apiBase]);
+
+  useEffect(() => {
+    ++newestRefresh.current;
+    ++newestProbe.current;
+    setKeys([]);
+    setEditing(null);
+    setReveal(null);
+    setRestrictionSupport("loading");
+    void refresh();
+    void probeCapabilities();
+    // Requests started for a previous token are ignored by sequence and token.
+  }, [refresh, probeCapabilities]);
+
 
   const getLimits = (draft: LimitsDraft) => {
     const parsed = parseDraft(draft, ["budget", "models", "modalities"]);
@@ -53,7 +94,10 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     if (!keyName.trim()) return setStatus("Please enter a name.");
     setBusy(true); setStatus("Creating…");
     try {
-      const restrictions = restrictionSupport ? getLimits(createLimits) : {};
+      if (restrictionSupport === "loading" || restrictionSupport === "error") {
+        throw new Error("Cannot verify key-limit support. Retry the capability check before creating a key.");
+      }
+      const restrictions = restrictionSupport === "supported" ? getLimits(createLimits) : {};
       const r = await fj("/v1/lightning-api-keys", {
         method: "POST", headers: authH(),
         body: JSON.stringify({ name: keyName.trim(), expiresAt: keyExpiry.trim() || null, ...restrictions }),
@@ -67,23 +111,41 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     finally { setBusy(false); }
   };
 
-  const editKey = (k: any) => setEditing({
-    id: k.id,
-    name: k.name,
-    draft: draftFrom({
-      monthly_credit_limit: k.monthlyCreditLimit ?? null,
-      allowed_models: k.allowedModels ?? null,
-      allowed_modalities: k.allowedModalities ?? null,
-    }),
-  });
+  const editKey = (k: any) => {
+    if (editing && editing.id !== k.id) return; // Save/cancel the open editor first.
+    setEditing({
+      id: k.id,
+      name: k.name,
+      draft: draftFrom({
+        monthly_credit_limit: k.monthlyCreditLimit ?? null,
+        allowed_models: k.allowedModels ?? null,
+        allowed_modalities: k.allowedModalities ?? null,
+      }),
+    });
+  };
 
   const saveLimits = async () => {
     if (!editing) return;
     setBusy(true);
     try {
-      await fj(`/v1/lightning-api-keys/${encodeURIComponent(editing.id)}`, {
-        method: "PATCH", headers: authH(), body: JSON.stringify(getLimits(editing.draft)),
-      });
+      const updated = getLimits(editing.draft);
+      const live = keys.find((k) => k.id === editing.id);
+      if (!live) throw new Error("This API key is not in the current list.");
+      const original = getLimits(draftFrom({
+        monthly_credit_limit: live.monthlyCreditLimit ?? null,
+        allowed_models: live.allowedModels ?? null,
+        allowed_modalities: live.allowedModalities ?? null,
+      }));
+      // PATCH only fields edited in this tab, avoiding resets of other fields.
+      const changes = Object.fromEntries(
+        Object.entries(updated).filter(([field, value]) =>
+          JSON.stringify(value) !== JSON.stringify(original[field as keyof typeof original])),
+      );
+      if (Object.keys(changes).length) {
+        await fj(`/v1/lightning-api-keys/${encodeURIComponent(editing.id)}`, {
+          method: "PATCH", headers: authH(), body: JSON.stringify(changes),
+        });
+      }
       setStatus(`Saved limits for "${editing.name}".`);
       setEditing(null);
       await refresh();
@@ -108,16 +170,21 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
             <div className={styles.stack}>
               <label>Name<input type="text" maxLength={64} placeholder="Production deploy, CI, backend service..." value={keyName} onChange={(e) => setKeyName(e.target.value)} /></label>
               <label>Expires (optional)<input type="text" placeholder="ISO date, for example 2026-12-31T23:59:59Z" value={keyExpiry} onChange={(e) => setKeyExpiry(e.target.value)} /></label>
-              {restrictionSupport ? (
+              {restrictionSupport === "supported" ? (
                 <>
                   <p className={styles.muted}>Optional restrictions for this key only. Blank values mean unrestricted; account limits still apply.</p>
                   <LimitsEditor idPrefix="personal-new-key" draft={createLimits} onChange={setCreateLimits} fields={["budget", "models", "modalities"]} disabled={busy} />
                 </>
+              ) : restrictionSupport === "unsupported" ? (
+                <p className={`${styles.muted} ${styles.tiny}`}>This server does not yet support per-key limits. Keys created here are unrestricted at key level.</p>
               ) : (
-                <p className={`${styles.muted} ${styles.tiny}`}>Per-key budgets and model restrictions will be available after the API server is updated. Keys created here remain unrestricted at the key level.</p>
+                <p className={`${styles.muted} ${styles.tiny}`}>
+                  {restrictionSupport === "loading" ? "Checking per-key limit support…" : "Unable to verify per-key limit support."}
+                  {restrictionSupport === "error" && <button type="button" className="ghost" onClick={probeCapabilities}>Retry</button>}
+                </p>
               )}
               <div className={styles.row}>
-                <button onClick={create} disabled={busy} style={{ flex: 1 }}>{busy ? "Creating\u2026" : "Generate API key"}</button>
+                <button onClick={create} disabled={busy || restrictionSupport === "loading" || restrictionSupport === "error"} style={{ flex: 1 }}>{busy ? "Creating\u2026" : "Generate API key"}</button>
                 <button className="ghost" onClick={refresh} style={{ flex: 1 }}>Refresh keys</button>
               </div>
               <p className={`${styles.muted} ${styles.tiny}`}>{status}</p>
@@ -145,7 +212,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
                   <div className={`${styles.apiKeyBadge} ${st.cls}`}>{st.label}</div>
                 </div>
                 <div className={styles.apiKeyMeta}><span>Created {fmt(k.createdAt)}</span><span>Last used {fmt(k.lastUsedAt)}</span><span>Expires {k.expiresAt ? fmt(k.expiresAt) : "Never"}</span></div>
-                {restrictionSupport && (
+                {restrictionSupport === "supported" && (
                   <div className={styles.apiKeyMeta}>
                     <span>Spent this UTC month: {Number(k.monthSpend || 0).toLocaleString()} / {k.monthlyCreditLimit == null ? "no key limit" : Number(k.monthlyCreditLimit).toLocaleString()} credits</span>
                     <span>Models: {k.allowedModels?.length ? k.allowedModels.join(", ") : "All models"}</span>
@@ -153,10 +220,10 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
                   </div>
                 )}
                 <div className={styles.apiKeyActions}>
-                  {restrictionSupport && !k.isRevoked && !k.isExpired && <button type="button" className="ghost" onClick={() => editKey(k)} disabled={busy}>Edit limits</button>}
+                  {restrictionSupport === "supported" && !k.isRevoked && !k.isExpired && <button type="button" className="ghost" onClick={() => editKey(k)} disabled={busy || (editing !== null && editing.id !== k.id)}>Edit limits</button>}
                   <button type="button" className="ghost" disabled={k.isRevoked || busy} onClick={() => revoke(k.id)}>{k.isRevoked ? "Revoked" : "Revoke key"}</button>
                 </div>
-                {restrictionSupport && editing?.id === k.id && (
+                {restrictionSupport === "supported" && editing?.id === k.id && (
                   <div className={styles.apiKeyForm}>
                     <div className={styles.heading}>Edit restrictions — {k.name}</div>
                     <LimitsEditor idPrefix={`personal-key-${k.id}`} draft={editing.draft}
