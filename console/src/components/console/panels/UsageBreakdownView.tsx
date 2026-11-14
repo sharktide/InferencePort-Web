@@ -26,9 +26,10 @@ interface Props {
   dateDimension?: boolean;
   metric?: Metric;
   onMetricChange?: (metric: Metric) => void;
+  eventLabel?: string;
 }
 
-export default function UsageBreakdownView({ rows, totalCredits, totalRequests, dimensionLabel, dateDimension = false, metric, onMetricChange }: Props) {
+export default function UsageBreakdownView({ rows, totalCredits, totalRequests, dimensionLabel, dateDimension = false, metric, onMetricChange, eventLabel = "requests" }: Props) {
   const [internalMetric, setInternalMetric] = useState<Metric>("credits");
   const activeMetric = metric ?? internalMetric;
   const [sort, setSort] = useState<Sort>(dateDimension ? "date" : "credits");
@@ -57,7 +58,7 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
           <legend>Compare by</legend>
           <div className={s.toggle}>
             {(["credits", "requests"] as const).map((name) => (
-              <button key={name} type="button" aria-pressed={activeMetric === name} onClick={() => setInternalMetric(name)}>{name === "credits" ? "Credits" : "Requests"}</button>
+              <button key={name} type="button" aria-pressed={activeMetric === name} onClick={() => setInternalMetric(name)}>{name === "credits" ? "Credits" : eventLabel === "requests" ? "Requests" : "Charges"}</button>
             ))}
           </div>
         </fieldset>}
@@ -84,13 +85,13 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
       ) : (
         <>
           <div className={s.chart} aria-label={dimensionLabel + " breakdown"}>
-            <div className={s.chartHead}><strong>{activeMetric === "credits" ? "Credits used" : "Requests"}</strong><span>{dateDimension && sort === "date" ? "Latest " + chartRows.length + " days" : "Top " + chartRows.length + " groups"}</span></div>
+            <div className={s.chartHead}><strong>{activeMetric === "credits" ? "Credits used" : eventLabel === "requests" ? "Requests" : "Charges"}</strong><span>{dateDimension && sort === "date" ? "Latest " + chartRows.length + " days" : "Top " + chartRows.length + " groups"}</span></div>
             {chartRows.map((row) => {
               const value = row[activeMetric];
               return (
                 <div key={row.key} className={s.barRow}>
                   <span className={s.barLabel} title={row.label}>{row.label}</span>
-                  <div className={s.barTrack} role="img" aria-label={row.label + ": " + (activeMetric === "credits" ? creditsLabel(value) + " credits" : countLabel(value) + " requests")}>
+                  <div className={s.barTrack} role="img" aria-label={row.label + ": " + (activeMetric === "credits" ? creditsLabel(value) + " credits" : countLabel(value) + " " + eventLabel)}>
                     <span className={s.barFill} style={{ width: (maxValue > 0 ? value / maxValue * 100 : 0) + "%" }} />
                   </div>
                   <strong className={s.barAmount}>{activeMetric === "credits" ? creditsLabel(value) : countLabel(value)}</strong>
@@ -100,14 +101,14 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
           </div>
           <div className={s.tableWrap}>
             <table className={s.table}>
-              <thead><tr><th scope="col">{dimensionLabel}</th><th scope="col">Credits</th><th scope="col">Requests</th><th scope="col">Share of {activeMetric}</th></tr></thead>
+              <thead><tr><th scope="col">{dimensionLabel}</th><th scope="col">Credits</th><th scope="col">{eventLabel === "requests" ? "Requests" : "Charges"}</th><th scope="col">Share of {activeMetric === "credits" ? "credits" : eventLabel}</th></tr></thead>
               <tbody>
                 {results.slice(0, visible).map((row) => (
                   <tr key={row.key}>
                     <th scope="row">{row.label}</th>
                     <td data-label="Credits">{creditsLabel(row.credits)}</td>
-                    <td data-label="Requests">{countLabel(row.requests)}</td>
-                    <td data-label={"Share of " + activeMetric}>{pct(row[activeMetric], total).toFixed(1)}%</td>
+                    <td data-label={eventLabel === "requests" ? "Requests" : "Charges"}>{countLabel(row.requests)}</td>
+                    <td data-label={"Share of " + (activeMetric === "credits" ? "credits" : eventLabel)}>{pct(row[activeMetric], total).toFixed(1)}%</td>
                   </tr>
                 ))}
               </tbody>
