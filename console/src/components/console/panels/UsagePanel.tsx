@@ -39,54 +39,58 @@ function formatDate(value?: string) {
 
 export default function UsagePanel({ session, apiBase }: Props) {
   const token = session?.access_token;
-  const [genUsage, setGenUsage] = useState<Record<string, Meter> | null>(null);
-  const [ledger, setLedger] = useState<LedgerEntry[]>([]);
-  const [loadingMeters, setLoadingMeters] = useState(true);
-  const [error, setError] = useState("");
+  const sourceKey = token ? apiBase + "|" + token : "";
+  type MeterState = { sourceKey: string; data: Record<string, Meter> | null; error: string };
+  type WalletState = { sourceKey: string; data: LedgerEntry[] | null; error: string };
+  const [meters, setMeters] = useState<MeterState | null>(null);
+  const [wallet, setWallet] = useState<WalletState | null>(null);
   const [reload, setReload] = useState(0);
+  const meterState = meters?.sourceKey === sourceKey ? meters : null;
+  const walletState = wallet?.sourceKey === sourceKey ? wallet : null;
 
   useEffect(() => {
     const controller = new AbortController();
-    setGenUsage(null);
-    setLedger([]);
-    setError("");
-    setLoadingMeters(true);
-    if (!token) { setLoadingMeters(false); return () => controller.abort(); }
+    setMeters(null);
+    setWallet(null);
+    if (!token) return () => controller.abort();
+    const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(20_000)]);
     const get = async (path: string) => {
       const response = await fetch(apiBase + path, {
-        headers: { Authorization: "Bearer " + token }, signal: controller.signal,
+        headers: { Authorization: "Bearer " + token }, signal,
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(typeof data.detail === "string" ? data.detail : "HTTP " + response.status);
       return data;
     };
-    void Promise.allSettled([get("/usage"), get("/v1/credits/ledger?limit=30")]).then(([meterResult, ledgerResult]) => {
-      if (controller.signal.aborted) return;
-      if (meterResult.status === "fulfilled") setGenUsage(meterResult.value.usage ?? {});
-      else setError("Could not load generation limits: " + (meterResult.reason instanceof Error ? meterResult.reason.message : "Unknown error"));
-      if (ledgerResult.status === "fulfilled") setLedger(Array.isArray(ledgerResult.value.entries) ? ledgerResult.value.entries : []);
-      else setError((prev) => prev + (prev ? " " : "") + "Could not load wallet transactions.");
-      setLoadingMeters(false);
+    void get("/usage").then((data) => {
+      if (!controller.signal.aborted) setMeters({ sourceKey, data: data.usage ?? {}, error: "" });
+    }).catch((err) => {
+      if (!controller.signal.aborted) setMeters({ sourceKey, data: null, error: err instanceof Error ? err.message : "Unable to load generation usage." });
+    });
+    void get("/v1/credits/ledger?limit=30").then((data) => {
+      if (!controller.signal.aborted) setWallet({ sourceKey, data: Array.isArray(data.entries) ? data.entries : [], error: "" });
+    }).catch((err) => {
+      if (!controller.signal.aborted) setWallet({ sourceKey, data: null, error: err instanceof Error ? err.message : "Unable to load wallet transactions." });
     });
     return () => controller.abort();
-  }, [token, apiBase, reload]);
+  }, [token, apiBase, reload, sourceKey]);
 
-  if (!session) return <div className={styles.panel + " " + styles.active}><div className={styles.lockedOverlay + " " + styles.panelLock}>Sign in to view your usage.</div></div>;
+  if (!session || !token) return <div className={styles.panel + " " + styles.active}><div className={styles.lockedOverlay + " " + styles.panelLock}>Sign in to view your usage.</div></div>;
 
   return (
     <div className={styles.panel + " " + styles.active}>
       <section className={styles.card + " " + styles.wide}>
-        <PersonalUsageDashboard session={session} apiBase={apiBase} />
+        <PersonalUsageDashboard key={sourceKey} session={session} apiBase={apiBase} />
       </section>
 
       <section className={styles.card + " " + styles.wide}>
         <div className={styles.heading}>Generation plan limits <button type="button" className="ghost" style={{ float: "right" }} onClick={() => setReload((n) => n + 1)}>Refresh</button></div>
         <p className={styles.muted}>Subscription generation allowances are separate from pay-as-you-go credits.</p>
-        {error && <p className={styles.muted} role="alert">{error}</p>}
-        {loadingMeters ? <p className={styles.muted}>Loading plan usage…</p> : genUsage ? (
+        {meterState?.error && <p className={styles.muted} role="alert">Unable to load plan limits: {meterState.error}</p>}
+        {!meterState ? <p className={styles.muted}>Loading plan usage…</p> : meterState.data ? (
           <div className={styles.statGrid}>
             {meterList.map(({ label, key }) => {
-              const meter = genUsage[key];
+              const meter = meterState.data[key];
               const percent = meterPercent(meter);
               return (
                 <div key={key} className={styles.statArticle + " " + styles.meterArticle}>
@@ -109,7 +113,10 @@ export default function UsagePanel({ session, apiBase }: Props) {
         <p className={styles.muted}>The latest 30 wallet entries, including purchases and credits added. For model-level charges, use the personal usage breakdown above.</p>
         <div className={styles.ledger}>
           <div className={styles.ledgerHeader}><span>Transaction</span><span>Credit change</span><span>Units</span><span>Date</span></div>
-          {ledger.length === 0 ? <p className={styles.muted}>No recent wallet entries.</p> : ledger.map((entry, index) => (
+          {walletState?.error && <p role="alert" className={styles.muted}>Unable to load wallet history: {walletState.error}</p>}
+          {!walletState ? <p className={styles.muted}>Loading wallet transactions…</p>
+            : walletState.data === null ? <button type="button" className="ghost" onClick={() => setReload((n) => n + 1)}>Retry wallet history</button>
+            : walletState.data.length === 0 ? <p className={styles.muted}>No recent wallet entries.</p> : walletState.data.map((entry, index) => (
             <div key={entry.id || index} className={styles.ledgerRow}>
               <div><strong>{entry.entry_type || "Transaction"}</strong><div className={styles.muted}>{entry.usage_kind || "—"}</div></div>
               <div style={{ fontFamily: "var(--mono)", fontSize: "0.8rem" }}>
