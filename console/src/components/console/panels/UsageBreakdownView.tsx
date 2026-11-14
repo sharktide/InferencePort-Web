@@ -28,18 +28,17 @@ interface Props {
 
 export default function UsageBreakdownView({ rows, totalCredits, totalRequests, dimensionLabel, dateDimension = false }: Props) {
   const [metric, setMetric] = useState<Metric>("credits");
-  const [sort, setSort] = useState<Sort>("credits");
+  const [sort, setSort] = useState<Sort>(dateDimension ? "date" : "credits");
   const [search, setSearch] = useState("");
   const [visible, setVisible] = useState(25);
 
   const results = useMemo(() => {
     const q = search.trim().toLocaleLowerCase();
     const list = rows.filter((row) => row.label.toLocaleLowerCase().includes(q));
-    const selectedSort = dateDimension && sort === "credits" ? "date" : sort;
     return [...list].sort((a, b) => {
-      if (selectedSort === "date") return a.key.localeCompare(b.key);
-      if (selectedSort === "name") return a.label.localeCompare(b.label);
-      if (selectedSort === "requests") return b.requests - a.requests || a.label.localeCompare(b.label);
+      if (sort === "date") return a.key.localeCompare(b.key);
+      if (sort === "name") return a.label.localeCompare(b.label);
+      if (sort === "requests") return b.requests - a.requests || a.label.localeCompare(b.label);
       return b.credits - a.credits || a.label.localeCompare(b.label);
     });
   }, [rows, search, sort, dateDimension]);
