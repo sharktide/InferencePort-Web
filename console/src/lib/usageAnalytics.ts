@@ -56,7 +56,7 @@ export function totals(entries: UsageLedgerRow[]) {
 /** Prevent a model name or metadata value from being interpreted as a spreadsheet formula. */
 export function csvCell(value: unknown): string {
   let str = value == null ? "" : String(value);
-  if (/^[=+\-@\t\r]/.test(str)) str = "'" + str;
+  if (/^[\s\uFEFF\u200B]*[=+\-@]/u.test(str) || /^[\t\r\n]/.test(str)) str = "'" + str;
   return '"' + str.replace(/"/g, '""') + '"';
 }
 
