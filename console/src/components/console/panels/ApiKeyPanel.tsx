@@ -10,6 +10,7 @@ interface Props { session: any; apiBase: string; }
 export default function ApiKeyPanel({ session, apiBase }: Props) {
   const modal = useModal();
   const [keys, setKeys] = useState<any[]>([]);
+  const [keysOwnerToken, setKeysOwnerToken] = useState<string | undefined>(undefined);
   const [keyName, setKeyName] = useState("");
   const [keyExpiry, setKeyExpiry] = useState("");
   const [status, setStatus] = useState("Sign in to create and manage Lightning API keys.");
@@ -21,6 +22,8 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   const activeToken = session?.access_token as string | undefined;
   const activeTokenRef = useRef(activeToken);
   activeTokenRef.current = activeToken;
+  // Never display a previous account's keys, even for the render before effects run.
+  const visibleKeys = keysOwnerToken === activeToken ? keys : [];
   const [createLimits, setCreateLimits] = useState<LimitsDraft>(emptyDraft);
   const [editing, setEditing] = useState<{ id: string; name: string; draft: LimitsDraft } | null>(null);
 
@@ -38,6 +41,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
       });
       if (seq !== newestRefresh.current || token !== activeTokenRef.current) return;
       setKeys(r.items || []);
+      setKeysOwnerToken(token);
       setStatus("Use a generated key as Bearer token when calling Lightning.");
     } catch (e: any) {
       if (seq === newestRefresh.current && token === activeTokenRef.current) setStatus(`Error: ${e.message}`);
@@ -70,6 +74,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     ++newestRefresh.current;
     ++newestProbe.current;
     setKeys([]);
+    setKeysOwnerToken(undefined);
     setEditing(null);
     setReveal(null);
     setRestrictionSupport("loading");
@@ -129,7 +134,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     setBusy(true);
     try {
       const updated = getLimits(editing.draft);
-      const live = keys.find((k) => k.id === editing.id);
+      const live = visibleKeys.find((k) => k.id === editing.id);
       if (!live) throw new Error("This API key is not in the current list.");
       const original = getLimits(draftFrom({
         monthly_credit_limit: live.monthlyCreditLimit ?? null,
@@ -203,7 +208,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
           )}
         </div>
         <div className={styles.apiKeyList}>
-          {keys.length === 0 ? <div className={styles.lockedOverlay} style={{ marginTop: "1rem" }}>No API keys yet.</div> : keys.map((k) => {
+          {visibleKeys.length === 0 ? <div className={styles.lockedOverlay} style={{ marginTop: "1rem" }}>No API keys yet.</div> : visibleKeys.map((k) => {
             const st = k.isRevoked ? { label: "Revoked", cls: styles.isRevoked } : k.isExpired ? { label: "Expired", cls: styles.isExpired } : { label: "Active", cls: styles.isActive };
             return (
               <div key={k.id} className={styles.apiKeyRow}>
