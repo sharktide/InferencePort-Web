@@ -49,6 +49,21 @@ export function usageGroups(entries: UsageLedgerRow[], by: UsageGroupBy): UsageG
   return Array.from(groups.values());
 }
 
+/** UTC-hour grouping for a genuine 24-hour trend, rather than two calendar-day bars. */
+export function usageHours(entries: UsageLedgerRow[]): UsageGroup[] {
+  const groups = new Map<string, UsageGroup>();
+  for (const entry of entries) {
+    const time = Date.parse(entry.created_at || "");
+    if (!Number.isFinite(time)) continue;
+    const key = new Date(time).toISOString().slice(0, 13);
+    const group = groups.get(key) || { key, label: key, credits: 0, requests: 0 };
+    group.credits += amountSpent(entry);
+    group.requests += 1;
+    groups.set(key, group);
+  }
+  return [...groups.values()];
+}
+
 export function totals(entries: UsageLedgerRow[]) {
   return { credits: entries.reduce((sum, entry) => sum + amountSpent(entry), 0), requests: entries.length };
 }
