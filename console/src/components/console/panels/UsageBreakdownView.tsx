@@ -46,7 +46,7 @@ export default function UsageBreakdownView({ rows, totalCredits, totalRequests, 
     });
   }, [rows, search, sort, dateDimension]);
 
-  const chartRows = dateDimension && sort === "date" ? results.slice(-10) : [...results].sort((a, b) => b[activeMetric] - a[metric]).slice(0, 10);
+  const chartRows = dateDimension && sort === "date" ? results.slice(-10) : [...results].sort((a, b) => b[activeMetric] - a[activeMetric]).slice(0, 10);
   const maxValue = Math.max(0, ...chartRows.map((row) => row[activeMetric]));
   const total = activeMetric === "credits" ? totalCredits : totalRequests;
 
