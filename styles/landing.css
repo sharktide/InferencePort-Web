@@ -259,3 +259,149 @@
 @media (prefers-reduced-motion:reduce) {
   .lp-button,.lp-model-ledger > a,.lp-workflow-services a { transition:none; }
 }
+
+/* v3: theme-correct hero and responsive navigation eyebrow.
+   The original full-bleed navy hero accidentally ignored light mode. */
+.lp-hero-overline { font-size:.65rem;letter-spacing:.045em; }
+.lp-hero-overline > span:first-child { overflow-wrap:normal;white-space:nowrap; }
+:root:not([data-theme="dark"]) .lp-hero {
+  background:#fafaf7;color:var(--text-body);
+}
+:root:not([data-theme="dark"]) .lp-hero::before {
+  opacity:.09;
+  background-image:linear-gradient(90deg,transparent calc(100% - 1px),#748096 calc(100% - 1px));
+}
+:root:not([data-theme="dark"]) .lp-hero-overline { color:#596270;border-bottom-color:var(--border); }
+:root:not([data-theme="dark"]) .lp-hero-copy h1 { color:var(--ink); }
+:root:not([data-theme="dark"]) .lp-hero-copy h1 em {
+  color:var(--ink);
+  background:linear-gradient(to bottom,transparent 71%,var(--gold) 71%,var(--gold) 92%,transparent 92%);
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+:root:not([data-theme="dark"]) .lp-hero-copy > p { color:var(--text-body); }
+:root:not([data-theme="dark"]) .lp-hero-meta { color:var(--text-muted); }
+:root:not([data-theme="dark"]) .lp-hero-meta span::before { color:#a78500; }
+:root:not([data-theme="dark"]) .lp-button-outline { color:var(--ink);border-color:#89919b; }
+:root:not([data-theme="dark"]) .lp-button-outline:hover { color:var(--ink);background:#f1f1eb;border-color:var(--ink); }
+:root:not([data-theme="dark"]) .lp-hero-bottom { border-top-color:var(--border);color:var(--text-body); }
+:root:not([data-theme="dark"]) .lp-hero-bottom span:first-child,
+:root:not([data-theme="dark"]) .lp-hero-bottom a { color:var(--ink); }
+:root:not([data-theme="dark"]) .lp-hero-bottom a:hover { color:var(--brand-ink); }
+
+/* Technical spec rows: useful details instead of decorative numbered chips. */
+.lp-agent-spec { display:grid;gap:0;margin:21px 0 13px;padding:0;border-top:1px solid #455368; }
+.lp-agent-spec > div { display:grid;grid-template-columns:105px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid #455368; }
+.lp-agent-spec dt { font:600 .7rem/1.6 var(--mono);color:#fcd704; }
+.lp-agent-spec dd { margin:0;font-size:.78rem;line-height:1.6;color:#d0dbe9; }
+.lp-mini-facts { display:grid;width:100%;margin:0 0 19px;border-top:1px solid var(--border); }
+.lp-mini-facts > span { padding:8px 0;line-height:1.45;font-size:.76rem;border-bottom:1px solid var(--border); }
+.lp-mini-facts > span::before { content:"/";font-family:var(--mono);color:var(--text-muted);margin-right:9px;font-size:.65rem; }
+.lp-stack-feature { min-height:510px; }
+.lp-stack-mini { min-height:290px; }
+
+/* Different presentations for security responses and workspace governance. */
+.lp-ops-layout { display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px; }
+.lp-ops-layout > article { padding:30px 31px;min-width:0; }
+.lp-ops-shield { background:var(--bg);border:1px solid var(--border); }
+.lp-ops-team { background:var(--paper);border:1px solid var(--border); }
+.lp-ops-label { display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;font:650 .7rem/1.5 var(--mono);letter-spacing:.02em;color:var(--text-muted); }
+.lp-ops-label a { letter-spacing:0;color:var(--ink);text-transform:none;font:650 .78rem Inter,sans-serif; }
+.lp-ops-label a:hover { color:var(--brand-ink); }
+.lp-ops-layout h3 { font-size:clamp(1.4rem,2vw,1.9rem);line-height:1.19;margin:27px 0 11px;letter-spacing:-.035em; }
+.lp-ops-layout p { font-size:.88rem;line-height:1.67;margin:0 0 23px; }
+.lp-shield-response { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--border); }
+.lp-shield-response > span { grid-column:1/-1;padding:11px 14px;background:var(--ink);color:var(--bg);font:600 .7rem/1.5 var(--mono);overflow-wrap:anywhere; }
+.lp-shield-response > div { padding:12px 14px;background:var(--bg);border-top:1px solid var(--border); }
+.lp-shield-response > div:nth-child(2n) { border-right:1px solid var(--border); }
+.lp-shield-response code { display:block;font:600 .78rem/1.5 var(--mono);color:var(--ink); }
+.lp-shield-response small { display:block;font-size:.72rem;color:var(--text-muted);margin-top:3px; }
+.lp-org-spec { border-top:1px solid var(--border);margin:0;padding:0; }
+.lp-org-spec > div { display:grid;grid-template-columns:100px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--border); }
+.lp-org-spec dt { color:var(--ink);font:650 .75rem/1.5 var(--mono); }
+.lp-org-spec dd { margin:0;font-size:.78rem;line-height:1.55; }
+
+/* A practical console feature index in place of the generic product-node diagram. */
+.lp-workflow { background:var(--bg-alt);color:var(--text-body); }
+.lp-workflow .lp-kicker { color:var(--text-muted); }
+.lp-workflow h2 { color:var(--ink); }
+.lp-workflow-header > p { color:var(--text-body); }
+.lp-console-layout { display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);border:1px solid var(--border);background:var(--bg); }
+.lp-console-intro { background:var(--gold);color:#151a23;padding:32px;display:flex;flex-direction:column;align-items:flex-start; }
+.lp-console-intro > span { font:600 .72rem var(--mono);color:#4d460c;letter-spacing:.015em; }
+.lp-console-intro h3 { color:#11151c;font-size:clamp(1.6rem,2.45vw,2.3rem);line-height:1.13;letter-spacing:-.04em;margin:40px 0 13px; }
+.lp-console-intro p { line-height:1.65;font-size:.9rem;margin:0 0 20px; }
+.lp-console-intro a { color:#101623;font-size:.86rem;font-weight:700;margin-top:auto;border-bottom:1px solid #101623;padding-bottom:4px; }
+.lp-console-capabilities { display:grid;grid-template-columns:repeat(2,minmax(0,1fr)); }
+.lp-console-capabilities > div { padding:28px;border-left:1px solid var(--border);border-bottom:1px solid var(--border); }
+.lp-console-capabilities > div:nth-last-child(-n+2) { border-bottom:0; }
+.lp-console-capabilities > div > span { color:var(--text-muted);font:600 .7rem var(--mono);display:block;margin-bottom:22px; }
+.lp-console-capabilities strong { display:block;color:var(--ink);font-weight:700;font-size:1.04rem;letter-spacing:-.02em; }
+.lp-console-capabilities p { margin:9px 0 0;font-size:.85rem;line-height:1.62; }
+:root[data-theme="dark"] .lp-workflow { background:#151c27;color:#cbd4e2; }
+:root[data-theme="dark"] .lp-workflow .lp-kicker { color:#acb8c9; }
+:root[data-theme="dark"] .lp-workflow h2 { color:#f4f6fa; }
+:root[data-theme="dark"] .lp-workflow-header > p { color:#b9c6d7; }
+:root[data-theme="dark"] .lp-console-layout { background:#1d2839;border-color:#405064; }
+:root[data-theme="dark"] .lp-console-capabilities > div { border-color:#405064; }
+:root[data-theme="dark"] .lp-console-capabilities strong { color:#f5f6fa; }
+:root[data-theme="dark"] .lp-console-capabilities p { color:#c0cce0; }
+:root[data-theme="dark"] .lp-console-capabilities > div > span { color:#9fb2c8; }
+
+/* Council + CLI get enough room for actual workflows and commands.
+   Hosted and desktop products are presented as complementary use cases. */
+.lp-builder-grid { display:grid;grid-template-columns:1fr 1fr;gap:15px; }
+.lp-builder-grid > article { display:flex;flex-direction:column;padding:31px;min-height:490px;border:1px solid var(--border); }
+.lp-council { background:var(--paper); }
+.lp-cli { background:var(--bg); }
+.lp-detail-eyebrow, .lp-experience-links article > span { display:block;color:var(--text-muted);font:600 .7rem/1.5 var(--mono);letter-spacing:.055em; }
+.lp-builder-grid h3 { margin:25px 0 10px;font-size:clamp(1.4rem,2vw,1.85rem);line-height:1.25;font-weight:700; }
+.lp-builder-grid p { margin:0 0 20px;font-size:.89rem;line-height:1.7; }
+.lp-builder-grid article > a { margin-top:auto;color:var(--ink);font-size:.86rem;font-weight:700; }
+.lp-builder-grid article > a:hover { color:var(--brand-ink); }
+.lp-council ol { list-style:none;padding:0;margin:0 0 17px;border-top:1px solid var(--border);counter-reset:steps; }
+.lp-council li { display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--border);font-size:.82rem; }
+.lp-council li b { font-weight:650;color:var(--ink); }
+.lp-council li span { color:var(--text-muted);font-size:.76rem;text-align:right; }
+.lp-builder-grid .lp-detail-foot { font-size:.73rem;color:var(--text-muted);line-height:1.55;margin:0 0 21px; }
+.lp-cli-terminal { background:#141b27;border:1px solid #343f50;color:#e2e9f4;margin:1px 0 20px;overflow:hidden; }
+.lp-cli-terminal > div { padding:10px 14px;border-bottom:1px solid #343f50;color:#a3b3c7;font:500 .68rem var(--mono); }
+.lp-cli-terminal pre { padding:18px 14px;white-space:pre;overflow-x:auto;line-height:1.75;font-size:.75rem;margin:0;color:#e5ecf8; }
+.lp-cli-terminal code { font:inherit; }
+.lp-experience-links { display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px; }
+.lp-experience-links > article { padding:25px 28px;background:var(--bg-alt);border:1px solid var(--border);display:flex;flex-direction:column;align-items:flex-start; }
+.lp-experience-links h3 { font-size:1.25rem;font-weight:700;line-height:1.3;margin:15px 0 8px; }
+.lp-experience-links p { font-size:.85rem;line-height:1.68;margin:0 0 15px; }
+.lp-experience-links a { margin-top:auto;color:var(--ink);font-size:.84rem;font-weight:700; }
+.lp-experience-links a:hover { color:var(--brand-ink); }
+
+@media (max-width:900px) {
+  .lp-console-layout { grid-template-columns:1fr; }
+  .lp-console-intro h3 { margin:19px 0 12px; }
+  .lp-console-intro { min-height:0; }
+  .lp-console-capabilities > div { border-top:1px solid var(--border); }
+  .lp-builder-grid { grid-template-columns:1fr; }
+  .lp-builder-grid > article { min-height:0; }
+  .lp-ops-layout { grid-template-columns:1fr; }
+}
+@media (max-width:630px) {
+  .lp-hero-overline { flex-direction:row;align-items:center;gap:0;font-size:.64rem;letter-spacing:.05em;padding-bottom:15px; }
+  .lp-hero-overline > span:last-child { display:none; }
+  .lp-hero-grid { padding-top:31px; }
+  .lp-hero-copy h1 { font-size:clamp(2.7rem,10.5vw,4.2rem); }
+  .lp-hero-meta { gap:7px 17px; }
+  .lp-agent-spec > div { grid-template-columns:85px minmax(0,1fr); }
+  .lp-ops-layout > article { padding:23px 20px; }
+  .lp-org-spec > div { grid-template-columns:80px 1fr; }
+  .lp-shield-response code { font-size:.69rem;overflow-wrap:anywhere; }
+  .lp-console-capabilities { grid-template-columns:1fr; }
+  .lp-console-capabilities > div { padding:20px 22px;border-left:0;border-bottom:1px solid var(--border) !important; }
+  .lp-console-capabilities > div:last-child { border-bottom:0 !important; }
+  .lp-console-capabilities > div > span { margin-bottom:10px; }
+  .lp-console-intro { padding:25px 22px; }
+  .lp-builder-grid > article { padding:24px 20px; }
+  .lp-council li { flex-direction:column;gap:3px;align-items:flex-start; }
+  .lp-council li span { text-align:left; }
+  .lp-experience-links { grid-template-columns:1fr; }
+  .lp-experience-links > article { padding:22px 20px; }
+}

@@ -72,8 +72,12 @@ test("homepage has intentional layout variation and responsive themes", () => {
   assert.ok(sectionCount <= 8, "Homepage has excessive sections");
   assert.match(home, /class="lp-model-ledger"/);
   assert.match(home, /class="lp-stack-layout"/);
-  assert.match(home, /class="lp-workflow-map"/);
-  assert.match(home, /class="lp-more-grid"/);
+  assert.match(home, /class="lp-ops-layout"/);
+  assert.match(home, /class="lp-agent-spec"/);
+  assert.match(home, /class="lp-org-spec"/);
+  assert.match(home, /class="lp-shield-response"/);
+  assert.match(home, /class="lp-console-layout"/);
+  assert.match(home, /class="lp-builder-grid"/);
   assert.doesNotMatch(home, /class="checks"|class="pgrid"|class="pc c-/);
   assert.match(home, /href="styles\/shared\.css"/);
   assert.match(home, /href="styles\/landing\.css"/);
@@ -85,4 +89,26 @@ test("homepage has intentional layout variation and responsive themes", () => {
   assert.match(css, /var\(--border\)/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /\.lp-code-tabs button:focus-visible/);
+});
+
+test("theme correctly switches the hero instead of forcing dark mode", () => {
+  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero \{/);
+  assert.match(css, /background:#fafaf7;color:var\(--text-body\)/);
+  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-copy h1/);
+  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-button-outline/);
+  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-bottom/);
+  assert.match(css, /\.lp-hero-overline > span:last-child \{ display:none; \}/);
+});
+
+test("specific infrastructure features remain discoverable in concise sections", () => {
+  for (const term of [
+    "HTTP or SSE MCP", "share unlisted", "Owner- or caller-paid",
+    "$0.50 per deployment", "warm availability",
+    "AWS Signature V4", "Revocable credentials", "Azure Blob Storage",
+    "risk_score", "confidence", "decision", "reasons",
+    "SAML SSO", "model and modality restrictions",
+    "separate API, storage and deployment charges",
+    "1–3 review rounds", "OAuth or API key",
+    "Ollama", "JSON output"
+  ]) assert.ok(home.toLowerCase().includes(term.toLowerCase()), "Missing concrete capability: " + term);
 });
