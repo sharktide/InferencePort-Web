@@ -47,14 +47,16 @@
 @media (max-width: 580px) { .panel { padding: .8rem; } .donutLayout { grid-template-columns: 1fr; }.donut { max-width: 185px; }.legend { grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem 1rem; } }
 @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
 
-.inspect { display: flex; flex-wrap: wrap; gap: .45rem 1rem; align-items: center; min-height: 44px; padding: .7rem .8rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); color: var(--text-2); font-size: .75rem; }
+.inspect { min-height: 76px; display: flex; flex-wrap: wrap; gap: .45rem 1rem; align-items: center; min-height: 44px; padding: .7rem .8rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); color: var(--text-2); font-size: .75rem; }
 .inspect strong { color: var(--text); overflow-wrap: anywhere; }
 .inspect span { font-variant-numeric: tabular-nums; }
 .inspectHint { color: var(--muted); }
 .clear { border: 0; background: transparent; color: var(--text); text-decoration: underline; font-size: .75rem; cursor: pointer; padding: .15rem .3rem; }
-.arc { cursor: pointer; stroke-linecap: butt; transition: opacity .16s ease, stroke-width .16s ease; outline: none; }
-.arc:hover, .arc:focus-visible, .arcActive { stroke-width: 27px; opacity: .85; }
-.arc:focus-visible { filter: drop-shadow(0 0 2px var(--text)); }
+/* Never change SVG stroke width or hit geometry on hover: it causes pointer enter/leave
+   oscillation at donut-segment edges, especially when the first slice dominates. */
+.arc { cursor: pointer; stroke-linecap: butt; transition: opacity .16s ease; outline: none; }
+.arc:hover, .arc:focus-visible, .arcActive { opacity: .8; }
+.arc:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
 .legendButton { display: grid; width: 100%; min-width: 0; grid-template-columns: 10px minmax(0,1fr) auto; gap: .25rem .5rem; align-items: center; text-align: left; border: 1px solid transparent; border-radius: var(--r-0); background: transparent; padding: .28rem; cursor: pointer; font-size: .77rem; }
 .legendButton:hover, .legendButton:focus-visible, .legendActive { background: var(--surface-2); border-color: var(--border); }
 .legendButton strong { color: var(--text-2); font-weight: 650; font-variant-numeric: tabular-nums; }
