@@ -13,6 +13,7 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   const [keysOwnerToken, setKeysOwnerToken] = useState<string | undefined>(undefined);
   const [keyName, setKeyName] = useState("");
   const [keyExpiry, setKeyExpiry] = useState("");
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const [status, setStatus] = useState("Sign in to create and manage Lightning API keys.");
   const [reveal, setReveal] = useState<{ raw: string; name: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -77,6 +78,10 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     setKeysOwnerToken(undefined);
     setEditing(null);
     setReveal(null);
+    setKeyName("");
+    setKeyExpiry("");
+    setCreateLimits(emptyDraft());
+    setAdvancedOpen(false);
     setRestrictionSupport("loading");
     void refresh();
     void probeCapabilities();
@@ -108,10 +113,10 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
         body: JSON.stringify({ name: keyName.trim(), expiresAt: keyExpiry.trim() || null, ...restrictions }),
       });
       if (!r?.apiKey || !r?.rawKey) throw new Error("Could not create API key");
-      setKeyName(""); setKeyExpiry(""); setCreateLimits(emptyDraft());
+      setKeyName(""); setKeyExpiry(""); setCreateLimits(emptyDraft()); setAdvancedOpen(false);
       setReveal({ raw: r.rawKey, name: r.apiKey.name });
-      setStatus("New key created. Copy it now.");
       await refresh();
+      setStatus("New key created. Copy it now.");
     } catch (e: any) { setStatus(`Error: ${e.message}`); }
     finally { setBusy(false); }
   };
@@ -163,6 +168,10 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     try { await fj(`/v1/lightning-api-keys/${encodeURIComponent(id)}`, { method: "DELETE", headers: authH() }); await refresh(); } catch (e: any) { setStatus(`Error: ${e.message}`); }
   };
 
+  const configuredRestrictions = restrictionSupport === "supported" &&
+    Boolean(createLimits.budget.trim() || createLimits.models.trim() || createLimits.modalities.length);
+  const hasAdvancedSettings = Boolean(keyExpiry.trim() || configuredRestrictions);
+
   if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to create and manage Lightning API keys.</div></div>;
 
   return (
@@ -170,29 +179,72 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Lightning API keys</div>
         <div className={styles.apiKeyShell}>
-          <div className={styles.apiKeyForm}>
-            <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "0.85rem" }}>Create long-lived API keys for hosted scripts, servers, and production integrations.</p>
-            <div className={styles.stack}>
-              <label>Name<input type="text" maxLength={64} placeholder="Production deploy, CI, backend service..." value={keyName} onChange={(e) => setKeyName(e.target.value)} /></label>
-              <label>Expires (optional)<input type="text" placeholder="ISO date, for example 2026-12-31T23:59:59Z" value={keyExpiry} onChange={(e) => setKeyExpiry(e.target.value)} /></label>
-              {restrictionSupport === "supported" ? (
-                <>
-                  <p className={styles.muted}>Optional restrictions for this key only. Blank values mean unrestricted; account limits still apply.</p>
-                  <LimitsEditor idPrefix="personal-new-key" draft={createLimits} onChange={setCreateLimits} fields={["budget", "models", "modalities"]} disabled={busy} />
-                </>
-              ) : restrictionSupport === "unsupported" ? (
-                <p className={`${styles.muted} ${styles.tiny}`}>This server does not yet support per-key limits. Keys created here are unrestricted at key level.</p>
-              ) : (
-                <p className={`${styles.muted} ${styles.tiny}`}>
-                  {restrictionSupport === "loading" ? "Checking per-key limit support…" : "Unable to verify per-key limit support."}
-                  {restrictionSupport === "error" && <button type="button" className="ghost" onClick={probeCapabilities}>Retry</button>}
+          <div className={`${styles.apiKeyForm} ${styles.apiKeyCompactForm}`}>
+            <p className={styles.apiKeyCreateDescription}>
+              Create a key for an application, server, or integration.
+            </p>
+            <div className={styles.apiKeyCreateFields}>
+              <label>Key name
+                <input type="text" maxLength={64} placeholder="e.g. Production backend"
+                  value={keyName} onChange={(e) => setKeyName(e.target.value)} />
+              </label>
+              <div className={styles.apiKeyAdvancedSection}>
+                <button type="button" className={styles.apiKeyAdvancedToggle}
+                  onClick={() => setAdvancedOpen((open) => !open)}
+                  aria-expanded={advancedOpen} aria-controls="personal-key-advanced">
+                  <span className={styles.apiKeyAdvancedToggleMain}>
+                    <span className={styles.apiKeyAdvancedTitle}>Advanced settings</span>
+                    <span className={styles.apiKeyAdvancedSummary}>
+                      {hasAdvancedSettings ? "Custom settings configured" : "Optional · expiration, spending and model access"}
+                    </span>
+                  </span>
+                  <span className={`${styles.apiKeyAdvancedChevron} ${advancedOpen ? styles.apiKeyAdvancedChevronOpen : ""}`} aria-hidden="true" />
+                </button>
+                {advancedOpen && (
+                  <div className={styles.apiKeyAdvancedContent} id="personal-key-advanced">
+                    <label>Expires (optional)
+                      <input type="datetime-local" value={keyExpiry}
+                        onChange={(e) => setKeyExpiry(e.target.value)} />
+                    </label>
+                    {restrictionSupport === "supported" ? (
+                      <>
+                        <p className={styles.apiKeyAdvancedHelp}>
+                          Optional key-level limits. Leave a field blank to allow all; account limits still apply.
+                        </p>
+                        <LimitsEditor idPrefix="personal-new-key" draft={createLimits}
+                          onChange={setCreateLimits} fields={["budget", "models", "modalities"]} disabled={busy} />
+                      </>
+                    ) : restrictionSupport === "unsupported" ? (
+                      <p className={styles.apiKeyAdvancedHelp}>
+                        This server does not support per-key spending or model limits yet.
+                      </p>
+                    ) : (
+                      <div className={styles.apiKeyAdvancedHelp} role="status">
+                        {restrictionSupport === "loading"
+                          ? "Checking server support for key restrictions…"
+                          : "Could not verify server support for key restrictions."}
+                        {restrictionSupport === "error" && (
+                          <button type="button" className="ghost" onClick={probeCapabilities}>Retry</button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className={styles.apiKeyCreateActions}>
+                <button type="button" onClick={create}
+                  disabled={busy || restrictionSupport === "loading" || restrictionSupport === "error"}>
+                  {busy ? "Creating…" : "Generate API key"}
+                </button>
+              </div>
+              {(restrictionSupport === "loading" || restrictionSupport === "error") && !advancedOpen && (
+                <p className={styles.apiKeyAdvancedHelp} role="status">
+                  {restrictionSupport === "loading"
+                    ? "Verifying API key capabilities…"
+                    : <>Unable to verify API key capabilities. <button type="button" className="ghost" onClick={probeCapabilities}>Retry</button></>}
                 </p>
               )}
-              <div className={styles.row}>
-                <button onClick={create} disabled={busy || restrictionSupport === "loading" || restrictionSupport === "error"} style={{ flex: 1 }}>{busy ? "Creating\u2026" : "Generate API key"}</button>
-                <button className="ghost" onClick={refresh} style={{ flex: 1 }}>Refresh keys</button>
-              </div>
-              <p className={`${styles.muted} ${styles.tiny}`}>{status}</p>
+              <p className={`${styles.muted} ${styles.tiny}`} role="status">{status}</p>
             </div>
           </div>
           {reveal && (
@@ -207,6 +259,10 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
             </div>
           )}
         </div>
+        <div className={styles.apiKeyListHeader}>
+          <span className={styles.apiKeyListTitle}>Your API keys</span>
+          <button type="button" className="ghost" onClick={refresh} disabled={busy}>Refresh</button>
+        </div>
         <div className={styles.apiKeyList}>
           {visibleKeys.length === 0 ? <div className={styles.lockedOverlay} style={{ marginTop: "1rem" }}>No API keys yet.</div> : visibleKeys.map((k) => {
             const st = k.isRevoked ? { label: "Revoked", cls: styles.isRevoked } : k.isExpired ? { label: "Expired", cls: styles.isExpired } : { label: "Active", cls: styles.isActive };
@@ -216,13 +272,20 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
                   <div className={styles.apiKeyRowTitle}><div className={styles.apiKeyName}>{k.name}</div><div className={styles.apiKeyPrefix}>{k.keyPrefix}...</div></div>
                   <div className={`${styles.apiKeyBadge} ${st.cls}`}>{st.label}</div>
                 </div>
-                <div className={styles.apiKeyMeta}><span>Created {fmt(k.createdAt)}</span><span>Last used {fmt(k.lastUsedAt)}</span><span>Expires {k.expiresAt ? fmt(k.expiresAt) : "Never"}</span></div>
+                <div className={styles.apiKeyMeta}>
+                  <span>Created {fmt(k.createdAt)}</span>
+                  <span>{k.expiresAt ? `Expires ${fmt(k.expiresAt)}` : "No expiration"}</span>
+                </div>
                 {restrictionSupport === "supported" && (
-                  <div className={styles.apiKeyMeta}>
-                    <span>Spent this UTC month: {Number(k.monthSpend || 0).toLocaleString()} / {k.monthlyCreditLimit == null ? "no key limit" : Number(k.monthlyCreditLimit).toLocaleString()} credits</span>
-                    <span>Models: {k.allowedModels?.length ? k.allowedModels.join(", ") : "All models"}</span>
-                    <span>Modalities: {k.allowedModalities?.length ? k.allowedModalities.join(", ") : "All modalities"}</span>
-                  </div>
+                  <details className={styles.apiKeyDetails}>
+                    <summary>Usage &amp; restrictions</summary>
+                    <div className={styles.apiKeyDetailsContent}>
+                      <div>Spent this UTC month: <strong>{Number(k.monthSpend || 0).toLocaleString()}</strong> / {k.monthlyCreditLimit == null ? "no key limit" : `${Number(k.monthlyCreditLimit).toLocaleString()} credits`}</div>
+                      <div>Allowed models: {k.allowedModels?.length ? k.allowedModels.join(", ") : "All"}</div>
+                      <div>Allowed modalities: {k.allowedModalities?.length ? k.allowedModalities.join(", ") : "All"}</div>
+                      <div>Last used: {fmt(k.lastUsedAt)}</div>
+                    </div>
+                  </details>
                 )}
                 <div className={styles.apiKeyActions}>
                   {restrictionSupport === "supported" && !k.isRevoked && !k.isExpired && <button type="button" className="ghost" onClick={() => editKey(k)} disabled={busy || (editing !== null && editing.id !== k.id)}>Edit limits</button>}
