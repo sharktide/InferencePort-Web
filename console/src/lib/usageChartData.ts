@@ -54,7 +54,7 @@ export function trendBins(rows: UsageChartRow[], range: TrendRange, now = Date.n
   if (!Number.isFinite(last)) return { interval, bins: [] };
   const first = range === "all" ? Math.min(...validRows.map((row) => Date.parse(
     row.key + (row.key.length === 13 ? ":00:00Z" : row.key.length === 7 ? "-01T00:00:00Z" : "T00:00:00Z")
-  ))) : range === "24h" ? now - (23 * HOUR) : now - (dayCount ?? 30) * DAY;
+  ))) : range === "24h" ? now - (23 * HOUR) : now - ((dayCount ?? 30) - 1) * DAY;
   // Cap unbounded "all loaded" to 60 daily bins, keeping recent months clear.
   const effectiveInterval = range === "all" && last - first > 60 * DAY ? "month" : interval;
   const startKey = bucketKey(first, effectiveInterval);
@@ -89,7 +89,7 @@ export function pieSlices(rows: UsageChartRow[], metric: "credits" | "requests",
   const main = ordered.slice(0, maxSegments);
   const leftover = ordered.slice(maxSegments);
   const slices = leftover.length ? [...main, {
-    key: "other", label: "Other (" + leftover.length + ")", credits: leftover.reduce((s, r) => s + r.credits, 0),
+    key: "__remaining_groups__", label: "Other (" + leftover.length + ")", credits: leftover.reduce((s, r) => s + r.credits, 0),
     requests: leftover.reduce((s, r) => s + r.requests, 0),
   }] : main;
   return slices.map((row) => ({ ...row, value: row[metric], share: (row[metric] / total) * 100 }));
