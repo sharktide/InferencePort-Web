@@ -14,7 +14,7 @@
 .chartHead strong { color: var(--text); }
 .barRow { display: grid; grid-template-columns: minmax(110px, 30%) minmax(0, 1fr) minmax(60px, auto); gap: 0.65rem; align-items: center; font-size: 0.8rem; }
 .barLabel { overflow-wrap: anywhere; color: var(--text); min-width: 0; }
-.barTrack { height: 11px; border-radius: 999px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--border); }
+.barTrack { display: block; width: 100%; padding: 0; cursor: pointer; height: 11px; border-radius: 999px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--border); }
 .barFill { display: block; height: 100%; background: var(--brand); border-radius: 999px; }
 .barAmount { color: var(--text-2); font-variant-numeric: tabular-nums; text-align: right; }
 .tableWrap { overflow-x: auto; max-width: 100%; border: 1px solid var(--border); border-radius: var(--r-1); }
@@ -32,3 +32,8 @@
   .barRow { grid-template-columns: minmax(0, 1fr) auto; gap: 0.3rem 0.65rem; }
   .barTrack { grid-column: 1 / -1; grid-row: 2; }
 }
+
+.barTrack:hover, .barTrack:focus-visible, .barTrack[aria-pressed="true"] { outline: 2px solid var(--border-strong); outline-offset: 2px; }
+.barDetails { min-height: 42px; display: flex; align-items: center; flex-wrap: wrap; gap: .4rem 1rem; padding: .7rem .9rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); color: var(--text-2); font-size: .76rem; }
+.barDetails strong { color: var(--text); overflow-wrap: anywhere; }
+.barDetails button { border: none; background: transparent; color: var(--text); text-decoration: underline; cursor: pointer; font-size: .76rem; }
