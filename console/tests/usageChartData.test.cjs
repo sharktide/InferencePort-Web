@@ -53,3 +53,13 @@ test("donut chart isolates top five segments and combines the remainder", () => 
   assert.equal(pieSlices(rows, "requests")[0].key, "model-6");
   assert.equal(pieSlices([], "credits").length, 0);
 });
+
+test("donut hover styling never changes the SVG segment's hit geometry", () => {
+  const css = fs.readFileSync(path.join(__dirname, "../src/components/console/panels/UsageCharts.module.css"), "utf8");
+  const hover = css.match(/\.arc:hover[^{]*\{([^}]*)\}/);
+  assert.ok(hover, "donut hover style exists");
+  assert.doesNotMatch(hover[1], /stroke-width|transform|scale|r\s*:/);
+  const source = fs.readFileSync(path.join(__dirname, "../src/components/console/panels/UsageCharts.tsx"), "utf8");
+  assert.ok(source.includes('className={s.inspect} aria-live="polite"'));
+  assert.ok(source.includes("activeSlice ? ("));
+});
