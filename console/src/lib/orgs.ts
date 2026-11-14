@@ -211,9 +211,10 @@ export interface OrgLedgerEntry {
   model: string | null; actor_email: string | null; key_prefix: string | null; source: string | null; created_at: string;
 }
 
-export type UsageDimension = "user" | "key" | "model" | "day";
-export interface UsageBucket { key: string; label: string; credits: number; requests: number }
-export interface UsageBreakdown { by: UsageDimension; days: number; total_credits: number; total_requests: number; buckets: UsageBucket[] }
+export type UsageDimension = "user" | "key" | "model" | "day" | "service" | "resource";
+export type UsageService = "all" | "api" | "storage" | "deployment" | "other";
+export interface UsageBucket { key: string; label: string; credits: number; requests: number; charge_events?: number }
+export interface UsageBreakdown { by: UsageDimension; service?: UsageService; days: number; total_credits: number; total_requests: number; total_charge_events?: number; buckets: UsageBucket[] }
 
 export interface AuditEvent {
   id: number; actor_id: string | null; actor_email: string | null; actor_type: string; action: string;
@@ -370,7 +371,7 @@ export function createOrgApi(apiBase: string, getToken: () => string | undefined
     setPolicies: (slug: string, b: Partial<OrgPolicies>) => call<{ policies: OrgPolicies }>("PUT", `${o(slug)}/policies`, b),
     desktopPolicy: (slug: string) => call<{ desktop: DesktopPolicy }>("GET", `${o(slug)}/desktop-policy`),
     setDesktopPolicy: (slug: string, b: Partial<DesktopPolicy>) => call<{ desktop: DesktopPolicy }>("PUT", `${o(slug)}/desktop-policy`, b),
-    usage: (slug: string, q: { days?: number; by?: UsageDimension } = {}) => call<UsageBreakdown>("GET", `${o(slug)}/usage/breakdown${qs({ days: q.days ?? 30, by: q.by ?? "user" })}`),
+    usage: (slug: string, q: { days?: number; by?: UsageDimension; service?: UsageService } = {}) => call<UsageBreakdown>("GET", `${o(slug)}/usage/breakdown${qs({ days: q.days ?? 30, by: q.by ?? "user", service: q.service ?? "all" })}`),
     usageExport: (slug: string, days = 30, format: "csv" | "json" = "csv") => call<string>("GET", `${o(slug)}/usage/export${qs({ days, format })}`, undefined, true),
     sendUsageReport: (slug: string, b: { days?: number; to?: string } = {}) => call<{ success: true; sent_to: string }>("POST", `${o(slug)}/usage/report`, b),
 
