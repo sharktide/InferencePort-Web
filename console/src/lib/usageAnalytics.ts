@@ -8,9 +8,33 @@ export interface UsageLedgerRow {
   usage_kind?: string | null;
   units?: number | null;
   unit_label?: string | null;
+  source?: string | null;
+  source_ref?: string | null;
+  metadata?: Record<string, unknown> | null;
 }
 export type UsagePeriod = "24h" | "7d" | "30d" | "90d" | "all";
-export type UsageGroupBy = "model" | "modality" | "day";
+export type UsageGroupBy = "model" | "modality" | "day" | "service" | "resource";
+export type UsageService = "all" | "api" | "storage" | "deployment" | "other";
+export const SERVICE_NAMES: Record<Exclude<UsageService, "all">, string> = {
+  api: "Model API", storage: "Buckets storage", deployment: "Featherless hosting", other: "Other charges",
+};
+const INFERENCE_KINDS = new Set(["text", "image", "video", "audio", "model3d", "embedding", "realtime", "decision"]);
+
+/** Match the server ledger service attribution; unknown charges do not become model calls. */
+export function usageService(entry: UsageLedgerRow): Exclude<UsageService, "all"> {
+  const kind = (entry.usage_kind || "").toLowerCase();
+  if (kind === "storage" || entry.source === "buckets") return "storage";
+  if (kind === "deployment" || entry.source === "v1_deploy_fee") return "deployment";
+  return INFERENCE_KINDS.has(kind) ? "api" : "other";
+}
+export function usageResource(entry: UsageLedgerRow): string {
+  const category = usageService(entry);
+  if (category === "api") return entry.model?.trim() || "Unspecified model";
+  const meta = entry.metadata || {};
+  const id = category === "storage" ? (meta.bucket_id || entry.source_ref) : category === "deployment" ? meta.deployment_id : null;
+  if (category === "other") return entry.usage_kind?.trim() || "Other charges";
+  return (category === "storage" ? "Bucket " : "Deployment ") + String(id || "unknown").slice(0, 12);
+}
 export interface UsageGroup { key: string; label: string; credits: number; requests: number }
 
 const PERIOD_MS: Record<Exclude<UsagePeriod, "all">, number> = {
@@ -36,12 +60,14 @@ export function usageGroups(entries: UsageLedgerRow[], by: UsageGroupBy): UsageG
   for (const entry of entries) {
     let key: string;
     if (by === "model") key = entry.model?.trim() || "Unspecified model";
+    else if (by === "resource") key = usageResource(entry);
+    else if (by === "service") key = usageService(entry);
     else if (by === "modality") key = entry.usage_kind?.trim() || "Other / unspecified";
     else {
       const date = Date.parse(entry.created_at || "");
       key = Number.isFinite(date) ? new Date(date).toISOString().slice(0, 10) : "Unknown date";
     }
-    const group = groups.get(key) || { key, label: key, credits: 0, requests: 0 };
+    const group = groups.get(key) || { key, label: by === "service" ? SERVICE_NAMES[key as Exclude<UsageService, "all">] : key, credits: 0, requests: 0 };
     group.credits += amountSpent(entry);
     group.requests++;
     groups.set(key, group);
@@ -76,9 +102,9 @@ export function csvCell(value: unknown): string {
 }
 
 export function usageCsv(entries: UsageLedgerRow[]): string {
-  const columns = ["Date", "Model", "Modality", "Credits used", "Units", "Unit"];
+  const columns = ["Date", "Service", "Model or resource", "Modality", "Credits used", "Units", "Unit"];
   const lines = entries.map((entry) =>
-    [entry.created_at, entry.model, entry.usage_kind, amountSpent(entry).toFixed(4), entry.units, entry.unit_label].map(csvCell).join(",")
+    [entry.created_at, SERVICE_NAMES[usageService(entry)], usageResource(entry), entry.usage_kind, amountSpent(entry).toFixed(4), entry.units, entry.unit_label].map(csvCell).join(",")
   );
   return [columns.map(csvCell).join(","), ...lines].join("\r\n") + "\r\n";
 }
