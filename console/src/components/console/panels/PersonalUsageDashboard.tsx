@@ -21,8 +21,11 @@ function displayDate(iso?: string | null) {
 
 export default function PersonalUsageDashboard({ session, apiBase }: Props) {
   const token = session?.access_token;
-  const [entries, setEntries] = useState<UsageLedgerRow[] | null>(null);
-  const [loadError, setLoadError] = useState("");
+  const sourceKey = token ? apiBase + "|" + token : "";
+  const [loaded, setLoaded] = useState<{ sourceKey: string; entries: UsageLedgerRow[] } | null>(null);
+  const [failure, setFailure] = useState<{ sourceKey: string; message: string } | null>(null);
+  const entries = loaded?.sourceKey === sourceKey ? loaded.entries : null;
+  const loadError = failure?.sourceKey === sourceKey ? failure.message : "";
   const [reload, setReload] = useState(0);
   const [period, setPeriod] = useState<UsagePeriod>("30d");
   const [by, setBy] = useState<UsageGroupBy>("model");
@@ -31,24 +34,25 @@ export default function PersonalUsageDashboard({ session, apiBase }: Props) {
 
   useEffect(() => {
     const controller = new AbortController();
-    setEntries(null);
-    setLoadError("");
+    setLoaded(null);
+    setFailure(null);
     if (!token) return () => controller.abort();
+    const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(20_000)]);
     void (async () => {
       try {
         const response = await fetch(apiBase + "/v1/credits/ledger/models?limit=" + LIMIT, {
-          headers: { Authorization: "Bearer " + token }, signal: controller.signal,
+          headers: { Authorization: "Bearer " + token }, signal,
         });
         const json = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(typeof json.detail === "string" ? json.detail : "Unable to load usage (HTTP " + response.status + ")");
         if (!Array.isArray(json.entries)) throw new Error("The usage response was not in the expected format.");
-        if (!controller.signal.aborted) setEntries(json.entries);
+        if (!controller.signal.aborted) setLoaded({ sourceKey, entries: json.entries });
       } catch (err) {
-        if (!controller.signal.aborted) setLoadError(err instanceof Error ? err.message : "Unable to load usage.");
+        if (!controller.signal.aborted) setFailure({ sourceKey, message: err instanceof Error ? err.message : "Unable to load usage." });
       }
     })();
     return () => controller.abort();
-  }, [token, apiBase, reload]);
+  }, [token, apiBase, reload, sourceKey]);
 
   const usage = useMemo(() => recentUsage(entries ?? [], period), [entries, period]);
   const models = useMemo(() =>
@@ -88,8 +92,9 @@ export default function PersonalUsageDashboard({ session, apiBase }: Props) {
         <button type="button" className="ghost" onClick={() => setReload((n) => n + 1)}>Refresh</button>
       </header>
 
-      {loadError && <div className={s.error} role="alert">Could not load usage: {loadError} <button type="button" onClick={() => setReload((n) => n + 1)}>Retry</button></div>}
-      {!entries && !loadError && <p className={s.empty} role="status">Loading model usage…</p>}
+      {!token && <p className={s.error} role="alert">Your session has no access token. Sign in again to view usage.</p>}
+      {token && loadError && <div className={s.error} role="alert">Could not load usage: {loadError} <button type="button" onClick={() => setReload((n) => n + 1)}>Retry</button></div>}
+      {token && !entries && !loadError && <p className={s.empty} role="status">Loading model usage…</p>}
       {entries && (
         <>
           <div className={s.controls}>
