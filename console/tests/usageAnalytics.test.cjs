@@ -11,7 +11,7 @@ const compiled = ts.transpileModule(source, {
 }).outputText;
 const moduleContext = { exports: {} };
 vm.runInNewContext(compiled, { exports: moduleContext.exports, module: moduleContext, Date, Map, Number, String, Array, RegExp });
-const { amountSpent, recentUsage, usageGroups, totals, csvCell, usageCsv } = moduleContext.exports;
+const { amountSpent, recentUsage, usageGroups, usageService, usageResource, totals, csvCell, usageCsv } = moduleContext.exports;
 
 const now = Date.parse("2026-11-13T20:00:00Z");
 const entries = [
@@ -56,4 +56,28 @@ test("CSV quotes input and neutralizes spreadsheet formulas", () => {
   const result = usageCsv([{ entry_type: "usage", delta_credits: -1, model: "=unsafe", usage_kind: "text" }]);
   assert.ok(result.includes("\"'=unsafe\""));
   assert.ok(result.includes("\"1.0000\""));
+});
+
+test("storage and hosting fees never count as model API inference", () => {
+  const charges = [
+    { entry_type: "usage", usage_kind: "text", model: "gemini", delta_credits: -1.25 },
+    { entry_type: "usage", usage_kind: "storage", source: "buckets", model: "storage", metadata: { bucket_id: "bucket-123" }, delta_credits: -2 },
+    { entry_type: "usage", usage_kind: "deployment", source: "v1_deploy_fee", model: "featherless-deployed",
+      metadata: { deployment_id: "deploy-456" }, delta_credits: -10 },
+    { entry_type: "usage", usage_kind: "custom", model: "unclassified", delta_credits: -0.5 },
+  ];
+  assert.equal(usageService(charges[0]), "api");
+  assert.equal(usageService(charges[1]), "storage");
+  assert.equal(usageService(charges[2]), "deployment");
+  assert.equal(usageService(charges[3]), "other");
+  const groups = usageGroups(charges, "service");
+  assert.equal(groups.find((r) => r.key === "api").credits, 1.25);
+  assert.equal(groups.find((r) => r.key === "storage").credits, 2);
+  assert.equal(groups.find((r) => r.key === "deployment").credits, 10);
+  assert.equal(usageResource(charges[1]), "Bucket bucket-123");
+  assert.equal(usageResource(charges[2]), "Deployment deploy-456");
+  assert.equal(totals(charges).credits, 13.75);
+  const csv = usageCsv(charges);
+  assert.ok(csv.includes("Buckets storage"));
+  assert.ok(csv.includes("Featherless hosting"));
 });
