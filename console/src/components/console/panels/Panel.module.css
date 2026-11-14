@@ -167,13 +167,38 @@
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
 /* API keys */
-.apiKeyShell { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 1.25rem; align-items: start; }
-.apiKeyForm { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2); padding: 1.25rem; }
+.apiKeyShell { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; max-width: 760px; }
+.apiKeyForm { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2); padding: 1.25rem; min-width: 0; }
+.apiKeyCompactForm { padding: 0; background: transparent; border: 0; }
+.apiKeyCreateDescription { margin: 0 0 1rem; color: var(--text-2); font-size: 0.875rem; line-height: 1.5; }
+.apiKeyCreateFields { display: grid; gap: 1rem; min-width: 0; }
+.apiKeyCreateFields > label, .apiKeyAdvancedContent > label { min-width: 0; display: grid; gap: 0.45rem; color: var(--text-2); font-size: 0.8125rem; font-weight: 600; }
+.apiKeyCreateFields > label > input, .apiKeyAdvancedContent > label > input { width: 100%; min-width: 0; }
+.apiKeyAdvancedSection { border: 1px solid var(--border); border-radius: var(--r-2); background: var(--surface); min-width: 0; overflow: hidden; }
+.apiKeyAdvancedToggle { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.8rem 0.95rem; background: transparent; color: var(--text); border: 0; border-radius: 0; min-height: 54px; cursor: pointer; font: inherit; text-align: left; box-shadow: none; }
+.apiKeyAdvancedToggle:hover { background: var(--surface-2); }
+.apiKeyAdvancedToggle:focus-visible { outline: 2px solid var(--brand); outline-offset: -3px; }
+.apiKeyAdvancedToggleMain { display: grid; gap: 0.12rem; min-width: 0; }
+.apiKeyAdvancedTitle { font-size: 0.875rem; font-weight: 600; }
+.apiKeyAdvancedSummary { font-size: 0.75rem; font-weight: 400; color: var(--muted); line-height: 1.35; }
+.apiKeyAdvancedChevron { flex: 0 0 auto; width: 8px; height: 8px; border-right: 1.5px solid var(--text-2); border-bottom: 1.5px solid var(--text-2); transform: rotate(45deg); transition: transform 0.15s ease; margin-right: 0.2rem; }
+.apiKeyAdvancedChevronOpen { transform: rotate(225deg); }
+.apiKeyAdvancedContent { display: grid; gap: 0.9rem; padding: 1.05rem; border-top: 1px solid var(--border); min-width: 0; }
+.apiKeyAdvancedHelp { margin: 0; font-size: 0.78rem; font-weight: 400; line-height: 1.5; color: var(--muted); }
+.apiKeyCreateActions { display: flex; justify-content: flex-start; }
+.apiKeyCreateActions > button { min-width: 180px; }
+.apiKeyListHeader { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 760px; margin-top: 1.75rem; }
+.apiKeyListTitle { font-size: 0.95rem; color: var(--text); font-weight: 600; }
+.apiKeyDetails { min-width: 0; margin: 0.65rem 0; font-size: 0.8125rem; color: var(--text-2); }
+.apiKeyDetails summary { width: fit-content; cursor: pointer; font-weight: 600; color: var(--text-2); }
+.apiKeyDetails summary:hover { color: var(--text); }
+.apiKeyDetailsContent { display: grid; gap: 0.4rem; margin-top: 0.65rem; padding: 0.75rem 0.85rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-1); overflow-wrap: anywhere; }
+.apiKeyDetailsContent strong { color: var(--text); }
 /* The secret is shown once: an emphasized brand-bordered surface */
 .apiKeyReveal { background: var(--surface); border: 1px solid var(--brand); box-shadow: 0 0 0 4px var(--brand-dim); border-radius: var(--r-2); padding: 1.25rem; }
 .apiKeyRevealTitle { margin: 0 0 0.35rem; font-size: 1rem; font-weight: 600; color: var(--text); }
 .apiKeySecret { font-family: var(--mono); font-size: 0.8125rem; white-space: pre-wrap; word-break: break-all; padding: 0.8rem 0.9rem; margin: 0.9rem 0; border-radius: var(--r-1); background: var(--surface-2); border: 1px solid var(--border); color: var(--text); }
-.apiKeyList { margin-top: 1rem; display: grid; gap: 0.75rem; }
+.apiKeyList { margin-top: 0.7rem; display: grid; gap: 0.75rem; max-width: 760px; }
 .apiKeyRow { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; min-width: 0; }
 .apiKeyRowHead { display: flex; justify-content: space-between; gap: 1rem; align-items: center; grid-column: 1 / -1; }
 .apiKeyRowTitle { min-width: 0; }
@@ -188,7 +213,7 @@
 .isExpired::before { background: var(--warn); -webkit-mask-image: var(--icon-clock-countdown); mask-image: var(--icon-clock-countdown); }
 .isRevoked { color: var(--text-2); background: transparent; }
 .isRevoked::before { background: var(--muted); -webkit-mask-image: var(--icon-x-circle); mask-image: var(--icon-x-circle); }
-.apiKeyActions { display: flex; justify-content: flex-end; }
+.apiKeyActions { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.75rem; }
 
 /* Ledger: a hairline table built on the existing grid rows */
 .ledger { display: grid; gap: 0.5rem; border-radius: var(--radius); overflow: hidden; }
@@ -277,7 +302,7 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
 @media (max-width: 960px) {
   .panel, .card { grid-column: span 12; }
   .authCard, .walletCard { grid-column: span 12; }
-  .apiKeyShell { grid-template-columns: 1fr; }
+  .apiKeyShell { grid-template-columns: minmax(0, 1fr); }
   .statGrid { grid-template-columns: 1fr; }
   .shieldAdvancedGrid { grid-template-columns: 1fr; }
 }
@@ -297,6 +322,8 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
 /* Phones: less side padding so nested boxes keep a readable width */
 @media (max-width: 640px) {
   .card { padding: 1.25rem; }
+  .apiKeyCreateActions > button { width: 100%; }
+  .apiKeyAdvancedContent { padding: 0.85rem; }
   .oauthGrantCard { padding: 1rem 1.1rem; }
   .oauthModal { padding: 1.25rem !important; }
 }
