@@ -173,7 +173,7 @@
 .apiKeyCreateDescription { margin: 0 0 1rem; color: var(--text-2); font-size: 0.875rem; line-height: 1.5; }
 .apiKeyCreateFields { display: grid; gap: 1rem; min-width: 0; }
 .apiKeyCreateFields > label, .apiKeyAdvancedContent > label { min-width: 0; display: grid; gap: 0.45rem; color: var(--text-2); font-size: 0.8125rem; font-weight: 600; }
-.apiKeyCreateFields input, .apiKeyAdvancedContent input { width: 100%; min-width: 0; }
+.apiKeyCreateFields > label > input, .apiKeyAdvancedContent > label > input { width: 100%; min-width: 0; }
 .apiKeyAdvancedSection { border: 1px solid var(--border); border-radius: var(--r-2); background: var(--surface); min-width: 0; overflow: hidden; }
 .apiKeyAdvancedToggle { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.8rem 0.95rem; background: transparent; color: var(--text); border: 0; border-radius: 0; min-height: 54px; cursor: pointer; font: inherit; text-align: left; box-shadow: none; }
 .apiKeyAdvancedToggle:hover { background: var(--surface-2); }
