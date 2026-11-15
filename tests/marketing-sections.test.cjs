@@ -71,8 +71,8 @@ test("product sections link to usable next steps", () => {
 test("homepage has intentional layout variation and responsive themes", () => {
   const sectionCount = [...home.matchAll(/<section\b/g)].length;
   assert.ok(sectionCount <= 8, "Homepage has excessive sections");
-  assert.match(home, /class="lp-modality-gallery"/);
-  assert.match(home, /class="lp-modality-secondary"/);
+  assert.match(home, /class="lp-modality-matrix"/);
+  assert.match(home, /class="lp-product-grid"/);
   assert.match(home, /class="lp-stack-layout"/);
   assert.match(home, /class="lp-ops-layout"/);
   assert.match(home, /class="lp-agent-spec"/);
@@ -118,16 +118,16 @@ test("specific infrastructure features remain discoverable in concise sections",
 test("every hosted model modality is prominent and opens its actual Marketplace filter", () => {
   const examples = {
     video: ["wan2.7-t2v"],
-    audio: ["openai-tts-1", "whisper-large-v3"],
-    "3d": ["tripoSR", "trellis2"],
-    realtime: ["gpt-realtime-2.1-mini", "scribe-v2-realtime"],
+    audio: ["openai-tts-1"],
+    "3d": ["trellis2"],
+    realtime: ["gpt-realtime-2.1-mini"],
     text: ["deepseek-v4.1-flash-1017"],
     image: ["lightning-image-turbo"],
     embedding: ["text-embedding-3-small"],
     decision: ["microsoft/decision-1"],
   };
-  assert.equal([...home.matchAll(/class="lp-modality-feature"/g)].length, 4,
-    "Give video, audio, 3D and realtime an equal, prominent treatment");
+  assert.equal([...home.matchAll(/class="lp-modality-row"/g)].length, 8,
+    "All eight modalities should use the same presentation");
   for (const [type, ids] of Object.entries(examples)) {
     const href = 'href="marketplace.html?modality=' + type + '"';
     assert.ok(home.includes(href), "Missing category link for " + type);
@@ -146,6 +146,24 @@ test("desktop modules have intentional spacing with tablet and mobile fallbacks"
   assert.match(css, /\.lp-stack-layout,\.lp-stack-side,\.lp-ops-layout \{ gap:24px; \}/);
   assert.match(css, /\.lp-ops-layout > article \{ padding:41px 43px 43px; \}/);
   assert.match(css, /@media \(min-width:901px\) and \(max-width:1100px\)/);
-  assert.match(css, /\.lp-modality-gallery \{ grid-template-columns:1fr; \}/);
-  assert.match(css, /\.lp-modality-secondary \{ grid-template-columns:1fr;/);
+  assert.match(css, /\.lp-modality-matrix \{ grid-template-columns:1fr; \}/);
+  assert.match(css, /\.lp-product-grid \{ grid-template-columns:1fr;/);
+});
+
+test("full product directory restores all twelve destinations without decorative marketing cards", () => {
+  const cards = [...home.matchAll(/<a class="lp-product-card" href="(#.*?)">/g)];
+  assert.equal(cards.length, 12, "Expected twelve distinct product links");
+  const groups = [...home.matchAll(/class="lp-product-group-heading"/g)];
+  assert.equal(groups.length, 3, "Expected Build, Deploy & run, Protect & manage groups");
+  for (const group of ["Build", "Deploy &amp; run", "Protect &amp; manage"]) {
+    assert.ok(home.includes("<h3>" + group + "</h3>"), "Missing product group " + group);
+  }
+  const ids = new Set([...home.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
+  const hrefs = cards.map(m => m[1].slice(1));
+  assert.equal(new Set(hrefs).size, 12, "Each card should have its own destination");
+  for (const target of hrefs) assert.ok(ids.has(target), "Broken product-card anchor #" + target);
+  assert.equal([...home.matchAll(/class="lp-product-icon"/g)].length, 12,
+    "Each product should have a compact, monochrome icon");
+  assert.match(css, /\.lp-product-card:hover \{[^}]*border-color:var\(--ink\)/);
+  assert.doesNotMatch(css, /\.lp-product-card:hover \{[^}]*box-shadow/);
 });
