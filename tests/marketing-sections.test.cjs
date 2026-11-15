@@ -164,6 +164,33 @@ test("full product directory restores all twelve destinations without decorative
   for (const target of hrefs) assert.ok(ids.has(target), "Broken product-card anchor #" + target);
   assert.equal([...home.matchAll(/class="lp-product-icon"/g)].length, 12,
     "Each product should have a compact, monochrome icon");
-  assert.match(css, /\.lp-product-card:hover \{[^}]*border-color:var\(--ink\)/);
+  assert.match(css, /\.lp-product-card:hover \{[^}]*border-color:var\(--lp-group-line\)/);
   assert.doesNotMatch(css, /\.lp-product-card:hover \{[^}]*box-shadow/);
+});
+
+test("products precede modality API section with restrained group accents", () => {
+  const hero = home.indexOf('class="lp-hero"');
+  const products = home.indexOf('class="lp-section lp-products" id="products"');
+  const api = home.indexOf('class="lp-section lp-models" id="api"');
+  const details = home.indexOf('class="lp-section lp-stack" id="platform-details"');
+  assert.ok(hero >= 0 && hero < products && products < api && api < details,
+    "Expected Hero → Products → Model API → Details order");
+  for (const group of ["build", "run", "manage"]) {
+    assert.match(home, new RegExp('class="lp-product-group lp-product-group--' + group + '"'));
+    assert.ok(css.includes(".lp-product-group--" + group + " {"), "Missing scoped group palette: " + group);
+  }
+  assert.match(css, /\.lp-product-symbol \{[^}]*background:var\(--lp-group-dim\)/);
+  assert.match(css, /\.lp-product-card:first-child \{[^}]*border-top:2px solid var\(--lp-group-line\)/);
+  assert.match(css, /\.lp-modality-matrix \{[^}]*border-top:3px solid var\(--gold\)/);
+  assert.doesNotMatch(css, /\.lp-product-card:hover \{[^}]*box-shadow/);
+  assert.equal([...home.matchAll(/class="lp-product-card"/g)].length, 12);
+  assert.equal([...home.matchAll(/class="lp-modality-row"/g)].length, 8);
+});
+
+test("product category icons match their labels", () => {
+  const iconFor = (link) => home.match(new RegExp('<a class="lp-product-card" href="#' + link + '">[\\s\\S]*?(<svg[\\s\\S]*?<\\/svg>)'))?.[1] || "";
+  assert.match(iconFor("buckets"), /m3 7 9-4 9 4-9 4-9-4Z/);
+  assert.match(iconFor("lightning"), /M13 3L5 13\.5h6L10 21/);
+  assert.match(iconFor("app"), /<rect x="3" y="4" width="18" height="12"/);
+  assert.match(iconFor("catalog"), /M12 3l9 5-9 5-9-5z/);
 });
