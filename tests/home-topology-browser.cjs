@@ -147,6 +147,26 @@ async function checkScene(page,name) {
     el=>parseFloat(getComputedStyle(el).paddingLeft));
   assert.ok(workspacePadding>=19,name+" workspace padding collapsed: "+workspacePadding);
 
+  // Main-site product detail is restored while keeping concise product stories.
+  const richSections=["agents","deploy","buckets","shield","council","cli","lightning","app"];
+  assert.equal(await page.locator(".lp-hero-demo .lp-feature-points li").count(),3);
+  for(const id of richSections){
+    const element=page.locator('[id="'+id+'"] .lp-feature-points').first();
+    assert.equal(await element.count(),1,name+" missing rich feature descriptions for "+id);
+    assert.equal(await element.locator("li").count(),3,name+" should feature three useful proof points for "+id);
+  }
+  const desktopImage=page.locator(".lp-desktop-window img");
+  await desktopImage.scrollIntoViewIfNeeded();
+  await desktopImage.evaluate(img=>img.decode());
+  const imgInfo=await desktopImage.evaluate(img=>({
+    width:img.naturalWidth,height:img.naturalHeight
+  }));
+  assert.ok(imgInfo.width>100&&imgInfo.height>100,
+    name+" original desktop screenshot did not load "+JSON.stringify(imgInfo));
+  await page.locator("#app").screenshot({
+    path:path.join(screenshots,name+"-desktop-product-detail.png")
+  });
+
   // Geometry is not allowed to produce horizontal page overflow.
   const measurements=await page.evaluate(()=>({
     documentWidth:document.documentElement.scrollWidth,

@@ -416,3 +416,55 @@ test("unnecessary all-caps section kickers have been removed", () => {
   assert.doesNotMatch(home,/class="lp-kicker"|class="lp-detail-eyebrow"|class="lp-hero-overline"|class="lp-hero-demo-overline"/);
   assert.doesNotMatch(home,/ONE INTEGRATED PLATFORM|INFERENCEPORT \/ CONNECTED CAPABILITIES|SELECT A CAPABILITY TO EXPLORE/);
 });
+
+
+test("product spotlights restore main-site capability depth without a wall of cards", () => {
+  const details = ["agents","deploy","buckets","shield","council","cli","lightning","app"];
+  assert.match(home.slice(home.indexOf('class="lp-hero-demo"'),home.indexOf('class="lp-hero-bottom"')),/class="lp-feature-points"/);
+  for(const id of details) {
+    const at=home.indexOf('id="'+id+'"');
+    assert.ok(at>0,"Missing product area "+id);
+    assert.match(home.slice(at,at+3200),
+      /class="lp-feature-points(?: lp-feature-points--inverse)?"/,
+      "Product section lacks useful capabilities: "+id);
+  }
+  assert.equal((home.match(/class="lp-feature-points/g)||[]).length,details.length+1);
+  assert.match(home,/HTTP or SSE MCP servers/);
+  assert.match(home,/organization’s workspace/);
+  assert.match(home,/AWS CLI or compatible SDKs/);
+  assert.match(home,/prompt injection/);
+  assert.match(home,/Claude Code, Cursor, VS Code, Claude Desktop/);
+  assert.match(home,/stdin support/);
+  assert.match(home,/Lightning Image Turbo/);
+  assert.match(home,/import GGUF files/);
+  assert.match(home,/per-member and per-key limits/);
+});
+
+test("illustrative previews show actual developer workflows, not placeholder feature lists", () => {
+  const {existsSync,statSync}=require("node:fs");
+  const screenshot=path.join(root,"img/examples/cucumber.png");
+  assert.ok(existsSync(screenshot) && statSync(screenshot).size>1000,
+    "The original desktop screenshot asset must be present");
+  assert.match(home,/class="lp-desktop-window"/);
+  assert.match(home,/src="img\/examples\/cucumber.png"/);
+  assert.match(home,/class="lp-lightning-message lp-lightning-message--assistant"/);
+  assert.match(home,/class="lp-council-request"/);
+  assert.match(home,/class="lp-bucket-files"/);
+  assert.match(home,/class="lp-model-catalog"/);
+  assert.match(home,/class="lp-shield-actions"/);
+  assert.match(home,/class="lp-agent-journey"/);
+  assert.match(css,/\.lp-desktop-window img \{display:block;width:100%;/);
+  assert.match(css,/\.lp-lightning-message--user/);
+  assert.match(css,/\.lp-feature-points li:before/);
+  assert.doesNotMatch(home,/12\.4k Requests|\$18\.20 Spend/);
+});
+
+test("restored detail keeps working CTAs, API tabs and semantic structure", () => {
+  assert.match(home,/href="\/console\/deploy">Browse deployments/);
+  assert.match(home,/href="\/console\/deploy">Deploy model/);
+  assert.match(home,/href="chat\/">Try Lightning chat/);
+  assert.match(home,/href="install.html#install">Download the desktop app/);
+  assert.match(home,/href="\/console\/agents">Configure an agent/);
+  assert.equal((home.match(/data-example-tab=/g)||[]).length,3);
+  assert.equal((home.match(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)||[]).length,4);
+});
