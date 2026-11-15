@@ -99,9 +99,7 @@
 .lp-stack-feature h3 { color:#fff;font-size:clamp(1.85rem,2.7vw,2.8rem);font-weight:750;letter-spacing:-.052em;line-height:1.13; }
 .lp-stack-feature h3 span { color:var(--gold); }
 .lp-stack-feature p { max-width:540px;margin:17px 0 0;font-size:.95rem;line-height:1.66; }
-.lp-agent-flow { display:flex;align-items:center;flex-wrap:wrap;gap:10px;font:500 .7rem/1.6 var(--mono);margin-top:20px; }
-.lp-agent-flow span { border:1px solid #5c687a;padding:9px 10px;background:#1c2738;color:#e0e5ee; }
-.lp-agent-flow i { color:var(--gold);font-style:normal; }
+
 .lp-agent-code { border-top:1px solid #485567;display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding-top:18px;margin-top:20px; }
 .lp-agent-code span { font:500 .67rem var(--mono);color:#9cacc0; }
 .lp-agent-code code { font:600 .79rem var(--mono);color:var(--gold);overflow-wrap:anywhere; }
@@ -118,48 +116,20 @@
 .lp-stack-mini a { margin-top:auto;font-size:.84rem;font-weight:700;color:var(--ink); }
 .lp-stack-mini-gold h3,.lp-stack-mini-gold a { color:#171817; }
 .lp-stack-mini-gold a:hover { text-decoration:underline; }
-.lp-stack-lower { display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px; }
-.lp-stack-horizontal { display:grid;grid-template-columns:48px minmax(0,1fr);gap:18px;align-items:start;min-height:225px;padding:27px 28px;border:1px solid var(--border);background:var(--bg); }
-.lp-horizontal-symbol { display:grid;place-items:center;width:45px;height:45px;border:1px solid var(--border);background:var(--bg-alt);color:var(--ink); }
-.lp-horizontal-symbol svg { width:22px;height:22px; }
-.lp-stack-horizontal h3 { font-size:1.3rem;font-weight:700;line-height:1.28;margin:12px 0 9px; }
-.lp-stack-horizontal p { margin:0;font-size:.85rem;line-height:1.65; }
-.lp-stack-horizontal > a { grid-column:2;color:var(--ink);font-size:.85rem;font-weight:700;align-self:end; }
-.lp-stack-horizontal > a:hover,.lp-stack-mini a:hover { color:var(--brand-ink); }
 
-/* A real navigation map of how existing products relate, not a fabricated usage dashboard. */
+.lp-stack-mini a:hover { color:var(--brand-ink); }
+
+/* Developer console controls and access overview. */
 .lp-workflow { background:#131b29;color:#c9d3e2; }
 .lp-workflow .lp-kicker { color:#a4b3c7; }
 .lp-workflow h2 { color:#f3f6fa; }
 .lp-workflow-header { display:flex;align-items:end;justify-content:space-between;gap:30px 55px;margin-bottom:36px; }
 .lp-workflow-header > p { max-width:370px;font-size:.96rem;line-height:1.7;margin:0;color:#b8c6d8; }
-.lp-workflow-map { border:1px solid #485567; }
-.lp-workflow-name { background:#232f40;color:var(--gold);font:700 .82rem var(--mono);letter-spacing:.045em;padding:18px 24px;display:flex;gap:14px;justify-content:space-between; }
-.lp-workflow-name span { color:#acb9ce;font-weight:500; }
-.lp-workflow-services { display:grid;grid-template-columns:repeat(4,minmax(0,1fr)); }
-.lp-workflow-services a { display:flex;flex-direction:column;gap:12px;padding:33px 22px 38px;border-right:1px solid #485567;color:#f0f4fa;background:#131b29;min-height:156px;transition:background-color .15s; }
-.lp-workflow-services a:last-child { border-right:0; }
-.lp-workflow-services a:hover { background:#223049; }
-.lp-workflow-services b { font:700 .77rem/1.4 var(--mono);letter-spacing:.02em; }
-.lp-workflow-services span { color:#aab9ce;font-size:.8rem;line-height:1.55; }
-.lp-workflow-base { display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:30px;padding:19px 24px;border-top:1px solid #485567;background:#1d293a;font-size:.81rem; }
-.lp-workflow-base > span:first-child { font:700 .78rem var(--mono);color:var(--gold); }
-.lp-workflow-base > span:nth-child(2) { color:#b8c7d9; }
-.lp-workflow-base a { color:#fff;font-weight:700; }
-.lp-workflow-base a:hover { color:var(--gold); }
 
 /* A practical directory for secondary tools, still giving every product a way in. */
 .lp-more { background:var(--bg); }
 .lp-more-head { margin-bottom:33px; }
-.lp-more-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);border-bottom:1px solid var(--border); }
-.lp-more-item { display:flex;flex-direction:column;padding:27px 24px 28px 0;border-right:1px solid var(--border);color:var(--text-body); }
-.lp-more-item + .lp-more-item { padding-left:24px; }
-.lp-more-item:last-child { border-right:0; }
-.lp-more-item > span { color:var(--text-muted);font:600 .69rem var(--mono);letter-spacing:.05em; }
-.lp-more-item h3 { font-weight:700;font-size:1.27rem;line-height:1.25;margin:24px 0 12px; }
-.lp-more-item p { font-size:.85rem;line-height:1.7;margin:0 0 29px; }
-.lp-more-item strong { margin-top:auto;font-size:.81rem;color:var(--ink); }
-.lp-more-item:hover h3,.lp-more-item:hover strong { color:var(--brand-ink); }
+
 .lp-more-bottom { display:flex;align-items:center;gap:13px 28px;flex-wrap:wrap;padding-top:23px;font-size:.83rem; }
 .lp-more-bottom span { font-weight:700;color:var(--ink);margin-right:auto; }
 .lp-more-bottom a { color:var(--ink);font-weight:620; }
@@ -192,10 +162,7 @@
   .lp-hero-grid { grid-template-columns:1fr 1fr;gap:28px; }
   .lp-hero-copy h1 { font-size:clamp(3rem,5vw,4.1rem); }
   .lp-code pre { font-size:.69rem; }
-  .lp-agent-flow { gap:7px; }
-  .lp-workflow-services { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .lp-workflow-services a:nth-child(2) { border-right:0; }
-  .lp-workflow-services a:nth-child(-n+2) { border-bottom:1px solid #485567; }
+
 }
 @media (max-width:900px) {
   .lp-hero-grid,.lp-section-heading,.lp-stack-heading,.lp-workflow-header,.lp-pricing-layout,.lp-closing-grid { display:grid;grid-template-columns:1fr;gap:24px; }
@@ -208,10 +175,7 @@
   .lp-stack-side { grid-template-columns:1fr 1fr;grid-template-rows:auto; }
   .lp-stack-feature { min-height:460px; }
   .lp-stack-mini { min-height:270px; }
-  .lp-more-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .lp-more-item:nth-child(2) { border-right:0; }
-  .lp-more-item:nth-child(-n+2) { border-bottom:1px solid var(--border); }
-  .lp-more-item:nth-child(3) { padding-left:0; }
+
 }
 @media (max-width:630px) {
   .lp-wrap { width:min(1192px,calc(100% - 34px)); }
@@ -232,24 +196,13 @@
   .lp-code-tabs button { padding:7px 9px 11px;font-size:.68rem; }
   .lp-hero-bottom { display:flex;flex-direction:column;align-items:start;gap:7px; }
   .lp-model-bottom { flex-direction:column;align-items:flex-start; }
-  .lp-stack-side,.lp-stack-lower,.lp-more-grid { grid-template-columns:1fr; }
+  .lp-stack-side { grid-template-columns:1fr; }
   .lp-stack-feature { padding:25px 22px;min-height:510px; }
   .lp-stack-feature h3 { font-size:2rem; }
   .lp-agent-code { flex-direction:column;gap:5px; }
-  .lp-agent-flow { gap:8px; }
-  .lp-agent-flow span { padding:6px 8px;font-size:.64rem; }
+
   .lp-stack-mini { min-height:230px;padding:26px 22px; }
-  .lp-stack-horizontal { min-height:0;padding:23px 20px; }
-  .lp-workflow-name { padding:15px; }
-  .lp-workflow-services { grid-template-columns:1fr; }
-  .lp-workflow-services a { border-right:0 !important;border-bottom:1px solid #485567;padding:21px 18px;min-height:0;gap:7px; }
-  .lp-workflow-services a:last-child { border-bottom:0; }
-  .lp-workflow-base { grid-template-columns:1fr auto;gap:8px;padding:16px; }
-  .lp-workflow-base > span:nth-child(2) { grid-row:2;grid-column:1 / -1; }
-  .lp-more-item,.lp-more-item + .lp-more-item,.lp-more-item:nth-child(3) { padding:22px 0;border-right:0;border-bottom:1px solid var(--border); }
-  .lp-more-item:last-child { border-bottom:0; }
-  .lp-more-item h3 { margin:12px 0 6px; }
-  .lp-more-item p { margin-bottom:17px; }
+
   .lp-pricing-rows a { grid-template-columns:1fr 20px;gap:6px 16px; }
   .lp-pricing-rows > a > span { grid-column:1/-1; }
   .lp-closing { padding:57px 0; }
@@ -259,10 +212,10 @@
 @media (max-width:380px) {
   .lp-actions { flex-direction:column;align-items:stretch; }
   .lp-actions .lp-button { width:100%; }
-  .lp-agent-flow i { display:none; }
+
 }
 @media (prefers-reduced-motion:reduce) {
-  .lp-button,.lp-model-ledger > a,.lp-workflow-services a { transition:none; }
+  .lp-button,.lp-modality-feature { transition:none; }
 }
 
 /* v3: theme-correct hero and responsive navigation eyebrow.
@@ -413,7 +366,6 @@
 
 .lp-mini-links { display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;margin-top:auto; }
 .lp-mini-links a { margin-top:0; }
-
 
 /* Give the desktop information-dense sections room without hiding capabilities. */
 @media (min-width:1101px) {
