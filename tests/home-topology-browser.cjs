@@ -108,7 +108,7 @@ async function checkScene(page,name) {
   // Catch theme-specific illegible panels (such as pale text on a pale
   // surface), which can pass structural tests but fail a real screenshot QA.
   const agentsContrast=await page.locator("#agents .lp-proof-copy").evaluate(panel=>{
-    const rgb=(value)=>[...value.matchAll(/[\\d.]+/g)].slice(0,3).map(x=>Number(x[0])/255);
+    const rgb=(value)=>[...value.matchAll(/[\d.]+/g)].slice(0,3).map(x=>Number(x[0])/255);
     const luminosity=value=>rgb(value).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
       .reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
     const bg=luminosity(getComputedStyle(panel).backgroundColor);
