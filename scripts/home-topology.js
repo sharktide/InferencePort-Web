@@ -560,7 +560,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     logoGroup.rotation.x=.055+Math.sin(time*.43)*.06+inputPitch*.38;
     // Dev-only diagnostics let browser E2E assert that an extreme drag
     // cannot turn the graph sideways or upside down.
-    if(window.location.hostname==="localhost"){
+    if(["localhost","127.0.0.1"].includes(window.location.hostname)){
       stage.dataset.graphYaw=graph.rotation.y.toFixed(3);
       stage.dataset.graphPitch=graph.rotation.x.toFixed(3);
     }
