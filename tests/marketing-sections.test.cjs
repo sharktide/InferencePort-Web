@@ -57,7 +57,7 @@ test("product sections link to usable next steps", () => {
   for (const fragment of [
     'href="/console/agents"', 'href="/console/buckets"', 'href="shield.html"',
     'href="ipx.html"', 'href="lightning.html"', 'href="install.html"',
-    'href="pricing.html#organizations"', 'href="marketplace.html"',
+    'href="platform.html#organizations"', 'href="marketplace.html"',
     'href="https://docs.inferenceport.ai/api/buckets.html"',
   ]) assert.ok(home.includes(fragment), "Missing product entry point: " + fragment);
   for (const phrase of [
