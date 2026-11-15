@@ -62,7 +62,7 @@ test("product sections link to usable next steps", () => {
   ]) assert.ok(home.includes(fragment), "Missing product entry point: " + fragment);
   for (const phrase of [
     "Managed agents", "MCP tools", "S3-compatible", "PREVIEW", "Security",
-    "Gemini 4 Carbon", "API key", "Usage", "Buckets",
+    "wan2.7-t2v", "API key", "Usage", "Buckets",
   ]) assert.ok(home.toLowerCase().includes(phrase.toLowerCase()), "Missing useful detail: " + phrase);
   assert.match(platform, /<b>Buckets \(Preview\)<\/b>/);
   assert.doesNotMatch(home, /agent\/acme\/support-bot|2 connected|Published<\/span>/);
