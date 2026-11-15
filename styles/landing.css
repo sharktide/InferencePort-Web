@@ -523,60 +523,6 @@
 .lp-hero-demo .lp-code { width:100%;box-shadow:none;border:1px solid #44536a; }
 .lp-hero-demo .lp-code-example { min-height:250px; }
 .lp-hero-demo .lp-code pre { font-size:.77rem;line-height:1.75;padding-top:16px;padding-bottom:22px; }
-
-.lp-topology-shell {
-  --topology-ink:#6f7990;--topology-surface:rgba(255,255,255,.8);
-  position:relative;min-width:0;
-  background:linear-gradient(145deg,#f4f5f5,#eceef1);
-  color:#26354e;border:1px solid #d2d7dc;border-radius:6px;
-  overflow:hidden;isolation:isolate;
-  box-shadow:0 26px 70px -52px rgba(20,29,44,.5);
-}
-.lp-topology-shell::before { content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.55;background-image:linear-gradient(to right,rgba(75,89,108,.08) 1px,transparent 1px),linear-gradient(to bottom,rgba(75,89,108,.08) 1px,transparent 1px);background-size:47px 47px;mask-image:radial-gradient(ellipse at center,black,transparent 78%); }
-.lp-topology-topline,.lp-topology-bottom { display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px 16px;position:relative;z-index:4;font:650 .64rem/1.5 var(--mono);letter-spacing:.04em; }
-.lp-topology-topline { padding:17px 20px;border-bottom:1px solid #d2d7dc;color:#67778d; }
-.lp-topology-topline > span:first-child { color:#344158; }
-.lp-topology-live { display:inline-flex;align-items:center;gap:8px; }
-.lp-topology-live i { width:7px;height:7px;background:#ca9d1e;border-radius:50%; }
-.lp-topology-stage { position:relative;min-height:475px;aspect-ratio:1.18;isolation:isolate; }
-.lp-topology-webgl,.lp-topology-fallback,.lp-topology-labels { position:absolute;inset:0;width:100%;height:100%; }
-.lp-topology-webgl { z-index:1;pointer-events:auto; }
-.lp-topology-canvas { display:block;width:100%;height:100%;touch-action:pan-y; }
-.lp-topology-fallback { z-index:0;pointer-events:none;opacity:1;transition:opacity .3s ease;color:#76859b; }
-.lp-topology-shell.is-3d .lp-topology-fallback { opacity:0; }
-.lp-topology-core-label { position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;text-align:center;color:#394e6c;font:700 .68rem/1.5 var(--mono);letter-spacing:.075em;text-shadow:0 1px 1px rgba(255,255,255,.95); }
-.lp-topology-core-label b { font:500 .49rem/1.4 var(--mono);white-space:nowrap;letter-spacing:.03em; }
-.lp-topology-labels { z-index:3;pointer-events:none; }
-.lp-topology-node {
-  position:absolute;
-  left:var(--x);top:var(--y);
-  transform:translate(-50%,-50%);
-  display:inline-flex;align-items:center;gap:7px;
-  color:#344257;background:var(--topology-surface);border:1px solid #cdd4dc;
-  font:650 .73rem/1.35 Inter,sans-serif;
-  padding:9px 12px;border-radius:4px;white-space:nowrap;pointer-events:auto;
-  box-shadow:0 3px 14px rgba(26,40,61,.045);
-  transition:background-color .16s,color .16s,border-color .16s,box-shadow .16s;
-}
-.lp-topology-node::before { content:"";width:5px;height:5px;background:#c39c30;transform:rotate(45deg);flex:none; }
-.lp-topology-node:hover,.lp-topology-node.is-active,.lp-topology-node:focus-visible {
-  background:#f9eebd;border-color:#be9634;color:#241b0e;box-shadow:0 4px 20px rgba(161,125,38,.15);
-}
-.lp-topology-node:focus-visible,.lp-topology-satellites a:focus-visible { outline:2px solid #a37c00;outline-offset:3px; }
-.lp-topology-bottom { border-top:1px solid #d2d7dc;padding:13px 20px;color:#6f7e94; }
-.lp-topology-satellites { display:flex;gap:9px 15px;flex-wrap:wrap; }
-.lp-topology-satellites a { color:#304664;font-size:.7rem;font-weight:650;text-decoration:none;letter-spacing:0; }
-.lp-topology-satellites a:hover,.lp-topology-satellites a.is-active { color:#a17508; }
-:root[data-theme="dark"] .lp-topology-shell { --topology-surface:rgba(25,34,50,.85);background:linear-gradient(145deg,#1a2435,#111a29);color:#dfe8f8;border-color:#455168;box-shadow:0 30px 68px -42px rgba(0,0,0,.75); }
-:root[data-theme="dark"] .lp-topology-shell::before { background-image:linear-gradient(to right,rgba(176,193,224,.065) 1px,transparent 1px),linear-gradient(to bottom,rgba(176,193,224,.065) 1px,transparent 1px); }
-:root[data-theme="dark"] .lp-topology-topline,:root[data-theme="dark"] .lp-topology-bottom { border-color:#455168;color:#9facc2; }
-:root[data-theme="dark"] .lp-topology-topline > span:first-child { color:#d4ddeb; }
-:root[data-theme="dark"] .lp-topology-fallback { color:#8d9db7; }
-:root[data-theme="dark"] .lp-topology-core-label { color:#d5e0f4;text-shadow:0 1px 12px #101b2c; }
-:root[data-theme="dark"] .lp-topology-node { background:rgba(25,34,50,.87);color:#d8e4f4;border-color:#506078;box-shadow:none; }
-:root[data-theme="dark"] .lp-topology-node:hover,:root[data-theme="dark"] .lp-topology-node.is-active,:root[data-theme="dark"] .lp-topology-node:focus-visible { background:#364052;color:#ffe29a;border-color:#b68c38; }
-:root[data-theme="dark"] .lp-topology-satellites a { color:#d1dbec; }
-:root[data-theme="dark"] .lp-topology-satellites a:hover,:root[data-theme="dark"] .lp-topology-satellites a.is-active { color:#ffdf78; }
 :root:not([data-theme="dark"]) .lp-hero-demo { border-top-color:var(--border); }
 :root:not([data-theme="dark"]) .lp-hero-demo-overline { color:var(--text-muted); }
 :root:not([data-theme="dark"]) .lp-hero-demo-intro h2 { color:var(--ink); }
@@ -615,8 +561,6 @@
 @media (max-width:1150px) {
   .lp-hero-grid { gap:27px; }
   .lp-hero-copy h1 { font-size:clamp(3.1rem,5.2vw,4.5rem); }
-  .lp-topology-stage { min-height:410px; }
-  .lp-topology-node { font-size:.68rem;padding:7px 9px; }
   .lp-proof-pair { gap:18px; }
   .lp-proof-compact { padding:32px; }
 }
@@ -625,8 +569,6 @@
   .lp-hero-grid { grid-template-columns:1fr;gap:42px;padding:56px 0 56px; }
   .lp-hero-copy { max-width:720px; }
   .lp-hero-copy h1 { font-size:clamp(3.3rem,8vw,5rem); }
-  .lp-topology-shell { width:min(100%,720px); }
-  .lp-topology-stage { aspect-ratio:1.45;min-height:420px; }
   .lp-hero-demo { grid-template-columns:1fr;gap:25px; }
   .lp-hero-demo-intro { max-width:700px; }
   .lp-hero-demo .lp-code { max-width:780px; }
@@ -635,15 +577,6 @@
   .lp-section { padding-block:92px; }
 }
 @media (max-width:700px) {
-  .lp-topology-stage { min-height:405px;aspect-ratio:auto; }
-  .lp-topology-webgl { display:none; }
-  .lp-topology-fallback { height:265px;top:0; }
-  .lp-topology-core-label { top:31%;font-size:.55rem; }
-  .lp-topology-labels { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));position:absolute;top:auto;bottom:12px;left:14px;right:14px;width:auto;height:auto;gap:6px;pointer-events:auto; }
-  .lp-topology-node { position:static;left:auto!important;top:auto!important;transform:none!important;justify-content:flex-start;font-size:.72rem;padding:7px 9px;white-space:normal;min-height:32px; }
-  .lp-topology-topline,.lp-topology-bottom { padding-inline:14px;font-size:.6rem; }
-  .lp-topology-live { display:none; }
-  .lp-topology-satellites { gap:9px 14px; }
   .lp-hero-demo { padding-top:29px; }
   .lp-hero-demo .lp-code pre { font-size:.71rem; }
   .lp-section { padding-block:78px; }
@@ -653,207 +586,19 @@
 }
 @media (max-width:480px) {
   .lp-wrap { width:calc(100% - 34px); }
-  .lp-topology-stage { min-height:420px; }
   .lp-hero-grid { padding-block:37px; }
   .lp-hero-copy h1 { font-size:clamp(2.55rem,10.7vw,3.7rem); }
-  .lp-topology-satellites { display:grid;grid-template-columns:repeat(2,max-content); }
-  .lp-topology-bottom { align-items:start; }
   .lp-modality-row::after { top:24px;right:8px;transform:scale(.8); }
   .lp-hero-demo-intro h2 { font-size:1.7rem; }
 }
 @media (prefers-reduced-motion:reduce) {
-  .lp-topology-fallback,.lp-topology-node,.lp-modality-row::after { transition:none; }
 }
-
-
-/* Hero topology refinement: an immersive product scene, not a framed dashboard. */
-.lp-topology-shell {
-  background:transparent;
-  border:0;
-  border-radius:0;
-  box-shadow:none;
-  overflow:visible;
-  isolation:isolate;
-}
-.lp-topology-shell::before {
-  inset:4% 0;
-  opacity:.7;
-  background-image:
-    radial-gradient(ellipse at 50% 49%,rgba(219,182,56,.14),transparent 48%),
-    radial-gradient(circle at 32% 64%,rgba(115,145,197,.12),transparent 40%),
-    linear-gradient(to right,rgba(112,123,143,.045) 1px,transparent 1px);
-  background-size:100% 100%,100% 100%,80px 100%;
-  mask-image:radial-gradient(ellipse at center,black,transparent 78%);
-}
-.lp-topology-stage { min-height:520px;aspect-ratio:1.12;overflow:hidden; }
-.lp-topology-topline {
-  position:absolute;
-  top:16px;left:16px;right:16px;
-  z-index:5;padding:0;border:0;
-  font-size:.62rem;color:#8691a4;
-  pointer-events:none;
-}
-.lp-topology-node {
-  border-radius:22px;
-  border-color:rgba(150,163,184,.42);
-  background:rgba(245,246,248,.76);
-  padding:7px 11px;
-  font-size:.69rem;
-  box-shadow:0 4px 17px rgba(26,40,61,.055);
-  backdrop-filter:blur(6px);
-}
-.lp-topology-node::before { width:4px;height:4px; }
-.lp-topology-shell.is-3d .lp-topology-core-label { opacity:0; }
-.lp-topology-core-label { transition:opacity .2s ease; }
-.lp-topology-bottom {
-  justify-content:center;
-  gap:22px;
-  border:0;
-  padding:9px 0 4px;
-  background:transparent;
-}
-.lp-topology-bottom > span:first-child { display:none; }
-.lp-topology-satellites { gap:14px 24px; }
-.lp-topology-satellites a { font-size:.68rem; }
-.lp-topology-inspector {
-  position:absolute;
-  z-index:7;
-  top:auto;
-  bottom:65px;
-  left:50%;
-  width:min(78%,360px);
-  transform:translate(-50%,8px);
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:12px;
-  padding:13px 16px;
-  border-radius:6px;
-  border:1px solid rgba(145,157,178,.42);
-  background:rgba(242,245,249,.95);
-  color:#273750;
-  box-shadow:0 18px 42px rgba(16,26,46,.12);
-  backdrop-filter:blur(16px);
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-  transition:opacity .18s ease,transform .18s ease,visibility .18s;
-}
-.lp-topology-inspector.is-selected {
-  opacity:1;
-  visibility:visible;
-  pointer-events:auto;
-  transform:translate(-50%,0);
-}
-.lp-topology-inspector > div { flex:1;min-width:0; }
-.lp-topology-inspector-kicker { display:block;font:600 .55rem/1.35 var(--mono);letter-spacing:.07em;color:#697b92;margin-bottom:4px; }
-.lp-topology-inspector strong { display:block;font-size:.92rem;line-height:1.3; }
-.lp-topology-inspector p { margin:3px 0 0;font-size:.74rem;line-height:1.5;color:#63718a; }
-.lp-topology-inspector a { flex:none;color:#795912;font-weight:700;font-size:.7rem;white-space:nowrap; }
-.lp-topology-inspector a:hover { color:#352609; }
-.lp-topology-gesture { position:absolute;bottom:35px;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none;font:500 .55rem/1.4 var(--mono);color:#718098;letter-spacing:.075em; }
-:root[data-theme="dark"] .lp-topology-shell {
-  background:transparent;
-  border:0;
-  box-shadow:none;
-}
-:root[data-theme="dark"] .lp-topology-shell::before {
-  background-image:
-    radial-gradient(ellipse at 50% 49%,rgba(246,199,70,.10),transparent 48%),
-    radial-gradient(circle at 30% 58%,rgba(90,121,182,.12),transparent 40%),
-    linear-gradient(to right,rgba(171,187,216,.04) 1px,transparent 1px);
-}
-:root[data-theme="dark"] .lp-topology-topline { color:#adb8ca; }
-:root[data-theme="dark"] .lp-topology-node {
-  background:rgba(22,32,49,.72);
-  border:1px solid rgba(139,156,187,.32);
-  color:#dde5f5;
-}
-:root[data-theme="dark"] .lp-topology-node:hover,
-:root[data-theme="dark"] .lp-topology-node.is-active,
-:root[data-theme="dark"] .lp-topology-node:focus-visible {
-  background:rgba(76,68,46,.88);
-  border-color:#d2a940;
-  color:#fff1c9;
-}
-:root[data-theme="dark"] .lp-topology-bottom { border:0; }
-:root[data-theme="dark"] .lp-topology-inspector {
-  border-color:rgba(164,180,212,.38);
-  background:rgba(22,31,47,.94);
-  color:#f0f4fc;
-  box-shadow:0 16px 52px rgba(0,0,0,.35);
-}
-:root[data-theme="dark"] .lp-topology-inspector p,
-:root[data-theme="dark"] .lp-topology-inspector-kicker { color:#b3c0d4; }
-:root[data-theme="dark"] .lp-topology-inspector a { color:#ffdc74; }
-:root[data-theme="dark"] .lp-topology-gesture { color:#8797ac; }
 @media (max-width:900px) {
-  .lp-topology-shell { width:min(100%,800px); }
-  .lp-topology-stage { aspect-ratio:1.3;min-height:430px; }
 }
 @media (max-width:700px) {
   /* Unlike the first implementation, capable phones actually run the 3D scene.
      The SVG remains for reduced motion, no-WebGL and blocked CDN cases. */
   .lp-hero-grid { display:flex;flex-direction:column;gap:8px;padding:15px 0 44px; }
-  .lp-topology-shell {
-    order:-1;
-    width:calc(100% + 34px);
-    max-width:none;
-    margin-inline:-17px;
-  }
-  .lp-topology-stage { min-height:355px;aspect-ratio:auto;overflow:hidden; }
-  .lp-topology-webgl { display:block; }
-  .lp-topology-fallback { top:0;height:100%;opacity:1; }
-  .lp-topology-topline { position:absolute;top:14px;left:20px;right:15px;font-size:.55rem;opacity:.8; }
-  .lp-topology-live { display:none; }
-  .lp-topology-core-label { top:47%; }
-  .lp-topology-labels {
-    display:flex;
-    flex-wrap:nowrap;
-    position:absolute;
-    z-index:5;
-    top:auto;bottom:6px;left:0;right:0;
-    width:auto;height:auto;
-    gap:7px;
-    padding:5px 16px 8px;
-    overflow-x:auto;
-    overflow-y:hidden;
-    overscroll-behavior-x:contain;
-    scroll-snap-type:x proximity;
-    scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
-    pointer-events:auto;
-    mask-image:linear-gradient(to right,transparent 0,black 12px,black calc(100% - 12px),transparent 100%);
-  }
-  .lp-topology-labels::-webkit-scrollbar { display:none; }
-  .lp-topology-node {
-    flex:0 0 auto;
-    min-height:29px;
-    white-space:nowrap;
-    position:static;
-    top:auto!important;left:auto!important;
-    transform:none!important;
-    border-radius:18px;
-    font-size:.65rem;
-    padding:6px 10px;
-    scroll-snap-align:start;
-    background:rgba(246,247,250,.72);
-    backdrop-filter:blur(10px);
-  }
-  .lp-topology-node::before { height:4px;width:4px; }
-  .lp-topology-bottom { padding:0 8px 6px;justify-content:center; }
-  .lp-topology-satellites { gap:8px 17px;justify-content:center; }
-  .lp-topology-satellites a { font-size:.65rem; }
-  .lp-topology-inspector {
-    width:calc(100% - 42px);
-    bottom:55px;
-    padding:11px 12px;
-    gap:9px;
-  }
-  .lp-topology-inspector strong { font-size:.85rem; }
-  .lp-topology-inspector p { font-size:.68rem; }
-  .lp-topology-inspector a { font-size:.67rem; }
-  .lp-topology-gesture { bottom:49px;font-size:.53rem; }
   .lp-hero-copy { width:100%;margin-top:20px; }
   .lp-hero-copy h1 { font-size:clamp(2.65rem,10.3vw,3.7rem); }
   .lp-hero-copy > p { margin:18px 0 23px;font-size:.99rem; }
@@ -861,10 +606,236 @@
   .lp-hero-demo { padding-top:33px; }
 }
 @media (max-width:400px) {
-  .lp-topology-stage { min-height:320px; }
-  .lp-topology-inspector { bottom:53px; }
-  .lp-topology-node { font-size:.64rem; }
 }
 @media (prefers-reduced-motion:reduce) {
-  .lp-topology-inspector,.lp-topology-node,.lp-topology-core-label { transition:none; }
+}
+
+/* INFERENCEPORT ARCHITECTURE
+   A functional three-layer graph: modality inputs -> exact brand mark ->
+   connected infrastructure. No orbital filler or fake activity visualization. */
+.ip-architecture {
+  --ip-arch-ink:#29384f;
+  --ip-arch-muted:#65748b;
+  --ip-arch-line:rgba(105,128,157,.22);
+  --ip-arch-model:#5379b1;
+  --ip-arch-service:#ae8530;
+  position:relative;
+  min-width:0;
+  width:100%;
+  color:var(--ip-arch-ink);
+  isolation:isolate;
+}
+.ip-architecture::before {
+  content:"";
+  pointer-events:none;
+  position:absolute;
+  inset:4% 1% 14%;
+  z-index:-1;
+  background:radial-gradient(ellipse at center,rgba(221,193,121,.14),transparent 61%);
+}
+.ip-architecture-topline {
+  display:flex;align-items:center;justify-content:space-between;
+  gap:18px;
+  color:var(--ip-arch-muted);
+  font:600 .65rem/1.5 var(--mono);
+  letter-spacing:.06em;
+  padding:0 10px 5px;
+}
+.ip-architecture-topline i {font-style:normal;color:var(--ip-arch-service);}
+.ip-architecture-stage {position:relative;height:490px;overflow:hidden;min-width:0;}
+.ip-architecture-canvas,.ip-architecture-fallback {
+  position:absolute;inset:0;width:100%;height:100%;
+}
+.ip-architecture-canvas {z-index:2;}
+.ip-architecture-webgl {display:block;width:100%;height:100%;touch-action:pan-y;}
+.ip-architecture-fallback {
+  z-index:1;
+  pointer-events:none;
+  color:#8b9bac;
+  opacity:.8;
+  transition:opacity .25s ease;
+}
+.ip-architecture.has-webgl .ip-architecture-fallback {opacity:0;}
+.ip-architecture-core-caption {
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  position:absolute;z-index:1;left:50%;top:77%;
+  transform:translate(-50%,-50%);pointer-events:none;
+  color:var(--ip-arch-ink);
+  font:700 .73rem/1.4 var(--mono);
+  letter-spacing:.045em;text-align:center;
+}
+.ip-architecture-core-caption strong {
+  color:var(--ip-arch-muted);
+  font:600 .58rem/1.4 var(--mono);letter-spacing:.08em;
+  white-space:nowrap;
+}
+.ip-architecture-layers {
+  position:absolute;z-index:5;top:80px;left:0;right:0;
+  display:grid;grid-template-columns:minmax(108px,1fr) minmax(115px,1fr);
+  justify-content:space-between;gap:29%;
+  pointer-events:none;
+}
+.ip-architecture-layer {pointer-events:auto;min-width:0;}
+.ip-architecture-layer-head {
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 8px;
+  padding:0 9px 10px;
+  color:var(--ip-arch-muted);
+  font:600 .6rem/1.5 var(--mono);
+  letter-spacing:.065em;
+}
+.ip-architecture-layer-head small {font-size:.58rem;letter-spacing:0;}
+.ip-architecture-layer-links {display:flex;flex-direction:column;gap:3px;}
+.ip-architecture-layer-links a {
+  display:flex;align-items:center;min-height:35px;
+  padding:6px 11px;
+  border-left:2px solid transparent;
+  color:var(--ip-arch-ink);
+  font:600 .77rem/1.4 Inter,sans-serif;
+  text-decoration:none;
+  background:transparent;
+  transition:color .14s,background-color .14s,border-color .14s;
+}
+.ip-architecture-layer--models .ip-architecture-layer-links a:hover,
+.ip-architecture-layer--models .ip-architecture-layer-links a.is-selected,
+.ip-architecture-layer--models .ip-architecture-layer-links a:focus-visible {
+  border-left-color:var(--ip-arch-model);
+  background:rgba(94,127,188,.09);color:var(--ip-arch-model);
+}
+.ip-architecture-layer--services .ip-architecture-layer-links a:hover,
+.ip-architecture-layer--services .ip-architecture-layer-links a.is-selected,
+.ip-architecture-layer--services .ip-architecture-layer-links a:focus-visible {
+  border-left-color:var(--ip-arch-service);
+  background:rgba(196,151,56,.10);color:var(--ip-arch-service);
+}
+.ip-architecture-layer-links a:focus-visible {
+  outline:2px solid var(--gold);outline-offset:2px;
+}
+.ip-architecture-inspector {
+  display:flex;justify-content:space-between;align-items:center;
+  gap:22px;
+  min-height:102px;
+  padding:19px 13px 16px;
+  border-top:1px solid var(--ip-arch-line);
+}
+.ip-architecture-inspector-copy > span {
+  display:block;font:600 .59rem/1.5 var(--mono);
+  color:var(--ip-arch-muted);letter-spacing:.06em;margin-bottom:6px;
+}
+.ip-architecture-inspector-copy strong {
+  display:block;color:var(--ip-arch-ink);
+  font-size:.97rem;font-weight:700;line-height:1.4;
+}
+.ip-architecture-inspector-copy p {
+  font-size:.78rem;line-height:1.55;margin:5px 0 0;
+  max-width:405px;color:var(--ip-arch-muted);
+}
+.ip-architecture-inspector > a {
+  color:var(--ip-arch-ink);
+  white-space:nowrap;
+  font-size:.76rem;font-weight:700;
+  text-underline-offset:5px;
+  text-decoration:underline;
+  text-decoration-color:var(--gold);
+}
+.ip-architecture-inspector > a:hover {color:var(--ip-arch-service);}
+.ip-architecture-hint {
+  margin:0;padding:0 13px 5px;
+  font:500 .58rem/1.5 var(--mono);
+  letter-spacing:.06em;color:var(--ip-arch-muted);
+}
+:root[data-theme="dark"] .ip-architecture {
+  --ip-arch-ink:#e7edf8;
+  --ip-arch-muted:#9facbf;
+  --ip-arch-line:rgba(147,168,205,.26);
+  --ip-arch-model:#a2bfff;
+  --ip-arch-service:#f3d27a;
+}
+:root[data-theme="dark"] .ip-architecture::before {
+  background:radial-gradient(ellipse at center,rgba(182,147,76,.11),transparent 65%);
+}
+:root[data-theme="dark"] .ip-architecture-fallback {color:#7d91ae;}
+:root[data-theme="dark"] .ip-architecture-layer--models .ip-architecture-layer-links a:hover,
+:root[data-theme="dark"] .ip-architecture-layer--models .ip-architecture-layer-links a.is-selected {
+  background:rgba(125,161,222,.15);
+}
+:root[data-theme="dark"] .ip-architecture-layer--services .ip-architecture-layer-links a:hover,
+:root[data-theme="dark"] .ip-architecture-layer--services .ip-architecture-layer-links a.is-selected {
+  background:rgba(207,167,77,.14);
+}
+@media (min-width:1150px) {
+  .ip-architecture-stage {height:550px;}
+  .ip-architecture-layers {top:105px;}
+  .ip-architecture-layer-links a {min-height:39px;}
+}
+@media (max-width:1149px) and (min-width:901px) {
+  .ip-architecture-stage {height:490px;}
+  .ip-architecture-layer-head small {display:none;}
+  .ip-architecture-layers {gap:32%;top:85px;}
+}
+@media (max-width:900px) {
+  .ip-architecture {max-width:760px;}
+  .ip-architecture-stage {height:450px;}
+  .ip-architecture-layers {top:72px;gap:39%;}
+  .ip-architecture-layer-links a {min-height:34px;}
+}
+@media (max-width:700px) {
+  /* On mobile the headline comes first, then one legible glass object.
+     The semantic layers are compact scrollers, not a grid of pill buttons. */
+  .lp-hero-grid {display:flex;flex-direction:column;gap:30px;padding:37px 0 51px;}
+  .lp-hero-copy {order:0;}
+  .ip-architecture {order:1;max-width:none;margin-top:7px;}
+  .ip-architecture-topline {padding:0 0 4px;font-size:.58rem;}
+  .ip-architecture-topline span:last-child {display:none;}
+  .ip-architecture-stage {height:320px;}
+  .ip-architecture-core-caption {top:89%;font-size:.62rem;}
+  .ip-architecture-core-caption strong {font-size:.49rem;}
+  .ip-architecture-layers {
+    position:static;
+    display:flex;flex-direction:column;
+    gap:13px;pointer-events:auto;
+    margin-top:3px;
+  }
+  .ip-architecture-layer {width:100%;}
+  .ip-architecture-layer-head {padding:0 0 7px;font-size:.6rem;}
+  .ip-architecture-layer-head small {font-size:.58rem;display:block;}
+  .ip-architecture-layer-links {
+    display:flex;flex-direction:row;
+    gap:14px;overflow-x:auto;overflow-y:hidden;
+    padding:0 0 11px;
+    scrollbar-width:thin;scrollbar-color:var(--ip-arch-line) transparent;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+  }
+  .ip-architecture-layer-links a {
+    flex:0 0 auto;
+    font-size:.75rem;min-height:34px;
+    border-left:0;border-bottom:2px solid transparent;
+    padding:6px 1px 9px;white-space:nowrap;
+  }
+  .ip-architecture-layer--models .ip-architecture-layer-links a:hover,
+  .ip-architecture-layer--models .ip-architecture-layer-links a.is-selected,
+  .ip-architecture-layer--models .ip-architecture-layer-links a:focus-visible {
+    border-left-color:transparent;border-bottom-color:var(--ip-arch-model);
+    background:transparent;
+  }
+  .ip-architecture-layer--services .ip-architecture-layer-links a:hover,
+  .ip-architecture-layer--services .ip-architecture-layer-links a.is-selected,
+  .ip-architecture-layer--services .ip-architecture-layer-links a:focus-visible {
+    border-left-color:transparent;border-bottom-color:var(--ip-arch-service);
+    background:transparent;
+  }
+  .ip-architecture-inspector {min-height:99px;padding:14px 0;gap:10px;}
+  .ip-architecture-inspector-copy > span {font-size:.55rem;}
+  .ip-architecture-inspector-copy strong {font-size:.87rem;}
+  .ip-architecture-inspector-copy p {font-size:.73rem;}
+  .ip-architecture-inspector > a {font-size:.73rem;}
+  .ip-architecture-hint {padding-inline:0;font-size:.55rem;}
+}
+@media (max-width:420px) {
+  .ip-architecture-stage {height:280px;}
+  .ip-architecture-core-caption {top:89%;}
+  .ip-architecture-inspector {align-items:flex-start;flex-direction:column;gap:8px;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .ip-architecture-fallback,.ip-architecture-layer-links a {transition:none;}
 }

@@ -1,0 +1,47 @@
+name: Homepage 3D browser E2E
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'styles/landing.css'
+      - 'scripts/home-topology.js'
+      - 'tests/home-topology-browser.cjs'
+      - '.github/workflows/home-topology-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runner
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve public site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/inferenceport-homepage-http.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/inferenceport-homepage-http.log
+          exit 1
+      - name: Verify interactive 3D in desktop/mobile browsers
+        run: node tests/home-topology-browser.cjs
+      - name: Upload visual QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-3d-visual-qa
+          path: test-results/home-topology/
+          if-no-files-found: ignore
+          retention-days: 10

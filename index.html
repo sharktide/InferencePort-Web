@@ -55,46 +55,69 @@
             </div>
             <div class="lp-hero-meta"><span>Free to get started</span><span>Usage-based API billing</span><span>One account for your team</span></div>
           </div>
-          <div class="lp-topology-shell" id="lp-topology" aria-label="Interactive three-dimensional InferencePort platform topology">
-            <div class="lp-topology-topline"><span>INFERENCEPORT / SYSTEM MAP</span><span class="lp-topology-live"><i aria-hidden="true"></i> EXPLORE THE PLATFORM</span></div>
-            <div class="lp-topology-stage">
-              <div class="lp-topology-webgl" aria-hidden="true"></div>
-              <svg class="lp-topology-fallback" viewBox="0 0 600 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                <circle cx="300" cy="250" r="114" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 9"/>
-                <ellipse cx="300" cy="250" rx="205" ry="103" transform="rotate(-31 300 250)" stroke="currentColor" stroke-opacity=".16"/>
-                <ellipse cx="300" cy="250" rx="211" ry="108" transform="rotate(26 300 250)" stroke="currentColor" stroke-opacity=".13"/>
-                <path d="M300 250L150 151M300 250L448 135M300 250L492 252M300 250L442 373M300 250L176 377M300 250L102 270M300 250L305 94" stroke="currentColor" stroke-opacity=".3"/>
-                <path d="M318 167 242 267h50l-17 88 87-118h-50z" fill="#d9b123" stroke="#ac8115" stroke-width="2" />
-                <path d="M318 167 242 267h50l-17 88" stroke="#ffeb93" stroke-opacity=".75" stroke-width="2"/>
-                <circle cx="300" cy="250" r="76" stroke="#d6b129" stroke-opacity=".34" stroke-width="1.5"/>
-                <g fill="#e1ba29" stroke="#e1ba29"><circle cx="150" cy="151" r="6"/><circle cx="448" cy="135" r="6"/><circle cx="492" cy="252" r="6"/><circle cx="442" cy="373" r="6"/><circle cx="176" cy="377" r="6"/><circle cx="102" cy="270" r="6"/><circle cx="305" cy="94" r="6"/></g>
-                <g fill="#8eabff"><circle cx="120" cy="82" r="3"/><circle cx="482" cy="73" r="3"/><circle cx="522" cy="419" r="3"/><circle cx="80" cy="432" r="3"/></g>
+          <div class="ip-architecture" id="lp-topology" aria-label="Interactive map showing how eight model types connect to InferencePort infrastructure">
+            <div class="ip-architecture-topline"><span>ONE INTEGRATED PLATFORM</span><span>MODEL ACCESS <i aria-hidden="true">→</i> INFRASTRUCTURE</span></div>
+            <div class="ip-architecture-stage">
+              <div class="ip-architecture-canvas" aria-hidden="true"></div>
+              <svg class="ip-architecture-fallback" viewBox="0 0 900 600" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <g stroke="currentColor" stroke-width="1.5" opacity=".5">
+                  <path d="M100 118H268L374 290M100 170H255L374 290M100 222H244L374 290M100 274H232L374 290M100 326H232L374 290M100 378H244L374 290M100 430H255L374 290M100 482H268L374 290"/>
+                  <path d="M510 290H600L770 135M510 290H600L770 201M510 290H600L770 267M510 290H600L770 333M510 290H600L770 399M510 290H600L770 465"/>
+                  <path d="M375 290H420M480 290H515" stroke="#c99d25" stroke-width="2.5"/>
+                </g>
+                <g fill="#71829c" opacity=".7">
+                  <rect x="94" y="113" width="10" height="10" rx="2"/><rect x="94" y="165" width="10" height="10" rx="2"/>
+                  <rect x="94" y="217" width="10" height="10" rx="2"/><rect x="94" y="269" width="10" height="10" rx="2"/>
+                  <rect x="94" y="321" width="10" height="10" rx="2"/><rect x="94" y="373" width="10" height="10" rx="2"/>
+                  <rect x="94" y="425" width="10" height="10" rx="2"/><rect x="94" y="477" width="10" height="10" rx="2"/>
+                </g>
+                <g fill="#b28b39" opacity=".8">
+                  <rect x="764" y="129" width="12" height="12" rx="3"/><rect x="764" y="195" width="12" height="12" rx="3"/>
+                  <rect x="764" y="261" width="12" height="12" rx="3"/><rect x="764" y="327" width="12" height="12" rx="3"/>
+                  <rect x="764" y="393" width="12" height="12" rx="3"/><rect x="764" y="459" width="12" height="12" rx="3"/>
+                </g>
+                <g transform="translate(450 290) scale(.27) translate(-328 -312.5)">
+                  <path d="M320 45h145L352 233h121L183 580l105-252H183z" fill="#f0d472" fill-opacity=".65" stroke="#c19930" stroke-width="12" stroke-linejoin="round"/>
+                </g>
+                <path d="M423 206H477M423 375H477" stroke="#cba548" opacity=".4"/>
               </svg>
-              <span class="lp-topology-core-label" aria-hidden="true">INFERENCEPORT<br/><b>MODEL ACCESS · INFRASTRUCTURE</b></span>
-              <nav class="lp-topology-labels" aria-label="Explore the InferencePort platform">
-                <a class="lp-topology-node" data-node="models" href="#api" style="--x:25%;--y:30%">Models</a>
-                <a class="lp-topology-node" data-node="agents" href="#agents" style="--x:77%;--y:28%">Agents</a>
-                <a class="lp-topology-node" data-node="deployments" href="#deploy" style="--x:86%;--y:53%">Deployments</a>
-                <a class="lp-topology-node" data-node="buckets" href="#buckets" style="--x:76%;--y:77%">Buckets</a>
-                <a class="lp-topology-node" data-node="shield" href="#shield" style="--x:28%;--y:78%">Shield</a>
-                <a class="lp-topology-node" data-node="organizations" href="#organizations" style="--x:17%;--y:53%">Organizations</a>
-                <a class="lp-topology-node" data-node="console" href="#console" style="--x:52%;--y:17%">Console</a>
+              <div class="ip-architecture-core-caption" aria-hidden="true"><span>INFERENCEPORT</span><strong>THE UNIFIED PLATFORM</strong></div>
+            </div>
+            <div class="ip-architecture-layers">
+              <nav class="ip-architecture-layer ip-architecture-layer--models" aria-label="Explore model modalities">
+                <div class="ip-architecture-layer-head"><span>MODEL LAYER</span><small>08 MODALITIES</small></div>
+                <div class="ip-architecture-layer-links">
+                  <a data-graph-node="text" href="marketplace.html?modality=text">Text</a>
+                  <a data-graph-node="image" href="marketplace.html?modality=image">Image</a>
+                  <a data-graph-node="video" href="marketplace.html?modality=video">Video</a>
+                  <a data-graph-node="audio" href="marketplace.html?modality=audio">Audio</a>
+                  <a data-graph-node="3d" href="marketplace.html?modality=3d">3D</a>
+                  <a data-graph-node="embedding" href="marketplace.html?modality=embedding">Embeddings</a>
+                  <a data-graph-node="realtime" href="marketplace.html?modality=realtime">Realtime</a>
+                  <a data-graph-node="decision" href="marketplace.html?modality=decision">Decisions</a>
+                </div>
               </nav>
-              <div class="lp-topology-inspector" data-topology-inspector aria-live="polite">
-                <div><span class="lp-topology-inspector-kicker">CONNECTED / EXPLORE</span><strong data-topology-title>InferencePort</strong><p data-topology-description>Explore how model access, deployment, storage and security connect.</p></div>
-                <a data-topology-explore href="#products">Explore platform <span aria-hidden="true">↗</span></a>
-              </div>
-              <span class="lp-topology-gesture" aria-hidden="true">DRAG TO ROTATE · SELECT A NODE</span>
+              <nav class="ip-architecture-layer ip-architecture-layer--services" aria-label="Explore connected infrastructure services">
+                <div class="ip-architecture-layer-head"><span>INFRASTRUCTURE</span><small>06 SERVICES</small></div>
+                <div class="ip-architecture-layer-links">
+                  <a data-graph-node="agents" href="#agents">Agents</a>
+                  <a data-graph-node="deployments" href="#deploy">Deployments</a>
+                  <a data-graph-node="buckets" href="#buckets">Buckets</a>
+                  <a data-graph-node="shield" href="#shield">Shield</a>
+                  <a data-graph-node="organizations" href="#organizations">Organizations</a>
+                  <a data-graph-node="console" href="#console">Console</a>
+                </div>
+              </nav>
             </div>
-            <div class="lp-topology-bottom">
-              <span>EXPLORE THE MODEL LAYER</span>
-              <div class="lp-topology-satellites">
-                <a data-satellite="video" href="marketplace.html?modality=video">Video ↗</a>
-                <a data-satellite="audio" href="marketplace.html?modality=audio">Audio ↗</a>
-                <a data-satellite="3d" href="marketplace.html?modality=3d">3D ↗</a>
-                <a data-satellite="realtime" href="marketplace.html?modality=realtime">Realtime ↗</a>
+            <div class="ip-architecture-inspector" data-graph-inspector aria-live="polite">
+              <div class="ip-architecture-inspector-copy">
+                <span>INFERENCEPORT / CONNECTED CAPABILITIES</span>
+                <strong data-graph-title>One platform. Connected workflows.</strong>
+                <p data-graph-description>Choose a model type or infrastructure service to trace how it fits into the platform.</p>
               </div>
+              <a href="#products" data-graph-link>Explore platform <span aria-hidden="true">↗</span></a>
             </div>
+            <p class="ip-architecture-hint">SELECT A CAPABILITY TO EXPLORE ITS CONNECTION</p>
           </div>
         </div>
         <div class="lp-hero-demo">

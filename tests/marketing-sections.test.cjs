@@ -234,114 +234,95 @@ test("pricing keeps distinct API, deployment, storage, and subscription billing"
   assert.match(home, /Hosted chat subscriptions/);
 });
 
-test("hero renders a meaningful 3D topology and accessible functional fallback", () => {
+test("architecture topology uses the exact InferencePort brand mark", () => {
   const js = read("scripts/home-topology.js");
-  assert.match(home, /id="lp-topology"/);
-  assert.match(home, /class="lp-topology-webgl" aria-hidden="true"/);
-  assert.match(home, /class="lp-topology-fallback"/);
-  assert.match(home, /<nav class="lp-topology-labels" aria-label="Explore the InferencePort platform">/);
-  assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
-  const nodes = [...home.matchAll(/class="lp-topology-node" data-node="([^"]+)" href="([^"]+)"/g)];
-  assert.equal(nodes.length, 7);
-  assert.deepEqual(nodes.map(n => n[1]), ["models","agents","deployments","buckets","shield","organizations","console"]);
-  const allIds = new Set([...home.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
-  for (const [, , href] of nodes) {
-    assert.ok(href.startsWith("#") && allIds.has(href.slice(1)), "Broken 3D node link: " + href);
+  const navbar = read("components/ip-navbar.js");
+  const canonical = "M320 45h145L352 233h121L183 580l105-252H183z";
+  assert.ok(navbar.includes(canonical), "Expected canonical navbar mark");
+  assert.ok(home.includes(canonical), "The static fallback must use the canonical mark");
+  assert.ok(js.includes(canonical), "The 3D implementation must reference the canonical outline");
+  assert.match(js, /const MARK_VERTICES = \[/);
+  assert.match(js, /new THREE\.ExtrudeGeometry\(logoShape/);
+  assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
+  assert.match(js, /transmission:\.88/);
+  assert.match(js, /clearcoat:1/);
+  assert.match(js, /THREE\.EquirectangularReflectionMapping/);
+  assert.match(js, /new THREE\.CanvasTexture\(pano\)/);
+  assert.doesNotMatch(js, /TorusGeometry|random constellation|Math\.random\(/);
+});
+
+test("topology represents exactly eight modalities and six infrastructure services", () => {
+  const js = read("scripts/home-topology.js");
+  const ids = [...home.matchAll(/data-graph-node="([^"]+)"/g)].map(m=>m[1]);
+  const expected = ["text","image","video","audio","3d","embedding","realtime","decision",
+    "agents","deployments","buckets","shield","organizations","console"];
+  assert.deepEqual(ids,expected);
+  assert.equal(new Set(ids).size,14);
+  assert.match(home, /aria-label="Explore model modalities"/);
+  assert.match(home, /aria-label="Explore connected infrastructure services"/);
+  for (const id of expected) assert.match(js,new RegExp(id==="3d" ? '"3d"' : "\\b"+id+"\\b"));
+  assert.match(js, /const RELATIONS=\[/);
+  assert.match(js, /\["deployments","buckets"\]/);
+  assert.match(js, /\["agents","shield"\]/);
+  assert.match(js, /\["organizations","console"\]/);
+  assert.match(js, /inputHub/);
+  assert.match(js, /outputHub/);
+  assert.match(js, /new THREE\.CatmullRomCurve3\(/);
+  assert.doesNotMatch(js,/new THREE\.TorusGeometry|28; i\+\+/);
+});
+
+test("each product control links to the correct existing section or modality", () => {
+  const anchors=[...home.matchAll(/<a data-graph-node="([^"]+)" href="([^"]+)"/g)];
+  const ids=new Set([...home.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]));
+  for(const [,id,href] of anchors) {
+    if(href.startsWith("#")) assert.ok(ids.has(href.slice(1)), "Broken section link: "+id);
+    else assert.equal(href, "marketplace.html?modality="+id);
   }
-  assert.equal([...home.matchAll(/data-satellite="(video|audio|3d|realtime)"/g)].length, 4);
-  assert.match(js, /new THREE\.WebGLRenderer\(/);
-  assert.match(js, /THREE\.IcosahedronGeometry/);
-  assert.match(js, /THREE\.TorusGeometry/);
-  assert.match(js, /THREE\.Raycaster/);
-  assert.match(js, /new THREE\.QuadraticBezierCurve3/);
-  assert.match(js, /import\(THREE_MODULE_URL\)/);
-  assert.match(js, /three@0\.171\.0\/build\/three\.module\.js/);
-  assert.doesNotMatch(js, /window\.localStorage|fetch\(.*\/users|Math\.random\(/);
+  assert.match(home, /data-graph-inspector/);
+  assert.match(home, /data-graph-title/);
+  assert.match(home, /data-graph-description/);
+  assert.match(home, /data-graph-link/);
+  assert.match(read("scripts/home-topology.js"), /function setSelected\(id\)/);
 });
 
-test("3D system is lazy, theme-aware, pausable, and not mandatory for navigation", () => {
-  const js = read("scripts/home-topology.js");
-  for (const feature of [
+test("Three.js is lazy, reduces motion, and cleans up resources", () => {
+  const js=read("scripts/home-topology.js");
+  for(const feature of [
     "IntersectionObserver", "ResizeObserver", "prefers-reduced-motion",
-    "ip-theme-change", "webglcontextlost", "document.visibilityState",
-    "requestAnimationFrame", "cancelAnimationFrame", "renderer.dispose()"
-  ]) assert.ok(js.includes(feature), "Missing 3D lifecycle feature: " + feature);
-  assert.match(css, /\.lp-topology-shell\.is-3d \.lp-topology-fallback \{ opacity:0; \}/);
-  assert.match(css, /@media \(max-width:700px\)/);
-  assert.match(css, /\.lp-topology-node \{[\s\S]*?position:static;[\s\S]*?left:auto!important;/);
-  assert.match(css, /:root\[data-theme="dark"\] \.lp-topology-shell/);
-  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-demo/);
-  assert.match(css, /@media \(prefers-reduced-motion:reduce\)/);
-  const { execFileSync } = require("node:child_process");
-  assert.doesNotThrow(() => execFileSync(process.execPath, ["--check", path.join(root, "scripts/home-topology.js")]));
+    "visibilitychange","document.visibilityState","webglcontextlost",
+    "requestAnimationFrame","cancelAnimationFrame","renderer.dispose()",
+    "matchMedia", "pagehide", "env.dispose()"
+  ]) assert.ok(js.includes(feature),feature);
+  assert.match(js,/import\(THREE_URL\)/);
+  assert.match(js,/import\(THREE_FALLBACK_URL\)/);
+  assert.match(js,/three@0\.171\.0\/build\/three\.module\.js/);
+  assert.match(js,/const canRun=\(\)=>!disposed && !reduced\.matches/);
+  assert.match(js,/Math\.min\(window\.devicePixelRatio\|\|1,narrow\?1\.3:1\.65\)/);
+  assert.match(js,/mobile\.matches\?1000\/24:1000\/30/);
+  assert.match(js,/scene\.traverse/);
+  const {execFileSync}=require("node:child_process");
+  assert.doesNotThrow(()=>execFileSync(process.execPath,
+    ["--check",path.join(root,"scripts/home-topology.js")]));
 });
 
-test("quickstart is still interactive and now has room beneath the hero graph", () => {
+test("responsive architecture keeps useful model and infrastructure controls visible", () => {
+  assert.match(css,/\.ip-architecture-stage \{position:relative;height:490px;/);
+  assert.match(css,/\.ip-architecture-layers \{[\s\S]*?grid-template-columns:/);
+  assert.match(css,/\.ip-architecture-layer-links a:focus-visible/);
+  assert.match(css,/@media \(max-width:700px\)/);
+  assert.match(css,/\.ip-architecture-layer-links \{[\s\S]*?overflow-x:auto;/);
+  assert.match(css,/\.ip-architecture-stage \{height:320px;\}/);
+  assert.match(css,/\.ip-architecture-webgl \{display:block;/);
+  assert.match(css,/\.ip-architecture\.has-webgl \.ip-architecture-fallback \{opacity:0;\}/);
+  assert.match(css,/:root\[data-theme="dark"\] \.ip-architecture/);
+  assert.match(css,/@media \(prefers-reduced-motion:reduce\)/);
+  assert.doesNotMatch(css,/\.lp-topology/);
+});
+
+test("quickstart remains functional underneath the hero architecture", () => {
   assert.match(home, /class="lp-hero-demo"/);
-  assert.match(home, /class="lp-hero-demo-intro"/);
   assert.match(home, /class="lp-code" aria-label="Copyable API quickstart examples"/);
-  assert.match(css, /\.lp-hero-demo \{ display:grid;grid-template-columns:/);
-  assert.match(css, /\.lp-wrap \{ width:min\(1392px,calc\(100% - 88px\)\); \}/);
-  assert.match(css, /\.lp-section \{ padding:clamp\(112px,10vw,162px\) 0; \}/);
-  assert.match(css, /\.lp-modality-row\[data-modality="realtime"\]::after/);
-});
-
-test("mobile uses WebGL on capable devices rather than a forced static fallback", () => {
-  const js = read("scripts/home-topology.js");
-  assert.match(js, /const canAnimate = \(\) => !disposed && !reduced\.matches;/);
-  assert.doesNotMatch(js, /!compact\.matches;/);
-  assert.match(css, /\.lp-topology-webgl \{ display:block; \}/);
-  assert.match(css, /\.lp-topology-labels \{[\s\S]*?scroll-snap-type:x proximity;/);
-  assert.match(css, /\.lp-hero-grid \{ display:flex;flex-direction:column;gap:8px;/);
-  assert.match(css, /\.lp-topology-shell \{[\s\S]*?order:-1;/);
-  assert.match(css, /\.lp-topology-inspector \{[\s\S]*?bottom:55px;/);
-  assert.match(js, /compact\.matches \? 1\.25 : 1\.75/);
-  assert.match(js, /compact\.matches \? 45 : 32/);
-});
-
-test("the centerpiece is a real extruded branded mark with touch interaction", () => {
-  const js = read("scripts/home-topology.js");
-  assert.match(js, /new THREE\.ExtrudeGeometry\(bolt/);
-  assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
-  assert.match(js, /new THREE\.PointLight\(/);
-  assert.match(js, /new THREE\.TorusGeometry\(/);
-  assert.match(js, /function onPointerDown\(event\)/);
-  assert.match(js, /function onPointerUp\(\)/);
-  assert.match(js, /if \(compact\.matches && selected !== id\)/);
-  assert.match(js, /function updateInspector\(id\)/);
-  assert.match(home, /data-topology-inspector/);
-  assert.match(home, /data-topology-title/);
-  assert.match(home, /data-topology-description/);
-  assert.match(home, /data-topology-explore/);
-  assert.match(home, /DRAG TO ROTATE/);
-  assert.match(js, /NODE_DESCRIPTIONS/);
-  assert.doesNotMatch(home, /class="lp-topology-labels"[^>]*role="button"/);
-});
-
-test("visual richness uses branded 3D geometry and meaningful node constellations", () => {
-  const js = read("scripts/home-topology.js");
-  assert.match(js, /new THREE\.ExtrudeGeometry\(bolt/);
-  assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
-  assert.match(js, /const cluster = new THREE\.Group\(\)/);
-  assert.match(js, /const beadCount = n\.primary \? \(compact\.matches \? 4 : 6\) : 3;/);
-  assert.match(js, /new THREE\.TorusGeometry\(0\.32,/);
-  assert.match(js, /cluster\.rotation\.z/);
-  assert.match(js, /NODE_DESCRIPTIONS/);
-});
-
-test("the branded core is large enough to read on phones and desktop", () => {
-  const js = read("scripts/home-topology.js");
-  assert.match(js, /camera\.position\.z = compact\.matches \? 10\.8 : 11\.6;/);
-  assert.match(js, /coreGroup\.scale\.setScalar\(compact\.matches \? 1\.5 : 1\.26\)/);
-  assert.match(css, /\.lp-topology-stage \{ min-height:355px;aspect-ratio:auto;overflow:hidden; \}/);
-  assert.match(css, /\.lp-topology-node \{[\s\S]*?scroll-snap-align:start;/);
-});
-
-test("3D scene can recover when the primary module CDN is unavailable", () => {
-  const js = read("scripts/home-topology.js");
-  assert.match(js, /three@0\.171\.0\/build\/three\.module\.js/);
-  assert.match(js, /const THREE_BACKUP_URL = "https:\/\/unpkg\.com\/three@0\.171\.0\/build\/three\.module\.js";/);
-  assert.match(js, /try \{ THREE = await import\(THREE_MODULE_URL\); \}/);
-  assert.match(js, /catch \{ THREE = await import\(THREE_BACKUP_URL\); \}/);
-  assert.match(js, /shell\.dataset\.fallback = "webgl-unavailable"/);
+  assert.match(home, /class="ip-architecture"/);
+  assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
+  assert.equal([...home.matchAll(/data-example-panel=/g)].length,3);
 });
