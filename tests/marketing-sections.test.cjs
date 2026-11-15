@@ -249,7 +249,7 @@ test("architecture topology uses the exact InferencePort brand mark", () => {
   assert.match(js, /THREE\.EquirectangularReflectionMapping/);
   assert.match(js, /new THREE\.CanvasTexture\(pano\)/);
   assert.match(js, /renderer\.toneMappingExposure=1\.06/);
-  assert.match(js, /logoGroup\.rotation\.y=\.32\+/);
+  assert.match(js, /logoGroup\.rotation\.y=\.28\+/);
   assert.match(js, /envMapIntensity:1\.48/);
   assert.match(js, /new THREE\.ShaderMaterial\(/);
   assert.match(js, /reflection=clamp\(broad\*\.24\+narrow\*\.13\+edge\*\.17/);
@@ -335,7 +335,7 @@ test("quickstart remains functional underneath the hero architecture", () => {
 
 test("active paths are meaningful and context loss restores accessible fallback", () => {
   const js = read("scripts/home-topology.js");
-  assert.match(js, /setSelected\("agents"\)/);
+  assert.match(js, /setSelected\(mobile\.matches\?"text":"agents"\)/);
   assert.match(js, /const RELATIONS=\[/);
   assert.match(js, /const onContextLost=e=>\{e\.preventDefault\(\);destroy\(\);onFailure\?\.\(\);\};/);
   assert.match(js, /shell\.dataset\.fallback="context-lost"/);
