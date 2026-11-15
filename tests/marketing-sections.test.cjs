@@ -328,3 +328,11 @@ test("visual richness uses branded 3D geometry and meaningful node constellation
   assert.match(js, /cluster\.rotation\.z/);
   assert.match(js, /NODE_DESCRIPTIONS/);
 });
+
+test("the branded core is large enough to read on phones and desktop", () => {
+  const js = read("scripts/home-topology.js");
+  assert.match(js, /camera\.position\.z = compact\.matches \? 10\.8 : 11\.6;/);
+  assert.match(js, /coreGroup\.scale\.setScalar\(compact\.matches \? 1\.5 : 1\.26\)/);
+  assert.match(css, /\.lp-topology-stage \{ min-height:355px;aspect-ratio:auto;overflow:hidden; \}/);
+  assert.match(css, /\.lp-topology-node \{[\s\S]*?scroll-snap-align:start;/);
+});

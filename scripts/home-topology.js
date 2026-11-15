@@ -189,6 +189,7 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
       transparent: true, opacity: 0.23, depthWrite: false, side: THREE.BackSide
     }));
   coreGroup.add(hub);
+  coreGroup.scale.setScalar(compact.matches ? 1.5 : 1.26);
 
   const ringMaterials = [];
   for (const [radius, rotX, rotY, opacity] of [
@@ -368,7 +369,8 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     const width = Math.max(240, stage.clientWidth);
     const height = Math.max(240, stage.clientHeight);
     camera.aspect = width / height;
-    camera.position.z = compact.matches ? 12.8 : 12.7;
+    camera.position.z = compact.matches ? 10.8 : 11.6;
+    coreGroup.scale.setScalar(compact.matches ? 1.5 : 1.26);
     camera.updateProjectionMatrix();
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compact.matches ? 1.25 : 1.75));
     renderer.setSize(width, height, false);
