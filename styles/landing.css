@@ -480,3 +480,187 @@
   .lp-pricing-rows a { padding-inline:3px; }
 }
 @media (prefers-reduced-motion:reduce) { .lp-proof-link { transition:none; } }
+
+
+/* Hero — interactive 3D platform map with a separate developer quickstart.
+   One focused visual scene rather than busy decorative backgrounds. */
+.lp-wrap { width:min(1392px,calc(100% - 88px)); }
+.lp-section { padding:clamp(112px,10vw,162px) 0; }
+.lp-section-heading,.lp-products-intro { margin-bottom:56px; }
+.lp-product-group + .lp-product-group { margin-top:58px; }
+.lp-product-grid { gap:22px; }
+.lp-product-card { min-height:260px;padding:29px 27px 27px; }
+.lp-stack-heading,.lp-workflow-header { margin-bottom:60px; }
+.lp-proof-agent { min-height:500px; }
+.lp-proof-copy { padding:clamp(40px,4vw,64px); }
+.lp-proof-interface .lp-preview-body { padding-block:27px 21px; }
+.lp-proof-pair { gap:28px;margin:28px 0; }
+.lp-proof-compact { padding:43px 46px;min-height:365px; }
+.lp-proof-shield { padding:45px 47px;gap:65px; }
+.lp-workspace-layout > article { padding:43px 48px; }
+.lp-builder-grid { gap:27px; }
+.lp-builder-grid > article { padding:43px 45px; }
+.lp-experience-links { gap:27px;margin-top:27px; }
+.lp-experience-links > article { padding:34px 36px; }
+.lp-more-head { margin-bottom:48px; }
+
+.lp-hero-grid {
+  grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);
+  align-items:center;
+  gap:clamp(40px,5vw,82px);
+  padding:78px 0 72px;
+}
+.lp-hero-copy h1 { font-size:clamp(3.5rem,5.15vw,5.5rem); }
+.lp-hero-copy > p { max-width:560px;line-height:1.8; }
+.lp-hero-demo { display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);align-items:center;gap:clamp(28px,5vw,72px);border-top:1px solid #364255;padding:40px 0 58px; }
+.lp-hero-demo-intro { display:flex;flex-direction:column;align-items:flex-start; }
+.lp-hero-demo-overline { font:600 .68rem/1.5 var(--mono);letter-spacing:.08em;color:#aab8cb; }
+.lp-hero-demo-intro h2 { color:#f2f5fb;margin:20px 0 17px;font-size:clamp(1.65rem,2.5vw,2.55rem);line-height:1.16; }
+.lp-hero-demo-intro h2 span { color:#fcd704; }
+.lp-hero-demo-intro p { max-width:380px;color:#b8c5d6;font-size:.94rem;line-height:1.75;margin:0 0 18px; }
+.lp-hero-demo-intro a { color:#f1f5fc;font-size:.84rem;font-weight:670; }
+.lp-hero-demo-intro a:hover { color:#fcd704; }
+.lp-hero-demo .lp-code { width:100%;box-shadow:none;border:1px solid #44536a; }
+.lp-hero-demo .lp-code-example { min-height:250px; }
+.lp-hero-demo .lp-code pre { font-size:.77rem;line-height:1.75;padding-top:16px;padding-bottom:22px; }
+
+.lp-topology-shell {
+  --topology-ink:#6f7990;--topology-surface:rgba(255,255,255,.8);
+  position:relative;min-width:0;
+  background:linear-gradient(145deg,#f4f5f5,#eceef1);
+  color:#26354e;border:1px solid #d2d7dc;border-radius:6px;
+  overflow:hidden;isolation:isolate;
+  box-shadow:0 26px 70px -52px rgba(20,29,44,.5);
+}
+.lp-topology-shell::before { content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.55;background-image:linear-gradient(to right,rgba(75,89,108,.08) 1px,transparent 1px),linear-gradient(to bottom,rgba(75,89,108,.08) 1px,transparent 1px);background-size:47px 47px;mask-image:radial-gradient(ellipse at center,black,transparent 78%); }
+.lp-topology-topline,.lp-topology-bottom { display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px 16px;position:relative;z-index:4;font:650 .64rem/1.5 var(--mono);letter-spacing:.04em; }
+.lp-topology-topline { padding:17px 20px;border-bottom:1px solid #d2d7dc;color:#67778d; }
+.lp-topology-topline > span:first-child { color:#344158; }
+.lp-topology-live { display:inline-flex;align-items:center;gap:8px; }
+.lp-topology-live i { width:7px;height:7px;background:#ca9d1e;border-radius:50%; }
+.lp-topology-stage { position:relative;min-height:475px;aspect-ratio:1.18;isolation:isolate; }
+.lp-topology-webgl,.lp-topology-fallback,.lp-topology-labels { position:absolute;inset:0;width:100%;height:100%; }
+.lp-topology-webgl { z-index:1;pointer-events:auto; }
+.lp-topology-canvas { display:block;width:100%;height:100%;touch-action:pan-y; }
+.lp-topology-fallback { z-index:0;pointer-events:none;opacity:1;transition:opacity .3s ease;color:#76859b; }
+.lp-topology-shell.is-3d .lp-topology-fallback { opacity:0; }
+.lp-topology-core-label { position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;text-align:center;color:#394e6c;font:700 .68rem/1.5 var(--mono);letter-spacing:.075em;text-shadow:0 1px 1px rgba(255,255,255,.95); }
+.lp-topology-core-label b { font:500 .49rem/1.4 var(--mono);white-space:nowrap;letter-spacing:.03em; }
+.lp-topology-labels { z-index:3;pointer-events:none; }
+.lp-topology-node {
+  position:absolute;
+  left:var(--x);top:var(--y);
+  transform:translate(-50%,-50%);
+  display:inline-flex;align-items:center;gap:7px;
+  color:#344257;background:var(--topology-surface);border:1px solid #cdd4dc;
+  font:650 .73rem/1.35 Inter,sans-serif;
+  padding:9px 12px;border-radius:4px;white-space:nowrap;pointer-events:auto;
+  box-shadow:0 3px 14px rgba(26,40,61,.045);
+  transition:background-color .16s,color .16s,border-color .16s,box-shadow .16s;
+}
+.lp-topology-node::before { content:"";width:5px;height:5px;background:#c39c30;transform:rotate(45deg);flex:none; }
+.lp-topology-node:hover,.lp-topology-node.is-active,.lp-topology-node:focus-visible {
+  background:#f9eebd;border-color:#be9634;color:#241b0e;box-shadow:0 4px 20px rgba(161,125,38,.15);
+}
+.lp-topology-node:focus-visible,.lp-topology-satellites a:focus-visible { outline:2px solid #a37c00;outline-offset:3px; }
+.lp-topology-bottom { border-top:1px solid #d2d7dc;padding:13px 20px;color:#6f7e94; }
+.lp-topology-satellites { display:flex;gap:9px 15px;flex-wrap:wrap; }
+.lp-topology-satellites a { color:#304664;font-size:.7rem;font-weight:650;text-decoration:none;letter-spacing:0; }
+.lp-topology-satellites a:hover,.lp-topology-satellites a.is-active { color:#a17508; }
+:root[data-theme="dark"] .lp-topology-shell { --topology-surface:rgba(25,34,50,.85);background:linear-gradient(145deg,#1a2435,#111a29);color:#dfe8f8;border-color:#455168;box-shadow:0 30px 68px -42px rgba(0,0,0,.75); }
+:root[data-theme="dark"] .lp-topology-shell::before { background-image:linear-gradient(to right,rgba(176,193,224,.065) 1px,transparent 1px),linear-gradient(to bottom,rgba(176,193,224,.065) 1px,transparent 1px); }
+:root[data-theme="dark"] .lp-topology-topline,:root[data-theme="dark"] .lp-topology-bottom { border-color:#455168;color:#9facc2; }
+:root[data-theme="dark"] .lp-topology-topline > span:first-child { color:#d4ddeb; }
+:root[data-theme="dark"] .lp-topology-fallback { color:#8d9db7; }
+:root[data-theme="dark"] .lp-topology-core-label { color:#d5e0f4;text-shadow:0 1px 12px #101b2c; }
+:root[data-theme="dark"] .lp-topology-node { background:rgba(25,34,50,.87);color:#d8e4f4;border-color:#506078;box-shadow:none; }
+:root[data-theme="dark"] .lp-topology-node:hover,:root[data-theme="dark"] .lp-topology-node.is-active,:root[data-theme="dark"] .lp-topology-node:focus-visible { background:#364052;color:#ffe29a;border-color:#b68c38; }
+:root[data-theme="dark"] .lp-topology-satellites a { color:#d1dbec; }
+:root[data-theme="dark"] .lp-topology-satellites a:hover,:root[data-theme="dark"] .lp-topology-satellites a.is-active { color:#ffdf78; }
+:root:not([data-theme="dark"]) .lp-hero-demo { border-top-color:var(--border); }
+:root:not([data-theme="dark"]) .lp-hero-demo-overline { color:var(--text-muted); }
+:root:not([data-theme="dark"]) .lp-hero-demo-intro h2 { color:var(--ink); }
+:root:not([data-theme="dark"]) .lp-hero-demo-intro h2 span { color:#9b7000; }
+:root:not([data-theme="dark"]) .lp-hero-demo-intro p { color:var(--text-body); }
+:root:not([data-theme="dark"]) .lp-hero-demo-intro a { color:var(--ink); }
+
+/* A few meaningful modality motifs; the 3D topology is the only substantial motion. */
+.lp-modality-row { position:relative; }
+.lp-modality-row-top { padding-right:23px; }
+.lp-modality-row::after {
+  content:"";width:38px;height:23px;position:absolute;right:19px;top:50px;opacity:.58;
+  background:repeating-linear-gradient(90deg,transparent 0 5px,var(--brand-ink) 5px 7px,transparent 7px 11px);
+  clip-path:polygon(0 55%,14% 25%,28% 75%,43% 10%,58% 78%,73% 35%,87% 60%,100% 45%,100% 100%,0 100%);
+  transition:opacity .16s,transform .22s;
+}
+.lp-modality-row[data-modality="image"]::after,.lp-modality-row[data-modality="video"]::after,.lp-modality-row[data-modality="3d"]::after {
+  width:32px;height:24px;background:transparent;border:1.5px solid var(--gold-ink);
+  clip-path:none;transform:rotate(-7deg);
+}
+.lp-modality-row[data-modality="video"]::after { box-shadow:6px 5px 0 -1px var(--bg),6px 5px 0 0 var(--gold-ink); }
+.lp-modality-row[data-modality="3d"]::after { transform:rotate(-19deg) skewY(14deg); }
+.lp-modality-row[data-modality="decision"]::after,.lp-modality-row[data-modality="embedding"]::after {
+  width:34px;height:24px;border:none;clip-path:none;
+  background:radial-gradient(circle at 17% 20%,var(--purple-ink) 0 3px,transparent 3.5px),radial-gradient(circle at 82% 54%,var(--purple-ink) 0 3px,transparent 3.5px),radial-gradient(circle at 32% 86%,var(--purple-ink) 0 3px,transparent 3.5px),linear-gradient(23deg,transparent 48%,var(--purple-ink) 49% 51%,transparent 52%);
+}
+.lp-modality-row[data-modality="realtime"]::after { border-radius:50%;clip-path:none;background:none;border:2px solid var(--brand-ink);box-shadow:0 0 0 5px var(--brand-dim);width:23px;height:23px; }
+.lp-modality-row:hover::after { opacity:1; }
+@media (min-width:1200px) {
+  .lp-hero { padding-top:48px; }
+  .lp-stack { padding-block:145px 160px; }
+  .lp-workflow { padding-block:140px 156px; }
+  .lp-products { padding-block:128px 148px; }
+  .lp-models { padding-block:140px 150px; }
+}
+@media (max-width:1150px) {
+  .lp-hero-grid { gap:27px; }
+  .lp-hero-copy h1 { font-size:clamp(3.1rem,5.2vw,4.5rem); }
+  .lp-topology-stage { min-height:410px; }
+  .lp-topology-node { font-size:.68rem;padding:7px 9px; }
+  .lp-proof-pair { gap:18px; }
+  .lp-proof-compact { padding:32px; }
+}
+@media (max-width:900px) {
+  .lp-wrap { width:min(1392px,calc(100% - 48px)); }
+  .lp-hero-grid { grid-template-columns:1fr;gap:42px;padding:56px 0 56px; }
+  .lp-hero-copy { max-width:720px; }
+  .lp-hero-copy h1 { font-size:clamp(3.3rem,8vw,5rem); }
+  .lp-topology-shell { width:min(100%,720px); }
+  .lp-topology-stage { aspect-ratio:1.45;min-height:420px; }
+  .lp-hero-demo { grid-template-columns:1fr;gap:25px; }
+  .lp-hero-demo-intro { max-width:700px; }
+  .lp-hero-demo .lp-code { max-width:780px; }
+  .lp-proof-copy { padding:35px; }
+  .lp-proof-shield { gap:27px; }
+  .lp-section { padding-block:92px; }
+}
+@media (max-width:700px) {
+  .lp-topology-stage { min-height:405px;aspect-ratio:auto; }
+  .lp-topology-webgl { display:none; }
+  .lp-topology-fallback { height:265px;top:0; }
+  .lp-topology-core-label { top:31%;font-size:.55rem; }
+  .lp-topology-labels { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));position:absolute;top:auto;bottom:12px;left:14px;right:14px;width:auto;height:auto;gap:6px;pointer-events:auto; }
+  .lp-topology-node { position:static;left:auto!important;top:auto!important;transform:none!important;justify-content:flex-start;font-size:.72rem;padding:7px 9px;white-space:normal;min-height:32px; }
+  .lp-topology-topline,.lp-topology-bottom { padding-inline:14px;font-size:.6rem; }
+  .lp-topology-live { display:none; }
+  .lp-topology-satellites { gap:9px 14px; }
+  .lp-hero-demo { padding-top:29px; }
+  .lp-hero-demo .lp-code pre { font-size:.71rem; }
+  .lp-section { padding-block:78px; }
+  .lp-product-grid { gap:12px; }
+  .lp-proof-compact { padding:26px 21px; }
+  .lp-proof-shield { padding:27px 22px; }
+}
+@media (max-width:480px) {
+  .lp-wrap { width:calc(100% - 34px); }
+  .lp-topology-stage { min-height:420px; }
+  .lp-hero-grid { padding-block:37px; }
+  .lp-hero-copy h1 { font-size:clamp(2.55rem,10.7vw,3.7rem); }
+  .lp-topology-satellites { display:grid;grid-template-columns:repeat(2,max-content); }
+  .lp-topology-bottom { align-items:start; }
+  .lp-modality-row::after { top:24px;right:8px;transform:scale(.8); }
+  .lp-hero-demo-intro h2 { font-size:1.7rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lp-topology-fallback,.lp-topology-node,.lp-modality-row::after { transition:none; }
+}

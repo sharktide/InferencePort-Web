@@ -55,6 +55,50 @@
             </div>
             <div class="lp-hero-meta"><span>Free to get started</span><span>Usage-based API billing</span><span>One account for your team</span></div>
           </div>
+          <div class="lp-topology-shell" id="lp-topology" aria-label="Interactive three-dimensional InferencePort platform topology">
+            <div class="lp-topology-topline"><span>PLATFORM TOPOLOGY / INTERACTIVE</span><span class="lp-topology-live"><i aria-hidden="true"></i> CONNECTED INFRASTRUCTURE</span></div>
+            <div class="lp-topology-stage">
+              <div class="lp-topology-webgl" aria-hidden="true"></div>
+              <svg class="lp-topology-fallback" viewBox="0 0 600 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                <circle cx="300" cy="250" r="114" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="5 9"/>
+                <ellipse cx="300" cy="250" rx="205" ry="103" transform="rotate(-31 300 250)" stroke="currentColor" stroke-opacity=".16"/>
+                <ellipse cx="300" cy="250" rx="211" ry="108" transform="rotate(26 300 250)" stroke="currentColor" stroke-opacity=".13"/>
+                <path d="M300 250L150 151M300 250L448 135M300 250L492 252M300 250L442 373M300 250L176 377M300 250L102 270M300 250L305 94" stroke="currentColor" stroke-opacity=".3"/>
+                <path d="m300 190 52 30v60l-52 30-52-30v-60z" stroke="#a87c08" stroke-width="1.8"/>
+                <path d="m300 190 0 120m-52-90 104 60m0-60-104 60" stroke="#a87c08" stroke-opacity=".7"/>
+                <circle cx="300" cy="250" r="76" stroke="#d6b129" stroke-opacity=".34" stroke-width="1.5"/>
+                <g fill="#e1ba29" stroke="#e1ba29"><circle cx="150" cy="151" r="6"/><circle cx="448" cy="135" r="6"/><circle cx="492" cy="252" r="6"/><circle cx="442" cy="373" r="6"/><circle cx="176" cy="377" r="6"/><circle cx="102" cy="270" r="6"/><circle cx="305" cy="94" r="6"/></g>
+                <g fill="#8eabff"><circle cx="120" cy="82" r="3"/><circle cx="482" cy="73" r="3"/><circle cx="522" cy="419" r="3"/><circle cx="80" cy="432" r="3"/></g>
+              </svg>
+              <span class="lp-topology-core-label" aria-hidden="true">INFERENCEPORT<br/><b>ONE CONNECTED PLATFORM</b></span>
+              <nav class="lp-topology-labels" aria-label="Explore the InferencePort platform">
+                <a class="lp-topology-node" data-node="models" href="#api" style="--x:25%;--y:30%">Models</a>
+                <a class="lp-topology-node" data-node="agents" href="#agents" style="--x:77%;--y:28%">Agents</a>
+                <a class="lp-topology-node" data-node="deployments" href="#deploy" style="--x:86%;--y:53%">Deployments</a>
+                <a class="lp-topology-node" data-node="buckets" href="#buckets" style="--x:76%;--y:77%">Buckets</a>
+                <a class="lp-topology-node" data-node="shield" href="#shield" style="--x:28%;--y:78%">Shield</a>
+                <a class="lp-topology-node" data-node="organizations" href="#organizations" style="--x:17%;--y:53%">Organizations</a>
+                <a class="lp-topology-node" data-node="console" href="#console" style="--x:52%;--y:17%">Console</a>
+              </nav>
+            </div>
+            <div class="lp-topology-bottom">
+              <span>EXPLORE THE MODEL LAYER</span>
+              <div class="lp-topology-satellites">
+                <a data-satellite="video" href="marketplace.html?modality=video">Video ↗</a>
+                <a data-satellite="audio" href="marketplace.html?modality=audio">Audio ↗</a>
+                <a data-satellite="3d" href="marketplace.html?modality=3d">3D ↗</a>
+                <a data-satellite="realtime" href="marketplace.html?modality=realtime">Realtime ↗</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lp-hero-demo">
+          <div class="lp-hero-demo-intro">
+            <span class="lp-hero-demo-overline">DEVELOPER QUICKSTART / 01</span>
+            <h2>Make a request.<br /><span>Build from there.</span></h2>
+            <p>Use an OpenAI-compatible client or direct HTTP request. Switch between working examples below; the platform services connect from the same console.</p>
+            <a href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Read the docs ↗</a>
+          </div>
           <div class="lp-code" aria-label="Copyable API quickstart examples">
             <div class="lp-code-heading">
               <div class="lp-code-filename"><span class="lp-code-light" aria-hidden="true"></span><strong>Quickstart</strong> <span>/ API</span></div>
@@ -100,71 +144,10 @@
             <div class="lp-code-bottom"><span>Real model IDs · Replace $IP_API_KEY</span><button type="button" class="lp-copy" data-copy-request>Copy request <span aria-hidden="true">↗</span></button></div>
             <div class="lp-copy-status" role="status" aria-live="polite"></div>
           </div>
-        </div>
-        <div class="lp-hero-bottom">
+        </div>        <div class="lp-hero-bottom">
           <span>One API key.</span><span>Text / Images / Video / Audio / 3D / Embeddings / Realtime / Decisions</span>
           <a href="decision.html">Explore decision models ↗</a>
         </div>
-      </div>
-    </section>
-
-    <section class="lp-section lp-models" id="api" aria-labelledby="lp-models-title">
-      <div class="lp-wrap">
-        <div class="lp-section-heading">
-          <div><p class="lp-kicker">MODEL ACCESS / EIGHT MODALITIES</p><h2 id="lp-models-title">One API.<br /><span>More than just chat.</span></h2></div>
-          <div class="lp-heading-aside"><p>Use text, media, realtime and decision models with the same account. Choose a category to explore supported models, capabilities and pricing.</p><a href="marketplace.html">Browse the full catalog <span aria-hidden="true">↗</span></a></div>
-        </div>
-        <div class="lp-modality-matrix" aria-label="Explore the eight available model modalities">
-          <a class="lp-modality-row" href="marketplace.html?modality=video" data-modality="video">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">VIDEO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Generate clips</h3>
-            <p>Text-to-video and creative video generation.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>wan2.7-t2v</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=audio" data-modality="audio">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">AUDIO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Speech &amp; sound</h3>
-            <p>Speech synthesis, transcription and sound generation.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>openai-tts-1</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=3d" data-modality="3d">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">3D</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Build 3D assets</h3>
-            <p>Reconstruct geometry and generate 3D models.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>trellis2</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=realtime" data-modality="realtime">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">REALTIME</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Live conversations</h3>
-            <p>Streaming voice interactions and transcription.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>gpt-realtime-2.1-mini</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=text" data-modality="text">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">TEXT</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Write &amp; reason</h3>
-            <p>Chat, coding and multimodal language models.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>deepseek-v4.1-flash-1017</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=image" data-modality="image">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">IMAGE</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Generate visuals</h3>
-            <p>Image generation and editing workflows.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>lightning-image-turbo</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=embedding" data-modality="embedding">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">EMBEDDINGS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Search &amp; retrieve</h3>
-            <p>Vectors for semantic search and retrieval.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>text-embedding-3-small</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=decision" data-modality="decision">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">DECISIONS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Make decisions</h3>
-            <p>Structured answers, scoring and classification.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>microsoft/decision-1</code></span>
-          </a>
-        </div>
-        <p class="lp-modality-foot">Example IDs are from the model catalog. Pricing, request formats and supported features vary by modality.</p>
       </div>
     </section>
 
@@ -261,6 +244,66 @@
             </a>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-models" id="api" aria-labelledby="lp-models-title">
+      <div class="lp-wrap">
+        <div class="lp-section-heading">
+          <div><p class="lp-kicker">MODEL ACCESS / EIGHT MODALITIES</p><h2 id="lp-models-title">One API.<br /><span>More than just chat.</span></h2></div>
+          <div class="lp-heading-aside"><p>Use text, media, realtime and decision models with the same account. Choose a category to explore supported models, capabilities and pricing.</p><a href="marketplace.html">Browse the full catalog <span aria-hidden="true">↗</span></a></div>
+        </div>
+        <div class="lp-modality-matrix" aria-label="Explore the eight available model modalities">
+          <a class="lp-modality-row" href="marketplace.html?modality=video" data-modality="video">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">VIDEO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Generate clips</h3>
+            <p>Text-to-video and creative video generation.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>wan2.7-t2v</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=audio" data-modality="audio">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">AUDIO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Speech &amp; sound</h3>
+            <p>Speech synthesis, transcription and sound generation.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>openai-tts-1</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=3d" data-modality="3d">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">3D</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Build 3D assets</h3>
+            <p>Reconstruct geometry and generate 3D models.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>trellis2</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=realtime" data-modality="realtime">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">REALTIME</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Live conversations</h3>
+            <p>Streaming voice interactions and transcription.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>gpt-realtime-2.1-mini</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=text" data-modality="text">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">TEXT</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Write &amp; reason</h3>
+            <p>Chat, coding and multimodal language models.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>deepseek-v4.1-flash-1017</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=image" data-modality="image">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">IMAGE</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Generate visuals</h3>
+            <p>Image generation and editing workflows.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>lightning-image-turbo</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=embedding" data-modality="embedding">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">EMBEDDINGS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Search &amp; retrieve</h3>
+            <p>Vectors for semantic search and retrieval.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>text-embedding-3-small</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=decision" data-modality="decision">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">DECISIONS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Make decisions</h3>
+            <p>Structured answers, scoring and classification.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>microsoft/decision-1</code></span>
+          </a>
+        </div>
+        <p class="lp-modality-foot">Example IDs are from the model catalog. Pricing, request formats and supported features vary by modality.</p>
       </div>
     </section>
 
@@ -448,5 +491,6 @@ ipx org keys create ci --monthly-limit 25</code></pre></div>
     });
   })();
   </script>
+  <script type="module" src="scripts/home-topology.js"></script>
 </body>
 </html>

@@ -177,9 +177,9 @@ test("homepage follows the 7-part hierarchy with restrained group accents", () =
   const workspace = home.indexOf('class="lp-section lp-workflow"');
   const ecosystem = home.indexOf('class="lp-section lp-more"');
   const pricing = home.indexOf('class="lp-section lp-pricing"');
-  assert.ok(hero >= 0 && hero < api && api < products && products < details
+  assert.ok(hero >= 0 && hero < products && products < api && api < details
     && details < workspace && workspace < ecosystem && ecosystem < pricing,
-    "Expected Hero → Eight modalities → Products → Featured → Workspace → Ecosystem → Pricing");
+    "Expected Hero → Products → Eight modalities → Featured → Workspace → Ecosystem → Pricing");
   for (const group of ["build", "run", "manage"]) {
     assert.match(home, new RegExp('class="lp-product-group lp-product-group--' + group + '"'));
     assert.ok(css.includes(".lp-product-group--" + group + " {"), "Missing scoped group palette: " + group);
@@ -232,4 +232,56 @@ test("pricing keeps distinct API, deployment, storage, and subscription billing"
   assert.match(home, /Deployment fee \+ usage/);
   assert.match(home, /Model-specific usage/);
   assert.match(home, /Hosted chat subscriptions/);
+});
+
+test("hero renders a meaningful 3D topology and accessible functional fallback", () => {
+  const js = read("scripts/home-topology.js");
+  assert.match(home, /id="lp-topology"/);
+  assert.match(home, /class="lp-topology-webgl" aria-hidden="true"/);
+  assert.match(home, /class="lp-topology-fallback"/);
+  assert.match(home, /<nav class="lp-topology-labels" aria-label="Explore the InferencePort platform">/);
+  assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
+  const nodes = [...home.matchAll(/class="lp-topology-node" data-node="([^"]+)" href="([^"]+)"/g)];
+  assert.equal(nodes.length, 7);
+  assert.deepEqual(nodes.map(n => n[1]), ["models","agents","deployments","buckets","shield","organizations","console"]);
+  const allIds = new Set([...home.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]));
+  for (const [, , href] of nodes) {
+    assert.ok(href.startsWith("#") && allIds.has(href.slice(1)), "Broken 3D node link: " + href);
+  }
+  assert.equal([...home.matchAll(/data-satellite="(video|audio|3d|realtime)"/g)].length, 4);
+  assert.match(js, /new THREE\.WebGLRenderer\(/);
+  assert.match(js, /THREE\.IcosahedronGeometry/);
+  assert.match(js, /THREE\.TorusGeometry/);
+  assert.match(js, /THREE\.Raycaster/);
+  assert.match(js, /new THREE\.QuadraticBezierCurve3/);
+  assert.match(js, /import\(THREE_MODULE_URL\)/);
+  assert.match(js, /three@0\.171\.0\/build\/three\.module\.js/);
+  assert.doesNotMatch(js, /window\.localStorage|fetch\(.*\/users|Math\.random\(/);
+});
+
+test("3D system is lazy, theme-aware, pausable, and not mandatory for navigation", () => {
+  const js = read("scripts/home-topology.js");
+  for (const feature of [
+    "IntersectionObserver", "ResizeObserver", "prefers-reduced-motion",
+    "ip-theme-change", "webglcontextlost", "document.visibilityState",
+    "requestAnimationFrame", "cancelAnimationFrame", "renderer.dispose()"
+  ]) assert.ok(js.includes(feature), "Missing 3D lifecycle feature: " + feature);
+  assert.match(css, /\.lp-topology-shell\.is-3d \.lp-topology-fallback \{ opacity:0; \}/);
+  assert.match(css, /@media \(max-width:700px\)/);
+  assert.match(css, /\.lp-topology-node \{ position:static;left:auto!important;top:auto!important;/);
+  assert.match(css, /:root\[data-theme="dark"\] \.lp-topology-shell/);
+  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-demo/);
+  assert.match(css, /@media \(prefers-reduced-motion:reduce\)/);
+  const { execFileSync } = require("node:child_process");
+  assert.doesNotThrow(() => execFileSync(process.execPath, ["--check", path.join(root, "scripts/home-topology.js")]));
+});
+
+test("quickstart is still interactive and now has room beneath the hero graph", () => {
+  assert.match(home, /class="lp-hero-demo"/);
+  assert.match(home, /class="lp-hero-demo-intro"/);
+  assert.match(home, /class="lp-code" aria-label="Copyable API quickstart examples"/);
+  assert.match(css, /\.lp-hero-demo \{ display:grid;grid-template-columns:/);
+  assert.match(css, /\.lp-wrap \{ width:min\(1392px,calc\(100% - 88px\)\); \}/);
+  assert.match(css, /\.lp-section \{ padding:clamp\(112px,10vw,162px\) 0; \}/);
+  assert.match(css, /\.lp-modality-row\[data-modality="realtime"\]::after/);
 });
