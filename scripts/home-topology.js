@@ -142,7 +142,7 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   });
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.35;
+  renderer.toneMappingExposure=1.06;
   renderer.domElement.className="ip-architecture-webgl";
   renderer.domElement.setAttribute("aria-hidden","true");
   host.appendChild(renderer.domElement);
@@ -157,10 +157,11 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   pano.width=1024;pano.height=512;
   const ctx=pano.getContext("2d");
   const background=ctx.createLinearGradient(0,0,1024,512);
-  background.addColorStop(0,"#c7d6e4");background.addColorStop(.46,"#f8f7f0");
-  background.addColorStop(.75,"#a3b8da");background.addColorStop(1,"#e2ca8a");
+  background.addColorStop(0,"#263b55");background.addColorStop(.25,"#8497b5");
+  background.addColorStop(.47,"#ecf0f3");background.addColorStop(.73,"#344765");
+  background.addColorStop(1,"#c7b27e");
   ctx.fillStyle=background;ctx.fillRect(0,0,1024,512);
-  for(const [x,w,alpha] of [[120,110,.9],[360,26,.7],[690,105,.65],[880,36,.8]]) {
+  for(const [x,w,alpha] of [[100,95,.9],[350,18,.85],[680,82,.78],[900,24,.8]]) {
     const light=ctx.createLinearGradient(x,0,x+w,0);
     light.addColorStop(0,"rgba(255,255,255,0)");
     light.addColorStop(.3,"rgba(255,255,255,"+alpha+")");
@@ -173,12 +174,12 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   env.colorSpace=THREE.SRGBColorSpace;
   scene.environment=env;
 
-  scene.add(new THREE.AmbientLight(0xffffff,1.35));
-  const warm=new THREE.DirectionalLight(0xffe1a3,3.3);
+  scene.add(new THREE.AmbientLight(0xffffff,.62));
+  const warm=new THREE.DirectionalLight(0xffe1a3,1.95);
   warm.position.set(-4,5,8);scene.add(warm);
-  const cool=new THREE.DirectionalLight(0xa2c4ff,3.0);
+  const cool=new THREE.DirectionalLight(0xa2c4ff,1.5);
   cool.position.set(4,-2,5);scene.add(cool);
-  const rim=new THREE.DirectionalLight(0xffffff,2.4);
+  const rim=new THREE.DirectionalLight(0xffffff,1.35);
   rim.position.set(2,3,-3);scene.add(rim);
 
   // EXACT canonical brand mark from ip-navbar.js; SVG coordinates are inverted
@@ -191,17 +192,17 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   });
   logoShape.closePath();
   const logoGeometry=new THREE.ExtrudeGeometry(logoShape,{
-    depth:.3,steps:1,bevelEnabled:true,bevelSize:.066,
-    bevelThickness:.075,bevelSegments:5,curveSegments:8
+    depth:.43,steps:1,bevelEnabled:true,bevelSize:.075,
+    bevelThickness:.115,bevelSegments:6,curveSegments:8
   });
   logoGeometry.center();
   const glass=new THREE.MeshPhysicalMaterial({
-    color:0xfff4d1,roughness:.065,metalness:0,
-    transmission:.88,thickness:1.6,ior:1.47,
-    clearcoat:1,clearcoatRoughness:.07,
-    iridescence:.18,iridescenceIOR:1.35,
-    envMapIntensity:2.15,attenuationColor:new THREE.Color(0xf4d278),
-    attenuationDistance:4.2,side:THREE.DoubleSide
+    color:0x9daec3,roughness:.045,metalness:0,
+    transmission:.77,thickness:2.2,ior:1.49,
+    clearcoat:1,clearcoatRoughness:.04,
+    iridescence:.12,iridescenceIOR:1.35,
+    envMapIntensity:1.25,attenuationColor:new THREE.Color(0x86a5c4),
+    attenuationDistance:2.5,side:THREE.DoubleSide
   });
   const logoGroup=new THREE.Group();
   logoGroup.position.set(0,0,.73);
@@ -209,12 +210,12 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   const body=new THREE.Mesh(logoGeometry,glass);
   logoGroup.add(body);
   const foil=new THREE.Mesh(logoGeometry.clone(),new THREE.MeshStandardMaterial({
-    color:0xd7ac38,metalness:.66,roughness:.2,transparent:true,opacity:.25,depthWrite:false
+    color:0x647c99,metalness:.38,roughness:.17,transparent:true,opacity:.45,depthWrite:false
   }));
-  foil.scale.set(.992,.992,.80);foil.position.z=-.07;logoGroup.add(foil);
+  foil.scale.set(.989,.989,.80);foil.position.z=-.12;logoGroup.add(foil);
   const outline=new THREE.LineSegments(
-    new THREE.EdgesGeometry(logoGeometry,27),
-    new THREE.LineBasicMaterial({color:0xf2d787,transparent:true,opacity:.68})
+    new THREE.EdgesGeometry(logoGeometry,18),
+    new THREE.LineBasicMaterial({color:0xb1842c,transparent:true,opacity:.95})
   );
   logoGroup.add(outline);
 
@@ -327,8 +328,11 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
     const lineColor=themeDark?0x9cacc8:0x73839a;
     for(const l of lines)if(l.kind!=="backbone")l.mat.color.setHex(lineColor);
     railMaterial.color.setHex(lineColor);
-    foil.material.opacity=themeDark?.26:.21;
-    outline.material.opacity=themeDark?.78:.59;
+    glass.color.setHex(themeDark?0xa1b8d6:0x91a7bf);
+    foil.material.color.setHex(themeDark?0x456688:0x6881a3);
+    foil.material.opacity=themeDark?.55:.49;
+    outline.material.color.setHex(themeDark?0xffd66f:0x9c792f);
+    outline.material.opacity=themeDark?.95:.88;
     for(const {mat,type} of points.values()) {
       mat.color.setHex(type==="model"?(themeDark?0x91b2fd:0x5375ac):(themeDark?0xf5cf72:0xb18a37));
     }
@@ -426,8 +430,8 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
     graph.rotation.y+=(yaw+Math.sin(time*.18)*.035-graph.rotation.y)*.045;
     graph.rotation.x+=(pitch-graph.rotation.x)*.045;
     // Only the logo moves slightly. The architecture stays spatially stable.
-    logoGroup.rotation.y=Math.sin(time*.26)*.14;
-    logoGroup.rotation.x=Math.sin(time*.17)*.045;
+    logoGroup.rotation.y=.32+Math.sin(time*.24)*.16;
+    logoGroup.rotation.x=.10+Math.sin(time*.17)*.07;
     for(const [i,l] of lines.entries()) {
       if(!l.packet.visible)continue;
       l.packet.position.copy(l.curve.getPoint((time*.16+i*.1)%1));
