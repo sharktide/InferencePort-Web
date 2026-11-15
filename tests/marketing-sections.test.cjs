@@ -244,13 +244,13 @@ test("architecture topology uses the exact InferencePort brand mark", () => {
   assert.match(js, /const MARK_VERTICES = \[/);
   assert.match(js, /new THREE\.ExtrudeGeometry\(logoShape/);
   assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
-  assert.match(js, /transmission:\.77/);
+  assert.match(js, /transmission:\.94/);
   assert.match(js, /clearcoat:1/);
   assert.match(js, /THREE\.EquirectangularReflectionMapping/);
   assert.match(js, /new THREE\.CanvasTexture\(pano\)/);
   assert.match(js, /renderer\.toneMappingExposure=1\.06/);
   assert.match(js, /logoGroup\.rotation\.y=\.32\+/);
-  assert.match(js, /envMapIntensity:1\.25/);
+  assert.match(js, /envMapIntensity:1\.48/);
   assert.doesNotMatch(js, /TorusGeometry|random constellation|Math\.random\(/);
 });
 
@@ -328,4 +328,13 @@ test("quickstart remains functional underneath the hero architecture", () => {
   assert.match(home, /class="ip-architecture"/);
   assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
   assert.equal([...home.matchAll(/data-example-panel=/g)].length,3);
+});
+
+test("active paths are meaningful and context loss restores accessible fallback", () => {
+  const js = read("scripts/home-topology.js");
+  assert.match(js, /setSelected\("agents"\)/);
+  assert.match(js, /const RELATIONS=\[/);
+  assert.match(js, /const onContextLost=e=>\{e\.preventDefault\(\);destroy\(\);onFailure\?\.\(\);\};/);
+  assert.match(js, /shell\.dataset\.fallback="context-lost"/);
+  assert.match(js, /foil\.material\.opacity=themeDark\?\.20:\.16/);
 });

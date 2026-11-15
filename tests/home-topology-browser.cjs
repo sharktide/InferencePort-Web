@@ -56,6 +56,7 @@ async function checkScene(page,name) {
   assert.match(await page.locator("[data-graph-description]").innerText(),/S3-compatible/);
   assert.equal(await bucket.getAttribute("aria-current"),"true");
   assert.equal(await page.locator("[data-graph-link]").getAttribute("href"),"#buckets");
+  await shell.screenshot({path:path.join(screenshots,name+"-buckets-selected.png")});
 
   // Geometry is not allowed to produce horizontal page overflow.
   const measurements=await page.evaluate(()=>({
@@ -65,6 +66,17 @@ async function checkScene(page,name) {
   }));
   assert.ok(measurements.documentWidth<=measurements.viewportWidth+2,
     name+" introduces horizontal overflow "+JSON.stringify(measurements));
+  // Simulate the WebGL context-loss event and verify that the live scene
+  // clears while all the meaningful links and SVG remain available.
+  await page.locator("canvas.ip-architecture-webgl").evaluate(canvas=>{
+    canvas.dispatchEvent(new Event("webglcontextlost",{cancelable:true}));
+  });
+  await page.waitForFunction(()=>{
+    const el=document.querySelector("#lp-topology");
+    return el?.dataset.fallback==="context-lost" && !el.classList.contains("has-webgl");
+  });
+  assert.equal(await page.locator("#lp-topology [data-graph-node]").count(),14);
+
 }
 
 (async()=>{

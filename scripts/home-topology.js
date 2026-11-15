@@ -81,6 +81,8 @@ function initTopology() {
     });
   }
 
+  setSelected("agents");
+
   const canRun=()=>!disposed && !reduced.matches;
   async function ensureScene() {
     if(loading||instance||!canRun()||!visible) return;
@@ -90,7 +92,8 @@ function initTopology() {
       try {THREE=await import(THREE_URL);}
       catch {THREE=await import(THREE_FALLBACK_URL);}
       if(!canRun()||!visible) return;
-      instance=makeScene({THREE,stage,host,mobile,onPick:setSelected});
+      instance=makeScene({THREE,stage,host,mobile,onPick:setSelected,
+        onFailure:()=>{shell.classList.remove("has-webgl");shell.classList.add("is-fallback");shell.dataset.fallback="context-lost";instance=null;}});
       shell.classList.add("has-webgl");
       shell.classList.remove("is-fallback");
       instance.setSelected(active);
@@ -136,7 +139,7 @@ function initTopology() {
   },{once:true});
 }
 
-function makeScene({THREE,stage,host,mobile,onPick}) {
+function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   const renderer=new THREE.WebGLRenderer({
     antialias:true,alpha:true,powerPreference:"low-power",preserveDrawingBuffer:false
   });
@@ -197,12 +200,12 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   });
   logoGeometry.center();
   const glass=new THREE.MeshPhysicalMaterial({
-    color:0x9daec3,roughness:.045,metalness:0,
-    transmission:.77,thickness:2.2,ior:1.49,
+    color:0xc4d5e2,roughness:.035,metalness:0,
+    transmission:.94,thickness:2.35,ior:1.49,
     clearcoat:1,clearcoatRoughness:.04,
     iridescence:.12,iridescenceIOR:1.35,
-    envMapIntensity:1.25,attenuationColor:new THREE.Color(0x86a5c4),
-    attenuationDistance:2.5,side:THREE.DoubleSide
+    envMapIntensity:1.48,attenuationColor:new THREE.Color(0xb4c9dc),
+    attenuationDistance:4.2,side:THREE.DoubleSide
   });
   const logoGroup=new THREE.Group();
   logoGroup.position.set(0,0,.73);
@@ -210,7 +213,7 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   const body=new THREE.Mesh(logoGeometry,glass);
   logoGroup.add(body);
   const foil=new THREE.Mesh(logoGeometry.clone(),new THREE.MeshStandardMaterial({
-    color:0x647c99,metalness:.38,roughness:.17,transparent:true,opacity:.45,depthWrite:false
+    color:0xa3b6cb,metalness:.20,roughness:.18,transparent:true,opacity:.16,depthWrite:false
   }));
   foil.scale.set(.989,.989,.80);foil.position.z=-.12;logoGroup.add(foil);
   const outline=new THREE.LineSegments(
@@ -328,9 +331,9 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
     const lineColor=themeDark?0x9cacc8:0x73839a;
     for(const l of lines)if(l.kind!=="backbone")l.mat.color.setHex(lineColor);
     railMaterial.color.setHex(lineColor);
-    glass.color.setHex(themeDark?0xa1b8d6:0x91a7bf);
-    foil.material.color.setHex(themeDark?0x456688:0x6881a3);
-    foil.material.opacity=themeDark?.55:.49;
+    glass.color.setHex(themeDark?0xd0dced:0xc3d3e2);
+    foil.material.color.setHex(themeDark?0x8296b7:0xa6bbca);
+    foil.material.opacity=themeDark?.20:.16;
     outline.material.color.setHex(themeDark?0xffd66f:0x9c792f);
     outline.material.opacity=themeDark?.95:.88;
     for(const {mat,type} of points.values()) {
@@ -412,7 +415,7 @@ function makeScene({THREE,stage,host,mobile,onPick}) {
   stage.addEventListener("pointerup",onUp);
   stage.addEventListener("pointercancel",onLeave);
   stage.addEventListener("pointerleave",onLeave);
-  const onContextLost=e=>{e.preventDefault();destroy();};
+  const onContextLost=e=>{e.preventDefault();destroy();onFailure?.();};
   renderer.domElement.addEventListener("webglcontextlost",onContextLost,false);
   const onVisibility=()=>document.visibilityState==="hidden"?pause():start();
   document.addEventListener("visibilitychange",onVisibility);
