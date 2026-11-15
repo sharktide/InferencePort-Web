@@ -50,6 +50,11 @@ async function checkScene(page,name) {
   await page.evaluate(()=>document.documentElement.setAttribute("data-theme","light"));
 
   // The graph interaction must explain a real capability and highlight its link.
+  if(name==="mobile") {
+    await page.getByRole("tab",{name:"Infrastructure"}).click();
+    assert.equal(await page.locator("#ip-layer-models").isVisible(),false);
+    assert.equal(await page.locator("#ip-layer-services").isVisible(),true);
+  }
   const bucket=page.locator('[data-graph-node="buckets"]');
   await bucket.scrollIntoViewIfNeeded();
   if(name==="mobile") {
@@ -62,6 +67,16 @@ async function checkScene(page,name) {
   assert.equal(await bucket.getAttribute("aria-current"),"true");
   assert.equal(await page.locator("[data-graph-link]").getAttribute("href"),"#buckets");
   await shell.screenshot({path:path.join(screenshots,name+"-buckets-selected.png")});
+
+  // A full two-axis drag must keep WebGL live and allow pointer rotation.
+  const canvas=page.locator("canvas.ip-architecture-webgl");
+  const region=await canvas.boundingBox();
+  assert.ok(region,"WebGL canvas did not have a bounding box");
+  await page.mouse.move(region.x+region.width*.54,region.y+region.height*.48);
+  await page.mouse.down();
+  await page.mouse.move(region.x+region.width*.17,region.y+region.height*.78,{steps:10});
+  await page.mouse.up();
+  assert.equal(await shell.evaluate(el=>el.classList.contains("has-webgl")),true);
 
   // Geometry is not allowed to produce horizontal page overflow.
   const measurements=await page.evaluate(()=>({
@@ -143,6 +158,7 @@ async function checkScene(page,name) {
       await safariPage.waitForTimeout(1200);
       assert.equal(await safariPage.locator("[data-graph-node]").count(),14);
       await safariShell.screenshot({path:path.join(screenshots,"mobile-webkit.png")});
+      await safariPage.getByRole("tab",{name:"Infrastructure"}).click();
       await safariPage.locator('[data-graph-node="shield"]').click();
       assert.match(await safariPage.locator("[data-graph-title]").innerText(),/Shield/);
       assert.deepEqual(safariErrors,[],"WebKit page errors");

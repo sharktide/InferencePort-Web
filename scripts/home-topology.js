@@ -43,6 +43,9 @@ function initTopology() {
   const stage=shell.querySelector(".ip-architecture-stage");
   const host=shell.querySelector(".ip-architecture-canvas");
   const anchors=[...shell.querySelectorAll("[data-graph-node]")];
+  const tabs=[...shell.querySelectorAll("[data-graph-tab]")];
+  const modelLayer=shell.querySelector("#ip-layer-models");
+  const serviceLayer=shell.querySelector("#ip-layer-services");
   const title=shell.querySelector("[data-graph-title]");
   const description=shell.querySelector("[data-graph-description]");
   const explore=shell.querySelector("[data-graph-link]");
@@ -50,10 +53,42 @@ function initTopology() {
   const mobile=window.matchMedia("(max-width: 700px)");
   let active=null;
   let instance=null,visible=false,disposed=false,loading=false;
+  function activateLayer(which) {
+    const chosen=which==="services"?"services":"models";
+    shell.dataset.graphLayer=chosen;
+    tabs.forEach(button=>{
+      const isSelected=button.dataset.graphTab===chosen;
+      button.setAttribute("aria-selected",String(isSelected));
+      button.tabIndex=isSelected?0:-1;
+    });
+    modelLayer.hidden=mobile.matches && chosen==="services";
+    serviceLayer.hidden=mobile.matches && chosen==="models";
+  }
+  tabs.forEach((button,index)=>{
+    button.addEventListener("click",()=>activateLayer(button.dataset.graphTab));
+    button.addEventListener("keydown",event=>{
+      if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;
+      event.preventDefault();
+      const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:
+        (index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;
+      activateLayer(tabs[next].dataset.graphTab);
+      tabs[next].focus();
+    });
+  });
+  const onViewportChange=()=>{
+    activateLayer(shell.dataset.graphLayer||"models");
+    instance?.resize?.();
+  };
+  mobile.addEventListener?.("change",onViewportChange);
+  activateLayer("models");
 
   function setSelected(id) {
     const chosen=CAPABILITIES[id] ? id : null;
     active=chosen;
+    if(mobile.matches && chosen){
+      const group=MODALITY_NAMES.includes(chosen)?"models":"services";
+      activateLayer(group);
+    }
     shell.dataset.selected=chosen || "";
     for(const a of anchors) {
       a.classList.toggle("is-selected",a.dataset.graphNode===chosen);
@@ -81,7 +116,7 @@ function initTopology() {
     });
   }
 
-  setSelected("agents");
+  setSelected(mobile.matches?"text":"agents");
 
   const canRun=()=>!disposed && !reduced.matches;
   async function ensureScene() {
@@ -134,6 +169,7 @@ function initTopology() {
   window.addEventListener("pagehide",()=>{
     disposed=true;io?.disconnect();themeObserver.disconnect();
     reduced.removeEventListener?.("change",updateMode);
+    mobile.removeEventListener?.("change",onViewportChange);
     document.removeEventListener("ip-theme-change",onTheme);
     instance?.destroy();instance=null;
   },{once:true});
@@ -356,7 +392,14 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   }
   const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
   let selected=null,active=false,dead=false,raf=0,last=0,time=0;
-  let pitch=0,yaw=0,drag=null,themeDark=false;
+  let drag=null,themeDark=false;
+  const targetRotation=new THREE.Quaternion();
+  const pointerTilt=new THREE.Vector2();
+  const velocity=new THREE.Vector2();
+  const rotX=new THREE.Quaternion(),rotY=new THREE.Quaternion(),hoverRotation=new THREE.Quaternion();
+  const xAxis=new THREE.Vector3(1,0,0),yAxis=new THREE.Vector3(0,1,0);
+  const tiltEuler=new THREE.Euler();
+  let dragging=false;
   let observer=null;
   function updateTheme() {
     themeDark=document.documentElement.getAttribute("data-theme")==="dark";
@@ -397,9 +440,10 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     const w=Math.max(stage.clientWidth,240),h=Math.max(stage.clientHeight,260);
     camera.aspect=w/h;
     const narrow=mobile.matches;
-    camera.position.set(0,0,narrow?14.6:12.8);
+    camera.position.set(0,0,narrow?11.9:12.1);
     camera.updateProjectionMatrix();
-    graph.scale.set(narrow?.81:1,narrow?.88:1,1);
+    graph.scale.set(narrow?.93:1,narrow?.93:1,1);
+    logoGroup.scale.setScalar(narrow?1.52:1.12);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,narrow?1.3:1.65));
     renderer.setSize(w,h,false);
     renderer.render(scene,camera);
@@ -416,19 +460,27 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   }
   function onDown(e) {
     if(e.target.closest?.("a"))return;
-    drag={x:e.clientX,y:e.clientY,baseYaw:yaw,basePitch:pitch,moved:false};
+    drag={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,moved:false};
+    dragging=true;
+    velocity.set(0,0);
+    renderer.domElement.setPointerCapture?.(e.pointerId);
   }
   function onMove(e) {
     if(drag) {
-      const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
-      if(Math.abs(dx)+Math.abs(dy)>9) drag.moved=true;
-      if(Math.abs(dx)>Math.abs(dy) || e.pointerType!=="touch") {
-        yaw=Math.max(-.16,Math.min(.16,drag.baseYaw+dx*.0016));
-        pitch=Math.max(-.09,Math.min(.09,drag.basePitch+dy*.001));
-      }
+      const dx=e.clientX-drag.lastX,dy=e.clientY-drag.lastY;
+      drag.lastX=e.clientX;drag.lastY=e.clientY;
+      if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>7)drag.moved=true;
+      // The user can turn the entire 3D graph freely on both axes.
+      const speed=e.pointerType==="touch"?.011:.0095;
+      rotY.setFromAxisAngle(yAxis,dx*speed);
+      rotX.setFromAxisAngle(xAxis,dy*speed);
+      targetRotation.premultiply(rotY).premultiply(rotX).normalize();
+      velocity.set(dx*speed,dy*speed);
       return;
     }
     if(e.pointerType==="touch")return;
+    const box=stage.getBoundingClientRect();
+    pointerTilt.set((e.clientX-box.left)/box.width-.5,(e.clientY-box.top)/box.height-.5);
     const id=hit(e);
     renderer.domElement.style.cursor=id?"pointer":"grab";
     if(id)onPick(id);
@@ -436,12 +488,17 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   function onUp(e) {
     if(!drag)return;
     const wasMoved=drag.moved;
-    drag=null;
+    drag=null;dragging=false;
+    if(renderer.domElement.hasPointerCapture?.(e.pointerId))
+      renderer.domElement.releasePointerCapture(e.pointerId);
     if(wasMoved)return;
     const id=hit(e);
     if(id)onPick(id);
   }
-  function onLeave(){drag=null;renderer.domElement.style.cursor="default";}
+  function onLeave(){
+    if(!drag)pointerTilt.set(0,0);
+    renderer.domElement.style.cursor="default";
+  }
   stage.addEventListener("pointerdown",onDown,{passive:true});
   stage.addEventListener("pointermove",onMove,{passive:true});
   stage.addEventListener("pointerup",onUp);
@@ -462,11 +519,20 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     if(now-last<interval)return;
     const delta=last?Math.min((now-last)/1000,.08):0;
     last=now;time+=delta;
-    graph.rotation.y+=(yaw+Math.sin(time*.18)*.035-graph.rotation.y)*.045;
-    graph.rotation.x+=(pitch-graph.rotation.x)*.045;
-    // Only the logo moves slightly. The architecture stays spatially stable.
-    logoGroup.rotation.y=.32+Math.sin(time*.24)*.16;
-    logoGroup.rotation.x=.10+Math.sin(time*.17)*.07;
+    if(!dragging) {
+      // Faster continuous orbit, plus momentum from the last pointer movement.
+      rotY.setFromAxisAngle(yAxis,.23*delta+velocity.x*.56);
+      rotX.setFromAxisAngle(xAxis,velocity.y*.56);
+      targetRotation.premultiply(rotY).premultiply(rotX).normalize();
+      velocity.multiplyScalar(Math.pow(.84,delta*60));
+    }
+    tiltEuler.set(-pointerTilt.y*.20,pointerTilt.x*.26,0);
+    hoverRotation.setFromEuler(tiltEuler);
+    hoverRotation.premultiply(targetRotation);
+    graph.quaternion.slerp(hoverRotation,1-Math.exp(-delta*15));
+    // The logo itself is part of the freely rotating platform graph.
+    logoGroup.rotation.y=.28+Math.sin(time*.36)*.22;
+    logoGroup.rotation.x=.08+Math.sin(time*.23)*.09;
     for(const [i,l] of lines.entries()) {
       if(!l.packet.visible)continue;
       l.packet.position.copy(l.curve.getPoint((time*.16+i*.1)%1));
@@ -489,6 +555,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     stage.removeEventListener("pointerup",onUp);
     stage.removeEventListener("pointercancel",onLeave);
     stage.removeEventListener("pointerleave",onLeave);
+    drag=null;dragging=false;
     renderer.domElement.removeEventListener("webglcontextlost",onContextLost);
     const materials=new Set(),geometries=new Set();
     scene.traverse(object=>{
@@ -504,7 +571,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     renderer.dispose();
     renderer.domElement.remove();
   }
-  return {start,pause,destroy,setSelected,updateTheme};
+  return {start,pause,destroy,setSelected,updateTheme,resize};
 }
 
 if(document.readyState==="loading"){

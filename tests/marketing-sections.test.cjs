@@ -79,7 +79,7 @@ test("homepage has intentional layout variation and responsive themes", () => {
   assert.match(home, /class="lp-workspace-layout"/);
   assert.match(home, /class="lp-org-spec"/);
   assert.match(home, /class="lp-shield-schema"/);
-  assert.match(home, /class="lp-builder-grid"/);
+  assert.equal([...home.matchAll(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)].length,4);
   assert.doesNotMatch(home, /class="checks"|class="pgrid"|class="pc c-/);
   assert.match(home, /href="styles\/shared\.css"/);
   assert.match(home, /href="styles\/landing\.css"/);
@@ -99,7 +99,7 @@ test("theme correctly switches the hero instead of forcing dark mode", () => {
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-copy h1/);
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-button-outline/);
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-bottom/);
-  assert.match(css, /\.lp-hero-overline > span:last-child \{ display:none; \}/);
+  assert.doesNotMatch(home, /class="lp-hero-overline"/);
 });
 
 test("specific infrastructure features remain discoverable in concise sections", () => {
@@ -144,7 +144,7 @@ test("every hosted model modality is prominent and opens its actual Marketplace 
 test("desktop modules have intentional spacing with tablet and mobile fallbacks", () => {
   assert.match(css, /@media \(min-width:1101px\)/);
   assert.match(css, /\.lp-proof-agent \{[^}]*grid-template-columns:/);
-  assert.match(css, /\.lp-proof-pair \{[^}]*grid-template-columns:/);
+  assert.match(css, /\.lp-proof-pair \{display:flex;flex-direction:column;/);
   assert.match(css, /\.lp-workspace-layout \{[^}]*grid-template-columns:/);
   assert.match(css, /\.lp-proof-agent,\.lp-proof-shield,\.lp-proof-pair,\.lp-workspace-layout \{ grid-template-columns:1fr; \}/);
   assert.match(css, /\.lp-modality-matrix \{ grid-template-columns:1fr; \}/);
@@ -202,10 +202,10 @@ test("product category icons match their labels", () => {
 
 test("proof panels show genuine control structures without pretending to be live data", () => {
   for (const term of [
-    "CONFIGURATION PREVIEW", "Backing model", "System instructions",
-    "MCP servers", "Request billing", "Published", "MODEL DEPLOYMENTS",
+    "Illustrative preview", "Backing model", "System instructions",
+    "MCP servers", "Request billing", "Published", "Model deployments",
     "aws --endpoint-url", "POST /ai-shield/analyze",
-    "RESPONSE FIELDS", "Illustrative control layout"
+    "Response fields", "Illustrative control layout"
   ]) assert.ok(home.includes(term), "Missing useful product proof: " + term);
   assert.match(home, /class="lp-proof-interface" aria-label="Illustration/);
   assert.doesNotMatch(home, /12\.4k Requests|\$18\.20 Spend|Customer logo|agent\/acme\/support-bot/);
@@ -317,7 +317,7 @@ test("responsive architecture keeps useful model and infrastructure controls vis
   assert.match(css,/\.ip-architecture-layer-links a:focus-visible/);
   assert.match(css,/@media \(max-width:700px\)/);
   assert.match(css,/\.ip-architecture-layer-links \{[\s\S]*?overflow-x:auto;/);
-  assert.match(css,/\.ip-architecture-stage \{height:320px;\}/);
+  assert.match(css,/\.ip-architecture-stage \{height:clamp\(380px,101vw,490px\);\}/);
   assert.match(css,/\.ip-architecture-webgl \{display:block;/);
   assert.match(css,/\.ip-architecture\.has-webgl \.ip-architecture-fallback \{opacity:0;\}/);
   assert.match(css,/:root\[data-theme="dark"\] \.ip-architecture/);
@@ -340,4 +340,49 @@ test("active paths are meaningful and context loss restores accessible fallback"
   assert.match(js, /const onContextLost=e=>\{e\.preventDefault\(\);destroy\(\);onFailure\?\.\(\);\};/);
   assert.match(js, /shell\.dataset\.fallback="context-lost"/);
   assert.match(js, /foil\.material\.opacity=themeDark\?\.13:\.095/);
+});
+
+test("mobile keeps only one capability layer visible at a time", () => {
+  const js=read("scripts/home-topology.js");
+  assert.match(home, /class="ip-architecture-layer-switch" role="tablist"/);
+  assert.match(home, /data-graph-tab="models" aria-controls="ip-layer-models"/);
+  assert.match(home, /data-graph-tab="services" aria-controls="ip-layer-services"/);
+  assert.match(js, /function activateLayer\(which\)/);
+  assert.match(js, /modelLayer\.hidden=mobile\.matches && chosen==="services"/);
+  assert.match(js, /serviceLayer\.hidden=mobile\.matches && chosen==="models"/);
+  assert.match(js, /ArrowLeft/);
+  assert.match(js, /ArrowRight/);
+  assert.match(js, /mobile\.addEventListener\?\.\("change",onViewportChange\)/);
+  assert.match(css, /\.ip-architecture-layer\[hidden\] \{display:none!important;\}/);
+});
+
+test("the platform graph freely rotates with a faster idle orbit, touch drag, and inertia", () => {
+  const js=read("scripts/home-topology.js");
+  assert.match(js,/const targetRotation=new THREE\.Quaternion\(\)/);
+  assert.match(js,/targetRotation\.premultiply\(rotY\)\.premultiply\(rotX\)\.normalize\(\)/);
+  assert.match(js,/rotY\.setFromAxisAngle\(yAxis,\.23\*delta\+velocity\.x\*\.56\)/);
+  assert.match(js,/velocity\.multiplyScalar\(Math\.pow\(\.84,delta\*60\)\)/);
+  assert.match(js,/graph\.quaternion\.slerp\(hoverRotation,1-Math\.exp\(-delta\*15\)\)/);
+  assert.match(css,/\.ip-architecture-webgl \{touch-action:none;cursor:grab;\}/);
+  assert.doesNotMatch(js,/yaw=Math\.max\(-\.16|pitch=Math\.max\(-\.09/);
+  assert.match(js,/logoGroup\.scale\.setScalar\(narrow\?1\.52:1\.12\)/);
+});
+
+test("featured infrastructure and developer ecosystem have readable dedicated spotlights", () => {
+  assert.equal([...home.matchAll(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)].length,4);
+  for(const id of ["council","cli","lightning","app"]) {
+    assert.match(home,new RegExp('<article class="lp-ecosystem-spotlight[^"]*" id="'+id+'"'));
+  }
+  assert.doesNotMatch(home,/class="lp-builder-grid"|class="lp-experience-links"/);
+  assert.match(home,/class="lp-deploy-preview" aria-label="Illustrative deployment setup controls"/);
+  assert.match(home,/class="lp-bucket-visual"/);
+  assert.match(css,/\.lp-proof-pair \{display:flex;flex-direction:column;/);
+  assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?grid-template-columns:/);
+  assert.match(css,/\.lp-ecosystem-spotlight--reverse \.lp-ecosystem-copy/);
+  assert.match(css,/@media \(max-width:900px\) \{[\s\S]*?\.lp-ecosystem-spotlight \{grid-template-columns:1fr;/);
+});
+
+test("unnecessary all-caps section kickers have been removed", () => {
+  assert.doesNotMatch(home,/class="lp-kicker"|class="lp-detail-eyebrow"|class="lp-hero-overline"|class="lp-hero-demo-overline"/);
+  assert.doesNotMatch(home,/ONE INTEGRATED PLATFORM|INFERENCEPORT \/ CONNECTED CAPABILITIES|SELECT A CAPABILITY TO EXPLORE/);
 });
