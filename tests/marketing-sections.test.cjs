@@ -10,6 +10,7 @@ const home = read("index.html");
 const css = read("styles/landing.css");
 const navbar = read("components/ip-navbar.js");
 const platform = read("platform.html");
+const marketplace = read("marketplace.html");
 
 test("every link from the shared navbar to the homepage has a stable anchor", () => {
   const ids = [...home.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
@@ -70,7 +71,8 @@ test("product sections link to usable next steps", () => {
 test("homepage has intentional layout variation and responsive themes", () => {
   const sectionCount = [...home.matchAll(/<section\b/g)].length;
   assert.ok(sectionCount <= 8, "Homepage has excessive sections");
-  assert.match(home, /class="lp-model-ledger"/);
+  assert.match(home, /class="lp-modality-gallery"/);
+  assert.match(home, /class="lp-modality-secondary"/);
   assert.match(home, /class="lp-stack-layout"/);
   assert.match(home, /class="lp-ops-layout"/);
   assert.match(home, /class="lp-agent-spec"/);
@@ -111,4 +113,39 @@ test("specific infrastructure features remain discoverable in concise sections",
     "1–3 review rounds", "OAuth or API key",
     "Ollama", "JSON output"
   ]) assert.ok(home.toLowerCase().includes(term.toLowerCase()), "Missing concrete capability: " + term);
+});
+
+test("every hosted model modality is prominent and opens its actual Marketplace filter", () => {
+  const examples = {
+    video: ["wan2.7-t2v"],
+    audio: ["openai-tts-1", "whisper-large-v3"],
+    "3d": ["tripoSR", "trellis2"],
+    realtime: ["gpt-realtime-2.1-mini", "scribe-v2-realtime"],
+    text: ["deepseek-v4.1-flash-1017"],
+    image: ["lightning-image-turbo"],
+    embedding: ["text-embedding-3-small"],
+    decision: ["microsoft/decision-1"],
+  };
+  assert.equal([...home.matchAll(/class="lp-modality-feature"/g)].length, 4,
+    "Give video, audio, 3D and realtime an equal, prominent treatment");
+  for (const [type, ids] of Object.entries(examples)) {
+    const href = 'href="marketplace.html?modality=' + type + '"';
+    assert.ok(home.includes(href), "Missing category link for " + type);
+    assert.ok(home.includes('data-modality="' + type + '"'), "Missing category marker for " + type);
+    for (const id of ids) assert.ok(home.includes(id), "Missing real model example: " + id);
+    assert.ok(marketplace.includes('"' + type + '"'), "Market category unavailable: " + type);
+  }
+  assert.match(marketplace, /permittedModalities\.has\(requestedModality\)/);
+  assert.match(marketplace, /tab\.classList\.toggle\("active", tab === selected\)/);
+  assert.match(marketplace, /nextUrl\.searchParams\.set\("modality", activeFilter\)/);
+  assert.match(marketplace, /window\.history\.replaceState\(/);
+});
+
+test("desktop modules have intentional spacing with tablet and mobile fallbacks", () => {
+  assert.match(css, /@media \(min-width:1101px\)/);
+  assert.match(css, /\.lp-stack-layout,\.lp-stack-side,\.lp-ops-layout \{ gap:24px; \}/);
+  assert.match(css, /\.lp-ops-layout > article \{ padding:41px 43px 43px; \}/);
+  assert.match(css, /@media \(min-width:901px\) and \(max-width:1100px\)/);
+  assert.match(css, /\.lp-modality-gallery \{ grid-template-columns:1fr; \}/);
+  assert.match(css, /\.lp-modality-secondary \{ grid-template-columns:1fr;/);
 });

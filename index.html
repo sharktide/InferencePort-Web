@@ -48,7 +48,7 @@
         <div class="lp-hero-grid">
           <div class="lp-hero-copy">
             <h1 id="lp-title">Models are<br />just the start.<br /><em>Build the rest.</em></h1>
-            <p>One OpenAI-compatible API for text, image, video, audio, 3D and more. Deploy models, run agents, store artifacts and protect requests without juggling five different platforms.</p>
+            <p>From text and images to video, speech, 3D and realtime AI. One platform to access models, deploy agents, store artifacts and protect requests—with familiar APIs and centralized controls.</p>
             <div class="lp-actions">
               <a class="lp-button lp-button-primary" href="/console">Start building <span aria-hidden="true">↗</span></a>
               <a class="lp-button lp-button-outline" href="marketplace.html">Browse models <span aria-hidden="true">↗</span></a>
@@ -111,17 +111,42 @@
     <section class="lp-section lp-models" id="api" aria-labelledby="lp-models-title">
       <div class="lp-wrap">
         <div class="lp-section-heading">
-          <div><p class="lp-kicker">THE MODEL LAYER</p><h2 id="lp-models-title">Use the model you need.<br /><span>Not the provider's entire stack.</span></h2></div>
-          <div class="lp-heading-aside"><p>Switch models without reinventing your integration. Use our IDs or supported publisher-qualified aliases.</p><a href="marketplace.html">Open the model catalog <span aria-hidden="true">↗</span></a></div>
+          <div><p class="lp-kicker">ONE PLATFORM / EIGHT MODALITIES</p><h2 id="lp-models-title">Not just chat models.<br /><span>Make something with every modality.</span></h2></div>
+          <div class="lp-heading-aside"><p>Generate video, synthesize speech, reconstruct 3D assets or hold live voice conversations. Discover models across the whole platform, with pricing and availability in the catalog.</p><a href="marketplace.html">Browse all models <span aria-hidden="true">↗</span></a></div>
         </div>
-        <div class="lp-model-ledger" aria-label="Examples from the InferencePort model catalog">
-          <div class="lp-model-ledger-head"><span>MODEL / API ID</span><span>TYPE</span><span>USE IT FOR</span></div>
-          <a href="marketplace.html"><strong>deepseek-v4.1-flash-1017<small>DeepSeek V4.1 Flash 1017</small></strong><span>Text</span><span>Reasoning &amp; coding <b aria-hidden="true">↗</b></span></a>
-          <a href="marketplace.html"><strong>gemini-4-carbon<small>Google Gemini 4 Carbon</small></strong><span>Text</span><span>Multimodal applications <b aria-hidden="true">↗</b></span></a>
-          <a href="marketplace.html"><strong>lightning-image-turbo<small>InferencePort Lightning Image Turbo</small></strong><span>Image</span><span>Image generation <b aria-hidden="true">↗</b></span></a>
-          <a href="marketplace.html"><strong>text-embedding-3-small<small>OpenAI Text Embedding 3 Small</small></strong><span>Embeddings</span><span>Search &amp; retrieval <b aria-hidden="true">↗</b></span></a>
+        <div class="lp-modality-gallery" aria-label="Video, audio, 3D, and realtime model capabilities">
+          <a class="lp-modality-feature" href="marketplace.html?modality=video" data-modality="video">
+            <div class="lp-modality-top"><span>01 / VIDEO GENERATION</span><span aria-hidden="true">↗</span></div>
+            <h3>Turn prompts into motion.</h3>
+            <p>Produce video clips with text-to-video and other generation models, without managing a separate video service.</p>
+            <div class="lp-modality-bottom"><span>Example: <code>wan2.7-t2v</code></span><strong>Explore video models</strong></div>
+          </a>
+          <a class="lp-modality-feature" href="marketplace.html?modality=audio" data-modality="audio">
+            <div class="lp-modality-top"><span>02 / AUDIO &amp; SPEECH</span><span aria-hidden="true">↗</span></div>
+            <h3>Give your apps a voice.</h3>
+            <p>Synthesize natural speech, transcribe recordings and work with specialized audio generation models.</p>
+            <div class="lp-modality-bottom"><span>Examples: <code>openai-tts-1</code> · <code>whisper-large-v3</code></span><strong>Explore audio models</strong></div>
+          </a>
+          <a class="lp-modality-feature" href="marketplace.html?modality=3d" data-modality="3d">
+            <div class="lp-modality-top"><span>03 / 3D GENERATION</span><span aria-hidden="true">↗</span></div>
+            <h3>Go from images to assets.</h3>
+            <p>Reconstruct and generate 3D models for prototyping, visualizations and creative pipelines.</p>
+            <div class="lp-modality-bottom"><span>Examples: <code>tripoSR</code> · <code>trellis2</code></span><strong>Explore 3D models</strong></div>
+          </a>
+          <a class="lp-modality-feature" href="marketplace.html?modality=realtime" data-modality="realtime">
+            <div class="lp-modality-top"><span>04 / REALTIME AI</span><span aria-hidden="true">↗</span></div>
+            <h3>Talk and listen live.</h3>
+            <p>Build interactive voice experiences with streaming audio conversations and low-latency transcription.</p>
+            <div class="lp-modality-bottom"><span>Examples: <code>gpt-realtime-2.1-mini</code> · <code>scribe-v2-realtime</code></span><strong>Explore realtime models</strong></div>
+          </a>
         </div>
-        <div class="lp-model-bottom"><span>OpenAI-compatible clients · Streaming and tool calling on supported models · Usage tracked in the console</span><a href="/console">Get your API key ↗</a></div>
+        <div class="lp-modality-secondary" aria-label="More InferencePort model categories">
+          <a href="marketplace.html?modality=text" data-modality="text"><strong>Text</strong><span>Chat, reasoning &amp; code</span><code>deepseek-v4.1-flash-1017</code><b aria-hidden="true">↗</b></a>
+          <a href="marketplace.html?modality=image" data-modality="image"><strong>Images</strong><span>Image generation</span><code>lightning-image-turbo</code><b aria-hidden="true">↗</b></a>
+          <a href="marketplace.html?modality=embedding" data-modality="embedding"><strong>Embeddings</strong><span>Search &amp; retrieval</span><code>text-embedding-3-small</code><b aria-hidden="true">↗</b></a>
+          <a href="marketplace.html?modality=decision" data-modality="decision"><strong>Decisions</strong><span>Classification &amp; scoring</span><code>microsoft/decision-1</code><b aria-hidden="true">↗</b></a>
+        </div>
+        <div class="lp-model-bottom"><span>Model IDs shown are examples; capabilities, endpoints and pricing vary by modality.</span><a href="decision.html">Learn about decision models ↗</a></div>
       </div>
     </section>
 

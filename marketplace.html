@@ -525,7 +525,9 @@
 		let cloudModels = [];
 		let localModels = [];
 		let config = null;
-		let activeFilter = "all";
+		const requestedModality = (urlParams.get("modality") || "").toLowerCase();
+		const permittedModalities = new Set(["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"]);
+		let activeFilter = permittedModalities.has(requestedModality) ? requestedModality : "all";
 		let priceRange = "all";
 		let priceSort = "default";
 		const MODELS_PER_PAGE = 24;
@@ -1020,6 +1022,11 @@
 			document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
 			tab.classList.add("active");
 			activeFilter = tab.dataset.filter;
+			// Keep category URLs shareable and preserve other query parameters.
+			const nextUrl = new URL(window.location.href);
+			if (activeFilter === "all") nextUrl.searchParams.delete("modality");
+			else nextUrl.searchParams.set("modality", activeFilter);
+			window.history.replaceState(null, "", nextUrl);
 			const onlyLocal = activeFilter === "local";
 			if (onlyLocal) {
 				priceRange = "all";
@@ -1033,7 +1040,14 @@
 			renderAll(document.getElementById("search-models").value);
 		});
 
-		document.addEventListener("DOMContentLoaded", async () => {
+		document.addEventListener("DOMContentLoaded", async () => {
+			// Homepage modality links open the matching catalog category.
+			// Ignore unknown query values rather than activating an invalid filter.
+			const selected = [...document.querySelectorAll(".filter-tab")]
+				.find(tab => tab.dataset.filter === activeFilter);
+			if (selected) {
+				document.querySelectorAll(".filter-tab").forEach(tab => tab.classList.toggle("active", tab === selected));
+			}
 			await loadModels();
 			renderAll();
 			scrollToHashModel();
