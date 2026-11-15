@@ -54,6 +54,7 @@ async function checkScene(page,name) {
     await page.getByRole("tab",{name:"Infrastructure"}).click();
     assert.equal(await page.locator("#ip-layer-models").isVisible(),false);
     assert.equal(await page.locator("#ip-layer-services").isVisible(),true);
+    assert.match(await page.locator("[data-graph-title]").innerText(),/Managed agents/);
   }
   const bucket=page.locator('[data-graph-node="buckets"]');
   await bucket.scrollIntoViewIfNeeded();
@@ -159,6 +160,7 @@ async function checkScene(page,name) {
       assert.equal(await safariPage.locator("[data-graph-node]").count(),14);
       await safariShell.screenshot({path:path.join(screenshots,"mobile-webkit.png")});
       await safariPage.getByRole("tab",{name:"Infrastructure"}).click();
+      assert.match(await safariPage.locator("[data-graph-title]").innerText(),/Managed agents/);
       await safariPage.locator('[data-graph-node="shield"]').click();
       assert.match(await safariPage.locator("[data-graph-title]").innerText(),/Shield/);
       assert.deepEqual(safariErrors,[],"WebKit page errors");
