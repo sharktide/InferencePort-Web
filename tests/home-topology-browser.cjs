@@ -10,7 +10,7 @@
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
-const {chromium,devices}=require("playwright");
+const {chromium,webkit,devices}=require("playwright");
 
 const root=path.resolve(__dirname,"..");
 const screenshots=path.join(root,"test-results","home-topology");
@@ -121,7 +121,31 @@ async function checkScene(page,name) {
       path:path.join(screenshots,"mobile-reduced-motion.png")
     });
     await reduced.close();
-    console.log("Browser E2E checks passed: desktop/mobile WebGL, interaction, themes, reduced-motion.");
+    // WebKit desktop-linux is the nearest available automated Safari engine.
+    // Its software rasterizer may use the static fallback, but the layout and
+    // accessible interaction must remain correct in either case.
+    const webkitBrowser=await webkit.launch({headless:true});
+    try {
+      const safari=await webkitBrowser.newContext({
+        ...devices["iPhone 13"],reducedMotion:"no-preference"
+      });
+      const safariPage=await safari.newPage();
+      const safariErrors=[];
+      safariPage.on("pageerror",e=>safariErrors.push(String(e)));
+      await safariPage.goto(BASE+"/",{waitUntil:"domcontentloaded"});
+      const safariShell=safariPage.locator("#lp-topology");
+      await safariShell.scrollIntoViewIfNeeded();
+      await safariPage.waitForTimeout(1200);
+      assert.equal(await safariPage.locator("[data-graph-node]").count(),14);
+      await safariShell.screenshot({path:path.join(screenshots,"mobile-webkit.png")});
+      await safariPage.locator('[data-graph-node="shield"]').click();
+      assert.match(await safariPage.locator("[data-graph-title]").innerText(),/Shield/);
+      assert.deepEqual(safariErrors,[],"WebKit page errors");
+      await safari.close();
+    }finally{
+      await webkitBrowser.close();
+    }
+    console.log("Browser E2E checks passed: Chromium desktop/mobile WebGL; WebKit mobile layout, interaction and reduced-motion.");
   }finally{
     await browser.close();
   }
