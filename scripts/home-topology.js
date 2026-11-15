@@ -65,13 +65,21 @@ function initTopology() {
     serviceLayer.hidden=mobile.matches && chosen==="models";
   }
   tabs.forEach((button,index)=>{
-    button.addEventListener("click",()=>activateLayer(button.dataset.graphTab));
+    button.addEventListener("click",()=>{
+      const group=button.dataset.graphTab;
+      activateLayer(group);
+      const groupIds=group==="services"?SERVICE_NAMES:MODALITY_NAMES;
+      if(!groupIds.includes(active))setSelected(groupIds[0]);
+    });
     button.addEventListener("keydown",event=>{
       if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;
       event.preventDefault();
       const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:
         (index+(event.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;
-      activateLayer(tabs[next].dataset.graphTab);
+      const group=tabs[next].dataset.graphTab;
+      activateLayer(group);
+      const groupIds=group==="services"?SERVICE_NAMES:MODALITY_NAMES;
+      if(!groupIds.includes(active))setSelected(groupIds[0]);
       tabs[next].focus();
     });
   });
