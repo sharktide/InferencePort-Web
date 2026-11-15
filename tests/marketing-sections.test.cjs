@@ -249,7 +249,7 @@ test("architecture topology uses the exact InferencePort brand mark", () => {
   assert.match(js, /THREE\.EquirectangularReflectionMapping/);
   assert.match(js, /new THREE\.CanvasTexture\(pano\)/);
   assert.match(js, /renderer\.toneMappingExposure=1\.06/);
-  assert.match(js, /logoGroup\.rotation\.y=\.28\+/);
+  assert.match(js, /logoGroup\.rotation\.y=\.20\+/);
   assert.match(js, /envMapIntensity:1\.48/);
   assert.match(js, /new THREE\.ShaderMaterial\(/);
   assert.match(js, /reflection=clamp\(broad\*\.24\+narrow\*\.13\+edge\*\.17/);
