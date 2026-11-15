@@ -351,7 +351,7 @@
             <p>Build a reusable assistant for support, internal workflows or your product. Choose its model, define instructions and connect tools—then call it through the chat completions API.</p>
             <ul class="lp-feature-points lp-feature-points--inverse"><li><strong>Connect real tools.</strong> Attach HTTP or SSE MCP servers for actions and external data.</li>
                 <li><strong>Choose who sees it.</strong> Keep an agent private, share it unlisted or publish it.</li>
-                <li><strong>Choose who pays.</strong> Bill the caller or owner, including through organization policies.</li></ul>
+                <li><strong>Owner- or caller-paid.</strong> Keep billing under your agent or organization’s wallet and policies.</li></ul>
             <div class="lp-proof-key"><span>CALL AS A MODEL</span><code>agent/&lt;username&gt;/&lt;agent-id&gt;</code></div>
             <a class="lp-proof-link" href="/console/agents">Configure an agent <span aria-hidden="true">↗</span></a>
           </div>
@@ -360,7 +360,7 @@
             <div class="lp-preview-body">
               <div class="lp-preview-row"><span>Backing model</span><strong>Select from the model catalog</strong></div>
               <div class="lp-preview-row lp-preview-row-block"><span>System instructions</span><div class="lp-preview-input">Define how the agent should behave and respond…</div></div>
-              <div class="lp-preview-row"><span>MCP servers</span><strong>HTTP or SSE tools · 2 connected <i aria-hidden="true">＋</i></strong></div>
+              <div class="lp-preview-row"><span>MCP servers</span><strong>HTTP or SSE tools · Configurable connections <i aria-hidden="true">＋</i></strong></div>
               <div class="lp-preview-choice"><span>Visibility</span><div><b>Private</b><span>Unlisted</span><span>Published</span></div></div>
               <div class="lp-preview-choice"><span>Request billing</span><div><b>Caller pays</b><span>Owner pays</span></div></div>
             </div>
@@ -373,7 +373,7 @@
             <div class="lp-proof-story">
               <div class="lp-proof-compact-header"><span>Model deployments</span></div>
               <h3>Deploy the open model your application needs.</h3>
-              <p>Search for Llama, Qwen, DeepSeek and other open models. Check context length and deployment availability, then bring your choice online without provisioning or maintaining GPUs.</p>
+              <p>Search for Llama, Qwen, DeepSeek and other open models. Check context length and model availability, then bring your choice online without provisioning or maintaining GPUs.</p>
               <ul class="lp-feature-points"><li><strong>See before you deploy.</strong> Inspect model details and readiness in the catalog.</li>
                 <li><strong>Use the same API.</strong> Call your deployment like any other InferencePort model.</li>
                 <li><strong>Built for teams.</strong> Deploy to a personal account or your organization’s workspace.</li></ul>
@@ -396,7 +396,7 @@
               <h3>Object storage that fits your model workflow.</h3>
               <p>Keep model weights, datasets and generated artifacts next to your AI infrastructure. Buckets brings S3-compatible storage to your personal or organization workspace, backed by Azure Blob Storage.</p>
               <ul class="lp-feature-points"><li><strong>Bring familiar clients.</strong> Use AWS CLI or compatible SDKs with your workspace endpoint.</li>
-                <li><strong>Scope credentials.</strong> Limit access by bucket, permission or object prefix; revoke credentials when needed.</li>
+                <li><strong>Scope credentials.</strong> Issue scoped, revocable SigV4 credentials and limit access by bucket, permission or object prefix.</li>
                 <li><strong>Track storage separately.</strong> Monitor requests, transfer and storage charges rather than mixing them into model spend.</li></ul>
               <div class="lp-proof-links"><a class="lp-proof-link" href="/console/buckets">Open Buckets <span aria-hidden="true">↗</span></a><a href="https://docs.inferenceport.ai/api/buckets.html">Connection guide ↗</a></div>
             </div>
@@ -465,7 +465,7 @@
             <p>Give developers one workspace instead of scattered accounts and API keys. Share credits, set limits and policies, and see who uses which services from the same console.</p>
             <dl class="lp-org-spec">
               <div><dt>Spend controls</dt><dd>Shared wallet, per-member and per-key limits, spend caps and alerts</dd></div>
-              <div><dt>Permissions</dt><dd>Owner, admin and member roles; model and modality restrictions</dd></div>
+              <div><dt>Permissions</dt><dd>Owner, admin and member roles; allowed models and modalities</dd></div>
               <div><dt>Enterprise access</dt><dd>SAML SSO and verified domains on eligible plans</dd></div>
               <div><dt>Governance</dt><dd>Audit trails, service-aware usage and desktop policies</dd></div>
             </dl>
@@ -485,7 +485,7 @@
               <p>One MCP tool call sends a difficult question to multiple models. They answer in parallel, critique one another and produce a synthesized result—without leaving the assistant you already use.</p>
               <ul class="lp-feature-points"><li><strong>Works in your client.</strong> Use Claude Code, Cursor, VS Code, Claude Desktop or your own MCP agent.</li>
               <li><strong>Control the review.</strong> Choose model and judge tiers, custom picks and one to three review rounds.</li>
-              <li><strong>Clear access and billing.</strong> Sign in with OAuth or an API key; usage follows your workspace billing policies.</li></ul>
+              <li><strong>OAuth or API key.</strong> Authenticate securely; usage and review fees follow your workspace billing policies.</li></ul>
               <a class="lp-proof-link" href="ipx.html">Explore Council MCP <span aria-hidden="true">↗</span></a>
             </div>
             <div class="lp-ecosystem-visual lp-council-visual" aria-label="Council model review workflow">
@@ -526,7 +526,7 @@ git diff | ipx shield scan --fail-on review</code></pre></div>
               <ul class="lp-feature-points"><li><strong>Lightning Text v2.</strong> Streaming answers for writing, code and everyday conversations.</li>
               <li><strong>Lightning Image Turbo.</strong> Generate images alongside the rest of your creative tools.</li>
               <li><strong>Start free, then grow.</strong> Try chat without a credit card; paid plans expand creative usage limits.</li></ul>
-              <a class="lp-proof-link" href="chat/">Try Lightning chat <span aria-hidden="true">↗</span></a>
+              <div class="lp-feature-ctas"><a class="lp-proof-link" href="chat/">Try Lightning chat <span aria-hidden="true">↗</span></a><a class="lp-feature-more" href="lightning.html">About Lightning ↗</a></div>
             </div>
             <div class="lp-ecosystem-visual lp-experience-visual lp-lightning-preview" aria-label="Illustrative Lightning chat interface">
               <div class="lp-visual-title"><span class="lp-experience-graphic lp-experience-graphic-lightning" aria-hidden="true">ϟ</span> Lightning chat <small>Illustrative preview</small></div>
@@ -543,7 +543,7 @@ git diff | ipx shield scan --fail-on review</code></pre></div>
               <ul class="lp-feature-points"><li><strong>Bring your models.</strong> Run Ollama models, download from Hugging Face or import GGUF files.</li>
               <li><strong>Own your workspace.</strong> Save conversations, organize sessions and use custom tools.</li>
               <li><strong>Connect when you choose.</strong> Optionally host your own model server for teammates or connect to remote endpoints.</li></ul>
-              <a class="lp-proof-link" href="install.html#install">Download the desktop app <span aria-hidden="true">↗</span></a>
+              <div class="lp-feature-ctas"><a class="lp-proof-link" href="install.html#install">Download the desktop app <span aria-hidden="true">↗</span></a><a class="lp-feature-more" href="install.html">Explore the app ↗</a></div>
             </div>
             <div class="lp-ecosystem-visual lp-experience-visual lp-desktop-visual">
               <div class="lp-visual-title"><span class="lp-experience-graphic lp-experience-graphic-app" aria-hidden="true">⌘</span> Local AI workspace</div>
