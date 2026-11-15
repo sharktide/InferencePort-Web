@@ -317,3 +317,14 @@ test("the centerpiece is a real extruded branded mark with touch interaction", (
   assert.match(js, /NODE_DESCRIPTIONS/);
   assert.doesNotMatch(home, /class="lp-topology-labels"[^>]*role="button"/);
 });
+
+test("visual richness uses branded 3D geometry and meaningful node constellations", () => {
+  const js = read("scripts/home-topology.js");
+  assert.match(js, /new THREE\.ExtrudeGeometry\(bolt/);
+  assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
+  assert.match(js, /const cluster = new THREE\.Group\(\)/);
+  assert.match(js, /const beadCount = n\.primary \? \(compact\.matches \? 4 : 6\) : 3;/);
+  assert.match(js, /new THREE\.TorusGeometry\(0\.32,/);
+  assert.match(js, /cluster\.rotation\.z/);
+  assert.match(js, /NODE_DESCRIPTIONS/);
+});

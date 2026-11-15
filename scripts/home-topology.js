@@ -219,6 +219,35 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     mesh.position.copy(pos);
     graph.add(mesh);
 
+    // Each major infrastructure node has a miniature orbit/constellation.
+    // The markers stand for its connected capabilities, not fictional activity.
+    const cluster = new THREE.Group();
+    cluster.position.copy(pos);
+    graph.add(cluster);
+    const beadCount = n.primary ? (compact.matches ? 4 : 6) : 3;
+    const clusterRadius = n.primary ? 0.39 : 0.23;
+    for (let beadIndex = 0; beadIndex < beadCount; beadIndex++) {
+      const angle = Math.PI * 2 * beadIndex / beadCount + index * 0.23;
+      const distance = clusterRadius * (beadIndex % 3 === 0 ? 1.18 : 1);
+      const bead = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(n.primary ? 0.037 : 0.024, 0),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true,
+          opacity: n.primary ? 0.7 : 0.42 })
+      );
+      bead.position.set(Math.cos(angle) * distance, Math.sin(angle) * distance,
+        ((beadIndex % 3) - 1) * 0.13);
+      cluster.add(bead);
+    }
+    if (n.primary) {
+      const orbit = new THREE.Mesh(
+        new THREE.TorusGeometry(0.32, 0.006, 4, 60),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true,
+          opacity: 0.25, side: THREE.DoubleSide, depthWrite: false })
+      );
+      orbit.rotation.x = index % 2 ? 0.45 : -0.45;
+      cluster.add(orbit);
+    }
+
     const haloMaterial = new THREE.MeshBasicMaterial({
       color: 0xffffff, transparent: true, opacity: n.primary ? 0.55 : 0.32,
       depthWrite: false, side: THREE.DoubleSide
@@ -253,7 +282,7 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     graph.add(tracer);
     tracers.push({ mesh: tracer, path, phase: (index * 0.137) % 1, speed: 0.034 + index * 0.002 });
 
-    meshes.set(n.id, { n, mesh, halo, material, haloMaterial, line, pos });
+    meshes.set(n.id, { n, mesh, halo, cluster, material, haloMaterial, line, pos });
   }
 
   // Deliberate, low-density orbital markers — not a simulated traffic cloud.
@@ -293,10 +322,11 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     edgeMaterial.color.setHex(palette.core);
     ringMaterials.forEach(m => m.color.setHex(palette.core));
     markerMaterial.color.setHex(palette.wire);
-    for (const { n, material, haloMaterial } of meshes.values()) {
+    for (const { n, material, haloMaterial, cluster } of meshes.values()) {
       material.color.setHex(palette[n.group]);
       material.emissive.setHex(palette[n.group]);
       haloMaterial.color.setHex(palette[n.group]);
+      cluster.children.forEach(child => child.material?.color?.setHex(palette[n.group]));
     }
     for (const wire of wires) wire.material.color.setHex(palette.wire);
     for (const { mesh } of tracers) mesh.material.color.setHex(palette.core);
@@ -324,6 +354,7 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
       const faded = Boolean(id) && !isSelected;
       info.mesh.scale.setScalar(isSelected ? 1.42 : 1);
       info.halo.scale.setScalar(isSelected ? 1.36 : 1);
+      info.cluster.scale.setScalar(isSelected ? 1.22 : 1);
       info.haloMaterial.opacity = isSelected ? 1 : faded ? 0.18 : info.n.primary ? 0.55 : 0.32;
       info.material.emissiveIntensity = isSelected ? 0.55 : 0.15;
       info.line.material.opacity = isSelected ? 0.93 : faded ? 0.11 : info.n.primary ? 0.36 : 0.18;
@@ -496,6 +527,10 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     graph.rotation.y += (targetY + idleY - graph.rotation.y) * 0.038;
     coreGroup.rotation.y = Math.sin(clock * 0.43) * 0.25;
     coreGroup.rotation.z = Math.sin(clock * 0.18) * 0.05;
+    let clusterIndex = 0;
+    for (const { cluster } of meshes.values()) {
+      cluster.rotation.z = Math.sin(clock * 0.22 + clusterIndex++ * 0.6) * 0.1;
+    }
     for (const { mesh, path, phase, speed } of tracers) {
       mesh.position.copy(path.getPoint((phase + clock * speed) % 1));
     }
