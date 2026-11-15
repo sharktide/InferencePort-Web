@@ -1257,3 +1257,18 @@
 }
 .lp-bucket-preview-mark {font-family:inherit;font-size:2rem;font-weight:800;line-height:1;}
 .lp-experience-graphic {font-family:inherit;font-size:1.65rem;font-weight:800;line-height:1;}
+
+
+/* Cross-theme contrast audit: the Agent story remains a dark branded panel in
+   both themes, regardless of the surrounding page surface. */
+.lp-proof-agent > .lp-proof-copy {
+  background:linear-gradient(140deg,rgba(111,84,215,.28),rgba(25,35,62,.24) 53%,transparent 85%),#151d2d!important;
+  color:#ecf1fa!important;
+}
+.lp-proof-agent > .lp-proof-copy h3 {color:#f8faff!important;}
+.lp-proof-agent > .lp-proof-copy > p {color:#d5e0ee!important;}
+.lp-proof-agent > .lp-proof-copy .lp-proof-kicker {color:#dec9ff!important;}
+.lp-proof-agent > .lp-proof-copy .lp-proof-key > span {color:#bccbe0!important;}
+.lp-proof-agent > .lp-proof-copy .lp-proof-key code {color:#ffe36f!important;}
+:root:not([data-theme="dark"]) .lp-shield-schema dt code {color:#176e62!important;}
+:root:not([data-theme="dark"]) .lp-shield-schema dd {color:#314354!important;}
