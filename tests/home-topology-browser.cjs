@@ -37,6 +37,11 @@ async function checkScene(page,name) {
   await page.locator("#lp-topology").screenshot({
     path:path.join(screenshots,name+"-light.png")
   });
+  // Full-section capture catches layout integration mistakes that a cropped
+  // scene screenshot misses (hero positioning, spacing, and headline overlap).
+  await page.locator(".lp-hero").screenshot({
+    path:path.join(screenshots,name+"-full-hero.png")
+  });
   await page.evaluate(()=>document.documentElement.setAttribute("data-theme","dark"));
   await page.waitForTimeout(300);
   await page.locator("#lp-topology").screenshot({
