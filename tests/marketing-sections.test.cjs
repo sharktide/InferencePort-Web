@@ -268,7 +268,7 @@ test("3D system is lazy, theme-aware, pausable, and not mandatory for navigation
   ]) assert.ok(js.includes(feature), "Missing 3D lifecycle feature: " + feature);
   assert.match(css, /\.lp-topology-shell\.is-3d \.lp-topology-fallback \{ opacity:0; \}/);
   assert.match(css, /@media \(max-width:700px\)/);
-  assert.match(css, /\.lp-topology-node \{ position:static;left:auto!important;top:auto!important;/);
+  assert.match(css, /\.lp-topology-node \{[\s\S]*?position:static;[\s\S]*?left:auto!important;/);
   assert.match(css, /:root\[data-theme="dark"\] \.lp-topology-shell/);
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-demo/);
   assert.match(css, /@media \(prefers-reduced-motion:reduce\)/);
@@ -284,4 +284,36 @@ test("quickstart is still interactive and now has room beneath the hero graph", 
   assert.match(css, /\.lp-wrap \{ width:min\(1392px,calc\(100% - 88px\)\); \}/);
   assert.match(css, /\.lp-section \{ padding:clamp\(112px,10vw,162px\) 0; \}/);
   assert.match(css, /\.lp-modality-row\[data-modality="realtime"\]::after/);
+});
+
+test("mobile uses WebGL on capable devices rather than a forced static fallback", () => {
+  const js = read("scripts/home-topology.js");
+  assert.match(js, /const canAnimate = \(\) => !disposed && !reduced\.matches;/);
+  assert.doesNotMatch(js, /!compact\.matches;/);
+  assert.match(css, /\.lp-topology-webgl \{ display:block; \}/);
+  assert.match(css, /\.lp-topology-labels \{[\s\S]*?scroll-snap-type:x proximity;/);
+  assert.match(css, /\.lp-hero-grid \{ display:flex;flex-direction:column;gap:8px;/);
+  assert.match(css, /\.lp-topology-shell \{[\s\S]*?order:-1;/);
+  assert.match(css, /\.lp-topology-inspector \{[\s\S]*?bottom:55px;/);
+  assert.match(js, /compact\.matches \? 1\.25 : 1\.75/);
+  assert.match(js, /compact\.matches \? 45 : 32/);
+});
+
+test("the centerpiece is a real extruded branded mark with touch interaction", () => {
+  const js = read("scripts/home-topology.js");
+  assert.match(js, /new THREE\.ExtrudeGeometry\(bolt/);
+  assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
+  assert.match(js, /new THREE\.PointLight\(/);
+  assert.match(js, /new THREE\.TorusGeometry\(/);
+  assert.match(js, /function onPointerDown\(event\)/);
+  assert.match(js, /function onPointerUp\(\)/);
+  assert.match(js, /if \(compact\.matches && selected !== id\)/);
+  assert.match(js, /function updateInspector\(id\)/);
+  assert.match(home, /data-topology-inspector/);
+  assert.match(home, /data-topology-title/);
+  assert.match(home, /data-topology-description/);
+  assert.match(home, /data-topology-explore/);
+  assert.match(home, /DRAG TO ROTATE/);
+  assert.match(js, /NODE_DESCRIPTIONS/);
+  assert.doesNotMatch(home, /class="lp-topology-labels"[^>]*role="button"/);
 });

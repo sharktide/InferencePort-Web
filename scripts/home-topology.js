@@ -7,6 +7,19 @@
  * There is no user activity simulation or telemetry in this visualization.
  */
 const THREE_MODULE_URL = "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js";
+const NODE_DESCRIPTIONS = Object.freeze({
+  models: "One model catalog for text, image, video, audio, 3D, realtime and decisions.",
+  agents: "Create reusable agents with instructions, MCP tools and clear billing controls.",
+  deployments: "Deploy supported open models and call them through InferencePort.",
+  buckets: "Store weights, datasets and model outputs using scoped S3-compatible access.",
+  shield: "Add risk analysis, content checks and structured security decisions.",
+  organizations: "Shared wallets, roles, limits, and service-aware team usage.",
+  console: "Explore models, issue keys and manage the infrastructure in one place.",
+  video: "Find video generation models for creative pipelines.",
+  audio: "Use speech generation, transcription, and audio models.",
+  "3d": "Turn images and prompts into three-dimensional assets.",
+  realtime: "Build streaming voice conversations and low-latency audio experiences."
+});
 
 const NODES = Object.freeze([
   { id: "models",        label: "Models",        href: "#api",                              x: -3.10, y:  1.45, z:  0.20, group: "gold",  primary: true },
@@ -37,7 +50,8 @@ function init() {
   let disposed = false;
   let visible = false;
 
-  const canAnimate = () => !disposed && !reduced.matches && !compact.matches;
+  // Mobile is a first-class interactive experience; only reduced-motion or unavailable WebGL uses static fallback.
+  const canAnimate = () => !disposed && !reduced.matches;
 
   function applyMode() {
     if (!canAnimate()) {
@@ -56,7 +70,7 @@ function init() {
     try {
       const THREE = await import(THREE_MODULE_URL);
       if (!canAnimate() || !visible) return;
-      instance = buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLinks });
+      instance = buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLinks, compact });
       shell.classList.remove("is-static");
       shell.classList.add("is-3d");
       instance.start();
@@ -98,12 +112,12 @@ function init() {
   }, { once: true });
 }
 
-function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLinks }) {
+function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLinks, compact }) {
   const renderer = new THREE.WebGLRenderer({
     alpha: true, antialias: true, powerPreference: "low-power",
     preserveDrawingBuffer: false
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compact.matches ? 1.25 : 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.15;
@@ -125,9 +139,9 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
   const graph = new THREE.Group();
   scene.add(graph);
 
-  const geometry = new THREE.SphereGeometry(0.13, 18, 12);
-  const satelliteGeometry = new THREE.SphereGeometry(0.072, 14, 9);
-  const pickGeometry = new THREE.SphereGeometry(0.36, 12, 9);
+  const geometry = new THREE.IcosahedronGeometry(0.17, 1);
+  const satelliteGeometry = new THREE.IcosahedronGeometry(0.095, 1);
+  const pickGeometry = new THREE.SphereGeometry(0.43, 12, 9);
   const pickMaterial = new THREE.MeshBasicMaterial({
     color: 0xffffff, transparent: true, opacity: 0, depthWrite: false
   });
@@ -142,16 +156,39 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
   const coreGroup = new THREE.Group();
   graph.add(coreGroup);
 
-  const bodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0x9a8c57, metalness: 0.68, roughness: 0.23,
-    emissive: 0xb89434, emissiveIntensity: 0.13, flatShading: true
+  // The centerpiece is an extruded version of the InferencePort lightning mark,
+  // not an interchangeable wireframe cube or a random decorative orb.
+  const bolt = new THREE.Shape();
+  bolt.moveTo(0.22, 1.28);
+  bolt.lineTo(-0.48, 0.09);
+  bolt.lineTo(-0.04, 0.09);
+  bolt.lineTo(-0.29, -1.25);
+  bolt.lineTo(0.60, 0.12);
+  bolt.lineTo(0.13, 0.12);
+  bolt.closePath();
+  const bodyMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0xe0b842, metalness: 0.58, roughness: 0.19,
+    clearcoat: 0.95, clearcoatRoughness: 0.12,
+    emissive: 0xa87309, emissiveIntensity: 0.11, side: THREE.DoubleSide
   });
-  const coreBody = new THREE.Mesh(new THREE.IcosahedronGeometry(0.69, 1), bodyMaterial);
+  const boltGeometry = new THREE.ExtrudeGeometry(bolt, {
+    depth: 0.27, steps: 1, bevelEnabled: true,
+    bevelThickness: 0.07, bevelSize: 0.045, bevelSegments: 4,
+    curveSegments: 8
+  });
+  boltGeometry.center();
+  const coreBody = new THREE.Mesh(boltGeometry, bodyMaterial);
   coreGroup.add(coreBody);
-  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xd8bb6e, transparent: true, opacity: 0.8 });
-  coreGroup.add(new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(0.78, 1)), edgeMaterial
-  ));
+  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xf1d172, transparent: true, opacity: 0.62 });
+  const coreOutline = new THREE.LineSegments(new THREE.EdgesGeometry(boltGeometry, 30), edgeMaterial);
+  coreGroup.add(coreOutline);
+  // Secondary dark hub gives the object scale and depth without overpowering the logo.
+  const hub = new THREE.Mesh(new THREE.IcosahedronGeometry(0.85, 1),
+    new THREE.MeshStandardMaterial({
+      color: 0x1c2636, metalness: 0.28, roughness: 0.38,
+      transparent: true, opacity: 0.23, depthWrite: false, side: THREE.BackSide
+    }));
+  coreGroup.add(hub);
 
   const ringMaterials = [];
   for (const [radius, rotX, rotY, opacity] of [
@@ -222,9 +259,9 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
   // Deliberate, low-density orbital markers — not a simulated traffic cloud.
   const markers = new THREE.Group();
   const markerMaterial = new THREE.MeshBasicMaterial({ color: 0x98a1b2, transparent: true, opacity: 0.46 });
-  const markerGeometry = new THREE.SphereGeometry(0.022, 7, 5);
-  for (let i = 0; i < 28; i++) {
-    const angle = (i / 28) * Math.PI * 2;
+  const markerGeometry = new THREE.SphereGeometry(0.026, 7, 5);
+  for (let i = 0; i < 24; i++) {
+    const angle = (i / 24) * Math.PI * 2;
     const radius = 2.03 + (i % 5) * 0.14;
     const dot = new THREE.Mesh(markerGeometry, markerMaterial);
     dot.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius * 0.71, -1.45);
@@ -232,7 +269,14 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
   }
   graph.add(markers);
 
+  const inspector = shell.querySelector("[data-topology-inspector]");
+  const inspectorTitle = inspector?.querySelector("[data-topology-title]");
+  const inspectorDescription = inspector?.querySelector("[data-topology-description]");
+  const inspectorExplore = inspector?.querySelector("[data-topology-explore]");
   let hovered = null;
+  let selected = null;
+  let pointerDown = null;
+  let ignoreClick = false;
   let frame = 0;
   let inView = false;
   let killed = false;
@@ -258,9 +302,22 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     for (const { mesh } of tracers) mesh.material.color.setHex(palette.core);
   }
 
+  function updateInspector(id) {
+    const selectedNode = NODES.find(node => node.id === id);
+    if (!inspector || !inspectorTitle || !inspectorDescription || !inspectorExplore) return;
+    inspector.classList.toggle("is-selected", Boolean(selectedNode));
+    inspectorTitle.textContent = selectedNode?.label || "InferencePort";
+    inspectorDescription.textContent = selectedNode
+      ? NODE_DESCRIPTIONS[selectedNode.id]
+      : "Explore how models, deployments, storage and security connect.";
+    inspectorExplore.href = selectedNode?.href || "#products";
+    inspectorExplore.firstChild.textContent = selectedNode ? "Explore " + selectedNode.label + " " : "Explore platform ";
+  }
+
   function setHovered(id) {
     if (hovered === id) return;
     hovered = id;
+    updateInspector(id);
     shell.dataset.activeNode = id || "";
     for (const [key, info] of meshes) {
       const isSelected = id === key;
@@ -280,12 +337,22 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     const width = Math.max(240, stage.clientWidth);
     const height = Math.max(240, stage.clientHeight);
     camera.aspect = width / height;
+    camera.position.z = compact.matches ? 12.8 : 12.7;
     camera.updateProjectionMatrix();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compact.matches ? 1.25 : 1.75));
     renderer.setSize(width, height, false);
     updateLabels();
   }
 
   function updateLabels() {
+    if (compact.matches) {
+      // On mobile labels form a horizontal link rail; they must not chase 3D points.
+      for (const link of labelLinks.values()) {
+        link.style.removeProperty("left");
+        link.style.removeProperty("top");
+      }
+      return;
+    }
     graph.updateWorldMatrix(true, true);
     for (const [id, link] of labelLinks) {
       const info = meshes.get(id);
@@ -313,8 +380,30 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     return hit?.object.userData.id || null;
   }
 
+  function onPointerDown(event) {
+    if (event.pointerType !== "touch" || event.target.closest?.("a")) return;
+    pointerDown = { x: event.clientX, y: event.clientY, lastX: event.clientX };
+    ignoreClick = false;
+  }
+
+  function onPointerUp() {
+    pointerDown = null;
+  }
+
   function onMove(event) {
-    if (event.pointerType === "touch") return;
+    if (event.pointerType === "touch") {
+      if (pointerDown) {
+        const dx = event.clientX - pointerDown.x;
+        const dy = event.clientY - pointerDown.y;
+        if (Math.abs(dx) > 9 && Math.abs(dx) > Math.abs(dy)) {
+          ignoreClick = true;
+          targetY = Math.max(-0.8, Math.min(0.8,
+            targetY + (event.clientX - pointerDown.lastX) * 0.008));
+          pointerDown.lastX = event.clientX;
+        }
+      }
+      return;
+    }
     const rect = stage.getBoundingClientRect();
     targetX = ((event.clientY - rect.top) / rect.height - 0.5) * 0.14;
     targetY = ((event.clientX - rect.left) / rect.width - 0.5) * 0.18;
@@ -325,17 +414,28 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
   }
 
   function onClick(event) {
-    // HTML anchors handle their own navigation, including keyboard activation.
-    if (event.target.closest?.("a")) return;
+    // HTML links always navigate normally, including keyboard activation.
+    if (event.target.closest?.("a") || ignoreClick) {
+      ignoreClick = false;
+      return;
+    }
     const id = findHit(event);
-    const href = NODES.find(n => n.id === id)?.href;
-    if (href) window.location.assign(href);
+    const href = NODES.find(node => node.id === id)?.href;
+    if (!href) return;
+    // A phone tap first reveals what a node does; the detail link navigates.
+    if (compact.matches && selected !== id) {
+      selected = id;
+      setHovered(id);
+      return;
+    }
+    window.location.assign(href);
   }
 
-  function onLeave() {
+  function onLeave(event) {
+    if (event.pointerType === "touch") return;
     targetX = 0;
     targetY = 0;
-    setHovered(null);
+    setHovered(selected);
     renderer.domElement.style.cursor = "default";
   }
 
@@ -348,12 +448,15 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     link.addEventListener("focus", onLabelOver);
     link.addEventListener("pointerenter", onLabelOver);
   }
-  const onFocusOut = () => setHovered(null);
+  const onFocusOut = () => setHovered(selected);
   for (const link of [...labelLinks.values(), ...satelliteLinks.values()]) {
     link.addEventListener("blur", onFocusOut);
     link.addEventListener("pointerleave", onFocusOut);
   }
 
+  stage.addEventListener("pointerdown", onPointerDown, { passive: true });
+  stage.addEventListener("pointerup", onPointerUp, { passive: true });
+  stage.addEventListener("pointercancel", onPointerUp, { passive: true });
   stage.addEventListener("pointermove", onMove, { passive: true });
   stage.addEventListener("pointerleave", onLeave);
   stage.addEventListener("click", onClick);
@@ -382,15 +485,17 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     if (killed || !inView) { frame = 0; return; }
     frame = requestAnimationFrame(tick);
     // Cap work at about 30fps on high-refresh displays and low-power devices.
-    if (now - lastFrame < 32) return;
+    if (now - lastFrame < (compact.matches ? 45 : 32)) return;
     const delta = lastFrame ? Math.min((now - lastFrame) / 1000, 0.08) : 0;
     lastFrame = now;
     clock += delta;
 
-    graph.rotation.x += (targetX - graph.rotation.x) * 0.045;
-    graph.rotation.y += (targetY - graph.rotation.y) * 0.045;
-    coreGroup.rotation.y = clock * 0.065;
-    coreGroup.rotation.z = clock * 0.033;
+    const idleX = Math.sin(clock * 0.31) * 0.06;
+    const idleY = Math.cos(clock * 0.22) * 0.13;
+    graph.rotation.x += (targetX + idleX - graph.rotation.x) * 0.038;
+    graph.rotation.y += (targetY + idleY - graph.rotation.y) * 0.038;
+    coreGroup.rotation.y = Math.sin(clock * 0.43) * 0.25;
+    coreGroup.rotation.z = Math.sin(clock * 0.18) * 0.05;
     for (const { mesh, path, phase, speed } of tracers) {
       mesh.position.copy(path.getPoint((phase + clock * speed) % 1));
     }
@@ -416,6 +521,9 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     pause();
     ro?.disconnect();
     if (!ro) window.removeEventListener("resize", resize);
+    stage.removeEventListener("pointerdown", onPointerDown);
+    stage.removeEventListener("pointerup", onPointerUp);
+    stage.removeEventListener("pointercancel", onPointerUp);
     stage.removeEventListener("pointermove", onMove);
     stage.removeEventListener("pointerleave", onLeave);
     stage.removeEventListener("click", onClick);
@@ -438,6 +546,7 @@ function buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLink
     shell.classList.remove("is-3d");
     labelLinks.forEach(link => { link.style.removeProperty("left"); link.style.removeProperty("top"); link.classList.remove("is-active"); });
     satelliteLinks.forEach(link => link.classList.remove("is-active"));
+    updateInspector(null);
   }
   return { start, pause, destroy };
 }

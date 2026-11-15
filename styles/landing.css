@@ -664,3 +664,207 @@
 @media (prefers-reduced-motion:reduce) {
   .lp-topology-fallback,.lp-topology-node,.lp-modality-row::after { transition:none; }
 }
+
+
+/* Hero topology refinement: an immersive product scene, not a framed dashboard. */
+.lp-topology-shell {
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  overflow:visible;
+  isolation:isolate;
+}
+.lp-topology-shell::before {
+  inset:4% 0;
+  opacity:.7;
+  background-image:
+    radial-gradient(ellipse at 50% 49%,rgba(219,182,56,.14),transparent 48%),
+    radial-gradient(circle at 32% 64%,rgba(115,145,197,.12),transparent 40%),
+    linear-gradient(to right,rgba(112,123,143,.045) 1px,transparent 1px);
+  background-size:100% 100%,100% 100%,80px 100%;
+  mask-image:radial-gradient(ellipse at center,black,transparent 78%);
+}
+.lp-topology-stage { min-height:520px;aspect-ratio:1.12;overflow:hidden; }
+.lp-topology-topline {
+  position:absolute;
+  top:16px;left:16px;right:16px;
+  z-index:5;padding:0;border:0;
+  font-size:.62rem;color:#8691a4;
+  pointer-events:none;
+}
+.lp-topology-node {
+  border-radius:22px;
+  border-color:rgba(150,163,184,.42);
+  background:rgba(245,246,248,.76);
+  padding:7px 11px;
+  font-size:.69rem;
+  box-shadow:0 4px 17px rgba(26,40,61,.055);
+  backdrop-filter:blur(6px);
+}
+.lp-topology-node::before { width:4px;height:4px; }
+.lp-topology-shell.is-3d .lp-topology-core-label { opacity:0; }
+.lp-topology-core-label { transition:opacity .2s ease; }
+.lp-topology-bottom {
+  justify-content:center;
+  gap:22px;
+  border:0;
+  padding:9px 0 4px;
+  background:transparent;
+}
+.lp-topology-bottom > span:first-child { display:none; }
+.lp-topology-satellites { gap:14px 24px; }
+.lp-topology-satellites a { font-size:.68rem; }
+.lp-topology-inspector {
+  position:absolute;
+  z-index:7;
+  top:auto;
+  bottom:65px;
+  left:50%;
+  width:min(78%,360px);
+  transform:translate(-50%,8px);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px 16px;
+  border-radius:6px;
+  border:1px solid rgba(145,157,178,.42);
+  background:rgba(242,245,249,.95);
+  color:#273750;
+  box-shadow:0 18px 42px rgba(16,26,46,.12);
+  backdrop-filter:blur(16px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease,visibility .18s;
+}
+.lp-topology-inspector.is-selected {
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translate(-50%,0);
+}
+.lp-topology-inspector > div { flex:1;min-width:0; }
+.lp-topology-inspector-kicker { display:block;font:600 .55rem/1.35 var(--mono);letter-spacing:.07em;color:#697b92;margin-bottom:4px; }
+.lp-topology-inspector strong { display:block;font-size:.92rem;line-height:1.3; }
+.lp-topology-inspector p { margin:3px 0 0;font-size:.74rem;line-height:1.5;color:#63718a; }
+.lp-topology-inspector a { flex:none;color:#795912;font-weight:700;font-size:.7rem;white-space:nowrap; }
+.lp-topology-inspector a:hover { color:#352609; }
+.lp-topology-gesture { position:absolute;bottom:35px;left:50%;transform:translateX(-50%);white-space:nowrap;pointer-events:none;font:500 .55rem/1.4 var(--mono);color:#718098;letter-spacing:.075em; }
+:root[data-theme="dark"] .lp-topology-shell {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+:root[data-theme="dark"] .lp-topology-shell::before {
+  background-image:
+    radial-gradient(ellipse at 50% 49%,rgba(246,199,70,.10),transparent 48%),
+    radial-gradient(circle at 30% 58%,rgba(90,121,182,.12),transparent 40%),
+    linear-gradient(to right,rgba(171,187,216,.04) 1px,transparent 1px);
+}
+:root[data-theme="dark"] .lp-topology-topline { color:#adb8ca; }
+:root[data-theme="dark"] .lp-topology-node {
+  background:rgba(22,32,49,.72);
+  border:1px solid rgba(139,156,187,.32);
+  color:#dde5f5;
+}
+:root[data-theme="dark"] .lp-topology-node:hover,
+:root[data-theme="dark"] .lp-topology-node.is-active,
+:root[data-theme="dark"] .lp-topology-node:focus-visible {
+  background:rgba(76,68,46,.88);
+  border-color:#d2a940;
+  color:#fff1c9;
+}
+:root[data-theme="dark"] .lp-topology-bottom { border:0; }
+:root[data-theme="dark"] .lp-topology-inspector {
+  border-color:rgba(164,180,212,.38);
+  background:rgba(22,31,47,.94);
+  color:#f0f4fc;
+  box-shadow:0 16px 52px rgba(0,0,0,.35);
+}
+:root[data-theme="dark"] .lp-topology-inspector p,
+:root[data-theme="dark"] .lp-topology-inspector-kicker { color:#b3c0d4; }
+:root[data-theme="dark"] .lp-topology-inspector a { color:#ffdc74; }
+:root[data-theme="dark"] .lp-topology-gesture { color:#8797ac; }
+@media (max-width:900px) {
+  .lp-topology-shell { width:min(100%,800px); }
+  .lp-topology-stage { aspect-ratio:1.3;min-height:430px; }
+}
+@media (max-width:700px) {
+  /* Unlike the first implementation, capable phones actually run the 3D scene.
+     The SVG remains for reduced motion, no-WebGL and blocked CDN cases. */
+  .lp-hero-grid { display:flex;flex-direction:column;gap:8px;padding:15px 0 44px; }
+  .lp-topology-shell {
+    order:-1;
+    width:calc(100% + 34px);
+    max-width:none;
+    margin-inline:-17px;
+  }
+  .lp-topology-stage { min-height:355px;aspect-ratio:auto;overflow:hidden; }
+  .lp-topology-webgl { display:block; }
+  .lp-topology-fallback { top:0;height:100%;opacity:1; }
+  .lp-topology-topline { position:absolute;top:14px;left:20px;right:15px;font-size:.55rem;opacity:.8; }
+  .lp-topology-live { display:none; }
+  .lp-topology-core-label { top:47%; }
+  .lp-topology-labels {
+    display:flex;
+    flex-wrap:nowrap;
+    position:absolute;
+    z-index:5;
+    top:auto;bottom:6px;left:0;right:0;
+    width:auto;height:auto;
+    gap:7px;
+    padding:5px 16px 8px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    overscroll-behavior-x:contain;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+    pointer-events:auto;
+    mask-image:linear-gradient(to right,transparent 0,black 12px,black calc(100% - 12px),transparent 100%);
+  }
+  .lp-topology-labels::-webkit-scrollbar { display:none; }
+  .lp-topology-node {
+    flex:0 0 auto;
+    min-height:29px;
+    white-space:nowrap;
+    position:static;
+    top:auto!important;left:auto!important;
+    transform:none!important;
+    border-radius:18px;
+    font-size:.65rem;
+    padding:6px 10px;
+    scroll-snap-align:start;
+    background:rgba(246,247,250,.72);
+    backdrop-filter:blur(10px);
+  }
+  .lp-topology-node::before { height:4px;width:4px; }
+  .lp-topology-bottom { padding:0 8px 6px;justify-content:center; }
+  .lp-topology-satellites { gap:8px 17px;justify-content:center; }
+  .lp-topology-satellites a { font-size:.65rem; }
+  .lp-topology-inspector {
+    width:calc(100% - 42px);
+    bottom:55px;
+    padding:11px 12px;
+    gap:9px;
+  }
+  .lp-topology-inspector strong { font-size:.85rem; }
+  .lp-topology-inspector p { font-size:.68rem; }
+  .lp-topology-inspector a { font-size:.67rem; }
+  .lp-topology-gesture { bottom:49px;font-size:.53rem; }
+  .lp-hero-copy { width:100%;margin-top:20px; }
+  .lp-hero-copy h1 { font-size:clamp(2.65rem,10.3vw,3.7rem); }
+  .lp-hero-copy > p { margin:18px 0 23px;font-size:.99rem; }
+  .lp-hero-meta { margin-top:20px; }
+  .lp-hero-demo { padding-top:33px; }
+}
+@media (max-width:400px) {
+  .lp-topology-stage { min-height:320px; }
+  .lp-topology-inspector { bottom:53px; }
+  .lp-topology-node { font-size:.64rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .lp-topology-inspector,.lp-topology-node,.lp-topology-core-label { transition:none; }
+}
