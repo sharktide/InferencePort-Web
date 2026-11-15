@@ -201,7 +201,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   logoGeometry.center();
   const glass=new THREE.MeshPhysicalMaterial({
     color:0xc4d5e2,roughness:.035,metalness:0,
-    transmission:.94,thickness:2.35,ior:1.49,
+    transmission:.96,thickness:2.35,ior:1.49,
     clearcoat:1,clearcoatRoughness:.04,
     iridescence:.12,iridescenceIOR:1.35,
     envMapIntensity:1.48,attenuationColor:new THREE.Color(0xb4c9dc),
@@ -213,7 +213,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   const body=new THREE.Mesh(logoGeometry,glass);
   logoGroup.add(body);
   const foil=new THREE.Mesh(logoGeometry.clone(),new THREE.MeshStandardMaterial({
-    color:0xa3b6cb,metalness:.20,roughness:.18,transparent:true,opacity:.16,depthWrite:false
+    color:0xb0c4d7,metalness:.14,roughness:.18,transparent:true,opacity:.095,depthWrite:false
   }));
   foil.scale.set(.989,.989,.80);foil.position.z=-.12;logoGroup.add(foil);
   const outline=new THREE.LineSegments(
@@ -221,6 +221,38 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     new THREE.LineBasicMaterial({color:0xb1842c,transparent:true,opacity:.95})
   );
   logoGroup.add(outline);
+  // A directional front-face coating creates crisp studio reflections without
+  // turning the transmissive glass core into a flat opaque lightning slab.
+  const sheenMaterial=new THREE.ShaderMaterial({
+    transparent:true,depthWrite:false,side:THREE.FrontSide,
+    vertexShader:`
+      varying vec3 vLocal;
+      varying vec3 vViewNormal;
+      void main() {
+        vLocal=position;
+        vViewNormal=normalize(normalMatrix*normal);
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);
+      }
+    `,
+    fragmentShader:`
+      varying vec3 vLocal;
+      varying vec3 vViewNormal;
+      void main() {
+        float broad=exp(-pow((vLocal.x*.68+vLocal.y*.26-.29)*3.8,2.0));
+        float narrow=exp(-pow((vLocal.x*.62+vLocal.y*.22+.53)*8.0,2.0));
+        float edge=pow(1.0-abs(vViewNormal.z),2.0);
+        float reflection=clamp(broad*.24+narrow*.13+edge*.17,0.0,.45);
+        vec3 cool=vec3(.82,.90,1.0);
+        vec3 warm=vec3(1.0,.94,.75);
+        vec3 tint=mix(cool,warm,smoothstep(-1.7,1.7,vLocal.y)*.25);
+        gl_FragColor=vec4(tint,reflection);
+      }
+    `
+  });
+  const sheen=new THREE.Mesh(logoGeometry.clone(),sheenMaterial);
+  sheen.position.z=.017;
+  sheen.renderOrder=2;
+  logoGroup.add(sheen);
 
   const modalityY=[2.25,1.60,.95,.30,-.35,-1.0,-1.65,-2.30];
   const serviceY=[2.15,1.29,.43,-.43,-1.29,-2.15];
@@ -331,9 +363,9 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     const lineColor=themeDark?0x9cacc8:0x73839a;
     for(const l of lines)if(l.kind!=="backbone")l.mat.color.setHex(lineColor);
     railMaterial.color.setHex(lineColor);
-    glass.color.setHex(themeDark?0xd0dced:0xc3d3e2);
+    glass.color.setHex(themeDark?0xc8d9e9:0xd0dce6);
     foil.material.color.setHex(themeDark?0x8296b7:0xa6bbca);
-    foil.material.opacity=themeDark?.20:.16;
+    foil.material.opacity=themeDark?.13:.095;
     outline.material.color.setHex(themeDark?0xffd66f:0x9c792f);
     outline.material.opacity=themeDark?.95:.88;
     for(const {mat,type} of points.values()) {
