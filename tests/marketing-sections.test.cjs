@@ -339,5 +339,5 @@ test("active paths are meaningful and context loss restores accessible fallback"
   assert.match(js, /const RELATIONS=\[/);
   assert.match(js, /const onContextLost=e=>\{e\.preventDefault\(\);destroy\(\);onFailure\?\.\(\);\};/);
   assert.match(js, /shell\.dataset\.fallback="context-lost"/);
-  assert.match(js, /foil\.material\.opacity=themeDark\?\.20:\.16/);
+  assert.match(js, /foil\.material\.opacity=themeDark\?\.13:\.095/);
 });
