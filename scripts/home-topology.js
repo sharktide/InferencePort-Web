@@ -7,6 +7,7 @@
  * There is no user activity simulation or telemetry in this visualization.
  */
 const THREE_MODULE_URL = "https://cdn.jsdelivr.net/npm/three@0.171.0/build/three.module.js";
+const THREE_BACKUP_URL = "https://unpkg.com/three@0.171.0/build/three.module.js";
 const NODE_DESCRIPTIONS = Object.freeze({
   models: "One model catalog for text, image, video, audio, 3D, realtime and decisions.",
   agents: "Create reusable agents with instructions, MCP tools and clear billing controls.",
@@ -68,7 +69,9 @@ function init() {
     if (!canAnimate() || loading || instance) return;
     loading = true;
     try {
-      const THREE = await import(THREE_MODULE_URL);
+      let THREE;
+      try { THREE = await import(THREE_MODULE_URL); }
+      catch { THREE = await import(THREE_BACKUP_URL); }
       if (!canAnimate() || !visible) return;
       instance = buildScene({ THREE, shell, stage, canvasHost, labelLinks, satelliteLinks, compact });
       shell.classList.remove("is-static");

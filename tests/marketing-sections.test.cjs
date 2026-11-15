@@ -336,3 +336,12 @@ test("the branded core is large enough to read on phones and desktop", () => {
   assert.match(css, /\.lp-topology-stage \{ min-height:355px;aspect-ratio:auto;overflow:hidden; \}/);
   assert.match(css, /\.lp-topology-node \{[\s\S]*?scroll-snap-align:start;/);
 });
+
+test("3D scene can recover when the primary module CDN is unavailable", () => {
+  const js = read("scripts/home-topology.js");
+  assert.match(js, /three@0\.171\.0\/build\/three\.module\.js/);
+  assert.match(js, /const THREE_BACKUP_URL = "https:\/\/unpkg\.com\/three@0\.171\.0\/build\/three\.module\.js";/);
+  assert.match(js, /try \{ THREE = await import\(THREE_MODULE_URL\); \}/);
+  assert.match(js, /catch \{ THREE = await import\(THREE_BACKUP_URL\); \}/);
+  assert.match(js, /shell\.dataset\.fallback = "webgl-unavailable"/);
+});
