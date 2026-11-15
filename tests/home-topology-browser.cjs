@@ -79,6 +79,16 @@ async function checkScene(page,name) {
   await page.mouse.up();
   assert.equal(await shell.evaluate(el=>el.classList.contains("has-webgl")),true);
 
+  // Visual QA of the areas that used to be cramped card walls.
+  assert.equal(await page.locator(".lp-ecosystem-spotlight").count(),4);
+  assert.equal(await page.locator(".lp-proof-compact").count(),2);
+  await page.locator("#platform-details").screenshot({
+    path:path.join(screenshots,name+"-infrastructure.png")
+  });
+  await page.locator(".lp-section.lp-more").screenshot({
+    path:path.join(screenshots,name+"-ecosystem.png")
+  });
+
   // Geometry is not allowed to produce horizontal page overflow.
   const measurements=await page.evaluate(()=>({
     documentWidth:document.documentElement.scrollWidth,
