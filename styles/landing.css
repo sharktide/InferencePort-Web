@@ -1506,3 +1506,10 @@
   .lp-lightning-model-bar > span:last-child {margin-left:0;}
   .lp-desktop-window img {max-height:260px;}
 }
+
+/* One clear primary CTA, plus an optional detail link for curious builders. */
+.lp-feature-ctas {display:flex;align-items:center;flex-wrap:wrap;gap:12px 22px;margin-top:4px;}
+.lp-feature-ctas .lp-proof-link {margin-top:0;}
+.lp-feature-more {display:inline-flex;align-items:center;min-height:42px;padding:8px 0;color:var(--ink);font-size:.84rem;font-weight:680;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:5px;}
+.lp-feature-more:hover {color:var(--brand-ink);}
+.lp-feature-more:focus-visible {outline:2px solid var(--gold);outline-offset:3px;}
