@@ -65,7 +65,7 @@ test("product sections link to usable next steps", () => {
     "wan2.7-t2v", "API key", "Usage", "Buckets",
   ]) assert.ok(home.toLowerCase().includes(phrase.toLowerCase()), "Missing useful detail: " + phrase);
   assert.match(platform, /<b>Buckets \(Preview\)<\/b>/);
-  assert.doesNotMatch(home, /agent\/acme\/support-bot|2 connected|Published<\/span>/);
+  assert.doesNotMatch(home, /agent\/acme\/support-bot|2 connected|\$18\.20 Spend/);
 });
 
 test("homepage has intentional layout variation and responsive themes", () => {
@@ -73,12 +73,12 @@ test("homepage has intentional layout variation and responsive themes", () => {
   assert.ok(sectionCount <= 8, "Homepage has excessive sections");
   assert.match(home, /class="lp-modality-matrix"/);
   assert.match(home, /class="lp-product-grid"/);
-  assert.match(home, /class="lp-stack-layout"/);
-  assert.match(home, /class="lp-ops-layout"/);
-  assert.match(home, /class="lp-agent-spec"/);
+  assert.match(home, /class="lp-proof-agent"/);
+  assert.match(home, /class="lp-proof-pair"/);
+  assert.match(home, /class="lp-proof-shield"/);
+  assert.match(home, /class="lp-workspace-layout"/);
   assert.match(home, /class="lp-org-spec"/);
-  assert.match(home, /class="lp-shield-response"/);
-  assert.match(home, /class="lp-console-layout"/);
+  assert.match(home, /class="lp-shield-schema"/);
   assert.match(home, /class="lp-builder-grid"/);
   assert.doesNotMatch(home, /class="checks"|class="pgrid"|class="pc c-/);
   assert.match(home, /href="styles\/shared\.css"/);
@@ -104,12 +104,12 @@ test("theme correctly switches the hero instead of forcing dark mode", () => {
 
 test("specific infrastructure features remain discoverable in concise sections", () => {
   for (const term of [
-    "HTTP or SSE MCP", "share unlisted", "Owner- or caller-paid",
-    "$0.50 per deployment", "warm availability",
-    "AWS Signature V4", "Revocable credentials", "Azure Blob Storage",
+    "HTTP or SSE tools", "Unlisted", "Owner- or caller-paid",
+    "$0.50 per deployment", "model availability",
+    "S3-compatible storage", "scoped, revocable SigV4 credentials",
     "risk_score", "confidence", "decision", "reasons",
-    "SAML SSO", "model and modality restrictions",
-    "separate API, storage and deployment charges",
+    "SAML SSO", "allowed models and modalities",
+    "API, deployment and storage charges",
     "1–3 review rounds", "OAuth or API key",
     "Ollama", "JSON output"
   ]) assert.ok(home.toLowerCase().includes(term.toLowerCase()), "Missing concrete capability: " + term);
@@ -143,9 +143,10 @@ test("every hosted model modality is prominent and opens its actual Marketplace 
 
 test("desktop modules have intentional spacing with tablet and mobile fallbacks", () => {
   assert.match(css, /@media \(min-width:1101px\)/);
-  assert.match(css, /\.lp-stack-layout,\.lp-stack-side,\.lp-ops-layout \{ gap:24px; \}/);
-  assert.match(css, /\.lp-ops-layout > article \{ padding:41px 43px 43px; \}/);
-  assert.match(css, /@media \(min-width:901px\) and \(max-width:1100px\)/);
+  assert.match(css, /\.lp-proof-agent \{[^}]*grid-template-columns:/);
+  assert.match(css, /\.lp-proof-pair \{[^}]*grid-template-columns:/);
+  assert.match(css, /\.lp-workspace-layout \{[^}]*grid-template-columns:/);
+  assert.match(css, /\.lp-proof-agent,\.lp-proof-shield,\.lp-proof-pair,\.lp-workspace-layout \{ grid-template-columns:1fr; \}/);
   assert.match(css, /\.lp-modality-matrix \{ grid-template-columns:1fr; \}/);
   assert.match(css, /\.lp-product-grid \{ grid-template-columns:1fr;/);
 });
@@ -168,13 +169,17 @@ test("full product directory restores all twelve destinations without decorative
   assert.doesNotMatch(css, /\.lp-product-card:hover \{[^}]*box-shadow/);
 });
 
-test("products precede modality API section with restrained group accents", () => {
+test("homepage follows the 7-part hierarchy with restrained group accents", () => {
   const hero = home.indexOf('class="lp-hero"');
   const products = home.indexOf('class="lp-section lp-products" id="products"');
   const api = home.indexOf('class="lp-section lp-models" id="api"');
   const details = home.indexOf('class="lp-section lp-stack" id="platform-details"');
-  assert.ok(hero >= 0 && hero < products && products < api && api < details,
-    "Expected Hero → Products → Model API → Details order");
+  const workspace = home.indexOf('class="lp-section lp-workflow"');
+  const ecosystem = home.indexOf('class="lp-section lp-more"');
+  const pricing = home.indexOf('class="lp-section lp-pricing"');
+  assert.ok(hero >= 0 && hero < api && api < products && products < details
+    && details < workspace && workspace < ecosystem && ecosystem < pricing,
+    "Expected Hero → Eight modalities → Products → Featured → Workspace → Ecosystem → Pricing");
   for (const group of ["build", "run", "manage"]) {
     assert.match(home, new RegExp('class="lp-product-group lp-product-group--' + group + '"'));
     assert.ok(css.includes(".lp-product-group--" + group + " {"), "Missing scoped group palette: " + group);
@@ -193,4 +198,38 @@ test("product category icons match their labels", () => {
   assert.match(iconFor("lightning"), /M13 3L5 13\.5h6L10 21/);
   assert.match(iconFor("app"), /<rect x="3" y="4" width="18" height="12"/);
   assert.match(iconFor("catalog"), /M12 3l9 5-9 5-9-5z/);
+});
+
+test("proof panels show genuine control structures without pretending to be live data", () => {
+  for (const term of [
+    "CONFIGURATION PREVIEW", "Backing model", "System instructions",
+    "MCP servers", "Request billing", "Published", "MODEL DEPLOYMENTS",
+    "aws --endpoint-url", "POST /ai-shield/analyze",
+    "RESPONSE FIELDS", "Illustrative control layout"
+  ]) assert.ok(home.includes(term), "Missing useful product proof: " + term);
+  assert.match(home, /class="lp-proof-interface" aria-label="Illustration/);
+  assert.doesNotMatch(home, /12\.4k Requests|\$18\.20 Spend|Customer logo|agent\/acme\/support-bot/);
+});
+
+test("console and organizations share one coherent workspace section", () => {
+  const workspaceStart = home.indexOf('class="lp-section lp-workflow"');
+  const workspaceEnd = home.indexOf('class="lp-section lp-more"', workspaceStart);
+  const workspace = home.slice(workspaceStart, workspaceEnd);
+  assert.match(workspace, /id="console"/);
+  assert.match(workspace, /id="organizations"/);
+  assert.match(workspace, /class="lp-workspace-console"/);
+  assert.match(workspace, /class="lp-workspace-org"/);
+  assert.match(workspace, /API, deployment and storage charges/);
+  assert.match(workspace, /per-member and per-key limits/);
+  assert.doesNotMatch(home.slice(home.indexOf('class="lp-section lp-stack"'), workspaceStart), /id="organizations"/);
+});
+
+test("pricing keeps distinct API, deployment, storage, and subscription billing", () => {
+  for (const label of ["MODEL API", "DEPLOYMENTS", "BUCKETS", "CHAT &amp; TEAMS"]) {
+    assert.ok(home.includes("<span>" + label + "</span>"), "Missing billing category " + label);
+  }
+  assert.match(home, /Storage, requests &amp; transfer/);
+  assert.match(home, /Deployment fee \+ usage/);
+  assert.match(home, /Model-specific usage/);
+  assert.match(home, /Hosted chat subscriptions/);
 });

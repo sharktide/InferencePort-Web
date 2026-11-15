@@ -48,7 +48,7 @@
         <div class="lp-hero-grid">
           <div class="lp-hero-copy">
             <h1 id="lp-title">Models are<br />just the start.<br /><em>Build the rest.</em></h1>
-            <p>From text and images to video, speech, 3D and realtime AI. One platform to access models, deploy agents, store artifacts and protect requests—with familiar APIs and centralized controls.</p>
+            <p>Access, deploy, secure and manage AI in one place. Start with an OpenAI-compatible API for text, image, video, audio, 3D and realtime—then add agents, storage and team controls without stitching services together.</p>
             <div class="lp-actions">
               <a class="lp-button lp-button-primary" href="/console">Start building <span aria-hidden="true">↗</span></a>
               <a class="lp-button lp-button-outline" href="marketplace.html">Browse models <span aria-hidden="true">↗</span></a>
@@ -105,6 +105,66 @@
           <span>One API key.</span><span>Text / Images / Video / Audio / 3D / Embeddings / Realtime / Decisions</span>
           <a href="decision.html">Explore decision models ↗</a>
         </div>
+      </div>
+    </section>
+
+    <section class="lp-section lp-models" id="api" aria-labelledby="lp-models-title">
+      <div class="lp-wrap">
+        <div class="lp-section-heading">
+          <div><p class="lp-kicker">MODEL ACCESS / EIGHT MODALITIES</p><h2 id="lp-models-title">One API.<br /><span>More than just chat.</span></h2></div>
+          <div class="lp-heading-aside"><p>Use text, media, realtime and decision models with the same account. Choose a category to explore supported models, capabilities and pricing.</p><a href="marketplace.html">Browse the full catalog <span aria-hidden="true">↗</span></a></div>
+        </div>
+        <div class="lp-modality-matrix" aria-label="Explore the eight available model modalities">
+          <a class="lp-modality-row" href="marketplace.html?modality=video" data-modality="video">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">VIDEO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Generate clips</h3>
+            <p>Text-to-video and creative video generation.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>wan2.7-t2v</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=audio" data-modality="audio">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">AUDIO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Speech &amp; sound</h3>
+            <p>Speech synthesis, transcription and sound generation.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>openai-tts-1</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=3d" data-modality="3d">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">3D</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Build 3D assets</h3>
+            <p>Reconstruct geometry and generate 3D models.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>trellis2</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=realtime" data-modality="realtime">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">REALTIME</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Live conversations</h3>
+            <p>Streaming voice interactions and transcription.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>gpt-realtime-2.1-mini</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=text" data-modality="text">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">TEXT</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Write &amp; reason</h3>
+            <p>Chat, coding and multimodal language models.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>deepseek-v4.1-flash-1017</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=image" data-modality="image">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">IMAGE</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Generate visuals</h3>
+            <p>Image generation and editing workflows.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>lightning-image-turbo</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=embedding" data-modality="embedding">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">EMBEDDINGS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Search &amp; retrieve</h3>
+            <p>Vectors for semantic search and retrieval.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>text-embedding-3-small</code></span>
+          </a>
+          <a class="lp-modality-row" href="marketplace.html?modality=decision" data-modality="decision">
+            <div class="lp-modality-row-top"><span class="lp-modality-name">DECISIONS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
+            <h3>Make decisions</h3>
+            <p>Structured answers, scoring and classification.</p>
+            <span class="lp-modality-example"><span>Example model</span><code>microsoft/decision-1</code></span>
+          </a>
+        </div>
+        <p class="lp-modality-foot">Example IDs are from the model catalog. Pricing, request formats and supported features vary by modality.</p>
       </div>
     </section>
 
@@ -204,145 +264,102 @@
       </div>
     </section>
 
-    <section class="lp-section lp-models" id="api" aria-labelledby="lp-models-title">
-      <div class="lp-wrap">
-        <div class="lp-section-heading">
-          <div><p class="lp-kicker">MODEL ACCESS / EIGHT MODALITIES</p><h2 id="lp-models-title">One API.<br /><span>More than just chat.</span></h2></div>
-          <div class="lp-heading-aside"><p>Use text, media, realtime and decision models with the same account. Choose a category to explore supported models, capabilities and pricing.</p><a href="marketplace.html">Browse the full catalog <span aria-hidden="true">↗</span></a></div>
-        </div>
-        <div class="lp-modality-matrix" aria-label="Explore the eight available model modalities">
-          <a class="lp-modality-row" href="marketplace.html?modality=video" data-modality="video">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">VIDEO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Generate clips</h3>
-            <p>Text-to-video and creative video generation.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>wan2.7-t2v</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=audio" data-modality="audio">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">AUDIO</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Speech &amp; sound</h3>
-            <p>Speech synthesis, transcription and sound generation.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>openai-tts-1</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=3d" data-modality="3d">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">3D</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Build 3D assets</h3>
-            <p>Reconstruct geometry and generate 3D models.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>trellis2</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=realtime" data-modality="realtime">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">REALTIME</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Live conversations</h3>
-            <p>Streaming voice interactions and transcription.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>gpt-realtime-2.1-mini</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=text" data-modality="text">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">TEXT</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Write &amp; reason</h3>
-            <p>Chat, coding and multimodal language models.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>deepseek-v4.1-flash-1017</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=image" data-modality="image">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">IMAGE</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Generate visuals</h3>
-            <p>Image generation and editing workflows.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>lightning-image-turbo</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=embedding" data-modality="embedding">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">EMBEDDINGS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Search &amp; retrieve</h3>
-            <p>Vectors for semantic search and retrieval.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>text-embedding-3-small</code></span>
-          </a>
-          <a class="lp-modality-row" href="marketplace.html?modality=decision" data-modality="decision">
-            <div class="lp-modality-row-top"><span class="lp-modality-name">DECISIONS</span><span class="lp-modality-arrow" aria-hidden="true">↗</span></div>
-            <h3>Make decisions</h3>
-            <p>Structured answers, scoring and classification.</p>
-            <span class="lp-modality-example"><span>Example model</span><code>microsoft/decision-1</code></span>
-          </a>
-        </div>
-        <p class="lp-modality-foot">Example IDs are from the model catalog. Pricing, request formats and supported features vary by modality.</p>
-      </div>
-    </section>
-
     <section class="lp-section lp-stack" id="platform-details" aria-labelledby="lp-stack-title">
       <div class="lp-wrap">
-        <div class="lp-stack-heading"><div><p class="lp-kicker">THE REST OF YOUR STACK</p><h2 id="lp-stack-title">Inference is step one.<br /><span>We cover what comes next.</span></h2></div><p>Keep building when the prototype turns into a product. These services work with the same InferencePort account.</p></div>
-        <div class="lp-stack-layout">
-          <article class="lp-stack-feature" id="agents">
-            <div class="lp-feature-top"><span>01 / MANAGED AGENTS</span><span class="lp-feature-mark" aria-hidden="true">↗</span></div>
-            <div><h3>Give your model a job.<br /><span>Give it tools.</span></h3><p>Configure instructions, choose a backing model, attach MCP tools and call your agent through the chat API. No separate agent hosting setup.</p></div>
-            <dl class="lp-agent-spec">
-              <div><dt>Model &amp; tools</dt><dd>Select a model, write instructions, attach HTTP or SSE MCP servers.</dd></div>
-              <div><dt>Visibility</dt><dd>Keep agents private, share unlisted links, or publish to the registry.</dd></div>
-              <div><dt>Billing</dt><dd>Owner- or caller-paid requests, including organization wallets and policies.</dd></div>
-            </dl>
-            <div class="lp-agent-code"><span>MODEL IDENTIFIER</span><code>agent/&lt;username&gt;/&lt;agent-id&gt;</code></div>
-            <a class="lp-feature-link" href="/console/agents">Create an agent <span aria-hidden="true">↗</span></a>
-          </article>
-          <div class="lp-stack-side">
-            <article class="lp-stack-mini" id="deploy">
-              <span class="lp-mini-number">02 / DEPLOYMENTS</span>
-              <h3>Need a specific open model?</h3>
-              <p>Choose from the open-model catalog, check context length and warm availability, and deploy without provisioning GPUs.</p>
-              <div class="lp-mini-facts"><span>Personal or shared organization deployments</span><span>$0.50 per deployment / month, plus token usage</span></div>
-              <a href="/console">Explore deployments ↗</a>
-            </article>
-            <article class="lp-stack-mini lp-stack-mini-gold" id="buckets">
-              <span class="lp-mini-number">03 / BUCKETS <small>PREVIEW</small></span>
-              <h3>Model files have a home, too.</h3>
-              <p>S3-compatible object storage backed by Azure Blob Storage, scoped to your personal or organization workspace.</p>
-              <div class="lp-mini-facts"><span>AWS Signature V4 and familiar S3 clients</span><span>Revocable credentials with bucket, permission and prefix scopes</span><span>Storage, request and transfer usage visible in the console</span></div>
-              <div class="lp-mini-links"><a href="/console/buckets">Open Buckets ↗</a><a href="https://docs.inferenceport.ai/api/buckets.html">Connection guide ↗</a></div>
-            </article>
+        <div class="lp-stack-heading">
+          <div><p class="lp-kicker">FROM FIRST REQUEST TO PRODUCTION</p><h2 id="lp-stack-title">The pieces work better together.</h2></div>
+          <p>Add hosting, storage and security to your application without managing each service in a separate platform.</p>
+        </div>
+        <article class="lp-proof-agent" id="agents" aria-labelledby="lp-agents-title">
+          <div class="lp-proof-copy">
+            <span class="lp-proof-kicker">01 / MANAGED AGENTS</span>
+            <h3 id="lp-agents-title">A reusable agent, not another service to host.</h3>
+            <p>Choose a backing model, give it instructions, connect MCP tools and invoke it through the same chat API. Keep it private or distribute it with owner- or caller-paid billing.</p>
+            <div class="lp-proof-key"><span>CALL AS A MODEL</span><code>agent/&lt;username&gt;/&lt;agent-id&gt;</code></div>
+            <a class="lp-proof-link" href="/console/agents">Configure an agent <span aria-hidden="true">↗</span></a>
           </div>
-        </div>
-        <div class="lp-ops-layout">
-          <article class="lp-ops-shield" id="shield">
-            <div class="lp-ops-label"><span>04 / AI SHIELD</span><a href="shield.html">Explore Shield ↗</a></div>
-            <h3>Check risks before they become incidents.</h3>
-            <p>One request for sign-up and login abuse, duplicate accounts, spam, scams, malicious prompts and unsafe content. Send the signals you have; Shield returns structured guidance your app can act on.</p>
-            <div class="lp-shield-response">
-              <span>POST /ai-shield/analyze</span>
-              <div><code>risk_score</code><small>Severity estimate</small></div>
-              <div><code>confidence</code><small>Assessment confidence</small></div>
-              <div><code>decision</code><small>Recommended action</small></div>
-              <div><code>reasons</code><small>Explanation signals</small></div>
+          <div class="lp-proof-interface" aria-label="Illustration of the available agent configuration controls">
+            <div class="lp-preview-header"><span>CONSOLE / AGENTS</span><span>CONFIGURATION PREVIEW</span></div>
+            <div class="lp-preview-body">
+              <div class="lp-preview-row"><span>Backing model</span><strong>Select from the model catalog</strong></div>
+              <div class="lp-preview-row lp-preview-row-block"><span>System instructions</span><div class="lp-preview-input">Define how the agent should behave and respond…</div></div>
+              <div class="lp-preview-row"><span>MCP servers</span><strong>HTTP or SSE tools <i aria-hidden="true">＋</i></strong></div>
+              <div class="lp-preview-choice"><span>Visibility</span><div><b>Private</b><span>Unlisted</span><span>Published</span></div></div>
+              <div class="lp-preview-choice"><span>Request billing</span><div><b>Caller pays</b><span>Owner pays</span></div></div>
             </div>
+            <p class="lp-preview-caption">Illustrative control layout based on the Agents console; no live configuration shown.</p>
+          </div>
+        </article>
+        <div class="lp-proof-pair">
+          <article class="lp-proof-compact" id="deploy">
+            <div class="lp-proof-compact-header"><span>02 / MODEL DEPLOYMENTS</span><span class="lp-proof-compact-arrow" aria-hidden="true">↗</span></div>
+            <h3>Bring an open model online.</h3>
+            <p>Search the deployable catalog, inspect context length and model availability, then deploy for yourself or an organization.</p>
+            <div class="lp-deploy-flow" aria-label="Deployment process">
+              <span>Search models</span><i aria-hidden="true">→</i><span>Check availability</span><i aria-hidden="true">→</i><span>Deploy &amp; call</span>
+            </div>
+            <p class="lp-proof-footnote">$0.50 per deployment / month, plus model usage.</p>
+            <a class="lp-proof-link" href="/console">Browse deployments <span aria-hidden="true">↗</span></a>
           </article>
-          <article class="lp-ops-team" id="organizations">
-            <div class="lp-ops-label"><span>05 / ORGANIZATIONS</span><a href="platform.html#organizations">Explore organizations ↗</a></div>
-            <h3>One workspace for the whole team.</h3>
-            <p>Keep spend, access, reporting and desktop behavior under one policy instead of coordinating personal accounts.</p>
-            <dl class="lp-org-spec">
-              <div><dt>Billing</dt><dd>Shared wallet, member and key budgets, spend caps and alerts</dd></div>
-              <div><dt>Access</dt><dd>Roles, SAML SSO and verified-domain policies on eligible plans</dd></div>
-              <div><dt>API policy</dt><dd>Model and modality restrictions, rate limits and key controls</dd></div>
-              <div><dt>Governance</dt><dd>Audits, model/service usage reports and desktop policies</dd></div>
-            </dl>
+          <article class="lp-proof-compact lp-proof-compact-buckets" id="buckets">
+            <div class="lp-proof-compact-header"><span>03 / BUCKETS <small>PREVIEW</small></span><span class="lp-proof-compact-arrow" aria-hidden="true">↗</span></div>
+            <h3>Keep model files in the same workspace.</h3>
+            <p>S3-compatible storage for weights, datasets and outputs, using scoped, revocable SigV4 credentials.</p>
+            <div class="lp-s3-example"><div>EXAMPLE / AWS CLI <span>USE YOUR WORKSPACE ENDPOINT</span></div><pre><code>aws --endpoint-url "$IP_S3_ENDPOINT" \
+  s3 ls "s3://$BUCKET/"</code></pre></div>
+            <div class="lp-proof-links"><a class="lp-proof-link" href="/console/buckets">Open Buckets <span aria-hidden="true">↗</span></a><a href="https://docs.inferenceport.ai/api/buckets.html">Connection guide ↗</a></div>
           </article>
         </div>
+        <article class="lp-proof-shield" id="shield">
+          <div>
+            <span class="lp-proof-kicker">04 / AI SHIELD</span>
+            <h3>Make security a request, not a separate stack.</h3>
+            <p>Analyze account risk, scan prompts and content, check indicators, and inspect suspicious requests. Get structured signals your application can use to allow, challenge, review or block.</p>
+            <a class="lp-proof-link" href="shield.html">Explore Shield <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="lp-shield-schema" aria-label="Shield analyze API response fields">
+            <div class="lp-shield-schema-head"><code>POST /ai-shield/analyze</code><span>RESPONSE FIELDS</span></div>
+            <dl>
+              <div><dt><code>risk_score</code></dt><dd>Severity estimate</dd></div>
+              <div><dt><code>confidence</code></dt><dd>Assessment confidence</dd></div>
+              <div><dt><code>decision</code></dt><dd>Recommended action</dd></div>
+              <div><dt><code>reasons</code></dt><dd>Explanation signals</dd></div>
+            </dl>
+          </div>
+        </article>
       </div>
     </section>
 
     <section class="lp-section lp-workflow" aria-labelledby="lp-workflow-title">
       <div class="lp-wrap">
         <div class="lp-workflow-header">
-          <div><p class="lp-kicker">THE DEVELOPER CONSOLE</p><h2 id="lp-workflow-title">The controls are part of the product.</h2></div>
-          <p>Manage your API keys, test models, inspect spending and administer agents or storage without leaving your workspace.</p>
+          <div><p class="lp-kicker">OPERATE / ONE WORKSPACE</p><h2 id="lp-workflow-title">One place to manage the whole stack.</h2></div>
+          <p>Test models, issue credentials, monitor service charges and apply team policies—all without leaving InferencePort.</p>
         </div>
-        <div class="lp-console-layout" id="console">
-          <div class="lp-console-intro">
-            <span>console.inferenceport.ai</span>
-            <h3>From first request to team operations.</h3>
-            <p>One place to see what your applications use, what those requests cost, and who can access them.</p>
-            <a href="/console">Open the console ↗</a>
-          </div>
-          <div class="lp-console-capabilities">
-            <div><span>01</span><strong>Explore &amp; test</strong><p>Model catalog and playground for text, image, video, audio, embeddings and realtime.</p></div>
-            <div><span>02</span><strong>Measure</strong><p>Usage by model, key, member and service; separate API, storage and deployment charges.</p></div>
-            <div><span>03</span><strong>Control</strong><p>API key restrictions, budgets, workspaces, roles and access policies.</p></div>
-            <div><span>04</span><strong>Operate</strong><p>Manage agents, deployments, Buckets credentials and Shield from the same account.</p></div>
-          </div>
+        <div class="lp-workspace-layout">
+          <article class="lp-workspace-console" id="console">
+            <div class="lp-workspace-top"><span>DEVELOPER CONSOLE</span><span>MODEL ACCESS + OPERATIONS</span></div>
+            <h3>From playground to production controls.</h3>
+            <div class="lp-workspace-nav" aria-label="Available console areas"><span>Playground</span><span>API keys</span><span>Usage</span><span>Billing</span></div>
+            <div class="lp-workspace-rows">
+              <div><strong>Explore &amp; test</strong><span>Models and multimodal playgrounds</span></div>
+              <div><strong>Measure spend</strong><span>API, deployment and storage charges by service</span></div>
+              <div><strong>Manage access</strong><span>Keys, limits, agents and Buckets credentials</span></div>
+            </div>
+            <a class="lp-proof-link" href="/console">Open the console <span aria-hidden="true">↗</span></a>
+          </article>
+          <article class="lp-workspace-org" id="organizations">
+            <div class="lp-workspace-top"><span>ORGANIZATIONS</span><span>SHARED CONTROLS</span></div>
+            <h3>Make the same tools work for a team.</h3>
+            <p>Centralized billing and access policies without asking every developer to operate a separate account.</p>
+            <dl class="lp-org-spec">
+              <div><dt>Budgets</dt><dd>Shared wallet, per-member and per-key limits</dd></div>
+              <div><dt>Permissions</dt><dd>Roles, allowed models and modalities</dd></div>
+              <div><dt>Identity</dt><dd>SAML SSO and domain controls on eligible plans</dd></div>
+              <div><dt>Audit</dt><dd>Activity, service-aware usage and desktop policy</dd></div>
+            </dl>
+            <a class="lp-proof-link" href="platform.html#organizations">Explore organizations <span aria-hidden="true">↗</span></a>
+          </article>
         </div>
       </div>
     </section>
@@ -380,11 +397,12 @@ ipx org keys create ci --monthly-limit 25</code></pre></div>
 
     <section class="lp-section lp-pricing" id="pricing" aria-labelledby="lp-pricing-title">
       <div class="lp-wrap lp-pricing-layout">
-        <div><p class="lp-kicker">STRAIGHTFORWARD BILLING</p><h2 id="lp-pricing-title">Know what you're paying for.</h2><p>Different workflows have different billing. API requests use credits, chat has its own plans, and organization usage is tracked by workspace.</p><a href="pricing.html" class="lp-standalone-link">View all pricing ↗</a></div>
+        <div><p class="lp-kicker">BILLING WITHOUT MIXED CATEGORIES</p><h2 id="lp-pricing-title">Know what each service costs.</h2><p>Model requests, hosted infrastructure and chat subscriptions are different products. Costs are tracked by service instead of blended into one vague usage total.</p><a href="pricing.html" class="lp-standalone-link">View all pricing ↗</a></div>
         <div class="lp-pricing-rows">
-          <a href="marketplace.html"><span>MODEL API</span><div><strong>Pay by usage</strong><small>Model-specific rates. Credit wallet. Usage breakdown.</small></div><b aria-hidden="true">↗</b></a>
-          <a href="pricing.html"><span>CHAT &amp; DESKTOP</span><div><strong>Free to start</strong><small>Subscription tiers for hosted chat. Local models on your hardware.</small></div><b aria-hidden="true">↗</b></a>
-          <a href="pricing.html#organizations"><span>ORGANIZATIONS</span><div><strong>Work as a team</strong><small>Shared billing, budgets, access and reporting.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="marketplace.html"><span>MODEL API</span><div><strong>Model-specific usage</strong><small>Pay-to-Go credit wallet, model rates and per-request metering.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="/console"><span>DEPLOYMENTS</span><div><strong>Deployment fee + usage</strong><small>Monthly deployment charge with separate inference costs.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="https://docs.inferenceport.ai/api/buckets.html"><span>BUCKETS</span><div><strong>Storage, requests &amp; transfer</strong><small>Usage-based S3-compatible storage, tracked separately from API spend.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="pricing.html"><span>CHAT &amp; TEAMS</span><div><strong>Distinct plans</strong><small>Hosted chat subscriptions and organization tiers; local inference on your hardware.</small></div><b aria-hidden="true">↗</b></a>
         </div>
       </div>
     </section>
