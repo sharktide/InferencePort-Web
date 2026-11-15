@@ -105,6 +105,22 @@ async function checkScene(page,name) {
   assert.ok(Math.abs(resetTilt.yaw)<.10&&Math.abs(resetTilt.pitch)<.065,
     name+" reset view failed: "+JSON.stringify(resetTilt));
 
+  // Catch theme-specific illegible panels (such as pale text on a pale
+  // surface), which can pass structural tests but fail a real screenshot QA.
+  const agentsContrast=await page.locator("#agents .lp-proof-copy").evaluate(panel=>{
+    const rgb=(value)=>[...value.matchAll(/[\\d.]+/g)].slice(0,3).map(x=>Number(x[0])/255);
+    const luminosity=value=>rgb(value).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
+      .reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+    const bg=luminosity(getComputedStyle(panel).backgroundColor);
+    const headings=panel.querySelectorAll("h3,p");
+    return [...headings].map(element=>{
+      const lum=luminosity(getComputedStyle(element).color);
+      return (Math.max(bg,lum)+.05)/(Math.min(bg,lum)+.05);
+    });
+  });
+  assert.ok(agentsContrast.every(value=>value>=4.5),
+    name+" Agent story contrast is not accessible: "+JSON.stringify(agentsContrast));
+
   // Visual QA of the areas that used to be cramped card walls.
   assert.equal(await page.locator(".lp-ecosystem-spotlight").count(),4);
   assert.equal(await page.locator(".lp-proof-compact").count(),2);
