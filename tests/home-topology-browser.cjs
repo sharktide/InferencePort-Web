@@ -78,6 +78,32 @@ async function checkScene(page,name) {
   await page.mouse.move(region.x+region.width*.17,region.y+region.height*.78,{steps:10});
   await page.mouse.up();
   assert.equal(await shell.evaluate(el=>el.classList.contains("has-webgl")),true);
+  // Deliberately repeat large drags to reproduce the user-reported upside-down
+  // scene. The product/network map must never rotate beyond safe angles.
+  for(let i=0;i<3;i++){
+    await page.mouse.move(region.x+region.width*.15,region.y+region.height*.20);
+    await page.mouse.down();
+    await page.mouse.move(region.x+region.width*.90,region.y+region.height*.85,{steps:10});
+    await page.mouse.up();
+  }
+  await page.waitForTimeout(250);
+  const tilt=await page.locator(".ip-architecture-stage").evaluate(el=>({
+    yaw:Number(el.dataset.graphYaw),pitch:Number(el.dataset.graphPitch)
+  }));
+  assert.ok(Number.isFinite(tilt.yaw)&&Number.isFinite(tilt.pitch),
+    name+" missing 3D scene diagnostics");
+  assert.ok(Math.abs(tilt.yaw)<=.205&&Math.abs(tilt.pitch)<=.11,
+    name+" graph flipped under repeated drag: "+JSON.stringify(tilt));
+  await page.locator("#lp-topology").screenshot({
+    path:path.join(screenshots,name+"-extreme-drag-bounded.png")
+  });
+  await page.getByRole("button",{name:"Reset 3D view"}).click();
+  await page.waitForTimeout(900);
+  const resetTilt=await page.locator(".ip-architecture-stage").evaluate(el=>({
+    yaw:Number(el.dataset.graphYaw),pitch:Number(el.dataset.graphPitch)
+  }));
+  assert.ok(Math.abs(resetTilt.yaw)<.10&&Math.abs(resetTilt.pitch)<.065,
+    name+" reset view failed: "+JSON.stringify(resetTilt));
 
   // Visual QA of the areas that used to be cramped card walls.
   assert.equal(await page.locator(".lp-ecosystem-spotlight").count(),4);
@@ -88,6 +114,22 @@ async function checkScene(page,name) {
   await page.locator(".lp-section.lp-more").screenshot({
     path:path.join(screenshots,name+"-ecosystem.png")
   });
+  // Real primary CTAs and distinct illustrative visuals, not tiny inert links.
+  assert.equal(await page.locator("#deploy .lp-proof-link").getAttribute("href"),"/console/deploy");
+  assert.equal(await page.locator("#deploy .lp-preview-action").getAttribute("href"),"/console/deploy");
+  const ctas=await page.locator(".lp-proof-link").evaluateAll(links=>links.map(el=>({
+    text:el.textContent.trim(),height:el.getBoundingClientRect().height,
+    bg:getComputedStyle(el).backgroundColor
+  })));
+  assert.ok(ctas.every(x=>x.height>=43&&x.bg!=="rgba(0, 0, 0, 0)"),
+    name+" invisible CTA: "+JSON.stringify(ctas));
+  const colors=await page.evaluate(()=>[
+    ".lp-deploy-preview",".lp-bucket-visual",".lp-council-visual"
+  ].map(sel=>getComputedStyle(document.querySelector(sel)).borderTopColor));
+  assert.equal(new Set(colors).size,3,"Preview colors should distinguish products");
+  const workspacePadding=await page.locator("#console").evaluate(
+    el=>parseFloat(getComputedStyle(el).paddingLeft));
+  assert.ok(workspacePadding>=19,name+" workspace padding collapsed: "+workspacePadding);
 
   // Geometry is not allowed to produce horizontal page overflow.
   const measurements=await page.evaluate(()=>({

@@ -49,6 +49,7 @@ function initTopology() {
   const title=shell.querySelector("[data-graph-title]");
   const description=shell.querySelector("[data-graph-description]");
   const explore=shell.querySelector("[data-graph-link]");
+  const resetButton=shell.querySelector("[data-graph-reset]");
   const reduced=window.matchMedia("(prefers-reduced-motion: reduce)");
   const mobile=window.matchMedia("(max-width: 700px)");
   let active=null;
@@ -169,6 +170,8 @@ function initTopology() {
   if(io)io.observe(shell);
   else {visible=true;void ensureScene();}
   reduced.addEventListener?.("change",updateMode);
+  const onReset=()=>instance?.resetView();
+  resetButton?.addEventListener("click",onReset);
   const onTheme=()=>instance?.updateTheme();
   document.addEventListener("ip-theme-change",onTheme);
   // The site theme manager also mutates data-theme directly.
@@ -179,6 +182,7 @@ function initTopology() {
     reduced.removeEventListener?.("change",updateMode);
     mobile.removeEventListener?.("change",onViewportChange);
     document.removeEventListener("ip-theme-change",onTheme);
+    resetButton?.removeEventListener("click",onReset);
     instance?.destroy();instance=null;
   },{once:true});
 }
@@ -402,11 +406,13 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   let selected=null,active=false,dead=false,raf=0,last=0,time=0;
   let drag=null,themeDark=false;
   const targetRotation=new THREE.Quaternion();
+  // Bounded interactive tilt keeps every model and infrastructure path readable.
+  // Only the central glass mark gets substantial rotation; the graph never flips.
   const pointerTilt=new THREE.Vector2();
   const velocity=new THREE.Vector2();
-  const rotX=new THREE.Quaternion(),rotY=new THREE.Quaternion(),hoverRotation=new THREE.Quaternion();
-  const xAxis=new THREE.Vector3(1,0,0),yAxis=new THREE.Vector3(0,1,0);
-  const tiltEuler=new THREE.Euler();
+  const MAX_YAW=.20,MAX_PITCH=.105;
+  const clamp=(value,limit)=>Math.max(-limit,Math.min(limit,value));
+  let inputYaw=0,inputPitch=0;
   let dragging=false;
   let observer=null;
   function updateTheme() {
@@ -467,23 +473,24 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     return raycaster.intersectObjects(pickMeshes,false)[0]?.object.userData.id||null;
   }
   function onDown(e) {
-    if(e.target.closest?.("a"))return;
-    drag={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,moved:false};
+    if(e.target.closest?.("a")||e.button>0)return;
+    drag={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,
+      baseYaw:inputYaw,basePitch:inputPitch,moved:false};
     dragging=true;
     velocity.set(0,0);
     renderer.domElement.setPointerCapture?.(e.pointerId);
   }
   function onMove(e) {
     if(drag) {
-      const dx=e.clientX-drag.lastX,dy=e.clientY-drag.lastY;
+      const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+      const stepX=e.clientX-drag.lastX,stepY=e.clientY-drag.lastY;
       drag.lastX=e.clientX;drag.lastY=e.clientY;
-      if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>7)drag.moved=true;
-      // The user can turn the entire 3D graph freely on both axes.
-      const speed=e.pointerType==="touch"?.011:.0095;
-      rotY.setFromAxisAngle(yAxis,dx*speed);
-      rotX.setFromAxisAngle(xAxis,dy*speed);
-      targetRotation.premultiply(rotY).premultiply(rotX).normalize();
-      velocity.set(dx*speed,dy*speed);
+      if(Math.hypot(dx,dy)>7)drag.moved=true;
+      // The limits are intentionally small: the entire capability graph must
+      // remain a recognizable front-facing map even after a long pointer drag.
+      inputYaw=clamp(drag.baseYaw+dx*.0042,MAX_YAW);
+      inputPitch=clamp(drag.basePitch+dy*.0032,MAX_PITCH);
+      velocity.set(clamp(stepX*.00019,.004),clamp(stepY*.00013,.002));
       return;
     }
     if(e.pointerType==="touch")return;
@@ -507,6 +514,12 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     if(!drag)pointerTilt.set(0,0);
     renderer.domElement.style.cursor="default";
   }
+  function resetView(){
+    drag=null;dragging=false;
+    inputYaw=0;inputPitch=0;
+    pointerTilt.set(0,0);
+    velocity.set(0,0);
+  }
   stage.addEventListener("pointerdown",onDown,{passive:true});
   stage.addEventListener("pointermove",onMove,{passive:true});
   stage.addEventListener("pointerup",onUp);
@@ -528,19 +541,29 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     const delta=last?Math.min((now-last)/1000,.08):0;
     last=now;time+=delta;
     if(!dragging) {
-      // Faster continuous orbit, plus momentum from the last pointer movement.
-      rotY.setFromAxisAngle(yAxis,.23*delta+velocity.x*.56);
-      rotX.setFromAxisAngle(xAxis,velocity.y*.56);
-      targetRotation.premultiply(rotY).premultiply(rotX).normalize();
-      velocity.multiplyScalar(Math.pow(.84,delta*60));
+      // A touch of momentum, gently decaying toward the canonical front view.
+      inputYaw=clamp(inputYaw+velocity.x*delta*30,MAX_YAW);
+      inputPitch=clamp(inputPitch+velocity.y*delta*30,MAX_PITCH);
+      velocity.multiplyScalar(Math.exp(-delta*12));
+      inputYaw*=Math.exp(-delta*.44);
+      inputPitch*=Math.exp(-delta*.55);
     }
-    tiltEuler.set(-pointerTilt.y*.20,pointerTilt.x*.26,0);
-    hoverRotation.setFromEuler(tiltEuler);
-    hoverRotation.premultiply(targetRotation);
-    graph.quaternion.slerp(hoverRotation,1-Math.exp(-delta*15));
-    // The logo itself is part of the freely rotating platform graph.
-    logoGroup.rotation.y=.28+Math.sin(time*.36)*.22;
-    logoGroup.rotation.x=.08+Math.sin(time*.23)*.09;
+    const yaw=clamp(inputYaw+pointerTilt.x*.055+Math.sin(time*.48)*.025,MAX_YAW);
+    const pitch=clamp(inputPitch-pointerTilt.y*.035+Math.sin(time*.31)*.012,MAX_PITCH);
+    const responsiveness=1-Math.exp(-delta*17);
+    graph.rotation.set(
+      graph.rotation.x+(pitch-graph.rotation.x)*responsiveness,
+      graph.rotation.y+(yaw-graph.rotation.y)*responsiveness,0
+    );
+    // The glass logo moves further than the *network*, but never turns edge-on.
+    logoGroup.rotation.y=.20+Math.sin(time*.7)*.26+inputYaw*.60;
+    logoGroup.rotation.x=.055+Math.sin(time*.43)*.06+inputPitch*.38;
+    // Dev-only diagnostics let browser E2E assert that an extreme drag
+    // cannot turn the graph sideways or upside down.
+    if(window.location.hostname==="localhost"){
+      stage.dataset.graphYaw=graph.rotation.y.toFixed(3);
+      stage.dataset.graphPitch=graph.rotation.x.toFixed(3);
+    }
     for(const [i,l] of lines.entries()) {
       if(!l.packet.visible)continue;
       l.packet.position.copy(l.curve.getPoint((time*.16+i*.1)%1));
@@ -579,7 +602,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     renderer.dispose();
     renderer.domElement.remove();
   }
-  return {start,pause,destroy,setSelected,updateTheme,resize};
+  return {start,pause,destroy,setSelected,updateTheme,resize,resetView};
 }
 
 if(document.readyState==="loading"){

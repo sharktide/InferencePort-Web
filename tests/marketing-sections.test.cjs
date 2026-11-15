@@ -356,16 +356,46 @@ test("mobile keeps only one capability layer visible at a time", () => {
   assert.match(css, /\.ip-architecture-layer\[hidden\] \{display:none!important;\}/);
 });
 
-test("the platform graph freely rotates with a faster idle orbit, touch drag, and inertia", () => {
+test("graph rotation remains readable after extreme input and can reset", () => {
   const js=read("scripts/home-topology.js");
-  assert.match(js,/const targetRotation=new THREE\.Quaternion\(\)/);
-  assert.match(js,/targetRotation\.premultiply\(rotY\)\.premultiply\(rotX\)\.normalize\(\)/);
-  assert.match(js,/rotY\.setFromAxisAngle\(yAxis,\.23\*delta\+velocity\.x\*\.56\)/);
-  assert.match(js,/velocity\.multiplyScalar\(Math\.pow\(\.84,delta\*60\)\)/);
-  assert.match(js,/graph\.quaternion\.slerp\(hoverRotation,1-Math\.exp\(-delta\*15\)\)/);
-  assert.match(css,/\.ip-architecture-webgl \{touch-action:none;cursor:grab;\}/);
-  assert.doesNotMatch(js,/yaw=Math\.max\(-\.16|pitch=Math\.max\(-\.09/);
+  assert.match(js,/const MAX_YAW=\.20,MAX_PITCH=\.105/);
+  assert.match(js,/inputYaw=clamp\(drag\.baseYaw\+dx\*\.0042,MAX_YAW\)/);
+  assert.match(js,/inputPitch=clamp\(drag\.basePitch\+dy\*\.0032,MAX_PITCH\)/);
+  assert.match(js,/const yaw=clamp\(inputYaw\+pointerTilt\.x\*\.055\+Math\.sin\(time\*\.48\)\*\.025,MAX_YAW\)/);
+  assert.match(js,/graph\.rotation\.set\(/);
+  assert.match(js,/velocity\.multiplyScalar\(Math\.exp\(-delta\*12\)\)/);
+  assert.match(js,/function resetView\(\)/);
+  assert.match(js,/stage\.dataset\.graphYaw=graph\.rotation\.y\.toFixed\(3\)/);
+  assert.match(home,/data-graph-reset/);
+  assert.match(css,/\.ip-architecture:not\(\.has-webgl\) \.ip-architecture-reset \{display:none;\}/);
+  assert.doesNotMatch(js,/targetRotation\.premultiply|graph\.quaternion\.slerp/);
   assert.match(js,/logoGroup\.scale\.setScalar\(narrow\?1\.52:1\.12\)/);
+});
+
+test("product actions are real prominent buttons and deploy links resolve to its console", () => {
+  assert.equal([...home.matchAll(/class="lp-proof-link"/g)].length,10);
+  assert.match(home,/class="lp-deploy-preview-footer"[\s\S]*?<a class="lp-preview-action" href="\/console\/deploy">Deploy model/);
+  assert.match(home,/href="\/console\/deploy">Browse deployments/);
+  assert.match(home,/href="\/console\/deploy"><span>DEPLOYMENTS<\/span>/);
+  assert.doesNotMatch(home,/class="lp-deploy-preview-footer"[\s\S]*?<b>Deploy model/);
+  assert.match(css,/\.lp-proof-link,[\s\S]*?min-height:47px;padding:12px 20px/);
+  assert.match(css,/background:#ffd625;border:1px solid #ffd625/);
+  assert.match(css,/\.lp-deploy-preview-footer \.lp-preview-action/);
+  assert.match(css,/\.lp-proof-link:focus-visible/);
+});
+
+test("preview accent colors and workspace padding are intentionally differentiated", () => {
+  for (const name of ["lp-deploy-preview-status","lp-bucket-preview-symbol","lp-shield-indicator",
+    "lp-council-indicator","lp-experience-graphic-lightning","lp-experience-graphic-app"]) {
+    assert.ok(home.includes(name),"Missing purposeful preview element "+name);
+  }
+  for (const selector of [".lp-deploy-preview {",".lp-bucket-visual {",".lp-proof-interface {",
+    ".lp-council-visual {","#cli .lp-ecosystem-visual {","#lightning .lp-ecosystem-visual {",
+    "#app .lp-ecosystem-visual {"]) {
+    assert.ok(css.includes(selector),"Missing preview styling "+selector);
+  }
+  assert.match(css,/\.lp-workspace-layout > \.lp-workspace-console,[\s\S]*?padding:clamp\(32px,4vw,64px\)!important/);
+  assert.match(css,/\.lp-workspace-layout > \.lp-workspace-org \{[\s\S]*?padding-left:clamp\(35px,4vw,65px\)!important/);
 });
 
 test("featured infrastructure and developer ecosystem have readable dedicated spotlights", () => {

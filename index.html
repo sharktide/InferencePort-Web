@@ -80,6 +80,7 @@
                 <path d="M423 206H477M423 375H477" stroke="#cba548" opacity=".4"/>
               </svg>
               <div class="ip-architecture-core-caption" aria-hidden="true"><span>INFERENCEPORT</span><strong>THE UNIFIED PLATFORM</strong></div>
+              <button class="ip-architecture-reset" data-graph-reset type="button" aria-label="Reset 3D view">Reset view <span aria-hidden="true">↺</span></button>
             </div>
             <div class="ip-architecture-layer-switch" role="tablist" aria-label="Explore the platform">
               <button type="button" role="tab" id="ip-tab-models" data-graph-tab="models" aria-controls="ip-layer-models" aria-selected="true" tabindex="0">Models</button>
@@ -367,14 +368,15 @@
               <h3>Bring an open model online.</h3>
               <p>Search the deployable catalog, inspect model availability and context, then deploy to your own account or an organization. Inference stays connected to your existing API workflow.</p>
               <p class="lp-proof-footnote">$0.50 per deployment / month, plus model usage.</p>
-              <a class="lp-proof-link" href="/console">Browse deployments <span aria-hidden="true">↗</span></a>
+              <a class="lp-proof-link" href="/console/deploy">Browse deployments <span aria-hidden="true">↗</span></a>
             </div>
             <div class="lp-deploy-preview" aria-label="Illustrative deployment setup controls">
               <div class="lp-preview-heading"><strong>Set up a deployment</strong><span>Illustrative preview</span></div>
+              <div class="lp-deploy-preview-status"><span class="lp-preview-status-dot" aria-hidden="true"></span> Ready to configure <span>Cloud deployment</span></div>
               <div class="lp-deploy-preview-field"><span>Model</span><strong>Choose from the deployable catalog <i aria-hidden="true">⌄</i></strong></div>
               <div class="lp-deploy-preview-field"><span>Destination</span><strong>Personal or organization <i aria-hidden="true">⌄</i></strong></div>
               <div class="lp-deploy-preview-field"><span>Model details</span><strong>Context and availability</strong></div>
-              <div class="lp-deploy-preview-footer"><span>Deployment fee and inference usage are billed separately.</span><b>Deploy model ↗</b></div>
+              <div class="lp-deploy-preview-footer"><span>Deployment fee and inference usage are billed separately.</span><a class="lp-preview-action" href="/console/deploy">Deploy model ↗</a></div>
             </div>
           </article>
           <article class="lp-proof-compact lp-proof-compact-buckets" id="buckets">
@@ -386,6 +388,7 @@
             </div>
             <div class="lp-bucket-visual">
               <div class="lp-preview-heading"><strong>Connect your workspace</strong><span>Illustrative preview</span></div>
+              <div class="lp-bucket-preview-symbol" aria-hidden="true"><span class="lp-bucket-preview-mark">▱</span><div><strong>Your object storage</strong><small>S3-compatible access</small></div></div>
               <div class="lp-bucket-visual-row"><span>Protocol</span><strong>S3-compatible / AWS Signature V4</strong></div>
               <div class="lp-bucket-visual-row"><span>Access</span><strong>Scoped credentials</strong></div>
               <div class="lp-s3-example"><div>Connect with AWS CLI <span>Your workspace endpoint</span></div><pre><code>aws --endpoint-url "$IP_S3_ENDPOINT" \
@@ -401,7 +404,7 @@
             <a class="lp-proof-link" href="shield.html">Explore Shield <span aria-hidden="true">↗</span></a>
           </div>
           <div class="lp-shield-schema" aria-label="Shield analyze API response fields">
-            <div class="lp-shield-schema-head"><code>POST /ai-shield/analyze</code><span>Response fields</span></div>
+            <div class="lp-shield-schema-head"><code>POST /ai-shield/analyze</code><span class="lp-shield-indicator"><i aria-hidden="true"></i> Protection API</span></div>
             <dl>
               <div><dt><code>risk_score</code></dt><dd>Severity estimate</dd></div>
               <div><dt><code>confidence</code></dt><dd>Assessment confidence</dd></div>
@@ -458,7 +461,7 @@
               <a class="lp-proof-link" href="ipx.html">Explore Council MCP <span aria-hidden="true">↗</span></a>
             </div>
             <div class="lp-ecosystem-visual lp-council-visual" aria-label="Council model review workflow">
-              <div class="lp-visual-title">A multi-model review</div>
+              <div class="lp-visual-title"><span class="lp-council-indicator" aria-hidden="true">◈</span> A multi-model review</div>
               <ol>
                 <li><span class="lp-review-step">01</span><div><strong>Parallel answers</strong><span>Choose models or a preset tier</span></div></li>
                 <li><span class="lp-review-step">02</span><div><strong>Peer review</strong><span>Configure 1–3 review rounds</span></div></li>
@@ -488,7 +491,7 @@ ipx org keys create ci --monthly-limit 25</code></pre></div>
               <a class="lp-proof-link" href="lightning.html">Try Lightning <span aria-hidden="true">↗</span></a>
             </div>
             <div class="lp-ecosystem-visual lp-experience-visual">
-              <div class="lp-visual-title">In the browser</div>
+              <div class="lp-visual-title"><span class="lp-experience-graphic lp-experience-graphic-lightning" aria-hidden="true">ϟ</span> In the browser</div>
               <div class="lp-experience-list"><span>Streaming chat</span><span>Hosted models</span><span>Creative tools</span></div>
             </div>
           </article>
@@ -499,7 +502,7 @@ ipx org keys create ci --monthly-limit 25</code></pre></div>
               <a class="lp-proof-link" href="install.html">Explore the desktop app <span aria-hidden="true">↗</span></a>
             </div>
             <div class="lp-ecosystem-visual lp-experience-visual">
-              <div class="lp-visual-title">On your computer</div>
+              <div class="lp-visual-title"><span class="lp-experience-graphic lp-experience-graphic-app" aria-hidden="true">⌘</span> On your computer</div>
               <div class="lp-experience-list"><span>Ollama</span><span>Offline sessions</span><span>Optional self-hosted access</span></div>
             </div>
           </article>
@@ -513,7 +516,7 @@ ipx org keys create ci --monthly-limit 25</code></pre></div>
         <div><h2 id="lp-pricing-title">Know what each service costs.</h2><p>Model requests, hosted infrastructure and chat subscriptions are different products. Costs are tracked by service instead of blended into one vague usage total.</p><a href="pricing.html" class="lp-standalone-link">View all pricing ↗</a></div>
         <div class="lp-pricing-rows">
           <a href="marketplace.html"><span>MODEL API</span><div><strong>Model-specific usage</strong><small>Pay-to-Go credit wallet, model rates and per-request metering.</small></div><b aria-hidden="true">↗</b></a>
-          <a href="/console"><span>DEPLOYMENTS</span><div><strong>Deployment fee + usage</strong><small>Monthly deployment charge with separate inference costs.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="/console/deploy"><span>DEPLOYMENTS</span><div><strong>Deployment fee + usage</strong><small>Monthly deployment charge with separate inference costs.</small></div><b aria-hidden="true">↗</b></a>
           <a href="https://docs.inferenceport.ai/api/buckets.html"><span>BUCKETS</span><div><strong>Storage, requests &amp; transfer</strong><small>Usage-based S3-compatible storage, tracked separately from API spend.</small></div><b aria-hidden="true">↗</b></a>
           <a href="pricing.html"><span>CHAT &amp; TEAMS</span><div><strong>Distinct plans</strong><small>Hosted chat subscriptions and organization tiers; local inference on your hardware.</small></div><b aria-hidden="true">↗</b></a>
         </div>
