@@ -78,7 +78,7 @@ test("homepage has intentional layout variation and responsive themes", () => {
   assert.match(home, /class="lp-proof-shield"/);
   assert.match(home, /class="lp-workspace-layout"/);
   assert.match(home, /class="lp-org-spec"/);
-  assert.match(home, /class="lp-shield-schema"/);
+  assert.match(home, /class="lp-shield-schema lp-shield-demo"/);
   assert.equal([...home.matchAll(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)].length,4);
   assert.doesNotMatch(home, /class="checks"|class="pgrid"|class="pc c-/);
   assert.match(home, /href="styles\/shared\.css"/);
@@ -425,7 +425,7 @@ test("product spotlights restore main-site capability depth without a wall of ca
     const at=home.indexOf('id="'+id+'"');
     assert.ok(at>0,"Missing product area "+id);
     assert.match(home.slice(at,at+3200),
-      /class="lp-feature-points(?: lp-feature-points--inverse)?"/,
+      /class="lp-feature-points(?: lp-feature-points--inverse| lp-feature-points-shield)?"/,
       "Product section lacks useful capabilities: "+id);
   }
   assert.equal((home.match(/class="lp-feature-points/g)||[]).length,details.length+1);
