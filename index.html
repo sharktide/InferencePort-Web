@@ -41,6 +41,7 @@
   <a class="lp-skip" href="#main-content">Skip to content</a>
   <ip-navbar active="home"></ip-navbar>
   <main class="lp" id="main-content">
+    <div class="lp-weather" id="lp-weather" aria-hidden="true" data-phase="cloud"></div>
     <!-- Strong hierarchy, useful sample code and a deliberately compact product story. -->
     <section class="lp-hero" aria-labelledby="lp-title">
       <div class="lp-wrap">
@@ -79,7 +80,6 @@
                 </g>
                 <path d="M423 206H477M423 375H477" stroke="#cba548" opacity=".4"/>
               </svg>
-              <div class="ip-architecture-core-caption" aria-hidden="true"><span>INFERENCEPORT</span><strong>THE UNIFIED PLATFORM</strong></div>
               <button class="ip-architecture-reset" data-graph-reset type="button" aria-label="Reset 3D view">Reset view <span aria-hidden="true">↺</span></button>
             </div>
             <div class="ip-architecture-layer-switch" role="tablist" aria-label="Explore the platform">
@@ -398,7 +398,7 @@
               <ul class="lp-feature-points"><li><strong>Bring familiar clients.</strong> Use AWS CLI or compatible SDKs with your workspace endpoint.</li>
                 <li><strong>Scope credentials.</strong> Issue scoped, revocable SigV4 credentials and limit access by bucket, permission or object prefix.</li>
                 <li><strong>Track storage separately.</strong> Monitor requests, transfer and storage charges rather than mixing them into model spend.</li></ul>
-              <div class="lp-proof-links"><a class="lp-proof-link" href="/console/buckets">Open Buckets <span aria-hidden="true">↗</span></a><a href="https://docs.inferenceport.ai/api/buckets.html">Connection guide ↗</a></div>
+              <div class="lp-proof-links"><a class="lp-proof-link" href="/console/buckets">Open Buckets <span aria-hidden="true">↗</span></a><a href="https://docs.inferenceport.ai/en/latest/api/buckets.html">Connection guide ↗</a></div>
             </div>
             <div class="lp-bucket-visual">
               <div class="lp-preview-heading"><strong>Connect your workspace</strong><span>Illustrative preview</span></div>
@@ -598,7 +598,7 @@
         <div class="lp-pricing-rows">
           <a href="marketplace.html"><span>MODEL API</span><div><strong>Model-specific usage</strong><small>Pay-to-Go credit wallet, model rates and per-request metering.</small></div><b aria-hidden="true">↗</b></a>
           <a href="/console/deploy"><span>DEPLOYMENTS</span><div><strong>Deployment fee + usage</strong><small>Monthly deployment charge with separate inference costs.</small></div><b aria-hidden="true">↗</b></a>
-          <a href="https://docs.inferenceport.ai/api/buckets.html"><span>BUCKETS</span><div><strong>Storage, requests &amp; transfer</strong><small>Usage-based S3-compatible storage, tracked separately from API spend.</small></div><b aria-hidden="true">↗</b></a>
+          <a href="https://docs.inferenceport.ai/en/latest/api/buckets.html"><span>BUCKETS</span><div><strong>Storage, requests &amp; transfer</strong><small>Usage-based S3-compatible storage, tracked separately from API spend.</small></div><b aria-hidden="true">↗</b></a>
           <a href="pricing.html"><span>CHAT &amp; TEAMS</span><div><strong>Distinct plans</strong><small>Hosted chat subscriptions and organization tiers; local inference on your hardware.</small></div><b aria-hidden="true">↗</b></a>
         </div>
       </div>
@@ -646,5 +646,6 @@
   })();
   </script>
   <script type="module" src="scripts/home-topology.js"></script>
+  <script defer src="scripts/home-weather.js"></script>
 </body>
 </html>

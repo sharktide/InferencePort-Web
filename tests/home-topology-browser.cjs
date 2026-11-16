@@ -209,6 +209,71 @@ async function checkScene(page,name) {
 
 }
 
+
+async function checkWeather(browser) {
+  const context=await browser.newContext({
+    viewport:{width:1728,height:900},
+    deviceScaleFactor:1,
+    reducedMotion:"no-preference"
+  });
+  try {
+    const page=await context.newPage();
+    const errors=[];
+    page.on("pageerror",error=>errors.push(String(error)));
+    await page.goto(BASE+"/",{waitUntil:"domcontentloaded"});
+    await page.waitForFunction(()=>document.querySelector("#lp-weather")?.children.length===2);
+    const weather=page.locator("#lp-weather");
+    assert.equal(await weather.getAttribute("aria-hidden"),"true");
+    assert.equal(await weather.locator(".lp-weather-rail").count(),2);
+    assert.equal(await weather.evaluate(el=>getComputedStyle(el).pointerEvents),"none");
+    assert.ok(await weather.isVisible(),"Wide-screen clouds should render");
+    const quickstart=await page.locator(".lp-hero-demo-intro .lp-feature-points li").first().evaluate(el=>{
+      const rgb=s=>[...s.matchAll(/[\d.]+/g)].slice(0,3).map(m=>Number(m[0])/255);
+      const lum=s=>rgb(s).map(v=>v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4))
+        .reduce((total,v,i)=>total+v*[.2126,.7152,.0722][i],0);
+      const text=lum(getComputedStyle(el).color);
+      const bg=lum(getComputedStyle(document.querySelector(".lp-hero")).backgroundColor);
+      return {contrast:(Math.max(text,bg)+.05)/(Math.min(text,bg)+.05),
+        color:getComputedStyle(el).color};
+    });
+    assert.ok(quickstart.contrast>=4.5,
+      "Light-mode API quickstart text lacks contrast "+JSON.stringify(quickstart));
+    await page.screenshot({path:path.join(screenshots,"wide-weather-cloud.png")});
+    const progress=[];
+    for(const [id,phase] of [["buckets","rain"],["shield","charged"],["lightning","electric"]]){
+      await page.locator("#"+id).evaluate(el=>{
+        window.scrollTo(0,window.scrollY+el.getBoundingClientRect().top-window.innerHeight*.32);
+      });
+      await page.waitForFunction(expected=>document.querySelector("#lp-weather")?.dataset.phase===expected,
+        phase,{timeout:6000});
+      progress.push({id,phase});
+      await page.screenshot({path:path.join(screenshots,"wide-weather-"+phase+".png")});
+    }
+    assert.equal(progress.length,3);
+    const overflow=await page.evaluate(()=>({
+      page:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth
+    }));
+    assert.ok(overflow.page<=overflow.viewport+2,"Atmosphere created sideways scroll "+JSON.stringify(overflow));
+    await page.setViewportSize({width:1350,height:900});
+    await page.waitForFunction(()=>document.querySelector("#lp-weather")?.children.length===0);
+    assert.equal(await weather.isVisible(),false,"Atmosphere must not overlap content on small screens");
+    assert.deepEqual(errors,[],"Weather layer page errors");
+  }finally{await context.close();}
+
+  const still=await browser.newContext({
+    viewport:{width:1728,height:900},reducedMotion:"reduce"
+  });
+  try{
+    const page=await still.newPage();
+    await page.goto(BASE+"/",{waitUntil:"domcontentloaded"});
+    const result=await page.locator("#lp-weather").evaluate(el=>({
+      children:el.children.length,visible:getComputedStyle(el).display
+    }));
+    assert.equal(result.children,0,"Reduced-motion preference should allocate no weather art");
+    assert.equal(result.visible,"none");
+  }finally{await still.close();}
+}
+
 (async()=>{
   const browser=await chromium.launch({
     headless:true,
@@ -225,6 +290,7 @@ async function checkScene(page,name) {
     const desktopPage=await desktop.newPage();
     await checkScene(desktopPage,"desktop");
     await desktop.close();
+    await checkWeather(browser);
 
     const mobile=await browser.newContext({
       ...devices["iPhone 13"],

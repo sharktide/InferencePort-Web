@@ -58,7 +58,7 @@ test("product sections link to usable next steps", () => {
     'href="/console/agents"', 'href="/console/buckets"', 'href="shield.html"',
     'href="ipx.html"', 'href="lightning.html"', 'href="install.html"',
     'href="platform.html#organizations"', 'href="marketplace.html"',
-    'href="https://docs.inferenceport.ai/api/buckets.html"',
+    'href="https://docs.inferenceport.ai/en/latest/api/buckets.html"',
   ]) assert.ok(home.includes(fragment), "Missing product entry point: " + fragment);
   for (const phrase of [
     "Managed agents", "MCP tools", "S3-compatible", "PREVIEW", "Security",
@@ -503,4 +503,34 @@ test("technical demos present meaningful workflows without fake live claims or r
   assert.match(css,/#council \.lp-ecosystem-visual,/);
   assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?padding:clamp\(55px,6\.2vw,88px\) 0;/);
   assert.match(css,/\.lp-desktop-visual \.lp-desktop-window img \{[\s\S]*?max-height:none/);
+});
+
+
+test("bucket docs URLs, logo caption and light quickstart contrast stay correct", () => {
+  const correct="https://docs.inferenceport.ai/en/latest/api/buckets.html";
+  assert.equal(home.split('href="'+correct+'"').length-1,2,
+    "Both bucket documentation references must point to the current docs path");
+  assert.doesNotMatch(home,/docs\.inferenceport\.ai\/api\/buckets\.html/);
+  assert.doesNotMatch(home,/ip-architecture-core-caption|THE UNIFIED PLATFORM/);
+  assert.match(css,/:root:not\(\[data-theme="dark"\]\) \.lp-hero-demo-intro > \.lp-feature-points li \{[\s\S]*?color:#455365/);
+  assert.match(css,/:root:not\(\[data-theme="dark"\]\) \.lp-hero-demo-intro > \.lp-feature-points strong \{[\s\S]*?color:#111a28/);
+});
+
+test("wide-screen atmospheric margins are branded, scroll-linked and safely optional", () => {
+  const weather=read("scripts/home-weather.js");
+  assert.match(home,/<div class="lp-weather" id="lp-weather" aria-hidden="true" data-phase="cloud"><\/div>/);
+  assert.match(home,/<script defer src="scripts\/home-weather\.js"><\/script>/);
+  assert.match(weather,/window\.matchMedia\("\(min-width: 1480px\)"\)/);
+  assert.match(weather,/window\.matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
+  assert.match(weather,/desktop\.matches && !reduced\.matches/);
+  assert.match(weather,/window\.addEventListener\("scroll", schedule, \{ passive: true \}\)/);
+  assert.match(weather,/window\.requestAnimationFrame\(draw\)/);
+  assert.match(weather,/id: "buckets", phase: "rain"/);
+  assert.match(weather,/id: "shield", phase: "charged"/);
+  assert.match(weather,/id: "lightning", phase: "electric"/);
+  assert.match(weather,/root\.replaceChildren\(\)/);
+  assert.match(css,/\.lp-weather \{[\s\S]*?pointer-events:none/);
+  assert.match(css,/\.lp-weather-scene \{[\s\S]*?perspective:640px/);
+  assert.match(css,/@media \(max-width:1479px\), \(prefers-reduced-motion:reduce\) \{/);
+  assert.doesNotMatch(weather,/setInterval|setTimeout|fetch\(|new WebGLRenderer|THREE/);
 });
