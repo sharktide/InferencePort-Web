@@ -386,7 +386,7 @@ test("product actions are real prominent buttons and deploy links resolve to its
 
 test("preview accent colors and workspace padding are intentionally differentiated", () => {
   for (const name of ["lp-deploy-preview-status","lp-bucket-preview-symbol","lp-shield-indicator",
-    "lp-council-indicator","lp-experience-graphic-lightning","lp-experience-graphic-app"]) {
+    "lp-council-indicator","lp-lightning-workspace","lp-desktop-window"]) {
     assert.ok(home.includes(name),"Missing purposeful preview element "+name);
   }
   for (const selector of [".lp-deploy-preview {",".lp-bucket-visual {",".lp-proof-interface {",
@@ -467,4 +467,40 @@ test("restored detail keeps working CTAs, API tabs and semantic structure", () =
   assert.match(home,/href="\/console\/agents">Configure an agent/);
   assert.equal((home.match(/data-example-tab=/g)||[]).length,3);
   assert.equal((home.match(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)||[]).length,4);
+});
+
+
+test("Shield retains original protection scope and shows a concrete example response", () => {
+  const shield=home.slice(home.indexOf('<article class="lp-proof-shield"'),home.indexOf("</article>",home.indexOf('<article class="lp-proof-shield"')));
+  for(const expected of ["Sign-up and trial abuse","Identity and account risk","Content moderation",
+    "Prompt and agent protection","Actionable decisions","Disposable email indicators",
+    "risk_score","confidence","decision","reasons","Rate limit","Illustrative only"]) {
+    assert.ok(shield.includes(expected),"Missing Shield product explanation: "+expected);
+  }
+  assert.match(shield,/class="lp-shield-json"/);
+  assert.match(shield,/class="lp-shield-demo-input"/);
+  assert.match(css,/\.lp-shield-json \{/);
+  assert.doesNotMatch(shield,/class="lp-shield-schema" aria-label="Shield analyze API response fields"/);
+});
+
+test("Lightning is clearly a browser chat product separate from the API", () => {
+  const light=home.slice(home.indexOf('id="lightning"'),home.indexOf('</article>',home.indexOf('id="lightning"')));
+  assert.match(light,/Lightning: chat and create in your browser/);
+  assert.match(light,/not the hosted model API/);
+  assert.match(light,/href="#api">Pay-to-Go model API/);
+  assert.match(light,/href="chat\/">Try Lightning chat/);
+  assert.match(light,/class="lp-lightning-workspace"/);
+  assert.match(light,/class="lp-lightning-conversation"/);
+  assert.doesNotMatch(light,/Hosted AI, ready when you are/);
+});
+
+test("technical demos present meaningful workflows without fake live claims or redundant gradient frames", () => {
+  for(const term of ["lp-council-voices","lp-council-review-stages","lp-council-synthesis",
+    "lp-cli-step-label","lp-cli-terminal-body","lp-shield-json",
+    "lp-lightning-compose","Actual app screenshot"]) {
+    assert.ok(home.includes(term),"Missing purposeful product preview: "+term);
+  }
+  assert.match(css,/#council \.lp-ecosystem-visual,/);
+  assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?padding:clamp\(55px,6\.2vw,88px\) 0;/);
+  assert.match(css,/\.lp-desktop-visual \.lp-desktop-window img \{[\s\S]*?max-height:none/);
 });

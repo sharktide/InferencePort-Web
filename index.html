@@ -419,22 +419,36 @@
         <article class="lp-proof-shield" id="shield">
           <div>
             <span class="lp-proof-kicker">AI Shield</span>
-            <h3>Know what to trust—in one security API.</h3>
-            <p>Send the signals you already have from a sign-up, login, message or AI request. Shield analyzes risk and returns structured confidence, reasons and recommended actions, without assembling separate rule engines.</p>
-            <ul class="lp-feature-points"><li><strong>Protect sign-ups.</strong> Detect bots, fake accounts, trial farming and linked-account abuse.</li>
-                <li><strong>Protect content and agents.</strong> Check spam, scams, prompt injection and suspicious tool use.</li>
-                <li><strong>Act on the result.</strong> Use risk signals to allow, challenge, review or block.</li></ul>
+            <h3>Protect your platform from fraud and AI abuse.</h3>
+            <p>Shield brings account-risk analysis, content checks and AI-specific protections into one API. Supply the signals you have—such as an IP address, email, device or text—and receive a structured assessment with reasons your application can act on.</p>
+            <ul class="lp-feature-points lp-feature-points-shield"><li><strong>Sign-up and trial abuse.</strong> Detect bots, disposable identities, fake accounts and referral farming.</li>
+                <li><strong>Identity and account risk.</strong> Investigate linked accounts, duplicates and suspected ban evasion.</li>
+                <li><strong>Content moderation.</strong> Check spam, scams and potentially malicious messages.</li>
+                <li><strong>Prompt and agent protection.</strong> Analyze prompt injection, jailbreak attempts and risky tool interactions.</li>
+                <li><strong>Actionable decisions.</strong> Use risk scores, confidence and reasons to allow, challenge, review, rate-limit or block.</li></ul>
             <a class="lp-proof-link" href="shield.html">Explore Shield <span aria-hidden="true">↗</span></a>
           </div>
-          <div class="lp-shield-schema" aria-label="Shield analyze API response fields">
-            <div class="lp-shield-schema-head"><code>POST /ai-shield/analyze</code><span class="lp-shield-indicator"><i aria-hidden="true"></i> Response fields</span></div>
-            <dl>
-              <div><dt><code>risk_score</code></dt><dd>Severity estimate</dd></div>
-              <div><dt><code>confidence</code></dt><dd>Assessment confidence</dd></div>
-              <div><dt><code>decision</code></dt><dd>Recommended action</dd></div>
-              <div><dt><code>reasons</code></dt><dd>Explanation signals</dd></div>
-            </dl>
-            <div class="lp-shield-actions" aria-label="Possible security actions"><span>Allow</span><span>Challenge</span><span>Review</span><span>Block</span></div>
+          <div class="lp-shield-schema lp-shield-demo" aria-label="Illustrative Shield API request and response">
+            <div class="lp-shield-schema-head"><code>POST /ai-shield/analyze</code><span class="lp-shield-indicator"><i aria-hidden="true"></i> Example response</span></div>
+            <div class="lp-shield-demo-input">
+              <span>Signals supplied by your application</span>
+              <div><code>email</code><code>ip</code><code>device</code><code>content</code></div>
+            </div>
+            <div class="lp-shield-example-head"><strong>Structured assessment</strong><small>Illustrative only · Response fields</small></div>
+            <pre class="lp-shield-json"><code>{
+  <span class="lp-json-key">"risk_score"</span>: <span class="lp-json-num">91</span>,
+  <span class="lp-json-key">"confidence"</span>: <span class="lp-json-num">0.97</span>,
+  <span class="lp-json-key">"decision"</span>: <span class="lp-json-danger">"block"</span>,
+  <span class="lp-json-key">"reasons"</span>: [
+    <span class="lp-json-string">"Disposable email indicators"</span>,
+    <span class="lp-json-string">"Device associated with prior abuse"</span>
+  ]
+}</code></pre>
+            <div class="lp-shield-demo-outcome">
+              <div><span>Recommended action</span><strong>Block · Review the reasons</strong></div>
+              <p>Use structured signals to drive the next step in your sign-up, request or moderation flow.</p>
+            </div>
+            <div class="lp-shield-actions" aria-label="Possible security actions"><span>Allow</span><span>Challenge</span><span>Review</span><span>Rate limit</span><span class="lp-shield-actions-selected">Block</span></div>
           </div>
         </article>
       </div>
@@ -477,7 +491,7 @@
 
     <section class="lp-section lp-more" aria-labelledby="lp-more-title">
       <div class="lp-wrap">
-        <div class="lp-more-head"><h2 id="lp-more-title">The right tools for how you build.</h2><p>Use a multi-model review workflow, automate from the terminal, or work in chat. Each fits into the same platform.</p></div>
+        <div class="lp-more-head"><h2 id="lp-more-title">Use InferencePort your way.</h2><p>Review with Council, automate using ipx, chat in the browser or run local models. Different interfaces, connected workflows.</p></div>
         <div class="lp-ecosystem-stack">
           <article class="lp-ecosystem-spotlight" id="council">
             <div class="lp-ecosystem-copy">
@@ -488,52 +502,72 @@
               <li><strong>OAuth or API key.</strong> Authenticate securely; usage and review fees follow your workspace billing policies.</li></ul>
               <a class="lp-proof-link" href="ipx.html">Explore Council MCP <span aria-hidden="true">↗</span></a>
             </div>
-            <div class="lp-ecosystem-visual lp-council-visual" aria-label="Council model review workflow">
-              <div class="lp-visual-title"><span class="lp-council-indicator" aria-hidden="true">◈</span> Council · MCP tool</div>
+            <div class="lp-ecosystem-visual lp-council-visual" aria-label="Illustrative Council MCP review flow">
+              <div class="lp-council-toolbar"><span class="lp-council-toolname"><span class="lp-council-indicator" aria-hidden="true">◈</span> council_reason</span><span>MCP tool · Example</span></div>
               <div class="lp-council-request"><span>Your assistant asks</span><strong>“Is this migration safe?”</strong></div>
-              <ol>
-                <li><span class="lp-review-step">01</span><div><strong>Parallel answers</strong><span>Choose models or a preset tier</span></div></li>
-                <li><span class="lp-review-step">02</span><div><strong>Peer review</strong><span>Configure 1–3 review rounds</span></div></li>
-                <li><span class="lp-review-step">03</span><div><strong>Synthesis</strong><span>Combine findings into a final result</span></div></li>
-              </ol>
-              <div class="lp-council-command"><code>claude mcp add --transport http council …</code></div>
-              <p>Example request and workflow · Usage plus council surcharge</p>
+              <div class="lp-council-review-stages" aria-label="Three-stage model review">
+                <div class="lp-council-stage-heading"><b>01</b><strong>Independent answers</strong><span>Parallel</span></div>
+                <div class="lp-council-voices">
+                  <div><span>Model A</span><p>Check compatibility and test coverage</p></div>
+                  <div><span>Model B</span><p>Review rollout and rollback options</p></div>
+                  <div><span>Model C</span><p>Look for operational and security risks</p></div>
+                </div>
+                <div class="lp-council-stage-heading"><b>02</b><strong>Cross-review</strong><span>1–3 rounds</span></div>
+                <div class="lp-council-review-note">The models critique each other’s answers and identify disagreements.</div>
+                <div class="lp-council-stage-heading"><b>03</b><strong>Judge synthesis</strong><span>One answer</span></div>
+                <div class="lp-council-synthesis"><span aria-hidden="true">◆</span> A consolidated answer, with competing perspectives considered.</div>
+              </div>
+              <div class="lp-council-command"><code>council_reason · callable from your MCP client</code></div>
             </div>
           </article>
           <article class="lp-ecosystem-spotlight lp-ecosystem-spotlight--reverse" id="cli">
             <div class="lp-ecosystem-copy">
-              <h3>The whole platform, scriptable.</h3>
+              <h3>From your terminal to the full platform.</h3>
               <p>Run InferencePort from your terminal, servers or CI. The ipx CLI connects model generation, organizations, agents, deployments, Buckets and Shield into repeatable developer workflows.</p>
               <ul class="lp-feature-points"><li><strong>Automate real workflows.</strong> Manage keys, agents, storage and protection without clicking through the console.</li>
               <li><strong>Made for CI.</strong> JSON output, stdin support and meaningful exit codes make scripts composable.</li>
               <li><strong>Use your favorite installer.</strong> Install through npm, pip, Cargo or a prebuilt binary.</li></ul>
               <a class="lp-proof-link" href="ipx.html">Explore ipx <span aria-hidden="true">↗</span></a>
             </div>
-            <div class="lp-ecosystem-visual">
-              <div class="lp-cli-terminal" aria-label="Example CLI commands"><div>terminal · ipx</div><pre><code>npm install -g @inferenceport-ai/ipx
-
-ipx auth login
-ipx org keys create ci --monthly-limit 25
-ipx agent chat acme-bot/support
-git diff | ipx shield scan --fail-on review</code></pre></div>
-              <p class="lp-visual-footnote">Examples from the current platform CLI · Connect once, automate across services.</p>
+            <div class="lp-ecosystem-visual lp-cli-visual">
+              <div class="lp-cli-terminal" aria-label="Example ipx CLI commands">
+                <div class="lp-cli-terminal-top"><span class="lp-cli-window-dots" aria-hidden="true"><i></i><i></i><i></i></span><strong>ipx · terminal</strong><span>Example commands</span></div>
+                <div class="lp-cli-terminal-body">
+                  <div class="lp-cli-step-label">Install and connect</div>
+                  <pre><code><span class="lp-cli-prompt">$</span> npm install -g @inferenceport-ai/ipx
+<span class="lp-cli-prompt">$</span> ipx auth login</code></pre>
+                  <div class="lp-cli-step-label">Automate your workspace</div>
+                  <pre><code><span class="lp-cli-prompt">$</span> ipx org keys create ci --monthly-limit 25
+<span class="lp-cli-prompt">$</span> ipx agent chat acme-bot/support</code></pre>
+                  <div class="lp-cli-step-label">Security in CI</div>
+                  <pre><code><span class="lp-cli-prompt">$</span> git diff | ipx shield scan --fail-on review</code></pre>
+                </div>
+                <div class="lp-cli-terminal-foot"><span>API keys</span><span>Agents</span><span>Shield</span><span>Organizations</span></div>
+              </div>
             </div>
           </article>
           <article class="lp-ecosystem-spotlight" id="lightning">
             <div class="lp-ecosystem-copy">
-              <h3>Hosted AI, ready when you are.</h3>
-              <p>Lightning is InferencePort’s hosted model family for chat and creative work. Open it in your browser or desktop app—no servers to configure and nothing to install for browser access.</p>
-              <ul class="lp-feature-points"><li><strong>Lightning Text v2.</strong> Streaming answers for writing, code and everyday conversations.</li>
-              <li><strong>Lightning Image Turbo.</strong> Generate images alongside the rest of your creative tools.</li>
-              <li><strong>Start free, then grow.</strong> Try chat without a credit card; paid plans expand creative usage limits.</li></ul>
+              <h3>Lightning: chat and create in your browser.</h3>
+              <p>Lightning is the ready-to-use chat experience—not the hosted model API. Talk to Lightning models, generate images and pick up conversations from your browser or desktop app, without configuring a developer environment.</p>
+              <ul class="lp-feature-points"><li><strong>Text and code.</strong> Use Lightning Text v2 for streaming answers, writing and development help.</li>
+              <li><strong>Creative tools.</strong> Generate images with Lightning Image Turbo and access supported media tools.</li>
+              <li><strong>One chat workspace.</strong> Start free, save conversations when signed in and upgrade for higher chat limits.</li></ul>
+              <p class="lp-product-distinction"><strong>Building an app?</strong> Use the separate <a href="#api">Pay-to-Go model API</a> for programmatic requests and usage-based billing.</p>
               <div class="lp-feature-ctas"><a class="lp-proof-link" href="chat/">Try Lightning chat <span aria-hidden="true">↗</span></a><a class="lp-feature-more" href="lightning.html">About Lightning ↗</a></div>
             </div>
-            <div class="lp-ecosystem-visual lp-experience-visual lp-lightning-preview" aria-label="Illustrative Lightning chat interface">
-              <div class="lp-visual-title"><span class="lp-experience-graphic lp-experience-graphic-lightning" aria-hidden="true">ϟ</span> Lightning chat <small>Illustrative preview</small></div>
-              <div class="lp-lightning-model-bar"><span class="lp-lightning-live-dot" aria-hidden="true"></span><strong>Lightning Text v2</strong><span>Hosted · streaming</span></div>
-              <div class="lp-lightning-message lp-lightning-message--user">Help me plan the next feature release.</div>
-              <div class="lp-lightning-message lp-lightning-message--assistant"><strong>Lightning</strong><p>Start with the goal, then break the work into milestones and testable tasks.</p><span class="lp-lightning-caret" aria-hidden="true"></span></div>
-              <div class="lp-lightning-tools"><span>Text &amp; code</span><span>Images</span><span>Creative tools</span></div>
+            <div class="lp-ecosystem-visual lp-experience-visual lp-lightning-preview" aria-label="Illustrative Lightning browser chat workspace">
+              <div class="lp-lightning-appbar"><span class="lp-lightning-appmark" aria-hidden="true">ϟ</span><strong>Lightning chat</strong><span>Example interface</span></div>
+              <div class="lp-lightning-workspace">
+                <aside class="lp-lightning-sidebar" aria-label="Example chat sidebar"><strong>Chats</strong><span class="lp-lightning-sidebar-active">API debugging</span><span>Writing notes</span><span>Image ideas</span></aside>
+                <div class="lp-lightning-conversation">
+                  <div class="lp-lightning-model-bar"><span class="lp-lightning-live-dot" aria-hidden="true"></span><strong>Lightning Text v2</strong><span>Streaming chat</span></div>
+                  <div class="lp-lightning-message lp-lightning-message--user">Help me debug an API request.</div>
+                  <div class="lp-lightning-message lp-lightning-message--assistant"><strong>Lightning</strong><p>Start by checking the endpoint, authorization header and model ID. Then inspect the response status and error body.</p></div>
+                  <div class="lp-lightning-compose"><span>Ask anything...</span><b aria-hidden="true">↗</b></div>
+                </div>
+              </div>
+              <div class="lp-lightning-tools"><span>Chat</span><span>Images</span><span>Creative tools</span><small>Illustrative layout</small></div>
             </div>
           </article>
           <article class="lp-ecosystem-spotlight lp-ecosystem-spotlight--reverse" id="app">
@@ -546,11 +580,10 @@ git diff | ipx shield scan --fail-on review</code></pre></div>
               <div class="lp-feature-ctas"><a class="lp-proof-link" href="install.html#install">Download the desktop app <span aria-hidden="true">↗</span></a><a class="lp-feature-more" href="install.html">Explore the app ↗</a></div>
             </div>
             <div class="lp-ecosystem-visual lp-experience-visual lp-desktop-visual">
-              <div class="lp-visual-title"><span class="lp-experience-graphic lp-experience-graphic-app" aria-hidden="true">⌘</span> Local AI workspace</div>
               <figure class="lp-desktop-window">
-                <div class="lp-desktop-window-bar"><span aria-hidden="true"><i></i><i></i><i></i></span> Desktop app · local model</div>
-                <img src="img/examples/cucumber.png" alt="InferencePort desktop app showing an example local AI chat session" loading="lazy" />
-                <figcaption>Local sessions · Ollama models · Optional self-hosted access</figcaption>
+                <div class="lp-desktop-window-bar"><span class="lp-cli-window-dots" aria-hidden="true"><i></i><i></i><i></i></span><strong>InferencePort Desktop</strong><span>Actual app screenshot</span></div>
+                <img src="img/examples/cucumber.png" alt="Actual InferencePort desktop app showing a local AI chat session" loading="lazy" />
+                <figcaption>Local chat · Sessions · Ollama models · Optional self-hosted access</figcaption>
               </figure>
             </div>
           </article>

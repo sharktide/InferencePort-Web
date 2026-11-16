@@ -153,7 +153,7 @@ async function checkScene(page,name) {
   for(const id of richSections){
     const element=page.locator('[id="'+id+'"] .lp-feature-points').first();
     assert.equal(await element.count(),1,name+" missing rich feature descriptions for "+id);
-    assert.equal(await element.locator("li").count(),3,name+" should feature three useful proof points for "+id);
+    assert.equal(await element.locator("li").count(),id==="shield"?5:3,name+" should show specific feature detail for "+id);
   }
   const desktopImage=page.locator(".lp-desktop-window img");
   await desktopImage.scrollIntoViewIfNeeded();
@@ -166,6 +166,27 @@ async function checkScene(page,name) {
   await page.locator("#app").screenshot({
     path:path.join(screenshots,name+"-desktop-product-detail.png")
   });
+  // Every illustrative demo should convey a specific product workflow, not
+  // repeated feature chips on generic gradient cards.
+  const productPreviews=[
+    ["shield",".lp-shield-demo",".lp-shield-json"],
+    ["council",".lp-council-visual",".lp-council-voices"],
+    ["cli",".lp-cli-visual",".lp-cli-terminal-body"],
+    ["lightning",".lp-lightning-preview",".lp-lightning-conversation"],
+    ["app",".lp-desktop-visual",".lp-desktop-window img"]
+  ];
+  for(const [product,container,content] of productPreviews){
+    assert.equal(await page.locator("#"+product+" "+container).count(),1,
+      name+" missing "+product+" product interface");
+    assert.ok(await page.locator("#"+product+" "+content).isVisible(),
+      name+" missing visible "+product+" workflow");
+    await page.locator("#"+product).screenshot({
+      path:path.join(screenshots,name+"-"+product+"-proof.png")
+    });
+  }
+  assert.match(await page.locator("#lightning h3").innerText(),/Lightning: chat and create/);
+  assert.ok(await page.locator("#shield .lp-feature-points li").count()>=5);
+
 
   // Geometry is not allowed to produce horizontal page overflow.
   const measurements=await page.evaluate(()=>({

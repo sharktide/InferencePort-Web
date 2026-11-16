@@ -1513,3 +1513,325 @@
 .lp-feature-more {display:inline-flex;align-items:center;min-height:42px;padding:8px 0;color:var(--ink);font-size:.84rem;font-weight:680;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:5px;}
 .lp-feature-more:hover {color:var(--brand-ink);}
 .lp-feature-more:focus-visible {outline:2px solid var(--gold);outline-offset:3px;}
+
+
+/* Product demo refinement: interfaces rather than ambient-gradient demo tiles.
+   The UI examples use real service concepts but are explicitly illustrative. */
+.lp-ecosystem-spotlight {
+  gap:clamp(42px,6.3vw,105px);
+  padding:clamp(55px,6.2vw,88px) 0;
+}
+.lp-ecosystem-copy {max-width:590px;}
+.lp-ecosystem-copy p {max-width:570px;}
+.lp-proof-shield {
+  gap:clamp(32px,4.5vw,85px);
+  grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr);
+  padding:clamp(55px,6vw,86px) 0;
+}
+.lp-proof-shield > div:first-child {min-width:0;}
+.lp-proof-shield > div:first-child > p {max-width:570px;}
+.lp-proof-shield .lp-feature-points-shield {gap:12px;margin:23px 0 27px;max-width:590px;}
+.lp-proof-shield .lp-feature-points-shield li {line-height:1.54;}
+/* Compact dark security response card: example values, not fictitious usage. */
+.lp-shield-demo {
+  overflow:hidden;
+  background:#121b2b;
+  border:1px solid #3a5269;
+  border-top:3px solid #54c6a3;
+  border-radius:9px;
+  box-shadow:none;
+  color:#d8e5f0;
+}
+.lp-shield-demo .lp-shield-schema-head {
+  background:#1c3040;
+  padding:18px 20px;
+  border-bottom:1px solid #314e60;
+  color:#e8f5f5;
+}
+.lp-shield-demo .lp-shield-schema-head code {color:#e4f4f6;font-size:.8rem;}
+.lp-shield-demo-input {padding:17px 20px 14px;border-bottom:1px solid #2a4054;}
+.lp-shield-demo-input > span {display:block;margin-bottom:12px;color:#adbfce;font-size:.79rem;font-weight:600;}
+.lp-shield-demo-input > div {display:flex;flex-wrap:wrap;gap:8px;}
+.lp-shield-demo-input code {
+  padding:6px 9px;
+  border:1px solid #41606e;
+  border-radius:4px;
+  color:#b7d8df;
+  background:#1a3040;
+  font:650 .75rem/1.4 var(--mono);
+}
+.lp-shield-example-head {display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:19px 20px 8px;}
+.lp-shield-example-head strong {font-size:.85rem;color:#e9f5fc;}
+.lp-shield-example-head small {color:#9eb5c9;font-size:.72rem;}
+.lp-shield-json {
+  margin:0;padding:10px 20px 19px;
+  background:transparent;
+  font:.81rem/1.85 var(--mono);
+  letter-spacing:0;
+  color:#dae6ee;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  overflow-x:auto;
+}
+.lp-shield-json code {font:inherit;}
+.lp-shield-json .lp-json-key {color:#9bc5ff;}
+.lp-shield-json .lp-json-num {color:#f6cb73;}
+.lp-shield-json .lp-json-danger {color:#ffa4a6;}
+.lp-shield-json .lp-json-string {color:#94ddc6;}
+.lp-shield-demo-outcome {display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:18px;background:#1c2938;border-top:1px solid #385268;padding:16px 20px;}
+.lp-shield-demo-outcome > div {display:grid;gap:6px;}
+.lp-shield-demo-outcome > div span {color:#a4bbcb;font-size:.72rem;}
+.lp-shield-demo-outcome > div strong {color:#ffd18a;font-size:.87rem;line-height:1.4;}
+.lp-shield-demo-outcome p {margin:0;color:#cfdee9;font-size:.78rem;line-height:1.6;}
+.lp-shield-demo .lp-shield-actions {border-top:1px solid #385268;padding:14px 20px;background:#182433;gap:7px;}
+.lp-shield-demo .lp-shield-actions span {font-size:.73rem;padding:7px 9px;}
+.lp-shield-demo .lp-shield-actions .lp-shield-actions-selected {
+  color:#fff1f1;
+  border-color:#b86672;
+  background:#843846;
+}
+/* Preserve distinct service identities, but remove the undifferentiated
+   gradient backgrounds of the old "preview cards." */
+.lp-proof-interface {
+  background:var(--paper);
+  border:1px solid rgba(148,125,231,.32);
+  border-top:3px solid #9578e5;
+  box-shadow:9px 9px 0 rgba(142,110,229,.12);
+}
+.lp-deploy-preview {
+  background:var(--paper);
+  border:1px solid rgba(92,147,230,.34);
+  border-top:3px solid #448ef0;
+  box-shadow:9px 9px 0 rgba(67,128,223,.10);
+  border-radius:7px;
+}
+.lp-deploy-preview:before {content:none;}
+.lp-bucket-visual {
+  background:var(--paper);
+  border:1px solid rgba(210,164,57,.35);
+  border-top:3px solid #e2b039;
+  box-shadow:9px 9px 0 rgba(210,164,57,.10);
+  border-radius:7px;
+}
+.lp-bucket-preview-symbol {margin-bottom:4px;}
+.lp-model-catalog > div {border-left-width:3px;}
+/* Council: request -> parallel answers -> review -> judges, not a generic
+   numbered feature list. Keep each stage legible at mobile widths. */
+#council .lp-ecosystem-visual,
+#cli .lp-ecosystem-visual,
+#lightning .lp-ecosystem-visual,
+#app .lp-ecosystem-visual {
+  padding:0;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+}
+.lp-council-visual {
+  border:1px solid rgba(153,126,219,.43)!important;
+  background:var(--paper)!important;
+  border-radius:9px;
+  overflow:hidden;
+}
+.lp-council-toolbar {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:13px 19px;
+  background:#231b38;
+  color:#ded1ff;
+  border-bottom:1px solid rgba(172,149,239,.28);
+  font-size:.76rem;
+}
+.lp-council-toolname {display:inline-flex;align-items:center;gap:8px;color:#e9dfff;font:700 .83rem/1.35 var(--mono);}
+.lp-council-toolbar > span:last-child {color:#af9dcf;font-size:.73rem;}
+.lp-council-indicator {display:inline-flex;width:23px;height:23px;margin:0;background:rgba(166,131,247,.22);color:#c8b1ff;border-radius:5px;font-size:1rem;}
+.lp-council-visual .lp-council-request {
+  display:flex;
+  gap:10px 18px;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  margin:0;
+  padding:17px 20px;
+  background:rgba(142,105,225,.09);
+  border:0;
+  border-bottom:1px solid var(--border);
+  border-radius:0;
+}
+.lp-council-request > span {font-size:.76rem;color:var(--text-muted);}
+.lp-council-request > strong {font-size:.87rem;color:var(--ink);}
+.lp-council-review-stages {padding:12px 20px 4px;}
+.lp-council-stage-heading {
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  padding:13px 0 11px;
+}
+.lp-council-stage-heading b {color:#9e7ee7;font:800 .78rem/1.4 var(--mono);}
+.lp-council-stage-heading strong {color:var(--ink);font-size:.85rem;}
+.lp-council-stage-heading > span {color:var(--text-muted);font-size:.7rem;}
+.lp-council-voices {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.lp-council-voices > div {
+  padding:13px 11px;
+  background:rgba(129,103,195,.075);
+  border:1px solid rgba(156,122,211,.20);
+  border-radius:5px;
+  min-width:0;
+}
+.lp-council-voices span {display:block;color:#b396f0;font-size:.73rem;font-weight:740;line-height:1.3;}
+.lp-council-voices p {margin:8px 0 0;color:var(--text-body);font-size:.76rem;line-height:1.46;}
+.lp-council-review-note {border-left:3px solid #a087e1;padding:8px 13px;background:rgba(149,120,221,.07);font-size:.8rem;line-height:1.55;color:var(--text-body);}
+.lp-council-synthesis {display:flex;align-items:center;gap:13px;padding:12px 14px;background:rgba(144,105,225,.12);border:1px solid rgba(151,114,229,.27);border-radius:5px;color:var(--ink);font-size:.8rem;line-height:1.6;}
+.lp-council-synthesis span {color:#a587e0;}
+.lp-council-visual .lp-council-command {margin:13px 20px 19px;background:transparent;color:var(--text-muted);padding:0;border:0;font-size:.7rem;overflow-wrap:anywhere;white-space:normal;}
+.lp-council-visual .lp-council-command code {font-family:var(--mono);font-size:.7rem;white-space:normal;overflow-wrap:anywhere;}
+/* CLI as the output of an actual terminal, not nested in a marketing tile. */
+#cli .lp-cli-terminal {overflow:hidden;border:1px solid #384861;border-radius:9px;box-shadow:none;background:#0e1727;}
+#cli .lp-cli-terminal > .lp-cli-terminal-top {
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;
+  background:#1d2b3d;
+  color:#d6e2f1;
+  border-bottom:1px solid #384861;
+  font-family:inherit;
+  font-size:.79rem;
+}
+.lp-cli-window-dots {display:inline-flex;gap:5px;align-items:center;flex:none;}
+.lp-cli-window-dots i {width:8px;height:8px;background:#ef8274;border-radius:50%;}
+.lp-cli-window-dots i:nth-child(2) {background:#e7bd65;}
+.lp-cli-window-dots i:nth-child(3) {background:#67c49d;}
+.lp-cli-terminal-top strong {color:#e5edfc;font-size:.81rem;}
+.lp-cli-terminal-top > span:last-child {margin-left:auto;color:#b2c3d8;font-size:.73rem;white-space:nowrap;}
+#cli .lp-cli-terminal > .lp-cli-terminal-body {padding:18px 0 13px;border:0;}
+.lp-cli-step-label {padding:11px 20px 5px;color:#92a9c9;font-size:.74rem;font-weight:650;line-height:1.4;}
+#cli .lp-cli-terminal-body pre {
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  padding:8px 20px 15px;
+  margin:0;
+  color:#eff5fb;
+  font:.78rem/1.75 var(--mono);
+  border-bottom:1px solid #25364a;
+}
+#cli .lp-cli-terminal-body pre:last-child {border-bottom:0;}
+.lp-cli-prompt {color:#7ab6f6;font-weight:750;}
+#cli .lp-cli-terminal > .lp-cli-terminal-foot {
+  display:flex;flex-wrap:wrap;gap:8px 14px;
+  padding:13px 19px;
+  border-top:1px solid #35475e;
+  border-bottom:0;
+  background:#192638;
+  color:#b0c9e3;
+  font-family:inherit;font-size:.73rem;
+}
+.lp-cli-terminal-foot span {font-family:inherit;line-height:1.4;}
+/* Lightning is an actual chat workspace, not another API-hosting product. */
+#lightning .lp-product-distinction {
+  max-width:570px;
+  margin:4px 0 25px;
+  padding:13px 17px;
+  border-left:3px solid #efd050;
+  background:rgba(220,179,57,.075);
+  font-size:.84rem;
+  line-height:1.58;
+  color:var(--text-body);
+}
+.lp-product-distinction strong {color:var(--ink);}
+.lp-product-distinction a {color:var(--ink);text-decoration-color:var(--gold);text-decoration:underline;text-underline-offset:4px;font-weight:680;}
+.lp-lightning-preview {
+  background:#121b29!important;
+  color:#e7edf7;
+  overflow:hidden;
+  border:1px solid #43506a!important;
+  border-radius:10px;
+}
+.lp-lightning-appbar {
+  display:flex;align-items:center;gap:12px;
+  padding:13px 18px;
+  background:#202c3f;
+  border-bottom:1px solid #3a4961;
+}
+.lp-lightning-appmark {display:flex;align-items:center;justify-content:center;width:29px;height:29px;color:#e3b322;background:rgba(227,179,34,.15);border-radius:6px;font-size:1.4rem;font-weight:750;}
+.lp-lightning-appbar strong {color:#f6f7fb;font-size:.85rem;}
+.lp-lightning-appbar > span:last-child {margin-left:auto;color:#b5c2d4;font-size:.73rem;}
+.lp-lightning-workspace {display:grid;grid-template-columns:minmax(128px,.37fr) minmax(0,1fr);min-height:332px;}
+.lp-lightning-sidebar {
+  display:flex;flex-direction:column;gap:7px;
+  padding:19px 12px;
+  background:#172235;
+  border-right:1px solid #36445c;
+}
+.lp-lightning-sidebar strong {font-size:.74rem;letter-spacing:.01em;color:#c7d4e4;padding:4px 9px 8px;}
+.lp-lightning-sidebar > span {padding:10px 9px;color:#b8c5d8;font-size:.77rem;line-height:1.35;border-radius:5px;}
+.lp-lightning-sidebar .lp-lightning-sidebar-active {background:#34354a;color:#fff1c6;border-left:2px solid #e7c044;}
+.lp-lightning-conversation {display:flex;flex-direction:column;gap:15px;min-width:0;padding:20px 19px;}
+.lp-lightning-conversation .lp-lightning-model-bar {padding:0 0 16px;background:none;border:0;border-radius:0;border-bottom:1px solid #35445c;gap:10px;flex-wrap:wrap;}
+.lp-lightning-conversation .lp-lightning-model-bar strong {color:#eff4fc;font-size:.8rem;}
+.lp-lightning-conversation .lp-lightning-model-bar > span:last-child {color:#a7b8d0;font-size:.71rem;margin-left:auto;}
+.lp-lightning-conversation .lp-lightning-message {padding:13px 15px;border-radius:9px;font-size:.79rem;max-width:91%;margin:0;line-height:1.55;}
+.lp-lightning-conversation .lp-lightning-message--user {color:#f4efd8;background:#424138;align-self:flex-end;border-bottom-right-radius:3px;}
+.lp-lightning-conversation .lp-lightning-message--assistant {color:#d6e1ef;background:#202e40;border:1px solid #364860;align-self:flex-start;border-bottom-left-radius:3px;}
+.lp-lightning-conversation .lp-lightning-message--assistant strong {color:#f6f8fb;}
+.lp-lightning-conversation .lp-lightning-message--assistant p {font-size:.79rem;color:#c7d5e8;line-height:1.52;margin-top:6px;}
+.lp-lightning-compose {display:flex;align-items:center;justify-content:space-between;gap:8px;background:#202b3c;border:1px solid #46546a;border-radius:9px;padding:12px 13px;margin-top:auto;font-size:.75rem;color:#a5b3c7;}
+.lp-lightning-compose b {color:#181e28;background:#ebc94d;width:23px;height:23px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+#lightning .lp-lightning-tools {margin:0;padding:11px 16px;background:#1a2638;border-top:1px solid #33445b;gap:7px;}
+#lightning .lp-lightning-tools span {padding:5px 9px;background:#243447;border:1px solid #3b5267;color:#d5e4f1;font-size:.7rem;}
+.lp-lightning-tools small {margin-left:auto;align-self:center;color:#94a9c2;font-size:.69rem;}
+/* Desktop: real screenshot is the primary content. No nested wallpaper card. */
+.lp-desktop-visual {background:transparent!important;}
+.lp-desktop-visual .lp-desktop-window {
+  margin:0;overflow:hidden;
+  border:1px solid #3c786c;
+  border-radius:9px;
+  box-shadow:none;
+  background:#122a29;
+}
+.lp-desktop-visual .lp-desktop-window-bar {
+  padding:13px 18px;
+  background:#192e30;
+  border-bottom:1px solid #41675f;
+  color:#cce3dc;
+  display:flex;gap:12px;align-items:center;
+  font-family:inherit;
+  font-size:.78rem;
+}
+.lp-desktop-window-bar strong {color:#ebf7f2;font-size:.81rem;}
+.lp-desktop-window-bar > span:last-child {color:#b1cbc0;margin-left:auto;font-size:.72rem;}
+.lp-desktop-visual .lp-desktop-window img {
+  display:block;width:100%;height:auto;max-height:none;
+  object-fit:contain;object-position:center;
+  background:#e8eef0;
+}
+.lp-desktop-visual .lp-desktop-window figcaption {background:#172c30;color:#c5dbd4;font-size:.73rem;padding:12px 18px;}
+@media (max-width:900px) {
+  .lp-proof-shield {grid-template-columns:1fr;gap:33px;}
+  .lp-ecosystem-spotlight {padding:60px 0;}
+}
+@media (max-width:630px) {
+  .lp-proof-shield {padding:50px 0;}
+  .lp-proof-shield .lp-feature-points-shield {gap:11px;}
+  .lp-shield-demo .lp-shield-schema-head {padding:15px;}
+  .lp-shield-demo-input,.lp-shield-example-head {padding-inline:15px;}
+  .lp-shield-json {padding-inline:15px;font-size:.73rem;}
+  .lp-shield-demo-outcome {grid-template-columns:1fr;gap:9px;padding-inline:15px;}
+  .lp-shield-demo .lp-shield-actions {padding-inline:15px;}
+  .lp-council-review-stages {padding-inline:14px;}
+  .lp-council-voices {grid-template-columns:1fr;gap:6px;}
+  .lp-council-voices > div {display:flex;align-items:center;gap:12px;padding:10px 12px;}
+  .lp-council-voices span {flex:0 0 55px;}
+  .lp-council-voices p {margin:0;font-size:.76rem;}
+  .lp-council-stage-heading {grid-template-columns:26px minmax(0,1fr) auto;}
+  .lp-council-visual .lp-council-command {margin-inline:14px;}
+  .lp-council-toolbar {padding:12px;}
+  #cli .lp-cli-terminal-body pre {font-size:.73rem;padding-inline:14px;}
+  .lp-cli-step-label {padding-inline:14px;}
+  .lp-lightning-workspace {grid-template-columns:1fr;min-height:0;}
+  .lp-lightning-sidebar {display:none;}
+  .lp-lightning-conversation {padding:17px 13px;min-height:340px;}
+  .lp-lightning-conversation .lp-lightning-message {max-width:95%;}
+  #lightning .lp-lightning-tools {gap:6px;}
+  .lp-lightning-tools small {width:100%;margin:5px 0 0;}
+  .lp-lightning-appbar {padding-inline:13px;}
+  .lp-desktop-visual .lp-desktop-window-bar {flex-wrap:wrap;padding-inline:12px;}
+}
