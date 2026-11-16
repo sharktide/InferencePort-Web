@@ -1860,6 +1860,8 @@
   --weather-twist:0deg;
   --weather-shift-right:0px;
   --weather-twist-right:0deg;
+  --weather-left-width:0px;
+  --weather-right-width:0px;
   position:fixed;
   inset:0;
   overflow:hidden;
@@ -1874,13 +1876,13 @@
 .lp-weather-rail {
   position:absolute;
   top:0;bottom:0;
-  width:min(236px,max(0px,calc((100vw - 1248px)/2 - 20px)));
+  width:0; /* Each gutter is measured against the actual content column in JS. */
   overflow:hidden;
   -webkit-mask-image:linear-gradient(to bottom,transparent 4%,#000 27%,#000 73%,transparent 96%);
   mask-image:linear-gradient(to bottom,transparent 4%,#000 27%,#000 73%,transparent 96%);
 }
-.lp-weather-rail--left {left:0;}
-.lp-weather-rail--right {right:0;}
+.lp-weather-rail--left {left:0;width:var(--weather-left-width);}
+.lp-weather-rail--right {right:0;width:var(--weather-right-width);}
 .lp-weather-scene {
   position:absolute;
   top:18%;
@@ -1899,13 +1901,14 @@
 .lp-weather-art {
   width:100%;height:100%;
   overflow:visible;
-  opacity:.8;
+  opacity:.49;
   transform-style:preserve-3d;
 }
 .lp-weather-rail--right .lp-weather-art {transform:scaleX(-1);}
 .lp-weather-far,.lp-weather-near,.lp-weather-rain,.lp-weather-charge,
 .lp-weather-water {transform-box:fill-box;transform-origin:center;}
 .lp-weather-far {
+  filter:blur(1.2px);
   transform:translate3d(0,-8px,-34px) scale(1.08);
   animation:lp-cloud-drift-far 23s ease-in-out infinite alternate;
 }
@@ -1923,7 +1926,7 @@
 .lp-weather[data-phase="electric"] .lp-weather-charge {opacity:.72;}
 .lp-weather[data-phase="electric"] .lp-weather-water {opacity:.21;}
 .lp-weather[data-phase="electric"] .lp-weather-far {opacity:.85;}
-:root[data-theme="dark"] .lp-weather-art {opacity:.65;}
+:root[data-theme="dark"] .lp-weather-art {opacity:.4;}
 :root[data-theme="dark"] .lp-weather[data-phase="electric"] .lp-weather-charge {opacity:.63;}
 @keyframes lp-cloud-drift-far {
   from {transform:translate3d(-8px,-9px,-34px) scale(1.05);}

@@ -227,6 +227,16 @@ async function checkWeather(browser) {
     assert.equal(await weather.locator(".lp-weather-rail").count(),2);
     assert.equal(await weather.evaluate(el=>getComputedStyle(el).pointerEvents),"none");
     assert.ok(await weather.isVisible(),"Wide-screen clouds should render");
+    const gutters=await page.evaluate(()=>{
+      const content=document.querySelector(".lp-hero .lp-wrap").getBoundingClientRect();
+      const left=document.querySelector(".lp-weather-rail--left").getBoundingClientRect();
+      const right=document.querySelector(".lp-weather-rail--right").getBoundingClientRect();
+      return {contentLeft:content.left,contentRight:content.right,leftRight:left.right,rightLeft:right.left};
+    });
+    assert.ok(gutters.leftRight<=gutters.contentLeft-30,
+      "Left cloud overlaps homepage text: "+JSON.stringify(gutters));
+    assert.ok(gutters.rightLeft>=gutters.contentRight+30,
+      "Right cloud overlaps homepage content: "+JSON.stringify(gutters));
     const quickstart=await page.locator(".lp-hero-demo-intro .lp-feature-points li").first().evaluate(el=>{
       const rgb=s=>[...s.matchAll(/[\d.]+/g)].slice(0,3).map(m=>Number(m[0])/255);
       const lum=s=>rgb(s).map(v=>v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4))

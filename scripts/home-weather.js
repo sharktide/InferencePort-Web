@@ -103,6 +103,17 @@
     pending = true;
     window.requestAnimationFrame(draw);
   }
+  function measureGutters() {
+    // The homepage content column changes slightly across viewport sizes.
+    // Never let the decorative atmosphere touch the actual text/cards.
+    const bounds = [...document.querySelectorAll(".lp .lp-wrap")]
+      .map(node => node.getBoundingClientRect());
+    const left = bounds.length ? Math.min(...bounds.map(rect => rect.left)) : 0;
+    const right = bounds.length ? Math.min(...bounds.map(rect => window.innerWidth - rect.right)) : 0;
+    const clamp = value => Math.max(0, Math.min(184, value - 34));
+    root.style.setProperty("--weather-left-width", `${clamp(left).toFixed(2)}px`);
+    root.style.setProperty("--weather-right-width", `${clamp(right).toFixed(2)}px`);
+  }
   function reconcile() {
     const enabled = desktop.matches && !reduced.matches;
     if (!enabled) {
@@ -112,6 +123,7 @@
       root.dataset.phase = "cloud";
       return;
     }
+    measureGutters();
     if (!active) {
       // Static, trusted internal markup. No dynamic HTML input from visitors.
       root.innerHTML = rail("left") + rail("right");

@@ -529,6 +529,10 @@ test("wide-screen atmospheric margins are branded, scroll-linked and safely opti
   assert.match(weather,/id: "shield", phase: "charged"/);
   assert.match(weather,/id: "lightning", phase: "electric"/);
   assert.match(weather,/root\.replaceChildren\(\)/);
+  assert.match(weather,/function measureGutters\(\)/);
+  assert.match(weather,/Math\.min\(184, value - 34\)/);
+  assert.match(css,/\.lp-weather-rail--left \{left:0;width:var\(--weather-left-width\);\}/);
+  assert.match(css,/\.lp-weather-rail--right \{right:0;width:var\(--weather-right-width\);\}/);
   assert.match(css,/\.lp-weather \{[\s\S]*?pointer-events:none/);
   assert.match(css,/\.lp-weather-scene \{[\s\S]*?perspective:640px/);
   assert.match(css,/@media \(max-width:1479px\), \(prefers-reduced-motion:reduce\) \{/);
