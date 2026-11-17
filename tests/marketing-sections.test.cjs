@@ -244,15 +244,15 @@ test("architecture topology uses the exact InferencePort brand mark", () => {
   assert.match(js, /const MARK_VERTICES = \[/);
   assert.match(js, /new THREE\.ExtrudeGeometry\(logoShape/);
   assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
-  assert.match(js, /transmission:\.92/);
+  assert.match(js, /transmission:\.96/);
   assert.match(js, /clearcoat:1/);
   assert.match(js, /THREE\.EquirectangularReflectionMapping/);
   assert.match(js, /new THREE\.CanvasTexture\(pano\)/);
   assert.match(js, /renderer\.toneMappingExposure=1\.025/);
   assert.match(js, /logoGroup\.rotation\.y=\.20\+/);
-  assert.match(js, /envMapIntensity:1\.58/);
+  assert.match(js, /envMapIntensity:1\.70/);
   assert.match(js, /new THREE\.ShaderMaterial\(/);
-  assert.match(js, /reflection=clamp\(broad\*\.16\+narrow\*\.21\+edge\*\.33/);
+  assert.match(js, /reflection=clamp\(broad\*\.23\+narrow\*\.31\+edge\*\.39/);
   assert.match(js, /const sheen=new THREE\.Mesh\(logoGeometry\.clone\(\),sheenMaterial\)/);
   assert.doesNotMatch(js, /TorusGeometry|random constellation|Math\.random\(/);
 });
@@ -339,7 +339,7 @@ test("active paths are meaningful and context loss restores accessible fallback"
   assert.match(js, /const RELATIONS=\[/);
   assert.match(js, /const onContextLost=e=>\{e\.preventDefault\(\);destroy\(\);onFailure\?\.\(\);\};/);
   assert.match(js, /shell\.dataset\.fallback="context-lost"/);
-  assert.match(js, /foil\.material\.opacity=themeDark\?\.105:\.095/);
+  assert.match(js, /foil\.material\.opacity=themeDark\?\.07:\.055/);
 });
 
 test("mobile keeps only one capability layer visible at a time", () => {
@@ -546,13 +546,22 @@ test("continuous atmospheric canvas is real scroll-linked weather, not cropped s
 
 test("hero mark has neutral opalescent glass, not a blue metallic fill", () => {
   const js=read("scripts/home-topology.js");
-  assert.match(js,/color:0xd9d7dd,roughness:\.088,metalness:0/);
-  assert.match(js,/transmission:\.92,thickness:1\.45,ior:1\.48/);
-  assert.match(js,/iridescence:\.52,iridescenceIOR:1\.34/);
-  assert.match(js,/attenuationColor:new THREE\.Color\(0xd1cbd5\)/);
-  assert.match(js,/glass\.color\.setHex\(themeDark\?0xd8d5dd:0xe1dee4\)/);
-  assert.match(js,/foil\.material\.opacity=themeDark\?\.105:\.095/);
+  assert.match(js,/color:0xe4e1e7,roughness:\.052,metalness:0/);
+  assert.match(js,/transmission:\.96,thickness:1\.05,ior:1\.48/);
+  assert.match(js,/iridescence:\.47,iridescenceIOR:1\.34/);
+  assert.match(js,/attenuationColor:new THREE\.Color\(0xe2dce7\)/);
+  assert.match(js,/glass\.color\.setHex\(themeDark\?0xd9d5df:0xeae6ee\)/);
+  assert.match(js,/foil\.material\.opacity=themeDark\?\.07:\.055/);
   assert.doesNotMatch(js,/color:0xc4d5e2|attenuationColor:new THREE\.Color\(0xb4c9dc\)/);
   assert.match(js,/const MARK_VERTICES = \[/);
   assert.match(js,/const MAX_YAW=\.20,MAX_PITCH=\.105/);
+});
+
+test("lightning mark uses translucent front glass and rounded reflective side glass", () => {
+  const js=read("scripts/home-topology.js");
+  assert.match(js,/bevelSize:\.115/);
+  assert.match(js,/bevelThickness:\.145,bevelSegments:9/);
+  assert.match(js,/const edgeGlass=new THREE\.MeshPhysicalMaterial\(/);
+  assert.match(js,/const body=new THREE\.Mesh\(logoGeometry,\[glass,edgeGlass\]\)/);
+  assert.match(js,/edgeGlass\.color\.setHex\(themeDark\?0xb4afbd:0xc8c2ce\)/);
 });
