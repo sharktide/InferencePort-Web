@@ -51,7 +51,7 @@
       const near=i%3!==0;
       return {
         side:i%2===0?-1:1,
-        depth:near?.19:.075,
+        depth:near?.13:.05,
         x:rand(13+i*7.83),y:rand(i*9.1+4),
         sway:rand(i*1.7+11),
         size:(near?390:285)+rand(i*8.7)*165,
@@ -91,14 +91,14 @@
       // Screen-wrap *after* adding the scroll-linked displacement. The
       // clouds never end at a page section or a sharp gutter mask.
       const span=height+h*2;
-      const shift=scroll*cloud.depth+clock*(cloud.depth*.010+.003);
+      const shift=scroll*cloud.depth+clock*(cloud.depth*.0065+.002);
       const y=((cloud.y*span+shift)%span+span)%span-h;
       const flank=cloud.side===-1 ? width*.065 : width*.935;
       const x=flank+(cloud.x-.48)*width*.22+
-        Math.sin(clock*.00011+cloud.sway*6)*27;
+        Math.sin(clock*.000085+cloud.sway*6)*18;
       ctx.save();
       ctx.translate(x,y);
-      ctx.rotate((cloud.side*.025)+Math.sin(clock*.000065+cloud.sway)*.028);
+      ctx.rotate((cloud.side*.025)+Math.sin(clock*.00005+cloud.sway)*.022);
       ctx.globalAlpha=(themeDark?.83:.69)*(cloud.depth>.1?.92:.69);
       ctx.drawImage(cloud.sprite,-w/2,-h/2,w,h);
       ctx.restore();
@@ -109,14 +109,14 @@
     if(weight<.018)return;
     const color=themeDark?"155,194,217":"95,151,185";
     ctx.save();
-    ctx.lineWidth=1.25;
-    ctx.strokeStyle="rgba("+color+","+(weight*(themeDark?.39:.25)).toFixed(3)+")";
+    ctx.lineWidth=1.3;
+    ctx.strokeStyle="rgba("+color+","+(weight*(themeDark?.46:.30)).toFixed(3)+")";
     ctx.beginPath();
-    for(let i=0;i<63;i++){
+    for(let i=0;i<78;i++){
       const side=i%2===0?-1:1;
       const x=(side<0?width*.04:width*.96)+(rand(i*7.2+2)-.5)*width*.27;
       const y=(rand(i*12.34+4)*height+scroll*.51+clock*.09*(.45+rand(i)) )%(height+90)-45;
-      const length=11+rand(i*8.33+6)*31;
+      const length=13+rand(i*8.33+6)*35;
       ctx.moveTo(x,y);ctx.lineTo(x-3-length*.16,y+length);
     }
     ctx.stroke();ctx.restore();
@@ -125,8 +125,8 @@
   function waterPass(weight) {
     if(weight<.015)return;
     ctx.save();
-    ctx.strokeStyle=themeDark?"rgba(96,167,204,.23)":"rgba(83,153,191,.17)";
-    ctx.lineWidth=1.15;
+    ctx.strokeStyle=themeDark?"rgba(96,167,204,.26)":"rgba(83,153,191,.20)";
+    ctx.lineWidth=1.22;
     ctx.globalAlpha=clamp(weight);
     const y0=height*.73+Math.sin(clock*.00016)*12;
     for(let j=0;j<5;j++){
@@ -160,8 +160,8 @@
       ctx.lineTo(-24,166);ctx.lineTo(2,136);ctx.lineTo(-3,100);
       ctx.lineTo(26,57);
       ctx.strokeStyle=themeDark?"rgba(255,221,132,.72)":"rgba(191,142,52,.5)";
-      ctx.globalAlpha=power*.58;
-      ctx.shadowBlur=18;ctx.shadowColor="#f6d58e";
+      ctx.globalAlpha=power*.66;
+      ctx.shadowBlur=21;ctx.shadowColor="#f6d58e";
       ctx.lineWidth=1.7;ctx.stroke();
       ctx.shadowBlur=0;
       ctx.setTransform(scale,0,0,scale,0,0);
@@ -196,9 +196,9 @@
     const lightning=influence("lightning",1550);
     const desktopAI=influence("app",1500);
     cloudPass();
-    rainPass(Math.max(buckets*.95,shield*.37,desktopAI*.18,.08));
-    waterPass(Math.max(buckets*.86,desktopAI*.48,.05));
-    electricPass(Math.max(shield*.33,lightning*.94,.06));
+    rainPass(Math.max(buckets*1.0,shield*.40,desktopAI*.20,.10));
+    waterPass(Math.max(buckets*.96,desktopAI*.52,.06));
+    electricPass(Math.max(shield*.39,lightning*1.04,.07));
     softenCenter();
     // Choose the closest active product, not whichever section appears first.
     const nearest=[["rain",buckets],["charged",shield],
@@ -215,7 +215,7 @@
     if(now-last<1000/FPS)return;
     const delta=last?Math.min(now-last,80):33;
     last=now;clock+=delta;
-    scroll=mix(scroll,targetScroll,1-Math.exp(-delta/110));
+    scroll=mix(scroll,targetScroll,1-Math.exp(-delta/165));
     render();
   }
 
