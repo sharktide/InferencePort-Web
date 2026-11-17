@@ -1853,96 +1853,38 @@
 :root[data-theme="dark"] .lp-hero-demo-intro > .lp-feature-points strong {
   color:#f7f9fc;
 }
-/* Wide-screen atmospheric rails: subtle CSS-3D cloud layers inspired by
-   the port/water + lightning brand. They live strictly in outer gutters. */
+
+/* Continuous, lightweight atmospheric canvas.
+   Unlike the old SVG rails, cloud shapes are never clipped at a gutter edge:
+   their own soft falloff is composited across the viewport. */
 .lp-weather {
-  --weather-shift:0px;
-  --weather-twist:0deg;
-  --weather-shift-right:0px;
-  --weather-twist-right:0deg;
-  --weather-left-width:0px;
-  --weather-right-width:0px;
   position:fixed;
   inset:0;
   overflow:hidden;
   pointer-events:none;
   user-select:none;
   z-index:4;
-  opacity:0;
-  transition:opacity .6s ease;
   visibility:hidden;
+  opacity:0;
+  transition:opacity .45s ease;
 }
-.lp-weather.is-active {opacity:1;visibility:visible;}
-.lp-weather-rail {
-  position:absolute;
-  top:0;bottom:0;
-  width:0; /* Each gutter is measured against the actual content column in JS. */
-  overflow:hidden;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 4%,#000 27%,#000 73%,transparent 96%);
-  mask-image:linear-gradient(to bottom,transparent 4%,#000 27%,#000 73%,transparent 96%);
+.lp-weather.is-active {
+  visibility:visible;
+  opacity:.88;
 }
-.lp-weather-rail--left {left:0;width:var(--weather-left-width);}
-.lp-weather-rail--right {right:0;width:var(--weather-right-width);}
-.lp-weather-scene {
+.lp-weather-canvas {
   position:absolute;
-  top:18%;
+  inset:0;
+  display:block;
   width:100%;
-  height:71%;
-  perspective:640px;
-  transform-style:preserve-3d;
-  transform:translate3d(0,var(--weather-shift),0)
-    rotateY(var(--weather-twist));
-  transition:transform .33s ease-out;
+  height:100%;
+  pointer-events:none;
+  contain:strict;
 }
-.lp-weather-rail--right .lp-weather-scene {
-  transform:translate3d(0,var(--weather-shift-right),0)
-    rotateY(var(--weather-twist-right));
-}
-.lp-weather-art {
-  width:100%;height:100%;
-  overflow:visible;
-  opacity:.49;
-  transform-style:preserve-3d;
-}
-.lp-weather-rail--right .lp-weather-art {transform:scaleX(-1);}
-.lp-weather-far,.lp-weather-near,.lp-weather-rain,.lp-weather-charge,
-.lp-weather-water {transform-box:fill-box;transform-origin:center;}
-.lp-weather-far {
-  filter:blur(1.2px);
-  transform:translate3d(0,-8px,-34px) scale(1.08);
-  animation:lp-cloud-drift-far 23s ease-in-out infinite alternate;
-}
-.lp-weather-near {
-  transform:translate3d(0,4px,16px) scale(.98);
-  animation:lp-cloud-drift-near 17s ease-in-out infinite alternate;
-}
-.lp-weather-rain {opacity:0;transition:opacity 1.05s ease;animation:lp-weather-fall 3.5s linear infinite;}
-.lp-weather-charge {opacity:0;transition:opacity .8s ease;filter:drop-shadow(0 0 12px rgba(210,167,79,.18));}
-.lp-weather-water {opacity:.04;transition:opacity 1s ease;}
-.lp-weather[data-phase="rain"] .lp-weather-rain {opacity:.42;}
-.lp-weather[data-phase="rain"] .lp-weather-water {opacity:.5;}
-.lp-weather[data-phase="charged"] .lp-weather-rain {opacity:.13;}
-.lp-weather[data-phase="charged"] .lp-weather-charge {opacity:.32;}
-.lp-weather[data-phase="electric"] .lp-weather-charge {opacity:.72;}
-.lp-weather[data-phase="electric"] .lp-weather-water {opacity:.21;}
-.lp-weather[data-phase="electric"] .lp-weather-far {opacity:.85;}
-:root[data-theme="dark"] .lp-weather-art {opacity:.4;}
-:root[data-theme="dark"] .lp-weather[data-phase="electric"] .lp-weather-charge {opacity:.63;}
-@keyframes lp-cloud-drift-far {
-  from {transform:translate3d(-8px,-9px,-34px) scale(1.05);}
-  to {transform:translate3d(12px,7px,-24px) scale(1.12);}
-}
-@keyframes lp-cloud-drift-near {
-  from {transform:translate3d(9px,5px,16px) scale(.98);}
-  to {transform:translate3d(-13px,-6px,24px) scale(1.035);}
-}
-@keyframes lp-weather-fall {
-  from {transform:translate3d(0,-12px,8px);}
-  to {transform:translate3d(-5px,30px,8px);}
-}
-@media (max-width:1479px), (prefers-reduced-motion:reduce) {
+:root[data-theme="dark"] .lp-weather.is-active {opacity:1;}
+@media (max-width:1023px),(prefers-reduced-motion:reduce) {
   .lp-weather {display:none!important;}
 }
 @media (prefers-reduced-motion:reduce) {
-  .lp-weather * {animation:none!important;transition:none!important;}
+  .lp-weather {transition:none!important;}
 }

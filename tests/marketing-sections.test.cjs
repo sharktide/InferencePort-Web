@@ -244,15 +244,15 @@ test("architecture topology uses the exact InferencePort brand mark", () => {
   assert.match(js, /const MARK_VERTICES = \[/);
   assert.match(js, /new THREE\.ExtrudeGeometry\(logoShape/);
   assert.match(js, /new THREE\.MeshPhysicalMaterial\(/);
-  assert.match(js, /transmission:\.96/);
+  assert.match(js, /transmission:\.98/);
   assert.match(js, /clearcoat:1/);
   assert.match(js, /THREE\.EquirectangularReflectionMapping/);
   assert.match(js, /new THREE\.CanvasTexture\(pano\)/);
-  assert.match(js, /renderer\.toneMappingExposure=1\.06/);
+  assert.match(js, /renderer\.toneMappingExposure=1\.16/);
   assert.match(js, /logoGroup\.rotation\.y=\.20\+/);
-  assert.match(js, /envMapIntensity:1\.48/);
+  assert.match(js, /envMapIntensity:2\.1/);
   assert.match(js, /new THREE\.ShaderMaterial\(/);
-  assert.match(js, /reflection=clamp\(broad\*\.24\+narrow\*\.13\+edge\*\.17/);
+  assert.match(js, /reflection=clamp\(broad\*\.14\+narrow\*\.19\+edge\*\.21/);
   assert.match(js, /const sheen=new THREE\.Mesh\(logoGeometry\.clone\(\),sheenMaterial\)/);
   assert.doesNotMatch(js, /TorusGeometry|random constellation|Math\.random\(/);
 });
@@ -339,7 +339,7 @@ test("active paths are meaningful and context loss restores accessible fallback"
   assert.match(js, /const RELATIONS=\[/);
   assert.match(js, /const onContextLost=e=>\{e\.preventDefault\(\);destroy\(\);onFailure\?\.\(\);\};/);
   assert.match(js, /shell\.dataset\.fallback="context-lost"/);
-  assert.match(js, /foil\.material\.opacity=themeDark\?\.13:\.095/);
+  assert.match(js, /foil\.material\.opacity=themeDark\?\.035:\.05/);
 });
 
 test("mobile keeps only one capability layer visible at a time", () => {
@@ -516,25 +516,43 @@ test("bucket docs URLs, logo caption and light quickstart contrast stay correct"
   assert.match(css,/:root:not\(\[data-theme="dark"\]\) \.lp-hero-demo-intro > \.lp-feature-points strong \{[\s\S]*?color:#111a28/);
 });
 
-test("wide-screen atmospheric margins are branded, scroll-linked and safely optional", () => {
+test("continuous atmospheric canvas is real scroll-linked weather, not cropped side stickers", () => {
   const weather=read("scripts/home-weather.js");
   assert.match(home,/<div class="lp-weather" id="lp-weather" aria-hidden="true" data-phase="cloud"><\/div>/);
   assert.match(home,/<script defer src="scripts\/home-weather\.js"><\/script>/);
-  assert.match(weather,/window\.matchMedia\("\(min-width: 1480px\)"\)/);
+  assert.match(weather,/window\.matchMedia\("\(min-width: 1024px\)"\)/);
   assert.match(weather,/window\.matchMedia\("\(prefers-reduced-motion: reduce\)"\)/);
-  assert.match(weather,/desktop\.matches && !reduced\.matches/);
-  assert.match(weather,/window\.addEventListener\("scroll", schedule, \{ passive: true \}\)/);
-  assert.match(weather,/window\.requestAnimationFrame\(draw\)/);
-  assert.match(weather,/id: "buckets", phase: "rain"/);
-  assert.match(weather,/id: "shield", phase: "charged"/);
-  assert.match(weather,/id: "lightning", phase: "electric"/);
-  assert.match(weather,/root\.replaceChildren\(\)/);
-  assert.match(weather,/function measureGutters\(\)/);
-  assert.match(weather,/Math\.min\(184, value - 34\)/);
-  assert.match(css,/\.lp-weather-rail--left \{left:0;width:var\(--weather-left-width\);\}/);
-  assert.match(css,/\.lp-weather-rail--right \{right:0;width:var\(--weather-right-width\);\}/);
+  assert.match(weather,/Boolean\(navigator\.connection && navigator\.connection\.saveData\)/);
+  assert.match(weather,/window\.requestAnimationFrame\(frame\)/);
+  assert.match(weather,/targetScroll=window\.scrollY/);
+  assert.match(weather,/scroll=mix\(scroll,targetScroll,1-Math\.exp\(-delta\/110\)\)/);
+  assert.match(weather,/const shift=scroll\*cloud\.depth\+clock\*/);
+  assert.match(weather,/ctx\.createLinearGradient\(0,0,width,0\)/);
+  assert.match(weather,/ctx\.globalCompositeOperation="destination-in"/);
+  assert.match(weather,/function rainPass\(weight\)/);
+  assert.match(weather,/function electricPass\(weight\)/);
+  assert.match(weather,/function waterPass\(weight\)/);
+  assert.match(weather,/if\(el\) sectionY\[id\]=window\.scrollY/);
+  assert.match(weather,/host\.dataset\.weatherScroll=Math\.round\(scroll\)/);
+  assert.match(weather,/window\.addEventListener\("scroll",onScroll,\{passive:true\}\)/);
+  assert.match(weather,/canvas\.getContext\("2d",\{alpha:true\}\)/);
+  assert.match(weather,/visible=!document\.hidden/);
+  assert.match(css,/\.lp-weather-canvas \{[\s\S]*?width:100%/);
+  assert.match(css,/@media \(max-width:1023px\),\(prefers-reduced-motion:reduce\)/);
   assert.match(css,/\.lp-weather \{[\s\S]*?pointer-events:none/);
-  assert.match(css,/\.lp-weather-scene \{[\s\S]*?perspective:640px/);
-  assert.match(css,/@media \(max-width:1479px\), \(prefers-reduced-motion:reduce\) \{/);
-  assert.doesNotMatch(weather,/setInterval|setTimeout|fetch\(|new WebGLRenderer|THREE/);
+  assert.doesNotMatch(weather,/setInterval|setTimeout|fetch\(|WebGLRenderer|THREE|measureGutters|lp-weather-rail/);
+  assert.doesNotMatch(css,/\.lp-weather-rail--left|\.lp-weather-rail--right/);
+});
+
+test("hero mark has neutral opalescent glass, not a blue metallic fill", () => {
+  const js=read("scripts/home-topology.js");
+  assert.match(js,/color:0xfaf9f8,roughness:\.055,metalness:0/);
+  assert.match(js,/transmission:\.98,thickness:1\.25,ior:1\.48/);
+  assert.match(js,/iridescence:\.43,iridescenceIOR:1\.33/);
+  assert.match(js,/attenuationColor:new THREE\.Color\(0xffffff\)/);
+  assert.match(js,/glass\.color\.setHex\(themeDark\?0xf7f5f4:0xffffff\)/);
+  assert.match(js,/foil\.material\.opacity=themeDark\?\.035:\.05/);
+  assert.doesNotMatch(js,/color:0xc4d5e2|attenuationColor:new THREE\.Color\(0xb4c9dc\)/);
+  assert.match(js,/const MARK_VERTICES = \[/);
+  assert.match(js,/const MAX_YAW=\.20,MAX_PITCH=\.105/);
 });

@@ -193,7 +193,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   });
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.06;
+  renderer.toneMappingExposure=1.16;
   renderer.domElement.className="ip-architecture-webgl";
   renderer.domElement.setAttribute("aria-hidden","true");
   host.appendChild(renderer.domElement);
@@ -208,11 +208,14 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   pano.width=1024;pano.height=512;
   const ctx=pano.getContext("2d");
   const background=ctx.createLinearGradient(0,0,1024,512);
-  background.addColorStop(0,"#263b55");background.addColorStop(.25,"#8497b5");
-  background.addColorStop(.47,"#ecf0f3");background.addColorStop(.73,"#344765");
-  background.addColorStop(1,"#c7b27e");
+  // Neutral studio reflections: the environment is not a painted blue surface.
+  // Dark-to-silver contrast makes both bevels and transmission visible.
+  background.addColorStop(0,"#343238");background.addColorStop(.17,"#74747d");
+  background.addColorStop(.33,"#e8e5e7");background.addColorStop(.51,"#b2b0b7");
+  background.addColorStop(.72,"#35363a");background.addColorStop(.88,"#d6d0d1");
+  background.addColorStop(1,"#888178");
   ctx.fillStyle=background;ctx.fillRect(0,0,1024,512);
-  for(const [x,w,alpha] of [[100,95,.9],[350,18,.85],[680,82,.78],[900,24,.8]]) {
+  for(const [x,w,alpha] of [[62,116,.97],[286,25,.91],[508,64,.94],[741,23,.92],[916,80,.95]]) {
     const light=ctx.createLinearGradient(x,0,x+w,0);
     light.addColorStop(0,"rgba(255,255,255,0)");
     light.addColorStop(.3,"rgba(255,255,255,"+alpha+")");
@@ -225,12 +228,12 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   env.colorSpace=THREE.SRGBColorSpace;
   scene.environment=env;
 
-  scene.add(new THREE.AmbientLight(0xffffff,.62));
-  const warm=new THREE.DirectionalLight(0xffe1a3,1.95);
+  scene.add(new THREE.AmbientLight(0xffffff,.72));
+  const warm=new THREE.DirectionalLight(0xfff0d4,2.0);
   warm.position.set(-4,5,8);scene.add(warm);
-  const cool=new THREE.DirectionalLight(0xa2c4ff,1.5);
+  const cool=new THREE.DirectionalLight(0xebe5ff,1.65);
   cool.position.set(4,-2,5);scene.add(cool);
-  const rim=new THREE.DirectionalLight(0xffffff,1.35);
+  const rim=new THREE.DirectionalLight(0xffffff,1.65);
   rim.position.set(2,3,-3);scene.add(rim);
 
   // EXACT canonical brand mark from ip-navbar.js; SVG coordinates are inverted
@@ -248,25 +251,30 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   });
   logoGeometry.center();
   const glass=new THREE.MeshPhysicalMaterial({
-    color:0xc4d5e2,roughness:.035,metalness:0,
-    transmission:.96,thickness:2.35,ior:1.49,
-    clearcoat:1,clearcoatRoughness:.04,
-    iridescence:.12,iridescenceIOR:1.35,
-    envMapIntensity:1.48,attenuationColor:new THREE.Color(0xb4c9dc),
-    attenuationDistance:4.2,side:THREE.DoubleSide
+    color:0xfaf9f8,roughness:.055,metalness:0,
+    transmission:.98,thickness:1.25,ior:1.48,
+    clearcoat:1,clearcoatRoughness:.045,
+    iridescence:.43,iridescenceIOR:1.33,
+    iridescenceThicknessRange:[110,360],
+    specularIntensity:1,specularColor:new THREE.Color(0xffffff),
+    envMapIntensity:2.1,attenuationColor:new THREE.Color(0xffffff),
+    attenuationDistance:25,side:THREE.DoubleSide
   });
   const logoGroup=new THREE.Group();
   logoGroup.position.set(0,0,.73);
   graph.add(logoGroup);
   const body=new THREE.Mesh(logoGeometry,glass);
   logoGroup.add(body);
-  const foil=new THREE.Mesh(logoGeometry.clone(),new THREE.MeshStandardMaterial({
-    color:0xb0c4d7,metalness:.14,roughness:.18,transparent:true,opacity:.095,depthWrite:false
+  // A very faint neutral inner backing prevents the transparent mark from
+  // disappearing on white pages. No blue or metallic painted fill.
+  const foil=new THREE.Mesh(logoGeometry.clone(),new THREE.MeshBasicMaterial({
+    color:0xffffff,transparent:true,opacity:.035,depthWrite:false,
+    side:THREE.DoubleSide
   }));
-  foil.scale.set(.989,.989,.80);foil.position.z=-.12;logoGroup.add(foil);
+  foil.scale.set(.987,.987,.78);foil.position.z=-.115;logoGroup.add(foil);
   const outline=new THREE.LineSegments(
     new THREE.EdgesGeometry(logoGeometry,18),
-    new THREE.LineBasicMaterial({color:0xb1842c,transparent:true,opacity:.95})
+    new THREE.LineBasicMaterial({color:0xd7c8ac,transparent:true,opacity:.58})
   );
   logoGroup.add(outline);
   // A directional front-face coating creates crisp studio reflections without
@@ -289,10 +297,14 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
         float broad=exp(-pow((vLocal.x*.68+vLocal.y*.26-.29)*3.8,2.0));
         float narrow=exp(-pow((vLocal.x*.62+vLocal.y*.22+.53)*8.0,2.0));
         float edge=pow(1.0-abs(vViewNormal.z),2.0);
-        float reflection=clamp(broad*.24+narrow*.13+edge*.17,0.0,.45);
-        vec3 cool=vec3(.82,.90,1.0);
-        vec3 warm=vec3(1.0,.94,.75);
-        vec3 tint=mix(cool,warm,smoothstep(-1.7,1.7,vLocal.y)*.25);
+        float reflection=clamp(broad*.14+narrow*.19+edge*.21,0.0,.38);
+        // Opalescent glints should shift between pearl, lilac and warm white,
+        // not create one uniform opaque blue panel across the front face.
+        vec3 pearl=vec3(.99,.99,1.0);
+        vec3 lilac=vec3(.94,.90,1.0);
+        vec3 champagne=vec3(1.0,.97,.88);
+        float angle=smoothstep(-1.5,1.5,vLocal.x+vLocal.y*.4);
+        vec3 tint=mix(mix(pearl,lilac,.22),champagne,angle*.28);
         gl_FragColor=vec4(tint,reflection);
       }
     `
@@ -420,11 +432,11 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     const lineColor=themeDark?0x9cacc8:0x73839a;
     for(const l of lines)if(l.kind!=="backbone")l.mat.color.setHex(lineColor);
     railMaterial.color.setHex(lineColor);
-    glass.color.setHex(themeDark?0xc8d9e9:0xd0dce6);
-    foil.material.color.setHex(themeDark?0x8296b7:0xa6bbca);
-    foil.material.opacity=themeDark?.13:.095;
-    outline.material.color.setHex(themeDark?0xffd66f:0x9c792f);
-    outline.material.opacity=themeDark?.95:.88;
+    glass.color.setHex(themeDark?0xf7f5f4:0xffffff);
+    foil.material.color.setHex(0xffffff);
+    foil.material.opacity=themeDark?.035:.05;
+    outline.material.color.setHex(themeDark?0xe8d7b7:0xbbaa8c);
+    outline.material.opacity=themeDark?.62:.50;
     for(const {mat,type} of points.values()) {
       mat.color.setHex(type==="model"?(themeDark?0x91b2fd:0x5375ac):(themeDark?0xf5cf72:0xb18a37));
     }
