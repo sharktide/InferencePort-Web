@@ -525,7 +525,7 @@ test("continuous atmospheric canvas is real scroll-linked weather, not cropped s
   assert.match(weather,/Boolean\(navigator\.connection && navigator\.connection\.saveData\)/);
   assert.match(weather,/window\.requestAnimationFrame\(frame\)/);
   assert.match(weather,/targetScroll=window\.scrollY/);
-  assert.match(weather,/scroll=mix\(scroll,targetScroll,1-Math\.exp\(-delta\/110\)\)/);
+  assert.match(weather,/scroll=mix\(scroll,targetScroll,1-Math\.exp\(-delta\/165\)\)/);
   assert.match(weather,/const shift=scroll\*cloud\.depth\+clock\*/);
   assert.match(weather,/ctx\.createLinearGradient\(0,0,width,0\)/);
   assert.match(weather,/ctx\.globalCompositeOperation="destination-in"/);
@@ -564,4 +564,25 @@ test("lightning mark uses translucent front glass and rounded reflective side gl
   assert.match(js,/const edgeGlass=new THREE\.MeshPhysicalMaterial\(/);
   assert.match(js,/const body=new THREE\.Mesh\(logoGeometry,\[glass,edgeGlass\]\)/);
   assert.match(js,/edgeGlass\.color\.setHex\(themeDark\?0xb4afbd:0xc8c2ce\)/);
+});
+
+
+test("atmosphere tuning keeps cloud motion calm while preserving readable weather", () => {
+  const js=read("scripts/home-weather.js");
+  assert.match(js,/depth:near\?\.13:\.05/);
+  assert.match(js,/cloud\.depth\*\.0065\+\.002/);
+  assert.match(js,/Math\.sin\(clock\*\.000085\+cloud\.sway\*6\)\*18/);
+  assert.match(js,/Math\.sin\(clock\*\.00005\+cloud\.sway\)\*\.022/);
+  assert.match(js,/for\(let i=0;i<78;i\+\+\)/);
+  assert.match(js,/weight\*\(themeDark\?\.46:\.30\)/);
+  assert.match(js,/const length=13\+rand\(i\*8\.33\+6\)\*35/);
+  assert.match(js,/waterPass\(Math\.max\(buckets\*\.96,desktopAI\*\.52,\.06\)\)/);
+  assert.match(js,/electricPass\(Math\.max\(shield\*\.39,lightning\*1\.04,\.07\)\)/);
+  assert.match(js,/ctx\.globalAlpha=power\*\.66/);
+  assert.match(js,/scroll=mix\(scroll,targetScroll,1-Math\.exp\(-delta\/165\)\)/);
+  // Preserve the original accessibility, performance, and layout protections.
+  assert.match(js,/const CANVAS_LIMIT=1\.5, FPS=30/);
+  assert.match(js,/function softenCenter\(\)/);
+  assert.match(js,/reduced\.matches\|\|saveData/);
+  assert.match(js,/window\.addEventListener\("scroll",onScroll,\{passive:true\}\)/);
 });
