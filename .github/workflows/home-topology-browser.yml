@@ -6,6 +6,7 @@ on:
       - 'index.html'
       - 'styles/landing.css'
       - 'scripts/home-topology.js'
+      - 'scripts/home-weather.js'
       - 'tests/home-topology-browser.cjs'
       - '.github/workflows/home-topology-browser.yml'
   workflow_dispatch:

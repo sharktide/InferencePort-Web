@@ -193,7 +193,7 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   });
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.16;
+  renderer.toneMappingExposure=1.025;
   renderer.domElement.className="ip-architecture-webgl";
   renderer.domElement.setAttribute("aria-hidden","true");
   host.appendChild(renderer.domElement);
@@ -251,14 +251,17 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   });
   logoGeometry.center();
   const glass=new THREE.MeshPhysicalMaterial({
-    color:0xfaf9f8,roughness:.055,metalness:0,
-    transmission:.98,thickness:1.25,ior:1.48,
-    clearcoat:1,clearcoatRoughness:.045,
-    iridescence:.43,iridescenceIOR:1.33,
-    iridescenceThicknessRange:[110,360],
-    specularIntensity:1,specularColor:new THREE.Color(0xffffff),
-    envMapIntensity:2.1,attenuationColor:new THREE.Color(0xffffff),
-    attenuationDistance:25,side:THREE.DoubleSide
+    // The transmissive volume needs a silver/pearl absorption *without*
+    // being tinted blue or blown out to flat white.
+    color:0xd9d7dd,roughness:.088,metalness:0,
+    transmission:.92,thickness:1.45,ior:1.48,
+    transparent:true,opacity:.83,
+    clearcoat:1,clearcoatRoughness:.035,
+    iridescence:.52,iridescenceIOR:1.34,
+    iridescenceThicknessRange:[125,375],
+    specularIntensity:1,specularColor:new THREE.Color(0xfffbf7),
+    envMapIntensity:1.58,attenuationColor:new THREE.Color(0xd1cbd5),
+    attenuationDistance:9,side:THREE.DoubleSide
   });
   const logoGroup=new THREE.Group();
   logoGroup.position.set(0,0,.73);
@@ -268,13 +271,13 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
   // A very faint neutral inner backing prevents the transparent mark from
   // disappearing on white pages. No blue or metallic painted fill.
   const foil=new THREE.Mesh(logoGeometry.clone(),new THREE.MeshBasicMaterial({
-    color:0xffffff,transparent:true,opacity:.035,depthWrite:false,
+    color:0x756f7e,transparent:true,opacity:.095,depthWrite:false,
     side:THREE.DoubleSide
   }));
   foil.scale.set(.987,.987,.78);foil.position.z=-.115;logoGroup.add(foil);
   const outline=new THREE.LineSegments(
     new THREE.EdgesGeometry(logoGeometry,18),
-    new THREE.LineBasicMaterial({color:0xd7c8ac,transparent:true,opacity:.58})
+    new THREE.LineBasicMaterial({color:0x988f93,transparent:true,opacity:.56})
   );
   logoGroup.add(outline);
   // A directional front-face coating creates crisp studio reflections without
@@ -297,14 +300,17 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
         float broad=exp(-pow((vLocal.x*.68+vLocal.y*.26-.29)*3.8,2.0));
         float narrow=exp(-pow((vLocal.x*.62+vLocal.y*.22+.53)*8.0,2.0));
         float edge=pow(1.0-abs(vViewNormal.z),2.0);
-        float reflection=clamp(broad*.14+narrow*.19+edge*.21,0.0,.38);
-        // Opalescent glints should shift between pearl, lilac and warm white,
-        // not create one uniform opaque blue panel across the front face.
-        vec3 pearl=vec3(.99,.99,1.0);
-        vec3 lilac=vec3(.94,.90,1.0);
-        vec3 champagne=vec3(1.0,.97,.88);
-        float angle=smoothstep(-1.5,1.5,vLocal.x+vLocal.y*.4);
-        vec3 tint=mix(mix(pearl,lilac,.22),champagne,angle*.28);
+        float reflection=clamp(broad*.16+narrow*.21+edge*.33,0.0,.51);
+        // Silver depth at glancing angles and narrow pearlescent highlights.
+        // The center stays semitransparent rather than a white opaque fill.
+        vec3 graphite=vec3(.36,.36,.41);
+        vec3 pearl=vec3(.94,.93,.97);
+        vec3 lilac=vec3(.86,.83,.96);
+        vec3 champagne=vec3(1.0,.96,.85);
+        float angle=smoothstep(-1.55,1.55,vLocal.x+vLocal.y*.36);
+        vec3 iridescence=mix(lilac,champagne,angle*.65);
+        vec3 tint=mix(pearl,graphite,edge*.58);
+        tint=mix(tint,iridescence,clamp(narrow*.4+broad*.18,0.0,.42));
         gl_FragColor=vec4(tint,reflection);
       }
     `
@@ -432,11 +438,11 @@ function makeScene({THREE,stage,host,mobile,onPick,onFailure}) {
     const lineColor=themeDark?0x9cacc8:0x73839a;
     for(const l of lines)if(l.kind!=="backbone")l.mat.color.setHex(lineColor);
     railMaterial.color.setHex(lineColor);
-    glass.color.setHex(themeDark?0xf7f5f4:0xffffff);
-    foil.material.color.setHex(0xffffff);
-    foil.material.opacity=themeDark?.035:.05;
-    outline.material.color.setHex(themeDark?0xe8d7b7:0xbbaa8c);
-    outline.material.opacity=themeDark?.62:.50;
+    glass.color.setHex(themeDark?0xd8d5dd:0xe1dee4);
+    foil.material.color.setHex(themeDark?0x716d75:0x8d8792);
+    foil.material.opacity=themeDark?.105:.095;
+    outline.material.color.setHex(themeDark?0xece3d8:0x938d91);
+    outline.material.opacity=themeDark?.68:.58;
     for(const {mat,type} of points.values()) {
       mat.color.setHex(type==="model"?(themeDark?0x91b2fd:0x5375ac):(themeDark?0xf5cf72:0xb18a37));
     }
