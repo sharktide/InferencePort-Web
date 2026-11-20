@@ -330,12 +330,13 @@ test("responsive architecture keeps useful model and infrastructure controls vis
   assert.doesNotMatch(css,/\.lp-topology/);
 });
 
-test("quickstart remains functional underneath the hero architecture", () => {
-  assert.match(home, /class="lp-hero-demo"/);
-  assert.match(home, /class="lp-code" aria-label="Copyable API quickstart examples"/);
+test("quickstart is a dedicated final section after the marketing narrative", () => {
+  assert.match(home, /class="lp-closing lp-quickstart" id="quickstart"/);
+  assert.match(home, /class="lp-code lp-quickstart-workbench"/);
   assert.match(home, /class="ip-architecture"/);
   assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
-  assert.equal([...home.matchAll(/data-example-panel=/g)].length,3);
+  assert.equal([...home.matchAll(/data-example-panel=/g)].length,8);
+  assert.ok(home.indexOf('id="quickstart"') > home.indexOf('id="pricing"'));
 });
 
 test("active paths are meaningful and context loss restores accessible fallback", () => {
@@ -425,7 +426,7 @@ test("unnecessary all-caps section kickers have been removed", () => {
 
 test("product spotlights restore main-site capability depth without a wall of cards", () => {
   const details = ["agents","deploy","buckets","shield","council","cli","lightning","app"];
-  assert.match(home.slice(home.indexOf('class="lp-hero-demo"'),home.indexOf('class="lp-hero-bottom"')),/class="lp-feature-points"/);
+  assert.doesNotMatch(home.slice(home.indexOf('class="lp-hero-grid"'),home.indexOf('class="lp-hero-bottom"')),/class="lp-feature-points"/);
   for(const id of details) {
     const at=home.indexOf('id="'+id+'"');
     assert.ok(at>0,"Missing product area "+id);
@@ -433,7 +434,7 @@ test("product spotlights restore main-site capability depth without a wall of ca
       /class="lp-feature-points(?: lp-feature-points--inverse| lp-feature-points-shield)?"/,
       "Product section lacks useful capabilities: "+id);
   }
-  assert.equal((home.match(/class="lp-feature-points/g)||[]).length,details.length+1);
+  assert.equal((home.match(/class="lp-feature-points/g)||[]).length,details.length);
   assert.match(home,/HTTP or SSE MCP servers/);
   assert.match(home,/organization’s workspace/);
   assert.match(home,/AWS CLI or compatible SDKs/);
@@ -594,11 +595,11 @@ test("atmosphere tuning keeps cloud motion calm while preserving readable weathe
 
 
 test("six recognizable marks are grouped as customers and startup-program memberships", () => {
-  const section = home.match(/<section class="lp-trust" id="customers"[\s\S]*?<\/section>/);
+  const section = home.match(/<section class="lp-trust lp-wrap" id="customers"[\s\S]*?<\/section>/);
   assert.ok(section, "The customer and program band should be visible in static HTML");
   const band=section[0];
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-grid"'));
-  assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-demo"'));
+  assert.ok(home.indexOf('id="customers"') > home.indexOf('id="pricing"'));
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-bottom"'));
   assert.match(band,/Used by teams/);
   assert.match(band,/Pollinations collaboration/);
