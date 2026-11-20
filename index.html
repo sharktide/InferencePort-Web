@@ -122,88 +122,9 @@
           </div>
         </div>
 
-        <div class="lp-hero-demo">
-          <div class="lp-hero-demo-intro">
-            <h2>Make a request.<br /><span>Build from there.</span></h2>
-            <p>Point your existing OpenAI SDK at InferencePort—or use HTTP directly. One account gives you access to text, image, video, audio, 3D, embeddings, realtime voice and typed decisions. Pay-to-Go usage comes from prepaid credits, independent of chat subscriptions.</p>
-            <ul class="lp-feature-points"><li><strong>Keep your tools.</strong> Change the base URL and API key; retain streaming and function calling.</li>
-                <li><strong>Build across modalities.</strong> Use the same workspace for generation, vector search and live voice.</li>
-                <li><strong>See what you spend.</strong> Explore the model catalog and inspect usage by model and service.</li></ul>
-            <a href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Read the docs ↗</a>
-          </div>
-          <div class="lp-code" aria-label="Copyable API quickstart examples">
-            <div class="lp-code-heading">
-              <div class="lp-code-filename"><span class="lp-code-light" aria-hidden="true"></span><strong>Quickstart</strong> <span>/ API</span></div>
-              <a href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Documentation ↗</a>
-            </div>
-            <div class="lp-code-tabs" role="tablist" aria-label="Example API requests">
-              <button type="button" role="tab" id="lp-tab-text" aria-controls="lp-panel-text" aria-selected="true" tabindex="0" data-example-tab="text">Text</button>
-              <button type="button" role="tab" id="lp-tab-image" aria-controls="lp-panel-image" aria-selected="false" tabindex="-1" data-example-tab="image">Image</button>
-              <button type="button" role="tab" id="lp-tab-embedding" aria-controls="lp-panel-embedding" aria-selected="false" tabindex="-1" data-example-tab="embedding">Embeddings</button>
-            </div>
-            <div class="lp-code-example" id="lp-panel-text" role="tabpanel" aria-labelledby="lp-tab-text" data-example-panel="text">
-              <div class="lp-code-hint">POST /v1/chat/completions</div>
-              <pre><code>curl https://api.inferenceport.ai/v1/chat/completions \
-  -H "Authorization: Bearer $IP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "deepseek-v4.1-flash-1017",
-    "messages": [
-      {"role": "user", "content": "Hello"}
-    ]
-  }'</code></pre>
-            </div>
-            <div class="lp-code-example" id="lp-panel-image" role="tabpanel" aria-labelledby="lp-tab-image" data-example-panel="image" hidden>
-              <div class="lp-code-hint">POST /v1/images/generations</div>
-              <pre><code>curl https://api.inferenceport.ai/v1/images/generations \
-  -H "Authorization: Bearer $IP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "lightning-image-turbo",
-    "prompt": "An architectural model on a desk"
-  }'</code></pre>
-            </div>
-            <div class="lp-code-example" id="lp-panel-embedding" role="tabpanel" aria-labelledby="lp-tab-embedding" data-example-panel="embedding" hidden>
-              <div class="lp-code-hint">POST /v1/embeddings</div>
-              <pre><code>curl https://api.inferenceport.ai/v1/embeddings \
-  -H "Authorization: Bearer $IP_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "text-embedding-3-small",
-    "input": "Make this searchable."
-  }'</code></pre>
-            </div>
-            <div class="lp-code-bottom"><span>Real model IDs · Replace $IP_API_KEY</span><button type="button" class="lp-copy" data-copy-request>Copy request <span aria-hidden="true">↗</span></button></div>
-            <div class="lp-copy-status" role="status" aria-live="polite"></div>
-          </div>
-        </div>
-        <section class="lp-trust" id="customers" aria-label="Customers and startup-program memberships">
-          <div class="lp-trust-row lp-trust-row--customers">
-            <div class="lp-trust-intro">
-              <h2 id="lp-trust-customers-title">Used by teams</h2>
-              <a class="lp-trust-case-study" href="/partnerships/pollinations.html">Pollinations collaboration <span aria-hidden="true">↗</span></a>
-            </div>
-            <ul class="lp-trust-list lp-trust-customers" aria-labelledby="lp-trust-customers-title">
-              <li><a class="lp-trust-mark lp-trust-mark--pollinations" href="https://pollinations.ai/" target="_blank" rel="noopener noreferrer" aria-label="Pollinations.ai"><img src="/img/brands/pollinations.svg" alt="Pollinations.ai" width="140" height="35" loading="lazy"></a></li>
-              <li><a class="lp-trust-mark lp-trust-mark--customer" href="https://ai.tomdacat.com/" target="_blank" rel="noopener noreferrer"><img src="/img/brands/tomdacat.svg" alt="" width="25" height="25" loading="lazy"><span>TomdacatAI</span></a></li>
-              <li><a class="lp-trust-mark lp-trust-mark--customer" href="https://reygrid.com/" target="_blank" rel="noopener noreferrer"><img src="/img/brands/reygrid.png" alt="" width="25" height="25" loading="lazy"><span>ReyGrid</span></a></li>
-            </ul>
-          </div>
-          <div class="lp-trust-row lp-trust-row--programs">
-            <div class="lp-trust-intro">
-              <h2 id="lp-trust-programs-title">Startup programs</h2>
-              <span class="lp-trust-caption">Member programs, not endorsements</span>
-            </div>
-            <ul class="lp-trust-list lp-trust-program-list" aria-labelledby="lp-trust-programs-title">
-              <li><a class="lp-trust-mark lp-trust-mark--e2b" href="https://e2b.dev/startups" target="_blank" rel="noopener noreferrer" aria-label="E2B for Startups"><img src="/img/brands/e2b-for-startups.png" alt="E2B for Startups" width="142" height="30" loading="lazy"></a></li>
-              <li><a class="lp-trust-mark lp-trust-mark--microsoft" href="https://www.microsoft.com/en-us/startups" target="_blank" rel="noopener noreferrer" aria-label="Microsoft for Startups"><img src="https://www.microsoft.com/en-us/startups/blog/wp-content/uploads/2025/03/Partner-badges_1.png" alt="Microsoft for Startups official program badge" width="121" height="52" loading="lazy"></a></li>
-              <li><a class="lp-trust-mark lp-trust-mark--openrouter" href="https://openrouter.ai/startup-program" target="_blank" rel="noopener noreferrer" aria-label="OpenRouter for Startups"><img src="/img/brands/openrouter.svg" alt="" width="25" height="23" loading="lazy"><span><strong>OpenRouter</strong><small>for Startups</small></span></a></li>
-            </ul>
-          </div>
-        </section>
         <div class="lp-hero-bottom">
           <span>One API key.</span><span>Text / Images / Video / Audio / 3D / Embeddings / Realtime / Decisions</span>
-          <a href="decision.html">Explore decision models ↗</a>
+          <a href="#quickstart">Try the API ↗</a>
         </div>
       </div>
     </section>
@@ -630,7 +551,134 @@
       </div>
     </section>
   </main>
-  <section class="lp-closing" aria-labelledby="lp-closing-title"><div class="lp-wrap lp-closing-grid"><div><h2 id="lp-closing-title">Make the first request.<br />Keep everything connected.</h2></div><div><p>Get a key, choose a model and make your first request. Keep the rest of the infrastructure close when you need it.</p><div class="lp-actions"><a class="lp-button lp-button-dark" href="/console">Get started ↗</a><a class="lp-button lp-button-clear" href="https://docs.inferenceport.ai/" target="_blank" rel="noopener">Read the docs ↗</a></div></div></div></section>
+        <section class="lp-trust lp-wrap" id="customers" aria-label="Customers and startup-program memberships">
+          <div class="lp-trust-row lp-trust-row--customers">
+            <div class="lp-trust-intro">
+              <h2 id="lp-trust-customers-title">Used by teams</h2>
+              <a class="lp-trust-case-study" href="/partnerships/pollinations.html">Pollinations collaboration <span aria-hidden="true">↗</span></a>
+            </div>
+            <ul class="lp-trust-list lp-trust-customers" aria-labelledby="lp-trust-customers-title">
+              <li><a class="lp-trust-mark lp-trust-mark--pollinations" href="https://pollinations.ai/" target="_blank" rel="noopener noreferrer" aria-label="Pollinations.ai"><img src="/img/brands/pollinations.svg" alt="Pollinations.ai" width="140" height="35" loading="lazy"></a></li>
+              <li><a class="lp-trust-mark lp-trust-mark--customer" href="https://ai.tomdacat.com/" target="_blank" rel="noopener noreferrer"><img src="/img/brands/tomdacat.svg" alt="" width="25" height="25" loading="lazy"><span>TomdacatAI</span></a></li>
+              <li><a class="lp-trust-mark lp-trust-mark--customer" href="https://reygrid.com/" target="_blank" rel="noopener noreferrer"><img src="/img/brands/reygrid.png" alt="" width="25" height="25" loading="lazy"><span>ReyGrid</span></a></li>
+            </ul>
+          </div>
+          <div class="lp-trust-row lp-trust-row--programs">
+            <div class="lp-trust-intro">
+              <h2 id="lp-trust-programs-title">Startup programs</h2>
+              <span class="lp-trust-caption">Recognized startup memberships</span>
+            </div>
+            <ul class="lp-trust-list lp-trust-program-list" aria-labelledby="lp-trust-programs-title">
+              <li><a class="lp-trust-mark lp-trust-mark--e2b" href="https://e2b.dev/startups" target="_blank" rel="noopener noreferrer" aria-label="E2B for Startups"><img src="/img/brands/e2b-for-startups.png" alt="E2B for Startups" width="142" height="30" loading="lazy"></a></li>
+              <li><a class="lp-trust-mark lp-trust-mark--microsoft" href="https://www.microsoft.com/en-us/startups" target="_blank" rel="noopener noreferrer" aria-label="Microsoft for Startups"><img src="https://www.microsoft.com/en-us/startups/blog/wp-content/uploads/2025/03/Partner-badges_1.png" alt="Microsoft for Startups official program badge" width="121" height="52" loading="lazy"></a></li>
+              <li><a class="lp-trust-mark lp-trust-mark--openrouter" href="https://openrouter.ai/startup-program" target="_blank" rel="noopener noreferrer" aria-label="OpenRouter for Startups"><img src="/img/brands/openrouter.svg" alt="" width="25" height="23" loading="lazy"><span><strong>OpenRouter</strong><small>for Startups</small></span></a></li>
+            </ul>
+          </div>
+        </section>
+
+  <section class="lp-closing lp-quickstart" id="quickstart" aria-labelledby="lp-quickstart-title"><div class="lp-wrap">
+    <div class="lp-quickstart-heading">
+      <div><span class="lp-quickstart-kicker">BUILD WITH INFERENCEPORT</span><h2 id="lp-quickstart-title">One API.<br /><span>Eight ways to build.</span></h2></div>
+      <div class="lp-quickstart-summary"><p>Go from a first request to production workflows. Explore copyable examples for text, images, video, audio, 3D, embeddings, realtime and decisions—all in one workspace.</p><div class="lp-actions"><a class="lp-button lp-button-dark" href="/console">Get an API key ↗</a><a class="lp-button lp-button-clear" href="https://docs.inferenceport.ai/en/latest/api/p2g-api.html">Read the API docs ↗</a></div></div>
+    </div>
+    <div class="lp-code lp-quickstart-workbench" aria-label="Eight API quickstart examples">
+      <div class="lp-code-heading"><div class="lp-code-filename"><span class="lp-code-light" aria-hidden="true"></span><strong>Quickstart</strong><span>/ Pay-to-Go API</span></div><span class="lp-workbench-count">8 capabilities · One key</span></div>
+      <div class="lp-code-tabs" role="tablist" aria-label="Example API requests"><button type="button" role="tab" id="lp-tab-text" aria-controls="lp-panel-text" aria-selected="true" tabindex="0" data-example-tab="text">Text</button>
+<button type="button" role="tab" id="lp-tab-image" aria-controls="lp-panel-image" aria-selected="false" tabindex="-1" data-example-tab="image">Images</button>
+<button type="button" role="tab" id="lp-tab-video" aria-controls="lp-panel-video" aria-selected="false" tabindex="-1" data-example-tab="video">Video</button>
+<button type="button" role="tab" id="lp-tab-audio" aria-controls="lp-panel-audio" aria-selected="false" tabindex="-1" data-example-tab="audio">Audio</button>
+<button type="button" role="tab" id="lp-tab-3d" aria-controls="lp-panel-3d" aria-selected="false" tabindex="-1" data-example-tab="3d">3D</button>
+<button type="button" role="tab" id="lp-tab-embedding" aria-controls="lp-panel-embedding" aria-selected="false" tabindex="-1" data-example-tab="embedding">Embeddings</button>
+<button type="button" role="tab" id="lp-tab-realtime" aria-controls="lp-panel-realtime" aria-selected="false" tabindex="-1" data-example-tab="realtime">Realtime</button>
+<button type="button" role="tab" id="lp-tab-decision" aria-controls="lp-panel-decision" aria-selected="false" tabindex="-1" data-example-tab="decision">Decisions</button></div>
+      <div class="lp-code-example" id="lp-panel-text" role="tabpanel" aria-labelledby="lp-tab-text" data-example-panel="text"><div class="lp-code-hint">POST /v1/chat/completions</div><pre><code>curl https://api.inferenceport.ai/v1/chat/completions \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "model": "deepseek-v4.1-flash-1017",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hello!"
+    }
+  ]
+}'</code></pre></div>
+<div class="lp-code-example" id="lp-panel-image" role="tabpanel" aria-labelledby="lp-tab-image" data-example-panel="image" hidden><div class="lp-code-hint">POST /v1/images/generations</div><pre><code>curl https://api.inferenceport.ai/v1/images/generations \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "model": "lightning-image-turbo",
+  "prompt": "A glass sculpture at sunrise"
+}'</code></pre></div>
+<div class="lp-code-example" id="lp-panel-video" role="tabpanel" aria-labelledby="lp-tab-video" data-example-panel="video" hidden><div class="lp-code-hint">POST /v1/videos · poll /v1/videos/{video_id}</div><pre><code>curl https://api.inferenceport.ai/v1/videos \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "model": "wan-fast",
+  "prompt": "Slow aerial pan across a coastline",
+  "seconds": 8,
+  "size": "1280x720"
+}'</code></pre></div>
+<div class="lp-code-example" id="lp-panel-audio" role="tabpanel" aria-labelledby="lp-tab-audio" data-example-panel="audio" hidden><div class="lp-code-hint">POST /v1/audio/generations · returns audio/mpeg</div><pre><code>curl https://api.inferenceport.ai/v1/audio/generations \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "prompt": "Soft rain and distant thunder",
+  "duration_seconds": 10
+}'</code></pre></div>
+<div class="lp-code-example" id="lp-panel-3d" role="tabpanel" aria-labelledby="lp-tab-3d" data-example-panel="3d" hidden><div class="lp-code-hint">POST /v1/3d/generations · poll /v1/3d/jobs/{job_id}</div><pre><code>curl https://api.inferenceport.ai/v1/3d/generations \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "model": "tripoSR",
+  "image_urls": [
+    "https://example.com/object.jpg"
+  ]
+}'</code></pre></div>
+<div class="lp-code-example" id="lp-panel-embedding" role="tabpanel" aria-labelledby="lp-tab-embedding" data-example-panel="embedding" hidden><div class="lp-code-hint">POST /v1/embeddings</div><pre><code>curl https://api.inferenceport.ai/v1/embeddings \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "model": "text-embedding-3-small",
+  "input": "Make this searchable."
+}'</code></pre></div>
+<div class="lp-code-example" id="lp-panel-realtime" role="tabpanel" aria-labelledby="lp-tab-realtime" data-example-panel="realtime" hidden><div class="lp-code-hint">WebSocket /v1/realtime</div><pre><code># Run on your server: pip install websockets
+import asyncio
+import os
+from websockets.asyncio.client import connect
+
+async def main():
+    url = "wss://api.inferenceport.ai/v1/realtime?model=gpt-realtime-2.1-mini"
+    async with connect(
+        url,
+        additional_headers={"Authorization": "Bearer " + os.environ["IP_API_KEY"]},
+    ) as ws:
+        print(await ws.recv())  # session.created
+        # Continue using session.update and the Realtime event protocol.
+
+asyncio.run(main())</code></pre></div>
+<div class="lp-code-example" id="lp-panel-decision" role="tabpanel" aria-labelledby="lp-tab-decision" data-example-panel="decision" hidden><div class="lp-code-hint">POST /v1/systemone</div><pre><code>curl https://api.inferenceport.ai/v1/systemone \
+  -H "Authorization: Bearer $IP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "model": "microsoft/decision-1",
+  "state": "A customer requests a refund for a double charge.",
+  "questions": {
+    "team": {
+      "type": "choice",
+      "instructions": "Which team should take this?",
+      "criteria": {
+        "billing": "Refunds and charges",
+        "support": "General help"
+      }
+    }
+  }
+}'</code></pre></div>
+      <div class="lp-code-bottom"><span>Use your <code>IP_API_KEY</code> environment variable. Video and 3D create asynchronous jobs.</span><button type="button" class="lp-copy" data-copy-request>Copy example ↗</button></div>
+      <div class="lp-copy-status" role="status" aria-live="polite"></div>
+    </div>
+    <div class="lp-workbench-notes"><span>Realtime uses a server-side WebSocket connection rather than an HTTP POST.</span><a href="https://docs.inferenceport.ai/en/latest/api/realtime-api.html">Realtime protocol ↗</a></div>
+  </div></section>
   <ip-footer></ip-footer>
   <script>
   (() => {
@@ -646,6 +694,8 @@
         if (active && focus) tab.focus();
       });
       panels.forEach(panel => { panel.hidden = panel.dataset.examplePanel !== key; });
+      if (status) status.textContent = "";
+      if (copyButton) copyButton.textContent = "Copy example ↗";
     }
     tabs.forEach((tab, index) => {
       tab.addEventListener("click", () => selectTab(tab.dataset.exampleTab));

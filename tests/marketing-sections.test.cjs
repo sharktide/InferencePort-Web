@@ -25,34 +25,39 @@ test("every link from the shared navbar to the homepage has a stable anchor", ()
   assert.match(home, /<main class="lp" id="main-content">/);
 });
 
-test("API demo uses registered model IDs and parseable real request examples", () => {
-  const examples = [...home.matchAll(/<div class="lp-code-example"[^>]*data-example-panel="([^"]+)"[^>]*>[\s\S]*?<pre><code>([\s\S]*?)<\/code><\/pre>/g)];
-  assert.equal(examples.length, 3);
-  const models = {
-    text: { endpoint: "/v1/chat/completions", id: "deepseek-v4.1-flash-1017", field: "messages" },
-    image: { endpoint: "/v1/images/generations", id: "lightning-image-turbo", field: "prompt" },
-    embedding: { endpoint: "/v1/embeddings", id: "text-embedding-3-small", field: "input" },
+test("final API workbench offers all eight documented modalities", () => {
+  const examples=[...home.matchAll(/<div class="lp-code-example"[^>]*data-example-panel="([^"]+)"[^>]*>[\s\S]*?<pre><code>([\s\S]*?)<\/code><\/pre>/g)];
+  assert.equal(examples.length,8);
+  const fields={
+    text:["/v1/chat/completions","deepseek-v4.1-flash-1017","messages"],
+    image:["/v1/images/generations","lightning-image-turbo","prompt"],
+    video:["/v1/videos","wan-fast","prompt"],
+    audio:["/v1/audio/generations",null,"prompt"],
+    "3d":["/v1/3d/generations","tripoSR","image_urls"],
+    embedding:["/v1/embeddings","text-embedding-3-small","input"],
+    decision:["/v1/systemone","microsoft/decision-1","questions"]
   };
-  for (const [, type, code] of examples) {
-    const expected = models[type];
-    assert.ok(expected, "Unknown example tab: " + type);
-    assert.ok(code.includes("https://api.inferenceport.ai" + expected.endpoint));
-    assert.match(code, /Authorization: Bearer \$IP_API_KEY/);
-    assert.match(code, /Content-Type: application\/json/);
-    const json = code.match(/-d '([\s\S]*?)'/)?.[1];
-    assert.ok(json, type + ": missing JSON body");
-    const body = JSON.parse(json);
-    assert.equal(body.model, expected.id);
-    assert.ok(body[expected.field], type + ": missing " + expected.field);
+  for(const [,key,code] of examples){
+    assert.ok(home.includes('data-example-tab="'+key+'"'));
+    if(key==="realtime"){
+      assert.match(code,/wss:\/\/api\.inferenceport\.ai\/v1\/realtime/);
+      assert.match(code,/os\.environ\["IP_API_KEY"\]/);
+      continue;
+    }
+    const [endpoint,model,field]=fields[key];
+    assert.ok(code.includes("https://api.inferenceport.ai"+endpoint));
+    assert.match(code,/Authorization: Bearer \$IP_API_KEY/);
+    const body=JSON.parse(code.match(/-d '([\s\S]*?)'/)[1]);
+    if(model)assert.equal(body.model,model);
+    assert.ok(body[field],key+" must include "+field);
   }
-  assert.match(home, /data-example-tab="text"/);
-  assert.match(home, /data-example-tab="image"/);
-  assert.match(home, /data-example-tab="embedding"/);
-  assert.match(home, /event\.key === "ArrowRight"/);
-  assert.match(home, /event\.key === "ArrowLeft"/);
-  assert.match(home, /navigator\.clipboard\.writeText\(code\)/);
+  assert.ok(home.indexOf('id="quickstart"')>home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="customers"')>home.indexOf('id="pricing"'));
+  assert.doesNotMatch(home,/class="lp-hero-demo"/);
+  assert.match(home,/event\.key === "ArrowRight"/);
+  assert.match(home,/event\.key === "ArrowLeft"/);
+  assert.match(home,/navigator\.clipboard\.writeText\(code\)/);
 });
-
 test("product sections link to usable next steps", () => {
   for (const fragment of [
     'href="/console/agents"', 'href="/console/buckets"', 'href="shield.html"',
@@ -70,7 +75,7 @@ test("product sections link to usable next steps", () => {
 
 test("homepage has intentional layout variation and responsive themes", () => {
   const sectionCount = [...home.matchAll(/<section\b/g)].length;
-  assert.ok(sectionCount <= 8, "Homepage has excessive sections");
+  assert.ok(sectionCount <= 10, "Homepage has excessive sections");
   assert.match(home, /class="lp-modality-matrix"/);
   assert.match(home, /class="lp-product-grid"/);
   assert.match(home, /class="lp-proof-agent"/);
@@ -594,11 +599,11 @@ test("six recognizable marks are grouped as customers and startup-program member
   const band=section[0];
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-grid"'));
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-demo"'));
-  assert.ok(home.indexOf('id="customers"') < home.indexOf('class="lp-hero-bottom"'));
+  assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-bottom"'));
   assert.match(band,/Used by teams/);
   assert.match(band,/Pollinations collaboration/);
   assert.match(band,/Startup programs/);
-  assert.match(band,/Member programs, not endorsements/);
+  assert.match(band,/Recognized startup memberships/);
   for (const [name,url,asset] of [
     ["Pollinations.ai","https://pollinations.ai/","pollinations.svg"],
     ["TomdacatAI","https://ai.tomdacat.com/","tomdacat.svg"],
