@@ -586,3 +586,47 @@ test("atmosphere tuning keeps cloud motion calm while preserving readable weathe
   assert.match(js,/reduced\.matches\|\|saveData/);
   assert.match(js,/window\.addEventListener\("scroll",onScroll,\{passive:true\}\)/);
 });
+
+
+test("six recognizable marks are grouped as customers and startup-program memberships", () => {
+  const section = home.match(/<section class="lp-trust" id="customers"[\s\S]*?<\/section>/);
+  assert.ok(section, "The customer and program band should be visible in static HTML");
+  const band=section[0];
+  assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-grid"'));
+  assert.ok(home.indexOf('id="customers"') < home.indexOf('class="lp-hero-demo"'));
+  assert.match(band,/Our customers/);
+  assert.match(band,/Programs we're members of/);
+  for (const [name,url,asset] of [
+    ["Pollinations.ai","https://pollinations.ai/","pollinations.svg"],
+    ["TomdacatAI","https://ai.tomdacat.com/","tomdacat.svg"],
+    ["ReyGrid","https://reygrid.com/","reygrid.png"],
+  ]) {
+    assert.ok(band.includes(url), "Missing customer destination "+name);
+    assert.ok(band.includes("/img/brands/"+asset), "Missing customer logo "+name);
+    assert.ok(fs.existsSync(path.join(root,"img/brands",asset)), "Missing local asset "+asset);
+  }
+  for (const [name,url] of [
+    ["E2B for Startups","https://e2b.dev/startups"],
+    ["Microsoft for Startups","https://www.microsoft.com/en-us/startups"],
+    ["OpenRouter for Startups","https://openrouter.ai/startup-program"]
+  ]) {
+    assert.ok(band.includes('aria-label="'+name+'"'),"Missing labeled startup link "+name);
+    assert.ok(band.includes(url),"Missing startup program link "+name);
+  }
+  assert.match(band,/\/partnerships\/pollinations\.html/);
+  assert.match(band,/\/img\/brands\/e2b-for-startups\.png/);
+  assert.match(band,/Partner-badges_1\.png/);
+  assert.match(band,/\/img\/brands\/openrouter\.svg/);
+  const badge=fs.readFileSync(path.join(root,"img/brands/e2b-for-startups.png"));
+  assert.equal(badge.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
+  assert.match(css,/\.lp-trust-tile:focus-visible/);
+  assert.match(css,/@media \(max-width:540px\)/);
+  const footer=read("components/ip-footer.js");
+  for (const url of ["https://e2b.dev/startups","https://www.microsoft.com/en-us/startups","https://openrouter.ai/startup-program"]) {
+    assert.ok(footer.includes(url),"Missing footer startup link "+url);
+  }
+  assert.match(footer,/href="\/index\.html#customers"/);
+  assert.match(footer,/src="\/img\/brands\/e2b-for-startups\.png"/);
+  assert.match(footer,/src="\/img\/brands\/openrouter\.svg"/);
+  assert.match(read("styles/shared.css"),/\.ipf-startup-list > a:focus-visible/);
+});
