@@ -471,7 +471,7 @@ test("restored detail keeps working CTAs, API tabs and semantic structure", () =
   assert.match(home,/href="chat\/">Try Lightning chat/);
   assert.match(home,/href="install.html#install">Download the desktop app/);
   assert.match(home,/href="\/console\/agents">Configure an agent/);
-  assert.equal((home.match(/data-example-tab=/g)||[]).length,3);
+  assert.equal((home.match(/data-example-tab=/g)||[]).length,8);
   assert.equal((home.match(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)||[]).length,4);
 });
 
