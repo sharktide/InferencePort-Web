@@ -493,25 +493,33 @@ html, body { overflow-x: clip; }
 }
 
 
-/* Site-wide startup-program membership recognition; footer is always dark. */
-.ipf-startup-programs {margin-top:44px;border-top:1px solid #222b3f;padding-top:23px;}
-.ipf-startup-caption {display:block;margin-bottom:14px;font:600 .67rem/1.4 var(--mono);text-transform:uppercase;letter-spacing:.085em;color:#9ca8bb;}
-.ipf-startup-list {display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;}
+
+/* Startup memberships: a quiet editorial footnote, not a second row of cards. */
+.ipf-startup-programs {margin-top:43px;padding:23px 0 0;border-top:1px solid #222b3f;display:flex;align-items:center;gap:28px;flex-wrap:wrap;}
+.ipf-startup-caption {font:600 .66rem/1.4 var(--mono);text-transform:uppercase;letter-spacing:.085em;color:#9ca8bb;flex:0 0 auto;}
+.ipf-startup-list {display:flex;align-items:center;flex-wrap:wrap;gap:0;min-width:0;}
 .ipf-startup-list > a {
-  display:flex;align-items:center;justify-content:center;min-height:69px;min-width:0;
-  background:#fff;border:1px solid #cfd6df;border-radius:8px;
-  padding:7px 14px;text-decoration:none;color:#202032;
-  transition:border-color .18s ease,transform .18s ease;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:4px 23px;min-height:52px;
+  text-decoration:none;color:#e5e9f0;transition:opacity .18s ease;
 }
-.ipf-startup-list > a:hover {border-color:#fcd704;transform:translateY(-2px);}
-.ipf-startup-list > a:focus-visible {outline:3px solid #fcd704;outline-offset:3px;}
+.ipf-startup-list > a + a {border-left:1px solid #303a4e;}
+.ipf-startup-list > a:first-child {padding-left:0;}
+.ipf-startup-list > a:hover {opacity:.75;}
+.ipf-startup-list > a:focus-visible {outline:2px solid #fcd704;outline-offset:3px;}
 .ipf-startup-list img {display:block;max-width:100%;height:auto;object-fit:contain;}
-.ipf-startup-list > a:first-child img {width:167px;}
-.ipf-startup-list > a:nth-child(2) img {width:140px;max-height:60px;}
+.ipf-startup-list > a:first-child img {width:148px;filter:invert(1);mix-blend-mode:screen;}
+.ipf-startup-list > a:nth-child(2) img {width:125px;max-height:54px;border-radius:4px;}
 .ipf-openrouter-badge {gap:9px;}
-.ipf-openrouter-badge img {width:25px;height:22px;}
+.ipf-openrouter-badge img {width:25px;height:22px;filter:brightness(0) invert(1);}
 .ipf-openrouter-badge span {display:grid;gap:2px;line-height:1.1;}
 .ipf-openrouter-badge strong {font-size:.86rem;letter-spacing:-.04em;}
-.ipf-openrouter-badge small {font-size:.69rem;font-weight:600;color:#66677a;}
-@media (max-width:540px) {.ipf-startup-list > a {flex:1 1 140px;}}
-@media (prefers-reduced-motion:reduce) {.ipf-startup-list > a {transition:none;}.ipf-startup-list > a:hover {transform:none;}}
+.ipf-openrouter-badge small {font-size:.67rem;font-weight:600;color:#a3adbf;}
+@media (max-width:540px) {
+  .ipf-startup-programs {gap:13px;}
+  .ipf-startup-list {gap:12px 0;}
+  .ipf-startup-list > a {padding:3px 14px;}
+  .ipf-startup-list > a:first-child {padding-left:0;}
+  .ipf-startup-list > a:nth-child(3) {border-left:0;padding-left:0;}
+}
+@media (prefers-reduced-motion:reduce) {.ipf-startup-list > a {transition:none;}}

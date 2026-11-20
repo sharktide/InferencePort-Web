@@ -593,9 +593,12 @@ test("six recognizable marks are grouped as customers and startup-program member
   assert.ok(section, "The customer and program band should be visible in static HTML");
   const band=section[0];
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-grid"'));
-  assert.ok(home.indexOf('id="customers"') < home.indexOf('class="lp-hero-demo"'));
-  assert.match(band,/Our customers/);
-  assert.match(band,/Programs we're members of/);
+  assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-demo"'));
+  assert.ok(home.indexOf('id="customers"') < home.indexOf('class="lp-hero-bottom"'));
+  assert.match(band,/01 \/ CUSTOMERS/);
+  assert.match(band,/Teams using InferencePort/);
+  assert.match(band,/02 \/ STARTUP PROGRAMS/);
+  assert.match(band,/Part of the ecosystem/);
   for (const [name,url,asset] of [
     ["Pollinations.ai","https://pollinations.ai/","pollinations.svg"],
     ["TomdacatAI","https://ai.tomdacat.com/","tomdacat.svg"],
@@ -619,8 +622,8 @@ test("six recognizable marks are grouped as customers and startup-program member
   assert.match(band,/\/img\/brands\/openrouter\.svg/);
   const badge=fs.readFileSync(path.join(root,"img/brands/e2b-for-startups.png"));
   assert.equal(badge.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
-  assert.match(css,/\.lp-trust-tile:focus-visible/);
-  assert.match(css,/@media \(max-width:540px\)/);
+  assert.match(css,/\.lp-trust-mark:focus-visible/);
+  assert.match(css,/@media \(max-width:560px\)/);
   const footer=read("components/ip-footer.js");
   for (const url of ["https://e2b.dev/startups","https://www.microsoft.com/en-us/startups","https://openrouter.ai/startup-program"]) {
     assert.ok(footer.includes(url),"Missing footer startup link "+url);
