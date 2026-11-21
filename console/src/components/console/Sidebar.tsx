@@ -1,59 +1,133 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import styles from "./Sidebar.module.css";
 import Icon from "../Icon";
 import ContextSwitcher from "./ContextSwitcher";
 import { useOptionalOrgContext } from "./OrgContext";
-import { SPENDING_ROLES } from "./OrgWorkspace";
-import { MAIN_NAV, mainSectionForTab } from "../../lib/consoleNavigation";
+import { isOrgSection, orgSectionAllowed, SPENDING_ROLES } from "./OrgWorkspace";
+import {
+  PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_MORE,
+  PERSONAL_DOCK, ORG_DOCK, ORG_READ_ONLY_DOCK, navHighlight,
+  type NavGroup, type NavItem,
+} from "../../lib/consoleNavigation";
 
 interface SidebarProps {
   user: any;
   isOpen: boolean;
+  onOpen: () => void;
   onClose: () => void;
+  onSignOut: () => void;
   activeTab: string;
   onTabChange: (tab: string) => void;
   unclaimedRewards?: number;
 }
 
-export default function Sidebar({ user, isOpen, onClose, activeTab, onTabChange, unclaimedRewards = 0 }: SidebarProps) {
-  const activeOrg = useOptionalOrgContext()?.activeOrg ?? null;
+export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, activeTab, onTabChange, unclaimedRewards = 0 }: SidebarProps) {
+  const ctx = useOptionalOrgContext();
+  const activeOrg = ctx?.activeOrg ?? null;
   const canSpend = !activeOrg || SPENDING_ROLES.includes(activeOrg.role);
-  const activeGroup = activeOrg && !canSpend && activeTab === "org-keys" ? "settings" : mainSectionForTab(activeTab);
+  const activeId = navHighlight(activeTab, !!activeOrg);
+  const moreRef = useRef<HTMLButtonElement>(null);
+  const sideRef = useRef<HTMLElement>(null);
+
+  const allowed = (id: string) => !isOrgSection(id) || (!!activeOrg && orgSectionAllowed(id, activeOrg.role));
+  const groups: NavGroup[] = activeOrg ? [
+    ...(canSpend ? [{ title: "Build", items: ORG_WORK }] : []),
+    { title: activeOrg.name, items: ORG_MANAGE.filter((item) => allowed(item.id)) },
+  ] : PERSONAL_GROUPS;
+  const advanced = (activeOrg ? ORG_MORE.filter((item) => allowed(item.id) && (canSpend || isOrgSection(item.id))) : PERSONAL_MORE);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const isAdvanced = advanced.some((item) => item.id === activeTab);
+  useEffect(() => { if (isAdvanced) setAdvancedOpen(true); }, [isAdvanced]);
+
   const navigate = (id: string) => { onTabChange(id); onClose(); };
+  const dock = activeOrg ? (canSpend ? ORG_DOCK : ORG_READ_ONLY_DOCK) : PERSONAL_DOCK;
+  const dockActive = dock.some((item) => item.id === activeId);
+  useEffect(() => {
+    if (!isOpen) return;
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { event.preventDefault(); onClose(); moreRef.current?.focus(); }
+    };
+    document.addEventListener("keydown", onEscape);
+    const oldOverflow = document.body.style.overflow;
+    if (window.matchMedia("(max-width: 960px)").matches) document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onEscape);
+      document.body.style.overflow = oldOverflow;
+    };
+  }, [isOpen, onClose]);
+
+  const navButton = (item: NavItem) => (
+    <button key={item.id} type="button" className={"console-nav-tab " + styles.consoleNavTab + (activeId === item.id ? " " + styles.active : "")}
+      data-console-tab={item.id} aria-current={activeId === item.id ? "page" : undefined} onClick={() => navigate(item.id)}>
+      <Icon name={item.icon} className={styles.navIcon} />
+      <span className={styles.navLabel}>{item.label}</span>
+      {item.id === "usage" && unclaimedRewards > 0 && !activeOrg && <span className={styles.rewardBadge} title="Rewards available">{unclaimedRewards}</span>}
+    </button>
+  );
 
   return (
     <>
       <div className={styles.mobileNavBackdrop + (isOpen ? " " + styles.visible : "")} onClick={onClose} aria-hidden="true" />
-      <aside className={styles.consoleNav + (isOpen ? " " + styles.mobileOpen : "")} aria-label="Console navigation">
-        <div className={styles.contextBlock}><ContextSwitcher variant="sidebar" className={styles.contextHeader} /></div>
-        <div className={styles.navGroup} role="group" aria-label="Workspace">
-          {MAIN_NAV.filter((item) => (canSpend || !["playground", "models", "build"].includes(item.id))).map((item) => (
-            <button key={item.id} type="button" className={styles.consoleNavTab + (activeGroup === item.id ? " " + styles.active : "")}
-              aria-current={activeGroup === item.id ? "page" : undefined}
-              onClick={() => navigate(activeOrg && item.id === "usage" ? "org-usage" : item.id)}>
-              <Icon name={item.icon} className={styles.navIcon} />
-              <span className={styles.navLabel}>{item.label}</span>
-              {item.id === "usage" && unclaimedRewards > 0 && !activeOrg && (
-                <span className={styles.rewardBadge} aria-label={unclaimedRewards + " unclaimed rewards"}>{unclaimedRewards}</span>
-              )}
-            </button>
-          ))}
+      <aside ref={sideRef} className={styles.consoleNav + (isOpen ? " " + styles.mobileOpen : "")}
+        aria-label="Console navigation" inert={!isOpen && typeof window !== "undefined" && window.matchMedia("(max-width: 960px)").matches}>
+        <div className={styles.drawerTitle}>
+          <strong>Navigation</strong>
+          <button type="button" className={styles.drawerClose} aria-label="Close navigation" onClick={onClose}><Icon name="x" size={20} /></button>
         </div>
+        <div className={styles.contextBlock}><ContextSwitcher variant="sidebar" className={styles.contextHeader} /></div>
+        {groups.map((group) => (
+          <div className={styles.navGroup} role="group" aria-label={group.title} key={group.title}>
+            <span className={styles.groupTitle} title={group.title}>{group.title}</span>
+            {group.items.map(navButton)}
+          </div>
+        ))}
+        {advanced.length > 0 && (
+          <div className={styles.advancedGroup}>
+            <button type="button" className={styles.expandButton} aria-expanded={advancedOpen}
+              aria-controls="console-advanced-links" onClick={() => setAdvancedOpen((value) => !value)}>
+              <span>{activeOrg ? "More workspace tools" : "More tools"}</span>
+              <span className={styles.chevron + (advancedOpen ? " " + styles.chevronOpen : "")} aria-hidden="true" />
+            </button>
+            {advancedOpen && <div id="console-advanced-links" className={styles.navGroup}>{advanced.map(navButton)}</div>}
+          </div>
+        )}
         <div className={styles.sideBottom}>
+          <button type="button" className={"console-nav-tab " + styles.consoleNavTab + (["account", "organizations", "authorized-apps"].includes(activeTab) ? " " + styles.active : "")} onClick={() => navigate("account")}>
+            <Icon name="user-circle" className={styles.navIcon} /> <span className={styles.navLabel}>Account</span>
+          </button>
+          <button type="button" className={"console-nav-tab " + styles.consoleNavTab} onClick={() => navigate("organizations")}>
+            <Icon name="plugs-connected" className={styles.navIcon} /> <span className={styles.navLabel}>Organizations</span>
+          </button>
           <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.utilityLink}>
             <Icon name="question" className={styles.navIcon} /> Documentation
           </a>
-          <button type="button" className={styles.consoleNavTab + (activeGroup === "settings" ? " " + styles.active : "")}
-            aria-current={activeGroup === "settings" ? "page" : undefined} onClick={() => navigate("settings")}>
-            <Icon name="user-circle" className={styles.navIcon} /> Settings
-          </button>
-          {user && <div className={styles.sidebarUserTag}>
-            <span className={styles.sidebarUserAvatar}>{user.email ? user.email[0].toUpperCase() : "?"}</span>
-            <span className={styles.sidebarUserEmail}>{user.email}</span>
-          </div>}
+          {user && (
+            <div className={styles.sidebarUserTag}>
+              <span className={styles.sidebarUserAvatar}>{user.email ? user.email[0].toUpperCase() : "?"}</span>
+              <span className={styles.sidebarUserEmail}>{user.email}</span>
+              <button type="button" className={styles.drawerSignOut} aria-label="Sign out" title="Sign out" onClick={() => { onClose(); onSignOut(); }}>
+                <Icon name="sign-out" size={18} />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
+      <nav className={styles.mobileDock} aria-label="Quick navigation">
+        {dock.map((item) => (
+          <button key={item.id} type="button" className={styles.dockButton + (activeId === item.id ? " " + styles.dockActive : "")}
+            aria-current={activeId === item.id ? "page" : undefined} onClick={() => navigate(item.id)}>
+            <Icon name={item.icon} size={20} />
+            <span>{item.id === "org-overview" ? "Overview" : item.label === "API keys" ? "Keys" : item.label}</span>
+          </button>
+        ))}
+        <button ref={moreRef} type="button" className={styles.dockButton + (!dockActive || isOpen ? " " + styles.dockActive : "")}
+          aria-label={isOpen ? "Close full navigation" : "Open full navigation"} aria-expanded={isOpen} onClick={isOpen ? onClose : onOpen}>
+          <Icon name={isOpen ? "x" : "list"} size={20} />
+          <span>More</span>
+        </button>
+      </nav>
     </>
   );
 }
