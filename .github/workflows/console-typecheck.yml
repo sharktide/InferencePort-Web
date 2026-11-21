@@ -28,3 +28,4 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run test:usage
       - run: npm run test:pricing
+      - run: npm run test:navigation
