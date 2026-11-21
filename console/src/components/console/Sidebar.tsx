@@ -30,6 +30,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
   const activeId = navHighlight(activeTab, !!activeOrg);
   const moreRef = useRef<HTMLButtonElement>(null);
   const sideRef = useRef<HTMLElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
   /* Keep off-canvas navigation out of the keyboard tab order on small screens. */
   useEffect(() => {
     const aside = sideRef.current;
@@ -50,6 +51,12 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const isAdvanced = advanced.some((item) => item.id === activeTab);
   useEffect(() => { if (isAdvanced) setAdvancedOpen(true); }, [isAdvanced]);
+
+  useEffect(() => {
+    if (isOpen && window.matchMedia("(max-width: 960px)").matches) {
+      drawerCloseRef.current?.focus();
+    }
+  }, [isOpen]);
 
   const navigate = (id: string) => { onTabChange(id); onClose(); };
   const dock = activeOrg ? (canSpend ? ORG_DOCK : ORG_READ_ONLY_DOCK) : PERSONAL_DOCK;
@@ -84,7 +91,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
         aria-label="Console navigation">
         <div className={styles.drawerTitle}>
           <strong>Navigation</strong>
-          <button type="button" className={styles.drawerClose} aria-label="Close navigation" onClick={onClose}><Icon name="x" size={20} /></button>
+          <button ref={drawerCloseRef} type="button" className={styles.drawerClose} aria-label="Close navigation" onClick={() => { onClose(); moreRef.current?.focus(); }}><Icon name="x" size={20} /></button>
         </div>
         <div className={styles.contextBlock}><ContextSwitcher variant="sidebar" className={styles.contextHeader} /></div>
         {groups.map((group) => (

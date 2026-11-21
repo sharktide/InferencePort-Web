@@ -16,6 +16,28 @@ interface Props {
 }
 
 type Command = { id: string; label: string; section: string; keywords?: string };
+const KEYWORDS: Record<string, string> = {
+  playground: "test try chat image audio video realtime 3d embeddings decisions",
+  models: "catalog discover pricing capabilities compare",
+  "api-key": "credential token limits sdk integrate",
+  "org-keys": "credential token limits sdk integrate",
+  agents: "managed assistant automation",
+  deploy: "featherless dedicated server models hosting",
+  buckets: "storage s3 files",
+  shield: "safety moderation protect",
+  usage: "analytics requests tokens costs credits chart",
+  "org-usage": "analytics requests tokens costs credits chart",
+  billing: "wallet buy credits payment subscription plans",
+  "org-billing": "wallet spend payment subscription plans",
+  "org-invoices": "billing payment receipts",
+  "payg-api": "p2g openai compatible api guide",
+  "gen-api": "subscription generation api guide",
+  mcp: "council tools integration",
+  "authorized-apps": "oauth connections permissions",
+  "org-audit": "activity history compliance",
+  "org-security": "sso login access",
+};
+
 export default function CommandPalette({ open, activeOrg, onClose, onNavigate }: Props) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
@@ -41,8 +63,8 @@ export default function CommandPalette({ open, activeOrg, onClose, onNavigate }:
           { id: "account", label: "Account", section: "Account" },
           { id: "organizations", label: "Organizations", section: "Account" },
         ];
-    const built: Command[] = [...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace" })),
-      ...more.map((item) => ({ id: item.id, label: item.label, section: "More tools" })), ...extra];
+    const built: Command[] = [...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace", keywords: KEYWORDS[item.id] })),
+      ...more.map((item) => ({ id: item.id, label: item.label, section: "More tools", keywords: KEYWORDS[item.id] })), ...extra];
     return built.filter((item, index, all) => all.findIndex((other) => other.id === item.id) === index);
   }, [activeOrg, canSpend]);
 

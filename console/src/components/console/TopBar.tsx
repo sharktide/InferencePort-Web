@@ -26,7 +26,7 @@ export default function TopBar({ user, onSignOut, onThemeToggle, theme, appName,
         <button type="button" className={styles.searchButton} onClick={onOpenSearch}
           aria-label="Search console (Command K or Control K)">
           <Icon name="sparkle" size={18} />
-          <span>Search anything</span><kbd>⌘ K</kbd>
+          <span>Search console</span><kbd>⌘ K</kbd>
         </button>
         <ContextSwitcher variant="topbar" className={styles.switcher} />
         <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.docsLink}>Docs</a>
