@@ -19,7 +19,7 @@ interface SidebarProps {
 export default function Sidebar({ user, isOpen, onClose, activeTab, onTabChange, unclaimedRewards = 0 }: SidebarProps) {
   const activeOrg = useOptionalOrgContext()?.activeOrg ?? null;
   const canSpend = !activeOrg || SPENDING_ROLES.includes(activeOrg.role);
-  const activeGroup = mainSectionForTab(activeTab);
+  const activeGroup = activeOrg && !canSpend && activeTab === "org-keys" ? "settings" : mainSectionForTab(activeTab);
   const navigate = (id: string) => { onTabChange(id); onClose(); };
 
   return (

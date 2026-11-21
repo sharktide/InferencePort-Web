@@ -482,7 +482,7 @@ function WorkspaceContextNav({ activeTab, activeOrg, onNavigate }: {
   activeOrg: OrgSummary | null;
   onNavigate: (tab: string) => void;
 }) {
-  const section = mainSectionForTab(activeTab);
+  const section = activeOrg && !SPENDING_ROLES.includes(activeOrg.role) && activeTab === "org-keys" ? "settings" : mainSectionForTab(activeTab);
   if (section === "home" || section === "models" || section === "playground") return null;
   const usageLinks = activeOrg
     ? [

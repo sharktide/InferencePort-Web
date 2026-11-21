@@ -40,6 +40,7 @@ export default function WorkspaceHub({ kind, activeOrg, onNavigate }: Props) {
       { id: "organizations", label: "Organizations", description: "Create, join and switch between workspaces.", icon: "user-circle" },
     ] },
     ...(activeOrg ? [{ title: "Workspace administration", description: "Manage " + activeOrg.name + " without cluttering your main navigation.", items: ([
+      ...(!canSpend ? [{ id: "org-keys", label: "API keys", description: "View available organization keys and access.", icon: "key" as IconName }] : []),
       { id: "org-members", label: "Members", description: "Invite and manage members.", icon: "user-circle" },
       { id: "org-teams", label: "Teams", description: "Organize members and access.", icon: "chat-circle-text" },
       { id: "org-policies", label: "Policies", description: "Configure organization policies.", icon: "shield-check" },

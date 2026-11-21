@@ -84,7 +84,7 @@ export default function CommandPalette({ open, activeOrg, onClose, onNavigate }:
     if (event.key === "Escape") { event.preventDefault(); onClose(); }
     else if (event.key === "ArrowDown") { event.preventDefault(); setSelected((i) => Math.min(matches.length - 1, i + 1)); }
     else if (event.key === "ArrowUp") { event.preventDefault(); setSelected((i) => Math.max(0, i - 1)); }
-    else if (event.key === "Enter" && matches[selected]) { event.preventDefault(); choose(matches[selected].id); }
+    else if (event.key === "Enter" && event.target === inputRef.current && matches[selected]) { event.preventDefault(); choose(matches[selected].id); }
     else if (event.key === "Tab") {
       const elements = Array.from(rootRef.current?.querySelectorAll<HTMLElement>('input:not([disabled]),button:not([disabled])') || []);
       const first = elements[0], last = elements[elements.length - 1];
