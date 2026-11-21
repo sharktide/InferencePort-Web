@@ -13,13 +13,9 @@
 .searchButton { display: flex; align-items: center; gap: .6rem; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: var(--r-1); min-width: 220px; min-height: 36px; padding: .45rem .7rem; cursor: pointer; font: 500 .84rem var(--sans); transition: background-color 150ms ease, border-color 150ms ease; }
 .searchButton:hover { background: var(--surface-2); border-color: var(--border-strong); }
 .searchButton kbd { margin-left: auto; padding: .15rem .32rem; border: 1px solid var(--border); color: var(--muted); border-radius: 4px; font: 500 .72rem var(--sans); }
-.docsLink { padding: .5rem .45rem; font: 500 .86rem var(--sans); text-decoration: none; color: var(--text-2); }
-.docsLink:hover { color: var(--text); }
 .iconButton { display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: transparent; width: 36px; height: 36px; color: var(--text-2); border-radius: var(--r-1); cursor: pointer; }
 .iconButton:hover { background: var(--surface-2); color: var(--text); }
-.signOut { border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface); color: var(--text-2); min-height: 34px; padding: .4rem .65rem; font: 500 .82rem var(--sans); cursor: pointer; }
-.signOut:hover { background: var(--surface-2); }
-.searchButton:focus-visible,.iconButton:focus-visible,.signOut:focus-visible,.docsLink:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.searchButton:focus-visible,.iconButton:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 @media (max-width: 1200px) {
   .searchButton { min-width: 36px; width: 36px; justify-content: center; padding: 0; }
   .searchButton span, .searchButton kbd { display: none; }
@@ -30,8 +26,7 @@
   .brand h1 { font-size: .91rem; gap: .4rem; }
   .suffix { font-size: .78rem; }
   .topActions { gap: .15rem; }
-  .topActions .switcher, .docsLink, .signOut { display: none !important; }
-  .iconButton,.searchButton { min-width: 40px; width: 40px; height: 40px; min-height: 40px; }
+  .topActions .switcher, .docsLink,   .iconButton,.searchButton { min-width: 40px; width: 40px; height: 40px; min-height: 40px; }
   .searchButton { border-color: transparent; background: transparent; }
   .searchButton:hover { border-color: transparent; }
 }

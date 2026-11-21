@@ -419,8 +419,6 @@ function ConsoleFrame({
   return (
     <div className={styles.consoleWrapper}>
       <TopBar
-        user={session?.user}
-        onSignOut={() => supabase?.auth.signOut()}
         onThemeToggle={onThemeToggle}
         theme={theme}
         appName={config?.dashboard?.appName || "InferencePort AI"}
