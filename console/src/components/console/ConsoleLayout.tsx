@@ -10,7 +10,7 @@ import WorkspaceHub from "./WorkspaceHub";
 import CommandPalette from "./CommandPalette";
 import Icon from "../Icon";
 import { mainSectionForTab } from "../../lib/consoleNavigation";
-import { PERSONAL_ITEMS, ORG_SECTION_META, orgSectionAllowed, type OrgSectionId } from "../../lib/consoleSections";
+import { PERSONAL_ITEMS, ORG_SECTION_META, type OrgSectionId } from "../../lib/consoleSections";
 import Sidebar from "./Sidebar";
 import { ORGS_CHANGED_EVENT, OrgProvider, useOrgContext } from "./OrgContext";
 import OrgWorkspace, { isOrgSection, orgSectionAllowed, SPENDING_ROLES } from "./OrgWorkspace";

@@ -38,7 +38,7 @@ export default function TopBar({
             <span className={styles.brandMobile}>Console</span>
           </h1>
           <p className={styles.brandDesktop}>
-            <span className={styles.brandEmphasis}>{appName}</span> Pay-2-Go API dashboard
+            Build, test and manage your AI workloads
           </p>
         </div>
       </div>
