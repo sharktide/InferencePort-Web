@@ -365,3 +365,15 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
 .usageChevronOpen { transform: rotate(225deg); }
 .usageDisclosure { border-top: 1px solid var(--border); padding-top: 1.15rem; margin-top: 1rem; display: grid; gap: 1rem; min-width: 0; }
 @media (prefers-reduced-motion: reduce) { .usageChevron { transition: none; } }
+
+/* Models retains its original inline prototyping controls. */
+.catalogHeaderActions { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
+.modelQuickPlayground { scroll-margin-top: 80px; }
+.quickPlaygroundHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .6rem; }
+.quickPlaygroundHeader h2 { font: 650 1.08rem/1.4 var(--sans); color: var(--text); }
+.quickPlaygroundHeader p { color: var(--text-2); margin-top: .2rem; font-size: .83rem; line-height: 1.4; }
+@media (max-width: 640px) {
+  .catalogHeaderActions { width: 100%; }
+  .quickPlaygroundHeader { flex-direction: column; }
+  .modelQuickPlayground { scroll-margin-top: 68px; }
+}
