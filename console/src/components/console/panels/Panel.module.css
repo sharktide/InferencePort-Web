@@ -355,3 +355,13 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
 .apiKeyGuides button { border: 1px solid var(--border); border-radius: var(--r-0); padding: .55rem .7rem; color: var(--text); font: 500 .78rem var(--sans); background: var(--surface-2); cursor: pointer; }
 .apiKeyGuides button:hover { border-color: var(--border-strong); }
 @media (max-width: 480px) { .apiKeyGuides { width: 100%; } .apiKeyGuides button { flex: 1; white-space: normal; } }
+
+.usageSectionToggle { display: flex; align-items: center; justify-content: space-between; gap: .75rem; width: 100%; text-align: left; padding: 0; background: transparent; color: var(--text); border: 0; font-family: var(--sans); cursor: pointer; }
+.usageSectionToggle > span:first-child { display: grid; gap: .3rem; }
+.usageSectionToggle strong { font-size: 1rem; font-weight: 650; }
+.usageSectionToggle small { color: var(--muted); font-size: .83rem; font-weight: 400; }
+.usageSectionToggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; }
+.usageChevron { flex: none; width: 9px; height: 9px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); transition: transform .15s ease; margin-right: .4rem; }
+.usageChevronOpen { transform: rotate(225deg); }
+.usageDisclosure { border-top: 1px solid var(--border); padding-top: 1.15rem; margin-top: 1rem; display: grid; gap: 1rem; min-width: 0; }
+@media (prefers-reduced-motion: reduce) { .usageChevron { transition: none; } }
