@@ -595,16 +595,16 @@ test("atmosphere tuning keeps cloud motion calm while preserving readable weathe
 
 
 test("six recognizable marks are grouped as customers and startup-program memberships", () => {
-  const section = home.match(/<section class="lp-trust lp-wrap" id="customers"[\s\S]*?<\/section>/);
+  const section = home.match(/<section class="lp-trust" id="customers"[\s\S]*?<\/section>/);
   assert.ok(section, "The customer and program band should be visible in static HTML");
   const band=section[0];
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-grid"'));
-  assert.ok(home.indexOf('id="customers"') > home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="customers"') < home.indexOf('id="products"'));
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-bottom"'));
   assert.match(band,/Used by teams/);
   assert.match(band,/Pollinations collaboration/);
   assert.match(band,/Startup programs/);
-  assert.match(band,/Recognized startup memberships/);
+  assert.match(band,/aria-labelledby="lp-trust-programs-title"/);
   for (const [name,url,asset] of [
     ["Pollinations.ai","https://pollinations.ai/","pollinations.svg"],
     ["TomdacatAI","https://ai.tomdacat.com/","tomdacat.svg"],
@@ -629,7 +629,7 @@ test("six recognizable marks are grouped as customers and startup-program member
   const badge=fs.readFileSync(path.join(root,"img/brands/e2b-for-startups.png"));
   assert.equal(badge.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
   assert.match(css,/\.lp-trust-mark:focus-visible/);
-  assert.match(css,/@media \(max-width:560px\)/);
+  assert.match(css,/@media \(max-width:520px\)/);
   assert.match(css,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.doesNotMatch(band,/lp-trust-story|lp-trust-index|lp-trust-tile/);
   const footer=read("components/ip-footer.js");
