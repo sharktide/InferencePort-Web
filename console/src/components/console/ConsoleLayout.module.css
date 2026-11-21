@@ -66,3 +66,16 @@
     padding: 1rem;
   }
 }
+
+/* Context navigation only appears when an existing feature page is open. */
+.crumbs { display: flex; align-items: center; gap: .65rem; flex-wrap: wrap; color: var(--muted); font-size: .83rem; }
+.crumbs button { display: inline-flex; align-items: center; gap: .4rem; padding: .25rem .15rem; background: transparent; border: 0; color: var(--text-2); font: 600 .83rem var(--sans); cursor: pointer; }
+.crumbs button:hover { color: var(--text); text-decoration: underline; }
+.crumbs button svg { transform: rotate(-90deg); }
+.sectionNav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem; align-items: center; padding: .15rem 0 .75rem; border-bottom: 1px solid var(--border); }
+.sectionNavTitle { color: var(--text); font-size: 1rem; font-weight: 650; }
+.sectionNavLinks { display: flex; flex-wrap: wrap; gap: .3rem; }
+.sectionNavButton { border: 1px solid transparent; border-radius: var(--r-0); color: var(--text-2); background: transparent; padding: .5rem .75rem; font: 500 .85rem var(--sans); cursor: pointer; }
+.sectionNavButton:hover { color: var(--text); background: var(--surface-2); }
+.sectionNavActive { background: var(--brand-dim); border-color: var(--border); color: var(--text); font-weight: 650; }
+@media (max-width: 560px) { .sectionNav { align-items: flex-start; flex-direction: column; } }
