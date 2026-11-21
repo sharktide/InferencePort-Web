@@ -509,7 +509,7 @@ html, body { overflow-x: clip; }
 .ipf-startup-list > a:focus-visible {outline:2px solid #fcd704;outline-offset:3px;}
 .ipf-startup-list img {display:block;max-width:100%;height:auto;object-fit:contain;}
 .ipf-startup-list > a:first-child img {width:148px;filter:invert(1);mix-blend-mode:screen;}
-.ipf-startup-list > a:nth-child(2) img {width:125px;max-height:54px;border-radius:4px;}
+.ipf-startup-list > a:nth-child(3) img {width:125px;max-height:54px;border-radius:4px;}
 .ipf-openrouter-badge {gap:9px;}
 .ipf-openrouter-badge img {width:25px;height:22px;filter:brightness(0) invert(1);}
 .ipf-openrouter-badge span {display:grid;gap:2px;line-height:1.1;}

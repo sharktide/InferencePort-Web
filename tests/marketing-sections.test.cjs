@@ -627,6 +627,11 @@ test("six recognizable marks are grouped as customers and startup-program member
   assert.match(band,/\/img\/brands\/e2b-for-startups\.png/);
   assert.match(band,/Partner-badges_1\.png/);
   assert.match(band,/\/img\/brands\/openrouter\.svg/);
+  const programBand=band.match(/<ul class="lp-trust-list lp-trust-program-list"[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(programBand,"Startup program logo row must exist");
+  const order=["E2B for Startups","OpenRouter for Startups","Microsoft for Startups"];
+  assert.deepEqual([...programBand.matchAll(/aria-label="([^"]+ for Startups)"/g)].map(m=>m[1]),order);
+
   const badge=fs.readFileSync(path.join(root,"img/brands/e2b-for-startups.png"));
   assert.equal(badge.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
   assert.match(css,/\.lp-trust-mark:focus-visible/);
@@ -640,5 +645,9 @@ test("six recognizable marks are grouped as customers and startup-program member
   assert.match(footer,/href="\/index\.html#customers"/);
   assert.match(footer,/src="\/img\/brands\/e2b-for-startups\.png"/);
   assert.match(footer,/src="\/img\/brands\/openrouter\.svg"/);
+  const footerProgramRow=footer.match(/class="ipf-startup-list"[\s\S]*?<\/div>/)?.[0];
+  assert.ok(footerProgramRow);
+  assert.deepEqual([...footerProgramRow.matchAll(/aria-label="([^"]+ for Startups)"/g)].map(m=>m[1]),["E2B for Startups","OpenRouter for Startups","Microsoft for Startups"]);
+
   assert.match(read("styles/shared.css"),/\.ipf-startup-list > a:focus-visible/);
 });
