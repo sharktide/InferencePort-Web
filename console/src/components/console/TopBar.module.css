@@ -31,3 +31,35 @@
   .searchButton:hover { border-color: transparent; }
 }
 @media (max-width: 355px) { .suffix { display: none; } }
+
+/* Keep the original top hamburger AND the new mobile quick-access dock.
+   The controls are intentionally distinct: search, navigation, appearance. */
+.mobileMenuButton { display: none; border: 1px solid var(--border); border-radius: var(--r-1);
+  align-items: center; justify-content: center; width: 40px; height: 40px; flex: 0 0 40px;
+  padding: 0; color: var(--text); background: var(--surface-2); cursor: pointer; }
+.mobileMenuButton:hover { background: var(--brand-dim); border-color: var(--border-strong); }
+.mobileMenuButton:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media (max-width: 960px) {
+  .topbar { gap: .4rem; padding: 0 .65rem; }
+  .brand { flex: 1 1 0; overflow: hidden; }
+  .brand h1 { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .topActions { display: flex; align-items: center; gap: .25rem; flex: none; }
+  .mobileMenuButton { display: inline-flex; }
+  .searchButton, .iconButton, .mobileMenuButton {
+    box-sizing: border-box; display: inline-flex; flex: 0 0 40px; width: 40px; min-width: 40px;
+    height: 40px; min-height: 40px; justify-content: center; align-items: center;
+    color: var(--text); border: 1px solid var(--border); border-radius: var(--r-1);
+    background: var(--surface-2); padding: 0; visibility: visible; opacity: 1;
+  }
+  .searchButton:hover, .iconButton:hover { background: var(--brand-dim); border-color: var(--border-strong); }
+}
+@media (max-width: 520px) {
+  .brandName { display: none; }
+  .brand h1 { font-size: .88rem; }
+  .suffix { display: inline; color: var(--text); font-weight: 600; }
+}
+@media (max-width: 340px) {
+  .topbar { padding: 0 .45rem; }
+  .topActions { gap: .12rem; }
+  .brandLogo { width: 28px; height: 28px; }
+}

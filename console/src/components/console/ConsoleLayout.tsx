@@ -423,6 +423,8 @@ function ConsoleFrame({
         theme={theme}
         appName={config?.dashboard?.appName || "InferencePort AI"}
         onOpenSearch={() => setSearchOpen(true)}
+        isMobileNavOpen={isMobileNavOpen}
+        onMobileNavToggle={() => setMobileNavOpen((isOpen) => !isOpen)}
       />
       <div className={styles.consoleShell}>
         <Sidebar

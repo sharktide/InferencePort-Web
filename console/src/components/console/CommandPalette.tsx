@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { OrgSummary } from "../../lib/orgs";
-import { PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_MORE } from "../../lib/consoleNavigation";
+import { PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_BUILD, ORG_MORE } from "../../lib/consoleNavigation";
 import { orgSectionAllowed, type OrgSectionId } from "../../lib/consoleSections";
 import { SPENDING_ROLES } from "./OrgWorkspace";
 import Icon from "../Icon";
@@ -47,7 +47,7 @@ export default function CommandPalette({ open, activeOrg, onClose, onNavigate }:
   const commands = useMemo(() => {
     const direct = activeOrg
       ? [
-          ...(canSpend ? ORG_WORK : []),
+          ...(canSpend ? [...ORG_WORK, ...ORG_BUILD] : []),
           ...ORG_MANAGE.filter((item) => !item.id.startsWith("org-") || orgSectionAllowed(item.id as OrgSectionId, activeOrg.role)),
         ]
       : PERSONAL_GROUPS.flatMap((group) => group.items);
@@ -64,7 +64,7 @@ export default function CommandPalette({ open, activeOrg, onClose, onNavigate }:
           { id: "organizations", label: "Organizations", section: "Account" },
         ];
     const built: Command[] = [...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace", keywords: KEYWORDS[item.id] })),
-      ...more.map((item) => ({ id: item.id, label: item.label, section: "More tools", keywords: KEYWORDS[item.id] })), ...extra];
+      ...more.map((item) => ({ id: item.id, label: item.label, section: "API guides", keywords: KEYWORDS[item.id] })), ...extra];
     return built.filter((item, index, all) => all.findIndex((other) => other.id === item.id) === index);
   }, [activeOrg, canSpend]);
 

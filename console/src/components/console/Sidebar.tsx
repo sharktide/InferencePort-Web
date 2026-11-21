@@ -101,7 +101,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
   return (
     <>
       <div className={styles.mobileNavBackdrop + (isOpen ? " " + styles.visible : "")} onClick={onClose} aria-hidden="true" />
-      <aside ref={sideRef} className={styles.consoleNav + (isOpen ? " " + styles.mobileOpen : "")}
+      <aside id="console-sidebar-nav" ref={sideRef} className={styles.consoleNav + (isOpen ? " " + styles.mobileOpen : "")}
         aria-label="Console navigation">
         <div className={styles.drawerTitle}>
           <strong>Navigation</strong>
