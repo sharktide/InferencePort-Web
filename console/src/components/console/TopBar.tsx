@@ -13,6 +13,7 @@ interface TopBarProps {
   appName: string;
   isMobileNavOpen: boolean;
   onMobileNavToggle: () => void;
+  onOpenSearch: () => void;
 }
 
 export default function TopBar({
@@ -24,6 +25,7 @@ export default function TopBar({
   appName,
   isMobileNavOpen,
   onMobileNavToggle,
+  onOpenSearch,
 }: TopBarProps) {
   return (
     <header className={styles.topbar}>
@@ -53,6 +55,10 @@ export default function TopBar({
         </button>
         <a id="home-link" href={homeUrl} target="_blank" rel="noreferrer" className={styles.desktopOnly}>Home</a>
         <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.desktopOnly}>Docs</a>
+        <button type="button" className={styles.searchButton} onClick={onOpenSearch} aria-label="Search console, Command K">
+          <Icon name="sparkle" size={17} />
+          <span>Search</span><kbd>⌘ K</kbd>
+        </button>
         <ContextSwitcher variant="topbar" className={styles.switcher} />
         <button
           id="theme-toggle"
