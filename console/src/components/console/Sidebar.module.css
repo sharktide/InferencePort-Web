@@ -3,229 +3,55 @@
   top: 60px;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
-  padding: 1.25rem 0.75rem 1rem;
+  gap: 1.4rem;
+  padding: 1.3rem 0.8rem 1rem;
   background: var(--bg);
   border-right: 1px solid var(--border);
-  height: calc(100vh - 60px);
   height: calc(100dvh - 60px);
   overflow-y: auto;
 }
-
-.navGroup {
-  display: grid;
-  gap: 1px;
-}
-
-/* Group titles: sentence case, quiet, not tracked caps */
-.consoleNavLabel {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted);
-  padding: 0 0.7rem 0.35rem;
-}
-
-/* "Working as" switcher at the top of the sidebar */
-.contextHeader {
+.contextBlock { padding-bottom: 1.1rem; border-bottom: 1px solid var(--border); }
+.contextHeader { width: 100%; }
+.navGroup { display: grid; gap: 0.3rem; }
+.consoleNavTab, .utilityLink {
   width: 100%;
-  margin-bottom: 0.1rem;
-}
-
-.navTabWrap {
-  position: relative;
   display: flex;
   align-items: center;
-}
-
-.consoleNavTab {
-  position: relative;
-  width: 100%;
-  min-height: 38px;
-  justify-content: flex-start;
-  gap: 0.65rem;
-  background: transparent;
-  color: var(--text-2);
-  border: 0;
-  padding: 0.5rem 0.7rem;
-  border-radius: var(--r-0);
-  font-size: 0.875rem;
-  font-weight: 500;
-  white-space: normal;
+  gap: 0.75rem;
   text-align: left;
-  line-height: 1.25;
-}
-
-.navIcon {
-  flex: none;
-  width: 18px;
-  height: 18px;
-  color: var(--muted);
-  transition: color var(--d-fast);
-}
-
-.navLabel { min-width: 0; }
-.navTabWrap:has(.rewardBadge) .navLabel { padding-right: 1.9rem; }
-
-.consoleNavTab:hover:not(.active) {
-  background: var(--surface-2);
-  color: var(--text);
-}
-.consoleNavTab:hover:not(.active) .navIcon { color: var(--text-2); }
-
-.consoleNavTab.active {
-  background: var(--brand-dim);
-  color: var(--text);
-  font-weight: 600;
-}
-.consoleNavTab.active .navIcon { color: var(--brand); }
-.consoleNavTab.active::before {
-  content: '';
-  position: absolute;
-  left: -0.75rem;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--brand);
-}
-
-/* Unclaimed rewards: a gold count chip (the console's one gold highlight) */
-.rewardBadge {
-  position: absolute;
-  right: 0.55rem;
-  top: 50%;
-  transform: translateY(-50%);
-  min-width: 22px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 6px;
-  background: var(--gold-dim);
-  border: 1px solid var(--gold-border);
-  color: var(--gold-ink);
-  font-size: 0.72rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.sidebarUserSection {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--border);
-}
-
-.rewardNotification {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
-  padding: 0.65rem 0.75rem;
-  background: var(--gold-dim);
-  border: 1px solid var(--gold-border);
+  font: 500 0.9rem/1.3 var(--sans);
+  min-height: 43px;
+  border: 0;
   border-radius: var(--r-1);
-}
-
-.rewardNotificationIcon {
-  flex: none;
-  width: 18px;
-  height: 18px;
-  margin-top: 1px;
-  color: var(--gold-ink);
-}
-
-.rewardNotificationText {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--gold-ink);
-  line-height: 1.35;
-}
-
-.sidebarUserTag {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.35rem 0.4rem;
-  min-width: 0;
-}
-
-.sidebarUserAvatar {
-  width: 30px;
-  height: 30px;
-  border-radius: var(--r-0);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text);
-  flex-shrink: 0;
-}
-
-.sidebarUserEmail {
-  font-size: 0.8125rem;
-  font-weight: 500;
   color: var(--text-2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
+  background: transparent;
+  padding: 0.7rem 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
 }
-
-/* Mobile drawer */
-.mobileNavBackdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 199;
-  background: var(--overlay);
-  opacity: 0;
-  transition: opacity var(--d-move) var(--ease-out);
-  -webkit-tap-highlight-color: transparent;
+.consoleNavTab:hover, .utilityLink:hover { color: var(--text); background: var(--surface-2); text-decoration: none; }
+.consoleNavTab.active { color: var(--text); background: var(--brand-dim); font-weight: 650; }
+.consoleNavTab.active .navIcon { color: var(--brand); }
+.consoleNavTab:focus-visible, .utilityLink:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.navIcon { flex: none; width: 19px; height: 19px; color: var(--muted); }
+.navLabel { flex: 1; }
+.rewardBadge {
+  font-size: 0.73rem; font-weight: 700; font-variant-numeric: tabular-nums;
+  background: var(--gold-dim); color: var(--gold-ink); border: 1px solid var(--gold-border);
+  border-radius: 6px; min-width: 23px; padding: 2px 6px; text-align: center;
 }
-
-.mobileNavBackdrop.visible {
-  display: block;
-  opacity: 1;
-}
-
+.sideBottom { display: grid; gap: 0.3rem; margin-top: auto; padding-top: 0.8rem; border-top: 1px solid var(--border); }
+.sidebarUserTag { display: flex; align-items: center; min-width: 0; gap: 0.65rem; padding: 0.65rem 0.65rem 0.15rem; margin-top: 0.4rem; border-top: 1px solid var(--border); }
+.sidebarUserAvatar { flex: none; width: 29px; height: 29px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); border-radius: 8px; font-size: 0.8rem; font-weight: 650; }
+.sidebarUserEmail { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 0.8rem; color: var(--text-2); }
+.mobileNavBackdrop { display: none; position: fixed; inset: 0; z-index: 199; background: var(--overlay); opacity: 0; transition: opacity 180ms ease; }
+.mobileNavBackdrop.visible { display: block; opacity: 1; }
 @media (max-width: 960px) {
-  .consoleNav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 200;
-    width: 300px;
-    max-width: 86vw;
-    height: 100vh;
-    height: 100dvh;
-    transform: translateX(-102%);
-    visibility: hidden;
-    transition: transform var(--d-move) var(--ease-out), visibility 0s linear var(--d-move);
-    border-right: 1px solid var(--border);
-    padding-top: 1.25rem;
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-    background: var(--surface);
-    box-shadow: var(--shadow-lg);
-    overscroll-behavior: contain;
-  }
-
-  .consoleNav.mobileOpen {
-    transform: translateX(0);
-    visibility: visible;
-    transition: transform var(--d-move) var(--ease-out), visibility 0s;
-  }
-
-  .consoleNavTab { min-height: 44px; }
+  .consoleNav { position: fixed; top: 0; left: 0; z-index: 200; width: 285px; max-width: 86vw; height: 100dvh; transform: translateX(-102%); visibility: hidden; transition: transform 180ms ease, visibility 0s linear 180ms; background: var(--surface); box-shadow: var(--shadow-lg); padding-top: 1.15rem; padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); }
+  .consoleNav.mobileOpen { transform: translateX(0); visibility: visible; transition: transform 180ms ease, visibility 0s; }
+  .consoleNavTab, .utilityLink { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .consoleNav, .mobileNavBackdrop, .consoleNavTab, .utilityLink { transition: none; }
 }

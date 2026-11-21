@@ -4,6 +4,9 @@ import type { OrgRole } from "./orgs";
 
 /* Personal sections (ids are the panel keys in ConsoleLayout). */
 export const PERSONAL_ITEMS = {
+  home: { label: "Home", icon: "gauge" },
+  build: { label: "Build", icon: "plugs-connected" },
+  settings: { label: "Settings", icon: "user-circle" },
   account: { label: "Account management", icon: "user-circle" },
   organizations: { label: "Organizations", icon: "user-circle" },
   billing: { label: "Billing", icon: "credit-card" },
