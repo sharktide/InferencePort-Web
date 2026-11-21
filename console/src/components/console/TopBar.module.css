@@ -1,169 +1,38 @@
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0 1.5rem 0 1.25rem;
-  height: 60px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: saturate(140%) blur(14px);
-  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  position: sticky; top: 0; z-index: 100; height: 60px; padding: 0 1.4rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+  background: color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter: saturate(140%) blur(14px); -webkit-backdrop-filter: saturate(140%) blur(14px);
   border-bottom: 1px solid var(--border);
 }
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.brand > div { min-width: 0; }
-
-.brandLogo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  flex: none;
-}
-
-.brand h1 {
-  font-family: var(--sans);
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.2;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.brand p {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: 1px;
-}
-
-.brandEmphasis {
-  font-weight: 600;
-}
-
-.brandDesktop { display: inline; }
-.brandMobile { display: none; }
-
-.topActions {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex: none;
-}
-
-.themeIcon {
-  display: inline-flex;
-  line-height: 1;
-}
-
-.hidden { display: none; }
-
-/* Context switcher sits left of the theme toggle; keeps its own tap target on phones */
-.switcher { margin-right: 0.35rem; }
-
-.topActions a {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-2);
-  padding: 0.45rem 0.7rem;
-  border-radius: var(--r-0);
-  transition: background-color var(--d-fast), color var(--d-fast);
-}
-
-.topActions a:hover {
-  background: var(--surface-2);
-  color: var(--text);
-  text-decoration: none;
-}
-
-.ghost {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--r-1);
-  padding: 0 0.85rem;
-  min-height: 36px;
-  font-family: var(--sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--d-fast), background-color var(--d-fast);
-}
-.ghost:hover {
-  border-color: var(--text-2);
-  background: var(--surface-2);
-}
-
-.iconBtn {
-  width: 36px;
-  padding: 0;
-  border-color: transparent;
-  color: var(--text-2);
-}
-.iconBtn:hover { color: var(--text); border-color: transparent; }
-
-.mobileOnly { display: none; }
-.desktopOnly { display: inline; }
-
-@media (max-width: 960px) {
-  .mobileOnly {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-  }
-
-  .desktopOnly {
-    display: none !important;
-  }
-
-  /* The org context switcher lives in the side drawer on phones; it would crowd the top bar.
-     Scoped under .topActions so it outranks ContextSwitcher's own .root { display: inline-flex }. */
-  .topActions .switcher {
-    display: none;
-  }
-
-  .brandEmphasis {
-    display: none !important;
-  }
-
-  .brandDesktop {
-    display: none !important;
-  }
-
-  .brandMobile {
-    display: inline !important;
-  }
-
-  .brand p {
-    display: none !important;
-  }
-
-  .topbar {
-    padding: 0 1rem;
-  }
-
-  .brandLogo {
-    width: 32px;
-    height: 32px;
-  }
-}
-
-.searchButton { display: inline-flex; align-items: center; justify-content: flex-start; gap: .55rem; min-height: 35px; min-width: 150px; padding: .4rem .65rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface); color: var(--text-2); font: 500 .83rem var(--sans); cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease; }
+.brand { min-width: 0; flex: 1; display: flex; align-items: center; gap: .7rem; }
+.brandLogo { width: 32px; height: 32px; flex: none; border-radius: 9px; object-fit: contain; }
+.brand h1 { display: flex; align-items: baseline; min-width: 0; gap: .5rem; font: 650 .98rem/1.2 var(--sans); color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.suffix { color: var(--muted); font-weight: 450; font-size: .86rem; }
+.topActions { display: flex; flex: none; align-items: center; gap: .55rem; }
+.searchButton { display: flex; align-items: center; gap: .6rem; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: var(--r-1); min-width: 220px; min-height: 36px; padding: .45rem .7rem; cursor: pointer; font: 500 .84rem var(--sans); transition: background-color 150ms ease, border-color 150ms ease; }
 .searchButton:hover { background: var(--surface-2); border-color: var(--border-strong); }
-.searchButton kbd { margin-left: auto; color: var(--muted); font: 600 .7rem var(--sans); }
-@media (max-width: 1100px) { .searchButton { min-width: unset; } .searchButton kbd, .searchButton span { display: none; } }
+.searchButton kbd { margin-left: auto; padding: .15rem .32rem; border: 1px solid var(--border); color: var(--muted); border-radius: 4px; font: 500 .72rem var(--sans); }
+.docsLink { padding: .5rem .45rem; font: 500 .86rem var(--sans); text-decoration: none; color: var(--text-2); }
+.docsLink:hover { color: var(--text); }
+.iconButton { display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: transparent; width: 36px; height: 36px; color: var(--text-2); border-radius: var(--r-1); cursor: pointer; }
+.iconButton:hover { background: var(--surface-2); color: var(--text); }
+.signOut { border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface); color: var(--text-2); min-height: 34px; padding: .4rem .65rem; font: 500 .82rem var(--sans); cursor: pointer; }
+.signOut:hover { background: var(--surface-2); }
+.searchButton:focus-visible,.iconButton:focus-visible,.signOut:focus-visible,.docsLink:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media (max-width: 1200px) {
+  .searchButton { min-width: 36px; width: 36px; justify-content: center; padding: 0; }
+  .searchButton span, .searchButton kbd { display: none; }
+}
+@media (max-width: 960px) {
+  .topbar { height: 56px; padding: 0 .85rem; gap: .5rem; }
+  .brandLogo { height: 30px; width: 30px; }
+  .brand h1 { font-size: .91rem; gap: .4rem; }
+  .suffix { font-size: .78rem; }
+  .topActions { gap: .15rem; }
+  .topActions .switcher, .docsLink, .signOut { display: none !important; }
+  .iconButton,.searchButton { min-width: 40px; width: 40px; height: 40px; min-height: 40px; }
+  .searchButton { border-color: transparent; background: transparent; }
+  .searchButton:hover { border-color: transparent; }
+}
+@media (max-width: 355px) { .suffix { display: none; } }

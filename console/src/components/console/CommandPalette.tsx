@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { OrgSummary } from "../../lib/orgs";
-import { MAIN_NAV } from "../../lib/consoleNavigation";
+import { PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_MORE } from "../../lib/consoleNavigation";
 import { orgSectionAllowed, type OrgSectionId } from "../../lib/consoleSections";
 import { SPENDING_ROLES } from "./OrgWorkspace";
 import Icon from "../Icon";
@@ -16,36 +16,6 @@ interface Props {
 }
 
 type Command = { id: string; label: string; section: string; keywords?: string };
-const personalCommands: Command[] = [
-  { id: "api-key", label: "API keys", section: "Build", keywords: "tokens credentials" },
-  { id: "payg-api", label: "Pay-as-you-go API", section: "Build", keywords: "openai requests p2g" },
-  { id: "gen-api", label: "Generation API", section: "Build", keywords: "subscription" },
-  { id: "mcp", label: "MCP", section: "Build", keywords: "tools council" },
-  { id: "agents", label: "Agents", section: "Build" },
-  { id: "deploy", label: "Deployments", section: "Build", keywords: "featherless" },
-  { id: "buckets", label: "Buckets", section: "Build", keywords: "storage s3" },
-  { id: "shield", label: "AI Shield", section: "Build", keywords: "moderation safety" },
-  { id: "billing", label: "Billing", section: "Usage", keywords: "balance credits" },
-  { id: "rewards", label: "Rewards", section: "Usage", keywords: "credits" },
-  { id: "account", label: "Account", section: "Settings" },
-  { id: "organizations", label: "Organizations", section: "Settings" },
-  { id: "authorized-apps", label: "Authorized applications", section: "Settings", keywords: "access oauth" },
-];
-const orgCommands: Command[] = [
-  { id: "org-keys", label: "Organization API keys", section: "Build" },
-  { id: "org-billing", label: "Organization billing", section: "Usage" },
-  { id: "org-invoices", label: "Invoices", section: "Usage" },
-  { id: "org-members", label: "Members", section: "Settings" },
-  { id: "org-teams", label: "Teams", section: "Settings" },
-  { id: "org-policies", label: "Policies", section: "Settings" },
-  { id: "org-security", label: "Security", section: "Settings" },
-  { id: "org-desktop", label: "Desktop application", section: "Settings" },
-  { id: "org-audit", label: "Audit log", section: "Settings" },
-  { id: "org-notifications", label: "Notifications", section: "Settings" },
-  { id: "organizations", label: "Manage organizations", section: "Settings" },
-  { id: "account", label: "Account", section: "Settings" },
-];
-
 export default function CommandPalette({ open, activeOrg, onClose, onNavigate }: Props) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
@@ -53,17 +23,27 @@ export default function CommandPalette({ open, activeOrg, onClose, onNavigate }:
   const rootRef = useRef<HTMLDivElement>(null);
   const canSpend = !activeOrg || SPENDING_ROLES.includes(activeOrg.role);
   const commands = useMemo(() => {
-    const primary: Command[] = MAIN_NAV
-      .filter((item) => canSpend || !["playground", "models", "build"].includes(item.id))
-      .map((item) => ({ id: activeOrg && item.id === "usage" ? "org-usage" : item.id, label: item.label, section: "Navigate" }));
-    primary.push({ id: "settings", label: "Settings", section: "Navigate" });
-    const secondary = activeOrg
+    const direct = activeOrg
       ? [
-          ...personalCommands.filter((item) => canSpend && ["agents", "deploy", "buckets", "payg-api", "gen-api", "mcp", "shield"].includes(item.id)),
-          ...orgCommands.filter((item) => !item.id.startsWith("org-") || orgSectionAllowed(item.id as OrgSectionId, activeOrg.role)),
+          ...(canSpend ? ORG_WORK : []),
+          ...ORG_MANAGE.filter((item) => !item.id.startsWith("org-") || orgSectionAllowed(item.id as OrgSectionId, activeOrg.role)),
         ]
-      : personalCommands;
-    return [...primary, ...secondary];
+      : PERSONAL_GROUPS.flatMap((group) => group.items);
+    const more = activeOrg
+      ? ORG_MORE.filter((item) => canSpend || item.id.startsWith("org-"))
+        .filter((item) => !item.id.startsWith("org-") || orgSectionAllowed(item.id as OrgSectionId, activeOrg.role))
+      : PERSONAL_MORE;
+    const extra: Command[] = activeOrg
+      ? [{ id: "account", label: "Account", section: "Account" }, { id: "organizations", label: "Organizations", section: "Account" }]
+      : [
+          { id: "rewards", label: "Rewards", section: "Billing" },
+          { id: "authorized-apps", label: "Connected applications", section: "Account" },
+          { id: "account", label: "Account", section: "Account" },
+          { id: "organizations", label: "Organizations", section: "Account" },
+        ];
+    const built = [...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace" })),
+      ...more.map((item) => ({ id: item.id, label: item.label, section: "More tools" })), ...extra];
+    return built.filter((item, index, all) => all.findIndex((other) => other.id === item.id) === index);
   }, [activeOrg, canSpend]);
 
   const matches = commands.filter((item) =>

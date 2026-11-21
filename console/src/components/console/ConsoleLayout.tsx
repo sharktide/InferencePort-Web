@@ -423,10 +423,7 @@ function ConsoleFrame({
         onSignOut={() => supabase?.auth.signOut()}
         onThemeToggle={onThemeToggle}
         theme={theme}
-        homeUrl={config?.dashboard?.homeUrl || "https://inferenceport.ai"}
         appName={config?.dashboard?.appName || "InferencePort AI"}
-        isMobileNavOpen={isMobileNavOpen}
-        onMobileNavToggle={() => setMobileNavOpen(!isMobileNavOpen)}
         onOpenSearch={() => setSearchOpen(true)}
       />
       <div className={styles.consoleShell}>
