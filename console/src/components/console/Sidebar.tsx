@@ -64,7 +64,19 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
   useEffect(() => {
     if (!isOpen) return;
     const onEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") { event.preventDefault(); onClose(); moreRef.current?.focus(); }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        moreRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab" || !window.matchMedia("(max-width: 960px)").matches) return;
+      const focusable = Array.from(sideRef.current?.querySelectorAll<HTMLElement>(
+        'a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]'
+      ) || []).filter((el) => el.getClientRects().length > 0);
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     };
     document.addEventListener("keydown", onEscape);
     const oldOverflow = document.body.style.overflow;
@@ -131,7 +143,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
           )}
         </div>
       </aside>
-      <nav className={styles.mobileDock} aria-label="Quick navigation">
+      <nav className={styles.mobileDock} aria-label="Quick navigation" inert={isOpen}>
         {dock.map((item) => (
           <button key={item.id} type="button" className={styles.dockButton + (activeId === item.id ? " " + styles.dockActive : "")}
             aria-current={activeId === item.id ? "page" : undefined} onClick={() => navigate(item.id)}>
