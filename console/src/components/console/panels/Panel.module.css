@@ -346,3 +346,12 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
   .modelDetailTray { width: min(100vw, 440px); }
   .modelDetailContent { padding: 1rem; }
 }
+
+.modelCard:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.apiKeyHeader { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.15rem; }
+.apiKeyHeader h2 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; color: var(--text); }
+.apiKeyHeader p { font-size: .85rem; line-height: 1.45; color: var(--text-2); margin-top: .35rem; }
+.apiKeyGuides { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+.apiKeyGuides button { border: 1px solid var(--border); border-radius: var(--r-0); padding: .55rem .7rem; color: var(--text); font: 500 .78rem var(--sans); background: var(--surface-2); cursor: pointer; }
+.apiKeyGuides button:hover { border-color: var(--border-strong); }
+@media (max-width: 480px) { .apiKeyGuides { width: 100%; } .apiKeyGuides button { flex: 1; white-space: normal; } }

@@ -228,7 +228,12 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
             const disc = source === "p2g" ? getModelDiscount(m) : { type: "none", percent: 0, fixedPrice: 0 };
             const discountedLabel = source === "p2g" ? formatDiscountedPrice(m, disc) : null;
             return (
-              <div key={`${slug(m) || "model"}-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
+              <div key={`${slug(m) || "model"}-${i}`} className={styles.modelCard} role="button" tabIndex={0}
+                aria-label={`View details for ${modelDisplayName(m)}`}
+                onClick={() => setSelectedDetailModel(m)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedDetailModel(m); }
+                }}>
                 {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
@@ -282,7 +287,7 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
 
       {selectedDetailModel && (
         <div className={styles.modelDetailOverlay} onClick={() => setSelectedDetailModel(null)}>
-          <div className={styles.modelDetailTray} onClick={(e) => e.stopPropagation()}>
+          <div className={styles.modelDetailTray} role="dialog" aria-modal="true" aria-label="Model details" onClick={(e) => e.stopPropagation()}>
             <button className={styles.modelDetailClose} onClick={() => setSelectedDetailModel(null)} aria-label="Close"><Icon name="x" size={18} /></button>
             <div className={styles.modelDetailImageWrap}>
               <img
@@ -342,17 +347,22 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
               {selectedDetailModel.output_modalities && (
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selectedDetailModel.output_modalities.map((v: string) => v.toUpperCase()).join(" / ")}</span></div>
               )}
-              {isTextModel(selectedDetailModel) && !!slug(selectedDetailModel) && (
-                <button type="button" className={styles.modelDetailTry} onClick={() => {
-                  try {
-                    sessionStorage.setItem("console-playground-selected-model", JSON.stringify({ id: slug(selectedDetailModel), source }));
-                  } catch { /* Storage is optional; still open the playground. */ }
-                  setSelectedDetailModel(null);
-                  navigateConsole("playground");
-                }}>
-                  Try in Playground <span aria-hidden="true">→</span>
-                </button>
-              )}
+              <button type="button" className={styles.modelDetailTry} onClick={() => {
+                const type = String(modelType(selectedDetailModel)).toLowerCase();
+                const mode = type === "3d" ? "3d" : type === "embedding" ? "embedding"
+                  : type === "decision" ? "decision" : type === "realtime" ? "realtime"
+                  : type === "image" ? "image" : type === "video" ? "video"
+                  : type === "audio" ? "audio" : "text";
+                try {
+                  sessionStorage.setItem("console-playground-selected-model", JSON.stringify({
+                    id: slug(selectedDetailModel), source, mode,
+                  }));
+                } catch { /* Storage is optional; still open the playground. */ }
+                setSelectedDetailModel(null);
+                navigateConsole("playground");
+              }}>
+                {isTextModel(selectedDetailModel) ? "Try this model" : "Open in Playground"} <span aria-hidden="true">→</span>
+              </button>
             </div>
           </div>
         </div>

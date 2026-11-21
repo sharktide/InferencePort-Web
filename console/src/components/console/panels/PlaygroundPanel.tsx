@@ -80,22 +80,23 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
   useEffect(() => {
     const m = readPref<Mode>("playground-mode", ALL_MODES, "text");
     const s = readPref<"p2g" | "gen">("playground-source", ["p2g", "gen"], "p2g");
-    let requested: { id: string; source: "gen" | "p2g" } | null = null;
+    let requested: { id: string; source: "gen" | "p2g"; mode: Mode } | null = null;
     try {
       const raw = sessionStorage.getItem("console-playground-selected-model");
       if (raw) {
         const parsed = JSON.parse(raw);
         if (typeof parsed?.id === "string" && parsed.id.length > 0 && parsed.id.length < 200) {
-          requested = { id: parsed.id, source: parsed.source === "gen" ? "gen" : "p2g" };
+          const parsedMode: Mode = ALL_MODES.includes(parsed.mode as Mode) ? parsed.mode as Mode : "text";
+          requested = { id: parsed.id, source: parsed.source === "gen" ? "gen" : "p2g", mode: parsedMode };
         }
         sessionStorage.removeItem("console-playground-selected-model");
       }
     } catch { /* Ignore invalid handoff data. */ }
-    const restored = requested ? "text" : s === "gen" && P2G_ONLY.includes(m) ? "text" : m;
+    const restored = requested ? requested.mode : s === "gen" && P2G_ONLY.includes(m) ? "text" : m;
     setSource(requested?.source ?? s);
     setMode(restored);
     setVisited([restored]);
-    if (requested) setPreferredModelId(requested.id);
+    if (requested?.mode === "text") setPreferredModelId(requested.id);
   }, []);
 
   const apiPrefix: ApiPrefix = source === "p2g" ? "/v1" : "/gen";
