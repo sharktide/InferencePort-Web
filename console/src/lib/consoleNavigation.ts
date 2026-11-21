@@ -4,6 +4,8 @@ import { ORG_SECTION_META, ORG_SECTION_ORDER } from "./consoleSections";
 export interface NavItem { id: string; label: string; icon: IconName }
 export interface NavGroup { title: string; items: NavItem[] }
 
+export const HOME_ITEM: NavItem = { id: "home", label: "Home", icon: "gauge" };
+
 /* Keep the original Account / Organization / Explore / Build / Access hierarchy.
    Only the duplicate API-reference destinations are tucked into a disclosure. */
 export const PERSONAL_GROUPS: NavGroup[] = [
@@ -76,7 +78,7 @@ export const ORG_READ_ONLY_DOCK: NavItem[] = ["org-overview", "org-keys", "org-u
 
 /* Historical paths still point to useful real pages. */
 export function navHighlight(tab: string, org: boolean): string {
-  if (tab === "home") return org ? "org-overview" : "models";
+  if (tab === "home") return "home";
   if (tab === "build") return org ? "org-keys" : "api-key";
   if (tab === "settings") return "account";
   return tab;

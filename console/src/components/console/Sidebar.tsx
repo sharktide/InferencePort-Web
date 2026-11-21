@@ -7,7 +7,7 @@ import ContextSwitcher from "./ContextSwitcher";
 import { useOptionalOrgContext } from "./OrgContext";
 import { isOrgSection, orgSectionAllowed, SPENDING_ROLES } from "./OrgWorkspace";
 import {
-  PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_BUILD, ORG_ACCOUNT, ORG_MORE,
+  HOME_ITEM, PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_BUILD, ORG_ACCOUNT, ORG_MORE,
   PERSONAL_DOCK, ORG_DOCK, ORG_READ_ONLY_DOCK, navHighlight,
   type NavGroup, type NavItem,
 } from "../../lib/consoleNavigation";
@@ -120,6 +120,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
           <button ref={drawerCloseRef} type="button" className={styles.drawerClose} aria-label="Close navigation" onClick={closeFromDrawer}><Icon name="x" size={20} /></button>
         </div>
         <div className={styles.contextBlock}><ContextSwitcher variant="sidebar" className={styles.contextHeader} /></div>
+        <div className={styles.navGroup}>{navButton(HOME_ITEM)}</div>
         {groups.map((group) => (
           <div className={styles.navGroup} role="group" aria-label={group.title} key={group.title}>
             <span className={styles.groupTitle} title={group.title}>{group.title}</span>

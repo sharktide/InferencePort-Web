@@ -51,7 +51,7 @@ export default function HomePanel({ session, activeOrg, onNavigate }: Props) {
     <button key={item.id} type="button" className={styles.destination} onClick={() => onNavigate(item.id)}>
       <span className={styles.destinationIcon}><Icon name={item.icon} size={21} /></span>
       <span className={styles.destinationText}><strong>{item.label}</strong><small>{item.detail}</small></span>
-      <Icon name="arrow-right" size={17} className={styles.arrow} />
+      <Icon name="arrow-up" size={17} className={styles.arrow} />
     </button>
   );
   return (

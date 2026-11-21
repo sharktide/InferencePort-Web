@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { OrgSummary } from "../../lib/orgs";
-import { PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_BUILD, ORG_MORE } from "../../lib/consoleNavigation";
+import { HOME_ITEM, PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_BUILD, ORG_MORE } from "../../lib/consoleNavigation";
 import { orgSectionAllowed, type OrgSectionId } from "../../lib/consoleSections";
 import { SPENDING_ROLES } from "./OrgWorkspace";
 import Icon from "../Icon";
@@ -17,6 +17,7 @@ interface Props {
 
 type Command = { id: string; label: string; section: string; keywords?: string };
 const KEYWORDS: Record<string, string> = {
+  home: "dashboard overview start workspace",
   playground: "test try chat image audio video realtime 3d embeddings decisions",
   models: "catalog discover pricing capabilities compare",
   "api-key": "credential token limits sdk integrate",
@@ -63,7 +64,8 @@ export default function CommandPalette({ open, activeOrg, onClose, onNavigate }:
           { id: "account", label: "Account", section: "Account" },
           { id: "organizations", label: "Organizations", section: "Account" },
         ];
-    const built: Command[] = [...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace", keywords: KEYWORDS[item.id] })),
+    const built: Command[] = [{ id: HOME_ITEM.id, label: HOME_ITEM.label, section: "Workspace", keywords: KEYWORDS.home },
+      ...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace", keywords: KEYWORDS[item.id] })),
       ...more.map((item) => ({ id: item.id, label: item.label, section: "API guides", keywords: KEYWORDS[item.id] })), ...extra];
     return built.filter((item, index, all) => all.findIndex((other) => other.id === item.id) === index);
   }, [activeOrg, canSpend]);

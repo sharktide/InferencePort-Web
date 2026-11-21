@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
-import { consoleTabFromPath, consoleTabHref, normalizeConsoleTab } from "../../lib/consoleTabs";
+import { consoleTabFromPath, consoleTabHref, isConsoleRootPath, normalizeConsoleTab } from "../../lib/consoleTabs";
 import TopBar from "./TopBar";
 import CommandPalette from "./CommandPalette";
 import type { OrgSectionId } from "../../lib/consoleSections";
@@ -15,6 +15,7 @@ import type { OrgSummary } from "../../lib/orgs";
 import AccountPanel from "./panels/AccountPanel";
 import BillingPanel from "./panels/BillingPanel";
 import ModelsPanel from "./panels/ModelsPanel";
+import HomePanel from "./panels/HomePanel";
 import ApiKeyPanel from "./panels/ApiKeyPanel";
 import UsagePanel from "./panels/UsagePanel";
 import GenApiPanel from "./panels/GenApiPanel";
@@ -46,22 +47,24 @@ function hasExplicitLanding(): boolean {
   if (typeof window === "undefined") return false;
   return landsOnOrganizations()
     || new URLSearchParams(window.location.search).has("invite")
-    || consoleTabFromPath(window.location.pathname) !== null;
+    || consoleTabFromPath(window.location.pathname) !== null
+    || isConsoleRootPath(window.location.pathname);
 }
 
 /* First paint tab: query-based invitations and org links take priority over tab paths and saved tabs. */
 function initialTab(): string {
-  if (typeof window === "undefined") return "models";
+  if (typeof window === "undefined") return "home";
   const params = new URLSearchParams(window.location.search);
   if (params.has("invite")) return "agents";
   if (params.has("org_invite")) return "organizations";
   if (params.has("org")) return params.has("billing") ? "org-billing" : "org-overview";
   const routeTab = consoleTabFromPath(window.location.pathname);
   if (routeTab) return routeTab;
+  if (isConsoleRootPath(window.location.pathname)) return "home";
   try {
-    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "models";
+    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "home";
   } catch {
-    return "models";
+    return "home";
   }
 }
 
@@ -93,7 +96,6 @@ export default function ConsoleLayout() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
-  const rootHistoryTab = useRef(activeTab);
 
   /* Keep the address bar in sync without remounting the console on every tab switch. */
   const updateTab = useCallback((tab: string, method: "push" | "replace") => {
@@ -112,11 +114,6 @@ export default function ConsoleLayout() {
 
   /* On refresh, use the requested route; on browser Back/Forward, restore that tab. */
   useEffect(() => {
-    const isRoot = ["/", "/console", "/console/"].includes(window.location.pathname);
-    if (isRoot) {
-      /* This root entry must retain its own selection, not whatever localStorage saves later. */
-      window.history.replaceState({ ...window.history.state, consoleRootTab: rootHistoryTab.current }, "");
-    }
     const routeTab = consoleTabFromPath(window.location.pathname);
     if (routeTab) {
       const canonical = consoleTabHref(routeTab, window.location.hostname);
@@ -127,10 +124,7 @@ export default function ConsoleLayout() {
     const onPopState = () => {
       const tab = consoleTabFromPath(window.location.pathname);
       if (tab) setActiveTab(tab);
-      else if (["/", "/console", "/console/"].includes(window.location.pathname)) {
-        const restored = normalizeConsoleTab(window.history.state?.consoleRootTab);
-        setActiveTab(restored || rootHistoryTab.current);
-      }
+      else if (isConsoleRootPath(window.location.pathname)) setActiveTab("home");
     };
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
@@ -217,7 +211,7 @@ export default function ConsoleLayout() {
             if (s) {
               hadSession.current = true;
               /* Keep the tab the user was on; only land on Models on a first visit or right after signing in */
-              if ((!hadSavedTab.current || fromAuthRedirect.current) && !hasExplicitLanding()) replaceTab("models");
+              if ((!hadSavedTab.current || fromAuthRedirect.current) && !hasExplicitLanding()) replaceTab("home");
             }
           }
           client.auth.onAuthStateChange(async (_event, s) => {
@@ -231,7 +225,7 @@ export default function ConsoleLayout() {
             }
             if (s) {
               /* Token refreshes and repeated SIGNED_IN events (e.g. returning to the browser tab) must not reset the tab */
-              if (!hadSession.current && !hasExplicitLanding()) replaceTab("models");
+              if (!hadSession.current && !hasExplicitLanding()) replaceTab("home");
               hadSession.current = true;
             } else {
               const wasSignedIn = hadSession.current;
@@ -356,9 +350,8 @@ function ConsoleFrame({
   useEffect(() => {
     if (!session) return; /* Keep the requested route until sign-in; render AccountPanel below. */
     if (!orgs) return;
-    /* Old Home / Build / Settings paths still work; avoid extra hub pages. */
-    const legacy = activeTab === "home" ? defaultTab(activeOrg)
-      : activeTab === "build" ? (activeOrg ? "org-keys" : "api-key")
+    /* Build / Settings aliases still resolve to real pages; Home is its own view. */
+    const legacy = activeTab === "build" ? (activeOrg ? "org-keys" : "api-key")
       : activeTab === "settings" ? "account" : null;
     if (legacy) { setActiveTab(legacy); return; }
     if (!tabAvailable(activeTab, activeOrg)) setActiveTab(defaultTab(activeOrg));
@@ -377,8 +370,7 @@ function ConsoleFrame({
   }, []);
 
   const renderSection = (requested: string): ReactNode => {
-    const tab = requested === "home" ? defaultTab(activeOrg)
-      : requested === "build" ? (activeOrg ? "org-keys" : "api-key")
+    const tab = requested === "build" ? (activeOrg ? "org-keys" : "api-key")
       : requested === "settings" ? "account" : requested;
     /* The login UI uses the current URL as its OAuth return destination. */
     if (!session && tab !== "organizations" && tab !== "agents") {
@@ -397,6 +389,7 @@ function ConsoleFrame({
       return <p className={styles.waiting}>Loading organization…</p>;
     }
     const panelMap: Record<string, ReactNode> = {
+      home: <HomePanel session={session} activeOrg={activeOrg} onNavigate={navigateTab} />,
       account: <AccountPanel config={config} session={session} supabase={supabase} />,
       billing: <BillingPanel config={config} session={session} apiBase={apiBase} />,
       models: <ModelsPanel config={config} session={session} apiBase={apiBase} theme={theme} />,

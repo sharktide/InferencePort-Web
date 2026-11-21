@@ -64,6 +64,11 @@ test("organization sidebar restores every role-filterable management destination
   assert.equal(sections.orgSectionAllowed("org-usage", "auditor"), true);
 });
 
+test("Home link is available without changing the original navigation groups", () => {
+  assert.equal(nav.HOME_ITEM.id, "home");
+  assert.ok(!groupIds(PERSONAL_GROUPS).includes("home"));
+});
+
 test("mobile retains role-appropriate direct shortcuts plus More", () => {
   assert.deepEqual(ids(PERSONAL_DOCK), ["playground", "models", "api-key", "usage"]);
   assert.deepEqual(ids(ORG_DOCK), ["playground", "models", "org-keys", "org-usage"]);
@@ -71,8 +76,8 @@ test("mobile retains role-appropriate direct shortcuts plus More", () => {
 });
 
 test("old URLs still highlight actual feature pages", () => {
-  assert.equal(navHighlight("home", false), "models");
-  assert.equal(navHighlight("home", true), "org-overview");
+  assert.equal(navHighlight("home", false), "home");
+  assert.equal(navHighlight("home", true), "home");
   assert.equal(navHighlight("build", false), "api-key");
   assert.equal(navHighlight("build", true), "org-keys");
   assert.equal(navHighlight("settings", false), "account");
