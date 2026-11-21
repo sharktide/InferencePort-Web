@@ -35,7 +35,7 @@ import styles from "./ConsoleLayout.module.css";
 const PERSONAL_ONLY_TABS = new Set(["billing", "rewards", "api-key", "usage", "authorized-apps"]);
 const SLUG_RE = /^[a-z0-9-]{1,40}$/i;
 
-/* Invitation and organization deep links must not be overridden by the models redirect below */
+/* Invitation and organization deep links must not be overridden by the Home landing page. */
 function landsOnOrganizations(): boolean {
   if (typeof window === "undefined") return false;
   const params = new URLSearchParams(window.location.search);

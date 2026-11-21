@@ -84,3 +84,25 @@ test("old URLs still highlight actual feature pages", () => {
   assert.equal(navHighlight("rewards", false), "rewards");
   assert.equal(navHighlight("org-invoices", true), "org-invoices");
 });
+
+
+test("root URL and deep-linked console routes resolve independently", () => {
+  const tabs = loadTs("src/lib/consoleTabs.ts", (id) => {
+    if (id === "./consoleSections") return sections;
+    throw new Error("Unexpected route dependency: " + id);
+  });
+  assert.equal(tabs.isConsoleRootPath("/"), true);
+  assert.equal(tabs.isConsoleRootPath("/console"), true);
+  assert.equal(tabs.isConsoleRootPath("/console/"), true);
+  assert.equal(tabs.isConsoleRootPath("/buckets"), false);
+  assert.equal(tabs.consoleTabFromPath("/"), null);
+  assert.equal(tabs.consoleTabFromPath("/console/"), null);
+  assert.equal(tabs.consoleTabFromPath("/buckets"), "buckets");
+  assert.equal(tabs.consoleTabFromPath("/console/buckets"), "buckets");
+  assert.equal(tabs.consoleTabFromPath("/console/org-overview"), "org-overview");
+  assert.equal(tabs.consoleTabHref("home", "console.inferenceport.ai"), "/");
+  assert.equal(tabs.consoleTabHref("home", "inferenceport.ai"), "/console/");
+  assert.equal(tabs.consoleTabHref("buckets", "console.inferenceport.ai"), "/buckets/");
+  assert.equal(tabs.consoleTabHref("buckets", "inferenceport.ai"), "/console/buckets/");
+  assert.equal(tabs.consoleTabHref("home", "localhost"), "/console/");
+});

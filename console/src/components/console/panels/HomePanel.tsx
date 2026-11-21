@@ -36,6 +36,7 @@ export default function HomePanel({ session, activeOrg, onNavigate }: Props) {
   ] : [];
   const manage: Destination[] = [
     { id: usageTab, label: "Usage", detail: "Inspect requests, credits, and trends.", icon: "chart-bar" },
+    ...(activeOrg ? [{ id: "account", label: "Account", detail: "Profile, security and account preferences.", icon: "user-circle" as const }] : []),
     ...(activeOrg ? [
       { id: "org-overview", label: "Organization overview", detail: "Workspace information and administration.", icon: "gauge" as const },
       { id: "org-members", label: "Members", detail: "Team membership and access.", icon: "user-circle" as const },
