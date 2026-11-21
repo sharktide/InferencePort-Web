@@ -30,6 +30,7 @@ class IpFooter extends HTMLElement {
 		<div>
 			<h4>Company</h4>
 			<ul>
+				<li><a href="/index.html#customers">Customers &amp; programs</a></li>
 				<li><a href="/pricing.html">Pricing</a></li>
 				<li><a href="/marketplace.html">Model catalog</a></li>
 				<li><a href="/platform.html">Platform guide</a></li>
@@ -47,6 +48,14 @@ class IpFooter extends HTMLElement {
 				<li><a href="https://stats.uptimerobot.com/N1MpjMQC4U" target="_blank" rel="noopener">System health</a></li>
 				<li><a href="https://github.com/sharktide/inferenceport-ai" target="_blank" rel="noopener">GitHub</a></li>
 			</ul>
+		</div>
+	</div>
+	<div class="ipf-startup-programs" aria-label="Startup program memberships">
+		<span class="ipf-startup-caption">Members of startup programs</span>
+		<div class="ipf-startup-list">
+			<a href="https://e2b.dev/startups" aria-label="E2B for Startups" target="_blank" rel="noopener noreferrer"><img src="/img/brands/e2b-for-startups.png" width="167" height="35" alt="E2B for Startups" loading="lazy"></a>
+			<a class="ipf-openrouter-badge" href="https://openrouter.ai/startup-program" aria-label="OpenRouter for Startups" target="_blank" rel="noopener noreferrer"><img src="/img/brands/openrouter.svg" width="25" height="22" alt=""><span><strong>OpenRouter</strong><small>for Startups</small></span></a>
+			<a href="https://www.microsoft.com/en-us/startups" aria-label="Microsoft for Startups" target="_blank" rel="noopener noreferrer"><img src="https://www.microsoft.com/en-us/startups/blog/wp-content/uploads/2025/03/Partner-badges_1.png" width="140" height="60" alt="Microsoft for Startups program badge" loading="lazy"></a>
 		</div>
 	</div>
 	<div class="ipf-bottom">

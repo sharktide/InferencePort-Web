@@ -25,34 +25,39 @@ test("every link from the shared navbar to the homepage has a stable anchor", ()
   assert.match(home, /<main class="lp" id="main-content">/);
 });
 
-test("API demo uses registered model IDs and parseable real request examples", () => {
-  const examples = [...home.matchAll(/<div class="lp-code-example"[^>]*data-example-panel="([^"]+)"[^>]*>[\s\S]*?<pre><code>([\s\S]*?)<\/code><\/pre>/g)];
-  assert.equal(examples.length, 3);
-  const models = {
-    text: { endpoint: "/v1/chat/completions", id: "deepseek-v4.1-flash-1017", field: "messages" },
-    image: { endpoint: "/v1/images/generations", id: "lightning-image-turbo", field: "prompt" },
-    embedding: { endpoint: "/v1/embeddings", id: "text-embedding-3-small", field: "input" },
+test("final API workbench offers all eight documented modalities", () => {
+  const examples=[...home.matchAll(/<div class="lp-code-example"[^>]*data-example-panel="([^"]+)"[^>]*>[\s\S]*?<pre><code>([\s\S]*?)<\/code><\/pre>/g)];
+  assert.equal(examples.length,8);
+  const fields={
+    text:["/v1/chat/completions","deepseek-v4.1-flash-1017","messages"],
+    image:["/v1/images/generations","lightning-image-turbo","prompt"],
+    video:["/v1/videos","wan-fast","prompt"],
+    audio:["/v1/audio/generations",null,"prompt"],
+    "3d":["/v1/3d/generations","tripoSR","image_urls"],
+    embedding:["/v1/embeddings","text-embedding-3-small","input"],
+    decision:["/v1/systemone","microsoft/decision-1","questions"]
   };
-  for (const [, type, code] of examples) {
-    const expected = models[type];
-    assert.ok(expected, "Unknown example tab: " + type);
-    assert.ok(code.includes("https://api.inferenceport.ai" + expected.endpoint));
-    assert.match(code, /Authorization: Bearer \$IP_API_KEY/);
-    assert.match(code, /Content-Type: application\/json/);
-    const json = code.match(/-d '([\s\S]*?)'/)?.[1];
-    assert.ok(json, type + ": missing JSON body");
-    const body = JSON.parse(json);
-    assert.equal(body.model, expected.id);
-    assert.ok(body[expected.field], type + ": missing " + expected.field);
+  for(const [,key,code] of examples){
+    assert.ok(home.includes('data-example-tab="'+key+'"'));
+    if(key==="realtime"){
+      assert.match(code,/wss:\/\/api\.inferenceport\.ai\/v1\/realtime/);
+      assert.match(code,/os\.environ\["IP_API_KEY"\]/);
+      continue;
+    }
+    const [endpoint,model,field]=fields[key];
+    assert.ok(code.includes("https://api.inferenceport.ai"+endpoint));
+    assert.match(code,/Authorization: Bearer \$IP_API_KEY/);
+    const body=JSON.parse(code.match(/-d '([\s\S]*?)'/)[1]);
+    if(model)assert.equal(body.model,model);
+    assert.ok(body[field],key+" must include "+field);
   }
-  assert.match(home, /data-example-tab="text"/);
-  assert.match(home, /data-example-tab="image"/);
-  assert.match(home, /data-example-tab="embedding"/);
-  assert.match(home, /event\.key === "ArrowRight"/);
-  assert.match(home, /event\.key === "ArrowLeft"/);
-  assert.match(home, /navigator\.clipboard\.writeText\(code\)/);
+  assert.ok(home.indexOf('id="quickstart"')>home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="customers"') < home.indexOf('id="products"'));
+  assert.doesNotMatch(home,/class="lp-hero-demo"/);
+  assert.match(home,/event\.key === "ArrowRight"/);
+  assert.match(home,/event\.key === "ArrowLeft"/);
+  assert.match(home,/navigator\.clipboard\.writeText\(code\)/);
 });
-
 test("product sections link to usable next steps", () => {
   for (const fragment of [
     'href="/console/agents"', 'href="/console/buckets"', 'href="shield.html"',
@@ -70,7 +75,7 @@ test("product sections link to usable next steps", () => {
 
 test("homepage has intentional layout variation and responsive themes", () => {
   const sectionCount = [...home.matchAll(/<section\b/g)].length;
-  assert.ok(sectionCount <= 8, "Homepage has excessive sections");
+  assert.ok(sectionCount <= 10, "Homepage has excessive sections");
   assert.match(home, /class="lp-modality-matrix"/);
   assert.match(home, /class="lp-product-grid"/);
   assert.match(home, /class="lp-proof-agent"/);
@@ -98,7 +103,7 @@ test("theme correctly switches the hero instead of forcing dark mode", () => {
   assert.match(css, /background:#fafaf7;color:var\(--text-body\)/);
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-copy h1/);
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-button-outline/);
-  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-bottom/);
+  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero \.lp-trust/);
   assert.doesNotMatch(home, /class="lp-hero-overline"/);
 });
 
@@ -325,12 +330,13 @@ test("responsive architecture keeps useful model and infrastructure controls vis
   assert.doesNotMatch(css,/\.lp-topology/);
 });
 
-test("quickstart remains functional underneath the hero architecture", () => {
-  assert.match(home, /class="lp-hero-demo"/);
-  assert.match(home, /class="lp-code" aria-label="Copyable API quickstart examples"/);
+test("quickstart is a dedicated final section after the marketing narrative", () => {
+  assert.match(home, /class="lp-closing lp-quickstart" id="quickstart"/);
+  assert.match(home, /class="lp-code lp-quickstart-workbench"/);
   assert.match(home, /class="ip-architecture"/);
   assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
-  assert.equal([...home.matchAll(/data-example-panel=/g)].length,3);
+  assert.equal([...home.matchAll(/data-example-panel=/g)].length,8);
+  assert.ok(home.indexOf('id="quickstart"') > home.indexOf('id="pricing"'));
 });
 
 test("active paths are meaningful and context loss restores accessible fallback", () => {
@@ -420,7 +426,7 @@ test("unnecessary all-caps section kickers have been removed", () => {
 
 test("product spotlights restore main-site capability depth without a wall of cards", () => {
   const details = ["agents","deploy","buckets","shield","council","cli","lightning","app"];
-  assert.match(home.slice(home.indexOf('class="lp-hero-demo"'),home.indexOf('class="lp-hero-bottom"')),/class="lp-feature-points"/);
+  assert.doesNotMatch(home.slice(home.indexOf('class="lp-hero-grid"'),home.indexOf('id="customers"')),/class="lp-feature-points"/);
   for(const id of details) {
     const at=home.indexOf('id="'+id+'"');
     assert.ok(at>0,"Missing product area "+id);
@@ -428,7 +434,7 @@ test("product spotlights restore main-site capability depth without a wall of ca
       /class="lp-feature-points(?: lp-feature-points--inverse| lp-feature-points-shield)?"/,
       "Product section lacks useful capabilities: "+id);
   }
-  assert.equal((home.match(/class="lp-feature-points/g)||[]).length,details.length+1);
+  assert.equal((home.match(/class="lp-feature-points/g)||[]).length,details.length);
   assert.match(home,/HTTP or SSE MCP servers/);
   assert.match(home,/organization’s workspace/);
   assert.match(home,/AWS CLI or compatible SDKs/);
@@ -465,7 +471,7 @@ test("restored detail keeps working CTAs, API tabs and semantic structure", () =
   assert.match(home,/href="chat\/">Try Lightning chat/);
   assert.match(home,/href="install.html#install">Download the desktop app/);
   assert.match(home,/href="\/console\/agents">Configure an agent/);
-  assert.equal((home.match(/data-example-tab=/g)||[]).length,3);
+  assert.equal((home.match(/data-example-tab=/g)||[]).length,8);
   assert.equal((home.match(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)||[]).length,4);
 });
 
@@ -585,4 +591,63 @@ test("atmosphere tuning keeps cloud motion calm while preserving readable weathe
   assert.match(js,/function softenCenter\(\)/);
   assert.match(js,/reduced\.matches\|\|saveData/);
   assert.match(js,/window\.addEventListener\("scroll",onScroll,\{passive:true\}\)/);
+});
+
+
+test("six recognizable marks are grouped as customers and startup-program memberships", () => {
+  const section = home.match(/<section class="lp-trust" id="customers"[\s\S]*?<\/section>/);
+  assert.ok(section, "The customer and program band should be visible in static HTML");
+  const band=section[0];
+  assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-grid"'));
+  assert.ok(home.indexOf('id="customers"') < home.indexOf('id="products"'));
+  assert.doesNotMatch(home, /class="lp-hero-bottom"/);
+  assert.match(band,/Used by 1k\+ teams and enterprises building in production/);
+  assert.match(band,/Pollinations collaboration/);
+  assert.match(band,/Startup programs/);
+  assert.ok(band.includes("Recipient of $21,000+ in cloud and AI infrastructure credits and grants from Microsoft for Startups, E2B, and OpenRouter."));
+  assert.match(band,/aria-labelledby="lp-trust-programs-title"/);
+  for (const [name,url,asset] of [
+    ["Pollinations.ai","https://pollinations.ai/","pollinations.svg"],
+    ["TomdacatAI","https://ai.tomdacat.com/","tomdacat.svg"],
+    ["ReyGrid","https://reygrid.com/","reygrid.png"],
+  ]) {
+    assert.ok(band.includes(url), "Missing customer destination "+name);
+    assert.ok(band.includes("/img/brands/"+asset), "Missing customer logo "+name);
+    assert.ok(fs.existsSync(path.join(root,"img/brands",asset)), "Missing local asset "+asset);
+  }
+  for (const [name,url] of [
+    ["E2B for Startups","https://e2b.dev/startups"],
+    ["Microsoft for Startups","https://www.microsoft.com/en-us/startups"],
+    ["OpenRouter for Startups","https://openrouter.ai/startup-program"]
+  ]) {
+    assert.ok(band.includes('aria-label="'+name+'"'),"Missing labeled startup link "+name);
+    assert.ok(band.includes(url),"Missing startup program link "+name);
+  }
+  assert.match(band,/\/partnerships\/pollinations\.html/);
+  assert.match(band,/\/img\/brands\/e2b-for-startups\.png/);
+  assert.match(band,/Partner-badges_1\.png/);
+  assert.match(band,/\/img\/brands\/openrouter\.svg/);
+  const programBand=band.match(/<ul class="lp-trust-list lp-trust-program-list"[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(programBand,"Startup program logo row must exist");
+  const order=["E2B for Startups","OpenRouter for Startups","Microsoft for Startups"];
+  assert.deepEqual([...programBand.matchAll(/aria-label="([^"]+ for Startups)"/g)].map(m=>m[1]),order);
+
+  const badge=fs.readFileSync(path.join(root,"img/brands/e2b-for-startups.png"));
+  assert.equal(badge.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
+  assert.match(css,/\.lp-trust-mark:focus-visible/);
+  assert.match(css,/@media \(max-width:520px\)/);
+  assert.match(css,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.doesNotMatch(band,/lp-trust-story|lp-trust-index|lp-trust-tile/);
+  const footer=read("components/ip-footer.js");
+  for (const url of ["https://e2b.dev/startups","https://www.microsoft.com/en-us/startups","https://openrouter.ai/startup-program"]) {
+    assert.ok(footer.includes(url),"Missing footer startup link "+url);
+  }
+  assert.match(footer,/href="\/index\.html#customers"/);
+  assert.match(footer,/src="\/img\/brands\/e2b-for-startups\.png"/);
+  assert.match(footer,/src="\/img\/brands\/openrouter\.svg"/);
+  const footerProgramRow=footer.match(/class="ipf-startup-list"[\s\S]*?<\/div>/)?.[0];
+  assert.ok(footerProgramRow);
+  assert.deepEqual([...footerProgramRow.matchAll(/aria-label="([^"]+ for Startups)"/g)].map(m=>m[1]),["E2B for Startups","OpenRouter for Startups","Microsoft for Startups"]);
+
+  assert.match(read("styles/shared.css"),/\.ipf-startup-list > a:focus-visible/);
 });

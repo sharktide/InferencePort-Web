@@ -149,7 +149,15 @@ async function checkScene(page,name) {
 
   // Main-site product detail is restored while keeping concise product stories.
   const richSections=["agents","deploy","buckets","shield","council","cli","lightning","app"];
-  assert.equal(await page.locator(".lp-hero-demo .lp-feature-points li").count(),3);
+  // The full API workbench lives at the end of the homepage now, not inside the hero.
+  assert.equal(await page.locator(".lp-hero-demo").count(),0);
+  assert.equal(await page.locator("#quickstart [data-example-tab]").count(),8);
+  assert.equal(await page.locator("#quickstart [data-example-panel]").count(),8);
+  assert.equal(await page.locator("#quickstart [data-example-panel]:not([hidden])").count(),1);
+  assert.ok(await page.locator("#quickstart").evaluate(el=>{
+    const pricing=document.querySelector("#pricing");
+    return pricing && pricing.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING;
+  }),name+" quickstart should follow pricing");
   for(const id of richSections){
     const element=page.locator('[id="'+id+'"] .lp-feature-points').first();
     assert.equal(await element.count(),1,name+" missing rich feature descriptions for "+id);
@@ -231,17 +239,19 @@ async function checkWeather(browser) {
       x:el.getBoundingClientRect().x,y:el.getBoundingClientRect().y}));
     assert.ok(size.width>=1728&&size.height>=900,
       "Continuous weather canvas must span the viewport: "+JSON.stringify(size));
-    const quickstart=await page.locator(".lp-hero-demo-intro .lp-feature-points li").first().evaluate(el=>{
+    // Assess the real, final quickstart copy against its own surface, not
+    // a removed hero feature list.
+    const quickstart=await page.locator("#quickstart .lp-quickstart-summary p").evaluate(el=>{
       const rgb=s=>[...s.matchAll(/[\d.]+/g)].slice(0,3).map(m=>Number(m[0])/255);
       const lum=s=>rgb(s).map(v=>v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4))
         .reduce((total,v,i)=>total+v*[.2126,.7152,.0722][i],0);
       const text=lum(getComputedStyle(el).color);
-      const bg=lum(getComputedStyle(document.querySelector(".lp-hero")).backgroundColor);
+      const bg=lum(getComputedStyle(document.querySelector("#quickstart")).backgroundColor);
       return {contrast:(Math.max(text,bg)+.05)/(Math.min(text,bg)+.05),
         color:getComputedStyle(el).color};
     });
     assert.ok(quickstart.contrast>=4.5,
-      "Light-mode API quickstart text lacks contrast "+JSON.stringify(quickstart));
+      "Light-mode final API quickstart text lacks contrast "+JSON.stringify(quickstart));
     await page.screenshot({path:path.join(screenshots,"atmosphere-light-hero.png")});
     const initial=Number(await weather.getAttribute("data-weather-scroll"))||0;
     for(const [id,phase] of [["buckets","rain"],["shield","charged"],["lightning","electric"]]){
