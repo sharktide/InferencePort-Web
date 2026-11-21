@@ -1,231 +1,63 @@
 .consoleNav {
-  position: sticky;
-  top: 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  padding: 1.25rem 0.75rem 1rem;
-  background: var(--bg);
-  border-right: 1px solid var(--border);
-  height: calc(100vh - 60px);
-  height: calc(100dvh - 60px);
-  overflow-y: auto;
+  position: sticky; top: 60px;
+  display: flex; flex-direction: column; gap: 1rem;
+  width: 100%; height: calc(100dvh - 60px);
+  background: var(--bg); border-right: 1px solid var(--border);
+  padding: 1.05rem .7rem 1rem; overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin;
 }
-
-.navGroup {
-  display: grid;
-  gap: 1px;
+.contextBlock { position: sticky; top: -.4rem; z-index: 2; padding: .4rem .2rem .75rem; background: var(--bg); border-bottom: 1px solid var(--border); }
+.contextHeader { width: 100%; }
+.navGroup { display: grid; gap: 2px; }
+.groupTitle { font-size: .74rem; line-height: 1.3; color: var(--muted); padding: .1rem .8rem .3rem; font-weight: 650; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.consoleNavTab, .utilityLink {
+  width: 100%; min-height: 38px; display: flex; align-items: center; gap: .7rem;
+  border: 0; border-radius: var(--r-0); background: transparent; text-decoration: none;
+  text-align: left; padding: .52rem .75rem; color: var(--text-2);
+  font: 500 .875rem/1.35 var(--sans); cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease;
 }
-
-/* Group titles: sentence case, quiet, not tracked caps */
-.consoleNavLabel {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--muted);
-  padding: 0 0.7rem 0.35rem;
-}
-
-/* "Working as" switcher at the top of the sidebar */
-.contextHeader {
-  width: 100%;
-  margin-bottom: 0.1rem;
-}
-
-.navTabWrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.consoleNavTab {
-  position: relative;
-  width: 100%;
-  min-height: 38px;
-  justify-content: flex-start;
-  gap: 0.65rem;
-  background: transparent;
-  color: var(--text-2);
-  border: 0;
-  padding: 0.5rem 0.7rem;
-  border-radius: var(--r-0);
-  font-size: 0.875rem;
-  font-weight: 500;
-  white-space: normal;
-  text-align: left;
-  line-height: 1.25;
-}
-
-.navIcon {
-  flex: none;
-  width: 18px;
-  height: 18px;
-  color: var(--muted);
-  transition: color var(--d-fast);
-}
-
-.navLabel { min-width: 0; }
-.navTabWrap:has(.rewardBadge) .navLabel { padding-right: 1.9rem; }
-
-.consoleNavTab:hover:not(.active) {
-  background: var(--surface-2);
-  color: var(--text);
-}
-.consoleNavTab:hover:not(.active) .navIcon { color: var(--text-2); }
-
-.consoleNavTab.active {
-  background: var(--brand-dim);
-  color: var(--text);
-  font-weight: 600;
-}
+.consoleNavTab:hover:not(.active), .utilityLink:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+.consoleNavTab.active { background: var(--brand-dim); color: var(--text); font-weight: 650; }
 .consoleNavTab.active .navIcon { color: var(--brand); }
-.consoleNavTab.active::before {
-  content: '';
-  position: absolute;
-  left: -0.75rem;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--brand);
-}
-
-/* Unclaimed rewards: a gold count chip (the console's one gold highlight) */
-.rewardBadge {
-  position: absolute;
-  right: 0.55rem;
-  top: 50%;
-  transform: translateY(-50%);
-  min-width: 22px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 6px;
-  background: var(--gold-dim);
-  border: 1px solid var(--gold-border);
-  color: var(--gold-ink);
-  font-size: 0.72rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.sidebarUserSection {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--border);
-}
-
-.rewardNotification {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
-  padding: 0.65rem 0.75rem;
-  background: var(--gold-dim);
-  border: 1px solid var(--gold-border);
-  border-radius: var(--r-1);
-}
-
-.rewardNotificationIcon {
-  flex: none;
-  width: 18px;
-  height: 18px;
-  margin-top: 1px;
-  color: var(--gold-ink);
-}
-
-.rewardNotificationText {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--gold-ink);
-  line-height: 1.35;
-}
-
-.sidebarUserTag {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.35rem 0.4rem;
-  min-width: 0;
-}
-
-.sidebarUserAvatar {
-  width: 30px;
-  height: 30px;
-  border-radius: var(--r-0);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text);
-  flex-shrink: 0;
-}
-
-.sidebarUserEmail {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--text-2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
-}
-
-/* Mobile drawer */
-.mobileNavBackdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 199;
-  background: var(--overlay);
-  opacity: 0;
-  transition: opacity var(--d-move) var(--ease-out);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.mobileNavBackdrop.visible {
-  display: block;
-  opacity: 1;
-}
-
+.consoleNavTab:focus-visible,.utilityLink:focus-visible,.expandButton:focus-visible,.dockButton:focus-visible,
+.drawerClose:focus-visible,.drawerSignOut:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+.navIcon { flex: none; width: 18px; height: 18px; color: var(--muted); }
+.navLabel { flex: 1; min-width: 0; }
+.rewardBadge { padding: .1rem .4rem; font-size: .74rem; font-weight: 700; border-radius: 6px; background: var(--gold-dim); color: var(--gold-ink); border: 1px solid var(--gold-border); }
+.advancedGroup { display: grid; gap: .25rem; border-top: 1px solid var(--border); padding-top: .5rem; margin-top: .2rem; }
+.expandButton { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 38px; padding: .5rem .75rem; border: 0; border-radius: var(--r-0); background: transparent; color: var(--text-2); cursor: pointer; font: 600 .82rem var(--sans); }
+.expandButton:hover { background: var(--surface-2); color: var(--text); }
+.chevron { width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); transition: transform 140ms ease; margin-right: .2rem; }
+.chevronOpen { transform: rotate(225deg); }
+.advancedGroup .navGroup { padding-left: .35rem; }
+.sideBottom { display: grid; gap: .2rem; margin-top: auto; padding-top: .75rem; border-top: 1px solid var(--border); }
+.sidebarUserTag { display: flex; gap: .5rem; align-items: center; min-width: 0; padding: .65rem .3rem .1rem; }
+.sidebarUserAvatar { width: 28px; height: 28px; flex: none; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: .75rem; font-weight: 650; }
+.sidebarUserEmail { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: .76rem; }
+.drawerSignOut { border: 0; background: transparent; color: var(--text-2); padding: .4rem; border-radius: var(--r-0); cursor: pointer; }
+.drawerSignOut:hover { background: var(--surface-2); }
+.drawerTitle, .mobileDock, .mobileNavBackdrop { display: none; }
 @media (max-width: 960px) {
-  .consoleNav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 200;
-    width: 300px;
-    max-width: 86vw;
-    height: 100vh;
-    height: 100dvh;
-    transform: translateX(-102%);
-    visibility: hidden;
-    transition: transform var(--d-move) var(--ease-out), visibility 0s linear var(--d-move);
-    border-right: 1px solid var(--border);
-    padding-top: 1.25rem;
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-    background: var(--surface);
-    box-shadow: var(--shadow-lg);
-    overscroll-behavior: contain;
+  .mobileNavBackdrop { display: block; position: fixed; inset: 0; z-index: 199; background: var(--overlay); opacity: 0; pointer-events: none; transition: opacity 160ms ease; }
+  .mobileNavBackdrop.visible { opacity: 1; pointer-events: auto; }
+  .consoleNav { position: fixed; top: 0; left: 0; z-index: 200; width: min(340px, 89vw); height: 100dvh; padding: .75rem .8rem calc(1.2rem + env(safe-area-inset-bottom,0px)); background: var(--surface); box-shadow: var(--shadow-lg); transform: translateX(-103%); visibility: hidden; transition: transform 180ms ease, visibility 0s linear 180ms; gap: 1.1rem; }
+  .consoleNav.mobileOpen { transform: translateX(0); visibility: visible; transition: transform 180ms ease, visibility 0s; }
+  .contextBlock { background: var(--surface); }
+  .drawerTitle { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding: 0 .5rem; font-size: 1rem; color: var(--text); }
+  .drawerClose { width: 38px; height: 38px; border: 0; border-radius: var(--r-1); background: var(--surface-2); color: var(--text); cursor: pointer; }
+  .consoleNavTab, .utilityLink { min-height: 44px; }
+  .mobileDock {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 150;
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .15rem;
+    padding: .45rem max(.35rem,env(safe-area-inset-left,0px)) calc(.45rem + env(safe-area-inset-bottom,0px)) max(.35rem,env(safe-area-inset-right,0px));
+    background: color-mix(in srgb,var(--surface) 94%,transparent); border-top: 1px solid var(--border);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   }
-
-  .consoleNav.mobileOpen {
-    transform: translateX(0);
-    visibility: visible;
-    transition: transform var(--d-move) var(--ease-out), visibility 0s;
-  }
-
-  .consoleNavTab { min-height: 44px; }
+  .dockButton { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; min-height: 48px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); cursor: pointer; font: 500 .65rem var(--sans); white-space: nowrap; min-width: 0; }
+  .dockButton svg { flex: none; }
+  .dockButton:hover { background: var(--surface-2); color: var(--text); }
+  .dockActive { color: var(--text); background: var(--brand-dim); font-weight: 650; }
 }
+@media (max-width: 360px) { .dockButton { font-size: .6rem; } .mobileDock { gap: 0; } }
+@media (prefers-reduced-motion: reduce) { .consoleNav, .mobileNavBackdrop, .consoleNavTab, .expandButton, .chevron { transition: none; } }

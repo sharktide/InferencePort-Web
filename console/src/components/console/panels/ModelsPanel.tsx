@@ -1,6 +1,7 @@
 "use client";
 
 import Icon from "../../Icon";
+import { navigateConsole } from "../ContextSwitcher";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import AudioPlayground from "./AudioPlayground";
@@ -388,12 +389,18 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
 
   const priceMap: Record<string, string> = {};
 
-  if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to view available models and run the playground.</div></div>;
+  if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to browse models and use the quick playground.</div></div>;
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Models</div>
+        <div className={styles.catalogHeader}>
+          <div><h2>Models</h2><p>Browse capabilities and pricing, or test a model without leaving the catalog.</p></div>
+          <div className={styles.catalogHeaderActions}>
+            <button type="button" className={styles.catalogPlaygroundLink} onClick={() => document.getElementById("models-quick-playground")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Quick test ↓</button>
+            <button type="button" className={styles.catalogPlaygroundLink} onClick={() => navigateConsole("playground")}>Full Playground <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
         <div className={styles.tabs}>
           <button className={`playground-tab ${styles.playgroundTab} ${source === "p2g" ? styles.active : ""}`} onClick={() => setSource("p2g")}>P2G API</button>
           <button className={`playground-tab ${styles.playgroundTab} ${source === "gen" ? styles.active : ""}`} onClick={() => setSource("gen")}>Gen API</button>
@@ -450,7 +457,12 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             const disc = source === "p2g" ? getModelDiscount(m) : { type: "none", percent: 0, fixedPrice: 0 };
             const discountedLabel = source === "p2g" ? formatDiscountedPrice(m, disc) : null;
             return (
-              <div key={`${slug(m) || "model"}-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
+              <div key={`${slug(m) || "model"}-${i}`} className={styles.modelCard} role="button" tabIndex={0}
+                aria-label={`View details for ${modelDisplayName(m)}`}
+                onClick={() => setSelectedDetailModel(m)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedDetailModel(m); }
+                }}>
                 {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
@@ -502,8 +514,11 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         </div>
       </section>
 
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Live playground</div>
+      <section id="models-quick-playground" className={`${styles.card} ${styles.wide} ${styles.modelQuickPlayground}`}>
+        <div className={styles.quickPlaygroundHeader}>
+          <div><h2>Quick playground</h2><p>Generate a response or test a model without leaving the catalog.</p></div>
+          <button type="button" className={styles.catalogPlaygroundLink} onClick={() => navigateConsole("playground")}>Full Playground <span aria-hidden="true">→</span></button>
+        </div>
         <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test generation using {source === "p2g" ? "P2G API" : "Gen API"}. Every successful generation consumes credits.</p>
         <div className={styles.tabs}>
           {(source === "p2g" ? ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"] as const : ["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${t === "decision" ? styles.playgroundTabDecision : ""} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t === "decision" ? "Decisions" : t === "embedding" ? "Embeddings" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
@@ -641,7 +656,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
 
       {selectedDetailModel && (
         <div className={styles.modelDetailOverlay} onClick={() => setSelectedDetailModel(null)}>
-          <div className={styles.modelDetailTray} onClick={(e) => e.stopPropagation()}>
+          <div className={styles.modelDetailTray} role="dialog" aria-modal="true" aria-label="Model details" onClick={(e) => e.stopPropagation()}>
             <button className={styles.modelDetailClose} onClick={() => setSelectedDetailModel(null)} aria-label="Close"><Icon name="x" size={18} /></button>
             <div className={styles.modelDetailImageWrap}>
               <img
@@ -701,6 +716,22 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
               {selectedDetailModel.output_modalities && (
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selectedDetailModel.output_modalities.map((v: string) => v.toUpperCase()).join(" / ")}</span></div>
               )}
+              <button type="button" className={styles.modelDetailTry} onClick={() => {
+                const type = String(modelType(selectedDetailModel)).toLowerCase();
+                const mode = type === "3d" ? "3d" : type === "embedding" ? "embedding"
+                  : type === "decision" ? "decision" : type === "realtime" ? "realtime"
+                  : type === "image" ? "image" : type === "video" ? "video"
+                  : type === "audio" ? "audio" : "text";
+                try {
+                  sessionStorage.setItem("console-playground-selected-model", JSON.stringify({
+                    id: slug(selectedDetailModel), source, mode,
+                  }));
+                } catch { /* Storage is optional; still open the playground. */ }
+                setSelectedDetailModel(null);
+                navigateConsole("playground");
+              }}>
+                {isTextModel(selectedDetailModel) ? "Try this model" : "Open in Playground"} <span aria-hidden="true">→</span>
+              </button>
             </div>
           </div>
         </div>

@@ -18,6 +18,11 @@ export function normalizeConsoleTab(value: string | null): ConsoleTab | null {
   return TAB_SET.has(slug) ? slug as ConsoleTab : null;
 }
 
+/* Bare console URLs always open Home. */
+export function isConsoleRootPath(pathname: string): boolean {
+  return pathname === "/" || pathname === "/console" || pathname === "/console/";
+}
+
 /* Recognize either /console/rewards or /rewards, with or without a trailing slash. */
 export function consoleTabFromPath(pathname: string): ConsoleTab | null {
   const segments = pathname.split("/").filter(Boolean);
@@ -28,5 +33,6 @@ export function consoleTabFromPath(pathname: string): ConsoleTab | null {
 /* The console subdomain omits /console in public URLs; the main domain keeps it. */
 export function consoleTabHref(tab: ConsoleTab, hostname: string): string {
   const prefix = hostname === "console.inferenceport.ai" ? "" : "/console";
+  if (tab === "home") return prefix ? `${prefix}/` : "/";
   return `${prefix}/${tab}/`;
 }

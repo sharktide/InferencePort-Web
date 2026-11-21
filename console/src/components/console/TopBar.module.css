@@ -1,164 +1,65 @@
 .topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0 1.5rem 0 1.25rem;
-  height: 60px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: saturate(140%) blur(14px);
-  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  position: sticky; top: 0; z-index: 100; height: 60px; padding: 0 1.4rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1.25rem;
+  background: color-mix(in srgb,var(--bg) 92%,transparent);
+  backdrop-filter: saturate(140%) blur(14px); -webkit-backdrop-filter: saturate(140%) blur(14px);
   border-bottom: 1px solid var(--border);
 }
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  min-width: 0;
-  flex: 1 1 auto;
+.brand { min-width: 0; flex: 1; display: flex; align-items: center; gap: .7rem; }
+.brandLogo { width: 32px; height: 32px; flex: none; border-radius: 9px; object-fit: contain; }
+.brand h1 { display: flex; align-items: baseline; min-width: 0; gap: .5rem; font: 650 .98rem/1.2 var(--sans); color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.suffix { color: var(--muted); font-weight: 450; font-size: .86rem; }
+.topActions { display: flex; flex: none; align-items: center; gap: .55rem; }
+.searchButton { display: flex; align-items: center; gap: .6rem; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); border-radius: var(--r-1); min-width: 220px; min-height: 36px; padding: .45rem .7rem; cursor: pointer; font: 500 .84rem var(--sans); transition: background-color 150ms ease, border-color 150ms ease; }
+.searchButton:hover { background: var(--surface-2); border-color: var(--border-strong); }
+.searchButton kbd { margin-left: auto; padding: .15rem .32rem; border: 1px solid var(--border); color: var(--muted); border-radius: 4px; font: 500 .72rem var(--sans); }
+.iconButton { display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; background: transparent; width: 36px; height: 36px; color: var(--text-2); border-radius: var(--r-1); cursor: pointer; }
+.iconButton:hover { background: var(--surface-2); color: var(--text); }
+.searchButton:focus-visible,.iconButton:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media (max-width: 1200px) {
+  .searchButton { min-width: 36px; width: 36px; justify-content: center; padding: 0; }
+  .searchButton span, .searchButton kbd { display: none; }
 }
-
-.brand > div { min-width: 0; }
-
-.brandLogo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  flex: none;
-}
-
-.brand h1 {
-  font-family: var(--sans);
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.2;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.brand p {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: 1px;
-}
-
-.brandEmphasis {
-  font-weight: 600;
-}
-
-.brandDesktop { display: inline; }
-.brandMobile { display: none; }
-
-.topActions {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex: none;
-}
-
-.themeIcon {
-  display: inline-flex;
-  line-height: 1;
-}
-
-.hidden { display: none; }
-
-/* Context switcher sits left of the theme toggle; keeps its own tap target on phones */
-.switcher { margin-right: 0.35rem; }
-
-.topActions a {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-2);
-  padding: 0.45rem 0.7rem;
-  border-radius: var(--r-0);
-  transition: background-color var(--d-fast), color var(--d-fast);
-}
-
-.topActions a:hover {
-  background: var(--surface-2);
-  color: var(--text);
-  text-decoration: none;
-}
-
-.ghost {
-  background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--r-1);
-  padding: 0 0.85rem;
-  min-height: 36px;
-  font-family: var(--sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--d-fast), background-color var(--d-fast);
-}
-.ghost:hover {
-  border-color: var(--text-2);
-  background: var(--surface-2);
-}
-
-.iconBtn {
-  width: 36px;
-  padding: 0;
-  border-color: transparent;
-  color: var(--text-2);
-}
-.iconBtn:hover { color: var(--text); border-color: transparent; }
-
-.mobileOnly { display: none; }
-.desktopOnly { display: inline; }
-
 @media (max-width: 960px) {
-  .mobileOnly {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-  }
+  .topbar { height: 56px; padding: 0 .85rem; gap: .5rem; }
+  .brandLogo { height: 30px; width: 30px; }
+  .brand h1 { font-size: .91rem; gap: .4rem; }
+  .suffix { font-size: .78rem; }
+  .topActions { gap: .15rem; }
+  .iconButton, .searchButton { min-width: 40px; width: 40px; height: 40px; min-height: 40px; }
+  .searchButton { border-color: transparent; background: transparent; }
+  .searchButton:hover { border-color: transparent; }
+}
+@media (max-width: 355px) { .suffix { display: none; } }
 
-  .desktopOnly {
-    display: none !important;
+/* Keep the original top hamburger AND the new mobile quick-access dock.
+   The controls are intentionally distinct: search, navigation, appearance. */
+.mobileMenuButton { display: none; border: 1px solid var(--border); border-radius: var(--r-1);
+  align-items: center; justify-content: center; width: 40px; height: 40px; flex: 0 0 40px;
+  padding: 0; color: var(--text); background: var(--surface-2); cursor: pointer; }
+.mobileMenuButton:hover { background: var(--brand-dim); border-color: var(--border-strong); }
+.mobileMenuButton:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media (max-width: 960px) {
+  .topbar { gap: .4rem; padding: 0 .65rem; }
+  .brand { flex: 1 1 0; overflow: hidden; }
+  .brand h1 { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .topActions { display: flex; align-items: center; gap: .25rem; flex: none; }
+  .mobileMenuButton { display: inline-flex; }
+  .searchButton, .iconButton, .mobileMenuButton {
+    box-sizing: border-box; display: inline-flex; flex: 0 0 40px; width: 40px; min-width: 40px;
+    height: 40px; min-height: 40px; justify-content: center; align-items: center;
+    color: var(--text); border: 1px solid var(--border); border-radius: var(--r-1);
+    background: var(--surface-2); padding: 0; visibility: visible; opacity: 1;
   }
-
-  /* The org context switcher lives in the side drawer on phones; it would crowd the top bar.
-     Scoped under .topActions so it outranks ContextSwitcher's own .root { display: inline-flex }. */
-  .topActions .switcher {
-    display: none;
-  }
-
-  .brandEmphasis {
-    display: none !important;
-  }
-
-  .brandDesktop {
-    display: none !important;
-  }
-
-  .brandMobile {
-    display: inline !important;
-  }
-
-  .brand p {
-    display: none !important;
-  }
-
-  .topbar {
-    padding: 0 1rem;
-  }
-
-  .brandLogo {
-    width: 32px;
-    height: 32px;
-  }
+  .searchButton:hover, .iconButton:hover { background: var(--brand-dim); border-color: var(--border-strong); }
+}
+@media (max-width: 520px) {
+  .brandName { display: none; }
+  .brand h1 { font-size: .88rem; }
+  .suffix { display: inline; color: var(--text); font-weight: 600; }
+}
+@media (max-width: 340px) {
+  .topbar { padding: 0 .45rem; }
+  .topActions { gap: .12rem; }
+  .brandLogo { width: 28px; height: 28px; }
 }

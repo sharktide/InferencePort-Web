@@ -504,7 +504,7 @@ function StatsLine({ stats }: { stats: Stats }) {
 
 /* ---------- Component ---------- */
 
-export default function TextChat({ session, apiBase, apiPrefix, models }: StudioProps) {
+export default function TextChat({ session, apiBase, apiPrefix, models, preferredModelId }: StudioProps) {
   const list = useMemo(() => textModels(models), [models]);
 
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -530,6 +530,7 @@ export default function TextChat({ session, apiBase, apiPrefix, models }: Studio
   const fileRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const pinnedRef = useRef(true);
+  const appliedModelHandoff = useRef<string | null>(null);
 
   /* Model: fall back to the first text model when nothing valid is picked. */
   const effModel = list.some((m) => slug(m) === modelPick) ? modelPick : (list[0] ? slug(list[0]) : "") || "";
@@ -550,6 +551,15 @@ export default function TextChat({ session, apiBase, apiPrefix, models }: Studio
   const canSend = !busy && (input.trim().length > 0 || images.length > 0);
   const maxTokens = parseMaxTokens(maxTokensText);
   const cfg: Cfg = { model: effModel, system, temperature, topP, maxTokens, stream: stream === "on" };
+
+  /* Model-catalog handoff opens a fresh draft without altering saved chat history. */
+  useEffect(() => {
+    if (preferredModelId && appliedModelHandoff.current !== preferredModelId && list.some((model) => slug(model) === preferredModelId)) {
+      appliedModelHandoff.current = preferredModelId;
+      setActiveId(null);
+      setModelPick(preferredModelId);
+    }
+  }, [preferredModelId, list]);
 
   /* Load saved threads once on mount, then persist when idle. */
   useEffect(() => {

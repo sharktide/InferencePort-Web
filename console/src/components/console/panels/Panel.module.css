@@ -327,3 +327,53 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
   .oauthGrantCard { padding: 1rem 1.1rem; }
   .oauthModal { padding: 1.25rem !important; }
 }
+
+.modelDetailTry { display: inline-flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; padding: .85rem 1rem; border: 1px solid var(--brand); border-radius: var(--r-1); background: var(--brand-dim); color: var(--text); font: 650 .9rem var(--sans); cursor: pointer; transition: background-color 150ms ease, transform 150ms ease; }
+.modelDetailTry:hover { background: var(--surface-2); transform: translateY(-1px); }
+.modelDetailTry:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* One focused catalog instead of a second generation playground. */
+.catalogHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.catalogHeader h2 { font-size: 1.45rem; font-weight: 650; letter-spacing: -.025em; line-height: 1.2; color: var(--text); }
+.catalogHeader p { color: var(--text-2); font-size: .86rem; line-height: 1.5; margin-top: .35rem; }
+.catalogPlaygroundLink { flex: none; display: inline-flex; align-items: center; gap: .6rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-1); padding: .6rem .8rem; color: var(--text); font: 600 .83rem var(--sans); cursor: pointer; }
+.catalogPlaygroundLink:hover { border-color: var(--border-strong); }
+@media (max-width: 720px) {
+  .catalogHeader { flex-direction: column; align-items: stretch; }
+  .catalogPlaygroundLink { align-self: flex-start; }
+  .card { padding: 1rem; box-shadow: none; }
+  .panel { row-gap: 1rem; }
+  .modelDetailTray { width: min(100vw, 440px); }
+  .modelDetailContent { padding: 1rem; }
+}
+
+.modelCard:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.apiKeyHeader { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.15rem; }
+.apiKeyHeader h2 { font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; color: var(--text); }
+.apiKeyHeader p { font-size: .85rem; line-height: 1.45; color: var(--text-2); margin-top: .35rem; }
+.apiKeyGuides { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+.apiKeyGuides button { border: 1px solid var(--border); border-radius: var(--r-0); padding: .55rem .7rem; color: var(--text); font: 500 .78rem var(--sans); background: var(--surface-2); cursor: pointer; }
+.apiKeyGuides button:hover { border-color: var(--border-strong); }
+@media (max-width: 480px) { .apiKeyGuides { width: 100%; } .apiKeyGuides button { flex: 1; white-space: normal; } }
+
+.usageSectionToggle { display: flex; align-items: center; justify-content: space-between; gap: .75rem; width: 100%; text-align: left; padding: 0; background: transparent; color: var(--text); border: 0; font-family: var(--sans); cursor: pointer; }
+.usageSectionToggle > span:first-child { display: grid; gap: .3rem; }
+.usageSectionToggle strong { font-size: 1rem; font-weight: 650; }
+.usageSectionToggle small { color: var(--muted); font-size: .83rem; font-weight: 400; }
+.usageSectionToggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 4px; }
+.usageChevron { flex: none; width: 9px; height: 9px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); transition: transform .15s ease; margin-right: .4rem; }
+.usageChevronOpen { transform: rotate(225deg); }
+.usageDisclosure { border-top: 1px solid var(--border); padding-top: 1.15rem; margin-top: 1rem; display: grid; gap: 1rem; min-width: 0; }
+@media (prefers-reduced-motion: reduce) { .usageChevron { transition: none; } }
+
+/* Models retains its original inline prototyping controls. */
+.catalogHeaderActions { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
+.modelQuickPlayground { scroll-margin-top: 80px; }
+.quickPlaygroundHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .6rem; }
+.quickPlaygroundHeader h2 { font: 650 1.08rem/1.4 var(--sans); color: var(--text); }
+.quickPlaygroundHeader p { color: var(--text-2); margin-top: .2rem; font-size: .83rem; line-height: 1.4; }
+@media (max-width: 640px) {
+  .catalogHeaderActions { width: 100%; }
+  .quickPlaygroundHeader { flex-direction: column; }
+  .modelQuickPlayground { scroll-margin-top: 68px; }
+}

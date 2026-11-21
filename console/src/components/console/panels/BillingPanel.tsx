@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
 import billingStyles from "./BillingPanel.module.css";
 import { useModal } from "../../Modal";
+import { navigateConsole } from "../ContextSwitcher";
 
 interface BillingPanelProps { config: any; session: any; apiBase: string; }
 
@@ -259,7 +260,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
                 </div>
               ))}
               <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "8px" }}>
-                <a href="#" onClick={(e) => { e.preventDefault(); (document.querySelector('[data-console-tab="deploy"]') as HTMLButtonElement)?.click(); }}>Manage all deployments</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); navigateConsole("deploy"); }}>Manage all deployments</a>
               </p>
             </div>
           );
