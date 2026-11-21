@@ -103,7 +103,7 @@ test("theme correctly switches the hero instead of forcing dark mode", () => {
   assert.match(css, /background:#fafaf7;color:var\(--text-body\)/);
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-copy h1/);
   assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-button-outline/);
-  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero-bottom/);
+  assert.match(css, /:root:not\(\[data-theme="dark"\]\) \.lp-hero \.lp-trust/);
   assert.doesNotMatch(home, /class="lp-hero-overline"/);
 });
 
@@ -426,7 +426,7 @@ test("unnecessary all-caps section kickers have been removed", () => {
 
 test("product spotlights restore main-site capability depth without a wall of cards", () => {
   const details = ["agents","deploy","buckets","shield","council","cli","lightning","app"];
-  assert.doesNotMatch(home.slice(home.indexOf('class="lp-hero-grid"'),home.indexOf('class="lp-hero-bottom"')),/class="lp-feature-points"/);
+  assert.doesNotMatch(home.slice(home.indexOf('class="lp-hero-grid"'),home.indexOf('id="customers"')),/class="lp-feature-points"/);
   for(const id of details) {
     const at=home.indexOf('id="'+id+'"');
     assert.ok(at>0,"Missing product area "+id);
@@ -600,10 +600,11 @@ test("six recognizable marks are grouped as customers and startup-program member
   const band=section[0];
   assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-grid"'));
   assert.ok(home.indexOf('id="customers"') < home.indexOf('id="products"'));
-  assert.ok(home.indexOf('id="customers"') > home.indexOf('class="lp-hero-bottom"'));
-  assert.match(band,/Used by teams/);
+  assert.doesNotMatch(home, /class="lp-hero-bottom"/);
+  assert.match(band,/Used by 1k\+ teams and enterprises building in production/);
   assert.match(band,/Pollinations collaboration/);
   assert.match(band,/Startup programs/);
+  assert.ok(band.includes("Recipient of $21,000+ in cloud and AI infrastructure credits and grants from Microsoft for Startups, E2B, and OpenRouter."));
   assert.match(band,/aria-labelledby="lp-trust-programs-title"/);
   for (const [name,url,asset] of [
     ["Pollinations.ai","https://pollinations.ai/","pollinations.svg"],
