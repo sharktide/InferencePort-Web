@@ -52,7 +52,7 @@ test("final API workbench offers all eight documented modalities", () => {
     assert.ok(body[field],key+" must include "+field);
   }
   assert.ok(home.indexOf('id="quickstart"')>home.indexOf('id="pricing"'));
-  assert.ok(home.indexOf('id="customers"')>home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="customers"') < home.indexOf('id="products"'));
   assert.doesNotMatch(home,/class="lp-hero-demo"/);
   assert.match(home,/event\.key === "ArrowRight"/);
   assert.match(home,/event\.key === "ArrowLeft"/);
