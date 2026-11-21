@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import { useModal } from "../../Modal";
+import { navigateConsole } from "../ContextSwitcher";
 import LimitsEditor, { draftFrom, emptyDraft, parseDraft, type LimitsDraft } from "./orgs/LimitsEditor";
 
 interface Props { session: any; apiBase: string; }
@@ -178,7 +179,13 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Lightning API keys</div>
+        <div className={styles.apiKeyHeader}>
+          <div><h2>API keys</h2><p>Manage credentials for your apps, or jump straight to the right API guide.</p></div>
+          <div className={styles.apiKeyGuides}>
+            <button type="button" onClick={() => navigateConsole("payg-api")}>Pay-as-you-go API →</button>
+            <button type="button" onClick={() => navigateConsole("gen-api")}>Generation API →</button>
+          </div>
+        </div>
         <div className={styles.apiKeyShell}>
           <div className={`${styles.apiKeyForm} ${styles.apiKeyCompactForm}`}>
             <p className={styles.apiKeyCreateDescription}>

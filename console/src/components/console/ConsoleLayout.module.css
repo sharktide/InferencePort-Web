@@ -66,3 +66,15 @@
     padding: 1rem;
   }
 }
+
+/* Narrow, quiet secondary navigation for related account and billing views. */
+.sectionNav { border-bottom: 1px solid var(--border); margin: -.35rem 0 -.2rem; padding-bottom: .5rem; min-width: 0; }
+.sectionNavLinks { display: flex; gap: .2rem; flex-wrap: wrap; }
+.sectionNavButton { background: transparent; border: 0; border-radius: var(--r-0); padding: .55rem .8rem; font: 500 .85rem var(--sans); color: var(--text-2); cursor: pointer; }
+.sectionNavButton:hover { background: var(--surface-2); color: var(--text); }
+.sectionNavButton.sectionNavActive { background: var(--brand-dim); font-weight: 650; color: var(--text); }
+.sectionNavButton:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media (max-width: 960px) {
+  .consoleContent { padding: 1.1rem .9rem calc(6.7rem + env(safe-area-inset-bottom, 0px)); gap: 1.1rem; width: 100%; }
+}
+@media (max-width: 420px) { .consoleContent { padding-left: .65rem; padding-right: .65rem; } }

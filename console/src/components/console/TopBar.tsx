@@ -2,73 +2,41 @@
 
 import styles from "./TopBar.module.css";
 import Icon from "../Icon";
-import ContextSwitcher from "./ContextSwitcher";
 
 interface TopBarProps {
-  user: any;
-  onSignOut: () => void;
   onThemeToggle: () => void;
   theme: "light" | "dark";
-  homeUrl: string;
   appName: string;
+  onOpenSearch: () => void;
   isMobileNavOpen: boolean;
   onMobileNavToggle: () => void;
 }
 
-export default function TopBar({
-  user,
-  onSignOut,
-  onThemeToggle,
-  theme,
-  homeUrl,
-  appName,
-  isMobileNavOpen,
-  onMobileNavToggle,
-}: TopBarProps) {
+export default function TopBar({ onThemeToggle, theme, appName, onOpenSearch, isMobileNavOpen, onMobileNavToggle }: TopBarProps) {
   return (
     <header className={styles.topbar}>
       <div className={styles.brand}>
-        <img src="/console/assets/logo.png" alt="InferencePort AI" className={styles.brandLogo} />
-        <div>
-          <h1 id="app-name">
-            <span className={styles.brandEmphasis}>{appName}</span>{" "}
-            <span className={styles.brandDesktop}>Developer Console</span>
-            <span className={styles.brandMobile}>Console</span>
-          </h1>
-          <p className={styles.brandDesktop}>
-            <span className={styles.brandEmphasis}>{appName}</span> Pay-2-Go API dashboard
-          </p>
-        </div>
+        <img src="/console/assets/logo.png" alt="" className={styles.brandLogo} />
+        <h1 id="app-name">
+          <span className={styles.brandName}>{appName}</span><span className={styles.suffix}>Console</span>
+        </h1>
       </div>
       <div className={styles.topActions}>
-        <button
-          id="mobile-nav-toggle"
-          className={`${styles.ghost} ${styles.iconBtn} ${styles.mobileOnly}`}
-          type="button"
-          aria-label={isMobileNavOpen ? "Close navigation" : "Open navigation"}
-          aria-expanded={isMobileNavOpen}
-          onClick={onMobileNavToggle}
-        >
-          <Icon name={isMobileNavOpen ? "x" : "list"} size={20} />
+        <button id="mobile-nav-toggle" type="button" className={styles.mobileMenuButton}
+          onClick={onMobileNavToggle} aria-expanded={isMobileNavOpen}
+          aria-controls="console-sidebar-nav"
+          aria-label={isMobileNavOpen ? "Close navigation menu" : "Open navigation menu"}>
+          <Icon name={isMobileNavOpen ? "x" : "list"} size={21} />
         </button>
-        <a id="home-link" href={homeUrl} target="_blank" rel="noreferrer" className={styles.desktopOnly}>Home</a>
-        <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.desktopOnly}>Docs</a>
-        <ContextSwitcher variant="topbar" className={styles.switcher} />
-        <button
-          id="theme-toggle"
-          className={`${styles.ghost} ${styles.iconBtn}`}
-          type="button"
-          aria-label="Toggle dark mode"
-          onClick={onThemeToggle}
-        >
-          <span className={`${styles.themeIcon} ${theme === "dark" ? styles.hidden : ""}`}><Icon name="moon" size={18} /></span>
-          <span className={`${styles.themeIcon} ${theme === "light" ? styles.hidden : ""}`}><Icon name="sun" size={18} /></span>
+        <button type="button" className={styles.searchButton} onClick={onOpenSearch}
+          aria-label="Search console (Command K or Control K)">
+          <Icon name="sparkle" size={18} />
+          <span>Search console</span><kbd>⌘ K</kbd>
         </button>
-        {user ? (
-          <button id="logout-btn" className={styles.ghost} onClick={onSignOut}>
-            Sign out
-          </button>
-        ) : null}
+        <button id="theme-toggle" className={styles.iconButton} type="button"
+          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} onClick={onThemeToggle}>
+          <Icon name={theme === "dark" ? "sun" : "moon"} size={19} />
+        </button>
       </div>
     </header>
   );

@@ -5,6 +5,8 @@ import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { consoleTabFromPath, consoleTabHref, normalizeConsoleTab } from "../../lib/consoleTabs";
 import TopBar from "./TopBar";
+import CommandPalette from "./CommandPalette";
+import type { OrgSectionId } from "../../lib/consoleSections";
 import Sidebar from "./Sidebar";
 import { ORGS_CHANGED_EVENT, OrgProvider, useOrgContext } from "./OrgContext";
 import OrgWorkspace, { isOrgSection, orgSectionAllowed, SPENDING_ROLES } from "./OrgWorkspace";
@@ -49,7 +51,7 @@ function hasExplicitLanding(): boolean {
 
 /* First paint tab: query-based invitations and org links take priority over tab paths and saved tabs. */
 function initialTab(): string {
-  if (typeof window === "undefined") return "account";
+  if (typeof window === "undefined") return "models";
   const params = new URLSearchParams(window.location.search);
   if (params.has("invite")) return "agents";
   if (params.has("org_invite")) return "organizations";
@@ -57,9 +59,9 @@ function initialTab(): string {
   const routeTab = consoleTabFromPath(window.location.pathname);
   if (routeTab) return routeTab;
   try {
-    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "account";
+    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "models";
   } catch {
-    return "account";
+    return "models";
   }
 }
 
@@ -71,7 +73,7 @@ function tabAvailable(tab: string, org: OrgSummary | null): boolean {
   if (isOrgSection(tab)) return !!org && orgSectionAllowed(tab, org.role);
   if (org && WORK_TABS.has(tab) && !SPENDING_ROLES.includes(org.role)) return false;
   /* Deploy is listed in the Work/Build navigation for roles that can spend; keep saved tabs consistent with that. */
-  if (org && tab === "deploy" && !SPENDING_ROLES.includes(org.role)) return false;
+  if (org && (tab === "deploy" || tab === "build") && !SPENDING_ROLES.includes(org.role)) return false;
   if (org) return !PERSONAL_ONLY_TABS.has(tab);
   return true;
 }
@@ -324,6 +326,7 @@ function ConsoleFrame({
   setUnclaimedRewards,
 }: FrameProps) {
   const { orgs, activeSlug, activeOrg, listError, refresh, setActiveSlug } = useOrgContext();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   /* ?org=<slug> from a link: switch to that organization, then drop the param so a reload does not re-apply it */
   useEffect(() => {
@@ -353,10 +356,30 @@ function ConsoleFrame({
   useEffect(() => {
     if (!session) return; /* Keep the requested route until sign-in; render AccountPanel below. */
     if (!orgs) return;
+    /* Old Home / Build / Settings paths still work; avoid extra hub pages. */
+    const legacy = activeTab === "home" ? defaultTab(activeOrg)
+      : activeTab === "build" ? (activeOrg ? "org-keys" : "api-key")
+      : activeTab === "settings" ? "account" : null;
+    if (legacy) { setActiveTab(legacy); return; }
     if (!tabAvailable(activeTab, activeOrg)) setActiveTab(defaultTab(activeOrg));
   }, [session, orgs, activeOrg, activeTab, setActiveTab]);
 
-  const renderSection = (tab: string): ReactNode => {
+  /* The command palette is always available and never steals ordinary typing shortcuts. */
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const renderSection = (requested: string): ReactNode => {
+    const tab = requested === "home" ? defaultTab(activeOrg)
+      : requested === "build" ? (activeOrg ? "org-keys" : "api-key")
+      : requested === "settings" ? "account" : requested;
     /* The login UI uses the current URL as its OAuth return destination. */
     if (!session && tab !== "organizations" && tab !== "agents") {
       return <AccountPanel config={config} session={session} supabase={supabase} />;
@@ -396,12 +419,10 @@ function ConsoleFrame({
   return (
     <div className={styles.consoleWrapper}>
       <TopBar
-        user={session?.user}
-        onSignOut={() => supabase?.auth.signOut()}
         onThemeToggle={onThemeToggle}
         theme={theme}
-        homeUrl={config?.dashboard?.homeUrl || "https://inferenceport.ai"}
         appName={config?.dashboard?.appName || "InferencePort AI"}
+        onOpenSearch={() => setSearchOpen(true)}
         isMobileNavOpen={isMobileNavOpen}
         onMobileNavToggle={() => setMobileNavOpen(!isMobileNavOpen)}
       />
@@ -409,12 +430,15 @@ function ConsoleFrame({
         <Sidebar
           user={session?.user}
           isOpen={isMobileNavOpen}
+          onOpen={() => setMobileNavOpen(true)}
           onClose={() => setMobileNavOpen(false)}
+          onSignOut={() => { void supabase?.auth.signOut(); }}
           activeTab={activeTab}
           onTabChange={navigateTab}
           unclaimedRewards={unclaimedRewards}
         />
         <main className={styles.consoleContent}>
+          {session && <SecondaryNav activeTab={activeTab} activeOrg={activeOrg} onNavigate={navigateTab} />}
           {/* Rewards stays mounted after the first visit so switching tabs does not refetch or reset progress.
               Keep it outside the keyed workspace frame; session changes still clear its user-scoped state. */}
           <PersistentRewardsPanel
@@ -432,6 +456,40 @@ function ConsoleFrame({
           )}
         </main>
       </div>
+      <CommandPalette open={searchOpen} activeOrg={activeOrg} onClose={() => setSearchOpen(false)} onNavigate={navigateTab} />
     </div>
+  );
+}
+
+/* Show secondary destinations only where they save a trip through the sidebar.
+   Regular pages are reached directly and do not need artificial breadcrumbs. */
+function SecondaryNav({ activeTab, activeOrg, onNavigate }: {
+  activeTab: string;
+  activeOrg: OrgSummary | null;
+  onNavigate: (tab: string) => void;
+}) {
+  const isUsage = ["usage", "billing", "rewards", "org-usage", "org-billing", "org-invoices"].includes(activeTab);
+  const isAccount = ["account", "authorized-apps"].includes(activeTab) && !activeOrg;
+  if (!isUsage && !isAccount) return null;
+  const links = isAccount ? [
+    { id: "account", label: "Profile" },
+    { id: "authorized-apps", label: "Connected apps" },
+  ] : activeOrg ? [
+    { id: "org-usage", label: "Analytics" },
+    { id: "org-billing", label: "Billing" },
+    { id: "org-invoices", label: "Invoices" },
+  ].filter((item) => orgSectionAllowed(item.id as OrgSectionId, activeOrg.role))
+  : [{ id: "usage", label: "Analytics" }, { id: "billing", label: "Billing" }, { id: "rewards", label: "Rewards" }];
+  return (
+    <nav className={styles.sectionNav} aria-label={isAccount ? "Account sections" : "Usage and billing sections"}>
+      <div className={styles.sectionNavLinks}>
+        {links.map((item) => (
+          <button key={item.id} type="button"
+            className={styles.sectionNavButton + (activeTab === item.id ? " " + styles.sectionNavActive : "")}
+            aria-current={activeTab === item.id ? "page" : undefined}
+            onClick={() => onNavigate(item.id)}>{item.label}</button>
+        ))}
+      </div>
+    </nav>
   );
 }
