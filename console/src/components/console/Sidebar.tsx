@@ -7,7 +7,7 @@ import ContextSwitcher from "./ContextSwitcher";
 import { useOptionalOrgContext } from "./OrgContext";
 import { isOrgSection, orgSectionAllowed, SPENDING_ROLES } from "./OrgWorkspace";
 import {
-  PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_MORE,
+  PERSONAL_GROUPS, PERSONAL_MORE, ORG_WORK, ORG_MANAGE, ORG_BUILD, ORG_ACCOUNT, ORG_MORE,
   PERSONAL_DOCK, ORG_DOCK, ORG_READ_ONLY_DOCK, navHighlight,
   type NavGroup, type NavItem,
 } from "../../lib/consoleNavigation";
@@ -44,10 +44,12 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
 
   const allowed = (id: string) => !isOrgSection(id) || (!!activeOrg && orgSectionAllowed(id, activeOrg.role));
   const groups: NavGroup[] = activeOrg ? [
-    ...(canSpend ? [{ title: "Build", items: ORG_WORK }] : []),
+    ...(canSpend ? [{ title: `Work · billed to ${activeOrg.name}`, items: ORG_WORK }] : []),
     { title: activeOrg.name, items: ORG_MANAGE.filter((item) => allowed(item.id)) },
+    ...(canSpend ? [{ title: "Build", items: ORG_BUILD }] : []),
+    { title: "Account", items: ORG_ACCOUNT },
   ] : PERSONAL_GROUPS;
-  const advanced = (activeOrg ? ORG_MORE.filter((item) => allowed(item.id) && (canSpend || isOrgSection(item.id))) : PERSONAL_MORE);
+  const advanced = canSpend ? (activeOrg ? ORG_MORE : PERSONAL_MORE) : [];
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const isAdvanced = advanced.some((item) => item.id === activeTab);
   useEffect(() => { if (isAdvanced) setAdvancedOpen(true); }, [isAdvanced]);
@@ -116,19 +118,13 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
           <div className={styles.advancedGroup}>
             <button type="button" className={styles.expandButton} aria-expanded={advancedOpen}
               aria-controls="console-advanced-links" onClick={() => setAdvancedOpen((value) => !value)}>
-              <span>{activeOrg ? "More workspace tools" : "More tools"}</span>
+              <span>API guides</span>
               <span className={styles.chevron + (advancedOpen ? " " + styles.chevronOpen : "")} aria-hidden="true" />
             </button>
             {advancedOpen && <div id="console-advanced-links" className={styles.navGroup}>{advanced.map(navButton)}</div>}
           </div>
         )}
         <div className={styles.sideBottom}>
-          <button type="button" className={"console-nav-tab " + styles.consoleNavTab + (["account", "organizations", "authorized-apps"].includes(activeTab) ? " " + styles.active : "")} onClick={() => navigate("account")}>
-            <Icon name="user-circle" className={styles.navIcon} /> <span className={styles.navLabel}>Account</span>
-          </button>
-          <button type="button" className={"console-nav-tab " + styles.consoleNavTab} onClick={() => navigate("organizations")}>
-            <Icon name="plugs-connected" className={styles.navIcon} /> <span className={styles.navLabel}>Organizations</span>
-          </button>
           <a href="https://docs.inferenceport.ai" target="_blank" rel="noreferrer" className={styles.utilityLink}>
             <Icon name="question" className={styles.navIcon} /> Documentation
           </a>
