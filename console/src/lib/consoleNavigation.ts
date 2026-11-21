@@ -40,14 +40,14 @@ export const ORG_MANAGE: NavItem[] = [
   { id: "org-usage", label: "Usage", icon: "chart-bar" },
   { id: "org-billing", label: "Billing", icon: "credit-card" },
   { id: "org-members", label: "Members", icon: "user-circle" },
-  { id: "org-teams", label: "Teams", icon: "chat-circle-text" },
+  { id: "org-security", label: "Security", icon: "lock-simple" },
 ];
 export const ORG_MORE: NavItem[] = [
   { id: "shield", label: "AI Shield", icon: "shield-check" },
   { id: "mcp", label: "MCP", icon: "link" },
   { id: "payg-api", label: "Pay-as-you-go API", icon: "coins" },
   { id: "gen-api", label: "Generation API", icon: "chat-circle-text" },
-  { id: "org-security", label: "Security", icon: "lock-simple" },
+  { id: "org-teams", label: "Teams", icon: "chat-circle-text" },
   { id: "org-policies", label: "Policies", icon: "shield-check" },
   { id: "org-invoices", label: "Invoices", icon: "credit-card" },
   { id: "org-audit", label: "Audit log", icon: "clock-countdown" },
@@ -71,7 +71,6 @@ export function navHighlight(tab: string, org: boolean): string {
   if (tab === "build") return org ? "org-keys" : "api-key";
   if (tab === "settings") return "account";
   if (tab === "rewards") return org ? "org-usage" : "usage";
-  if (tab === "org-invoices") return "org-billing";
   if (tab === "authorized-apps" || tab === "organizations") return "account";
   return tab;
 }
