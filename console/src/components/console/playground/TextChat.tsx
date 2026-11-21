@@ -530,6 +530,7 @@ export default function TextChat({ session, apiBase, apiPrefix, models, preferre
   const fileRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const pinnedRef = useRef(true);
+  const appliedModelHandoff = useRef<string | null>(null);
 
   /* Model: fall back to the first text model when nothing valid is picked. */
   const effModel = list.some((m) => slug(m) === modelPick) ? modelPick : (list[0] ? slug(list[0]) : "") || "";
@@ -553,7 +554,8 @@ export default function TextChat({ session, apiBase, apiPrefix, models, preferre
 
   /* Model-catalog handoff opens a fresh draft without altering saved chat history. */
   useEffect(() => {
-    if (preferredModelId && list.some((model) => slug(model) === preferredModelId)) {
+    if (preferredModelId && appliedModelHandoff.current !== preferredModelId && list.some((model) => slug(model) === preferredModelId)) {
+      appliedModelHandoff.current = preferredModelId;
       setActiveId(null);
       setModelPick(preferredModelId);
     }

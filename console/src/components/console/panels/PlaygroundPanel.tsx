@@ -91,9 +91,10 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
         sessionStorage.removeItem("console-playground-selected-model");
       }
     } catch { /* Ignore invalid handoff data. */ }
+    const restored = requested ? "text" : s === "gen" && P2G_ONLY.includes(m) ? "text" : m;
     setSource(requested?.source ?? s);
-    setMode(requested ? "text" : s === "gen" && P2G_ONLY.includes(m) ? "text" : m);
-    setVisited([requested ? "text" : m]);
+    setMode(restored);
+    setVisited([restored]);
     if (requested) setPreferredModelId(requested.id);
   }, []);
 
