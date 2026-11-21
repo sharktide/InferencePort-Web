@@ -331,3 +331,18 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
 .modelDetailTry { display: inline-flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; padding: .85rem 1rem; border: 1px solid var(--brand); border-radius: var(--r-1); background: var(--brand-dim); color: var(--text); font: 650 .9rem var(--sans); cursor: pointer; transition: background-color 150ms ease, transform 150ms ease; }
 .modelDetailTry:hover { background: var(--surface-2); transform: translateY(-1px); }
 .modelDetailTry:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* One focused catalog instead of a second generation playground. */
+.catalogHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.catalogHeader h2 { font-size: 1.45rem; font-weight: 650; letter-spacing: -.025em; line-height: 1.2; color: var(--text); }
+.catalogHeader p { color: var(--text-2); font-size: .86rem; line-height: 1.5; margin-top: .35rem; }
+.catalogPlaygroundLink { flex: none; display: inline-flex; align-items: center; gap: .6rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-1); padding: .6rem .8rem; color: var(--text); font: 600 .83rem var(--sans); cursor: pointer; }
+.catalogPlaygroundLink:hover { border-color: var(--border-strong); }
+@media (max-width: 720px) {
+  .catalogHeader { flex-direction: column; align-items: stretch; }
+  .catalogPlaygroundLink { align-self: flex-start; }
+  .card { padding: 1rem; box-shadow: none; }
+  .panel { row-gap: 1rem; }
+  .modelDetailTray { width: min(100vw, 440px); }
+  .modelDetailContent { padding: 1rem; }
+}

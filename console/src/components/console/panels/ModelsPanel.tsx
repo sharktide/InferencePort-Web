@@ -2,12 +2,8 @@
 
 import Icon from "../../Icon";
 import { navigateConsole } from "../ContextSwitcher";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
-import AudioPlayground from "./AudioPlayground";
-import DecisionStudio from "../playground/DecisionStudio";
-import EmbeddingStudio from "../playground/EmbeddingStudio";
-import RealtimeStudio from "../playground/RealtimeStudio";
 import {
   formatDiscountedPrice,
   formatModelPrice,
@@ -20,49 +16,16 @@ import {
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
 
-interface ThreeJobResult {
-  glbUrl?: string;
-  plyUrl?: string;
-  videoUrl?: string;
-  usage?: { payg_credits_charged: number; model_count: number };
-}
-
-export default function ModelsPanel({ config, session, apiBase, theme = "light" }: Props) {
+export default function ModelsPanel({ session, apiBase, theme = "light" }: Props) {
   const [allModels, setAllModels] = useState<any[]>([]);
   const [genModels, setGenModels] = useState<any[]>([]);
   const [source, setSource] = useState<"p2g" | "gen">("p2g");
-  const [selectedModel, setSelectedModel] = useState("");
   const [selectedDetailModel, setSelectedDetailModel] = useState<any | null>(null);
-  const [tab, setTab] = useState("text");
   const [modelSearch, setModelSearch] = useState("");
   const [priceRange, setPriceRange] = useState("all");
   const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
-  const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
   const [fixedPrices, setFixedPrices] = useState<Record<string, number>>({});
-  const [rewardsOptedOut, setRewardsOptedOut] = useState(false);
-  const [textPrompt, setTextPrompt] = useState("");
-  const [textOutput, setTextOutput] = useState("");
-  const [imageModel, setImageModel] = useState("");
-  const [imagePrompt, setImagePrompt] = useState("");
-  const [imageOutput, setImageOutput] = useState("");
-  const [videoPrompt, setVideoPrompt] = useState("");
-  const [videoModels, setVideoModels] = useState<any[]>([]);
-  const [videoModel, setVideoModel] = useState("");
-  const [videoDur, setVideoDur] = useState(4);
-  const [videoStatus, setVideoStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
-  const [videoStatusText, setVideoStatusText] = useState("");
-  const [videoError, setVideoError] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [threeModel, setThreeModel] = useState("tripoSR");
-  const [threeResolution, setThreeResolution] = useState<"low" | "medium" | "high">("low");
-  const [threePrompt, setThreePrompt] = useState("");
-  const [threeUrl, setThreeUrl] = useState("");
-  const [threeStatus, setThreeStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
-  const [threeStatusText, setThreeStatusText] = useState("");
-  const [threeResult, setThreeResult] = useState<ThreeJobResult | null>(null);
-  const [threeError, setThreeError] = useState("");
-  const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return modelType(m).toLowerCase() === "text" && i.includes("text") && o.includes("text"); };
   const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
@@ -112,14 +75,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
     return allModels.filter((m: any) => !isTextModel(m) && m.is_ready !== false);
   }, [allModels]);
 
-  const imageConfigModels = useCallback(() => {
-    return allModels.filter((m: any) => m.output_modalities?.includes("image") && m.is_ready !== false);
-  }, [allModels]);
-
-  const videoConfigModels = useCallback(() => {
-    return allModels.filter((m: any) => m.output_modalities?.includes("video") && m.is_ready !== false);
-  }, [allModels]);
-
   const getModelDiscount = (m: any) => {
     const id = m?.id || "";
     if (fixedPrices[id]) return { type: "fixed" as const, fixedPrice: fixedPrices[id], percent: 0 };
@@ -142,7 +97,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
         const d = await r.json().catch(() => ({}));
         const remoteModels = (Array.isArray(d.data) ? d.data : []).filter((m: any) => m.is_ready !== false);
         setAllModels(remoteModels);
-        setVideoModels(remoteModels.filter((m: any) => m.output_modalities?.includes("video") && m.is_ready !== false));
       } else {
         const r = await fetch(`${apiBase}/gen/models`);
         const d = await r.json().catch(() => ({}));
@@ -161,7 +115,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
       .then((r) => r.json())
       .then((d) => {
         const optedOut = d.opted_out || false;
-        setRewardsOptedOut(optedOut);
         if (optedOut) {
           setModelDiscounts({});
           setFixedPrices({});
@@ -187,15 +140,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
   }, [session, apiBase]);
 
   useEffect(() => {
-    //@ts-ignore
-    import("@google/model-viewer/dist/model-viewer");
-  }, []);
-
-  useEffect(() => {
-    return () => { if (pollRef.current) clearTimeout(pollRef.current); };
-  }, []);
-
-  useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSelectedDetailModel(null); };
     if (selectedDetailModel) window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -218,183 +162,16 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
     catalogModels.sort((a: any, b: any) => compareModelPrice(a, b, priceSort));
   }
   const visibleCount = catalogModels.length;
-  const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
-  const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) { const errMsg = d.detail || (typeof d.error === "object" ? d.error?.message : d.error) || `HTTP ${r.status}`; throw new Error(errMsg); } return d; };
-  const sb = (k: string, v: boolean) => setBusy((p) => ({ ...p, [k]: v }));
 
-  const decodeBase64 = (b64: string): string => {
-    const binary = atob(b64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return URL.createObjectURL(new Blob([bytes]));
-  };
-
-  const runText = async () => { if (!session) return alert("Sign in required"); sb("text", true); setTextOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/chat/completions" : "/gen/chat/completions"; setTextOutput(JSON.stringify(await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ stream: false, model: selectedModel || undefined, messages: [{ role: "user", content: textPrompt || "Hello" }] }) }), null, 2)); } catch (e: any) { setTextOutput(e.message); } sb("text", false); };
-  const runImage = async () => { if (!session) return alert("Sign in required"); sb("image", true); setImageOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/images/generations" : "/gen/images/generations"; const r = await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: imagePrompt || "A colorful neon city.", model: imageModel || undefined }) }); const b = r?.data?.[0]?.b64_json; if (!b) throw new Error("No image returned"); setImageOutput(`data:image/jpeg;base64,${b}`); } catch (e: any) { setImageOutput(e.message); } sb("image", false); };
-  const runVideo = async () => {
-    if (!session) return alert("Sign in required");
-    if (source === "gen") { setVideoError("Video generation is only available via the P2G API."); return; }
-    sb("video", true);
-    setVideoStatus("submitting");
-    setVideoStatusText("Submitting video generation job\u2026");
-    setVideoError("");
-    try {
-      const body: Record<string, any> = { prompt: videoPrompt };
-      if (videoModel) body.model = videoModel;
-      if (videoDur) body.seconds = videoDur;
-      const r = await fj("/v1/videos", { method: "POST", headers: authH(), body: JSON.stringify(body) });
-      if (r.id) {
-        setVideoStatus("polling");
-        setVideoStatusText(`Job submitted (ID: ${r.id.slice(0, 8)}\u2026). Polling for result\u2026`);
-        await pollVideoJob(r.id);
-      } else {
-        throw new Error("Unexpected response from video generation endpoint");
-      }
-    } catch (e: any) {
-      setVideoStatus("failed");
-      setVideoError(e.message);
-      sb("video", false);
-    }
-  };
-
-  const fetchVideoContent = async (jobId: string): Promise<string> => {
-    const r = await fetch(`${apiBase}/v1/videos/${jobId}/content`, {
-      headers: { Authorization: `Bearer ${session?.access_token}` },
-    });
-    if (r.ok) {
-      const blob = await r.blob();
-      return URL.createObjectURL(blob);
-    }
-    return "";
-  };
-
-  const pollVideoJob = async (jobId: string) => {
-    try {
-      const r = await fj(`/v1/videos/${jobId}`, { headers: authH() });
-      if (r.status === "completed") {
-        setVideoStatus("completed");
-        setVideoStatusText("Video generation complete!");
-        try {
-          const url = await fetchVideoContent(jobId);
-          if (url) setVideoUrl(url);
-        } catch { /* ignore content fetch errors */ }
-        sb("video", false);
-        return;
-      }
-      if (r.status === "failed") {
-        setVideoStatus("failed");
-        setVideoError(r.error?.message || (typeof r.error === "string" ? r.error : "Video generation job failed."));
-        sb("video", false);
-        return;
-      }
-      setVideoStatusText(`Job ${r.status}${r.progress ? ` (${r.progress}%)` : ""}\u2026 Polling in 3s`);
-      pollRef.current = setTimeout(() => pollVideoJob(jobId), 3000);
-    } catch (e: any) {
-      setVideoStatus("failed");
-      setVideoError(e.message);
-      sb("video", false);
-    }
-  };
-  const run3d = async () => {
-    if (!session) return alert("Sign in required");
-    if (source === "gen") { setThreeError("3D generation is only available via the P2G API."); return; }
-    if (!threeUrl?.trim()) { setThreeError("An image URL or base64 data URI is required."); return; }
-    sb("3d", true);
-    setThreeStatus("submitting");
-    setThreeStatusText("Submitting 3D generation job\u2026");
-    setThreeResult(null);
-    setThreeError("");
-
-    try {
-      const body: Record<string, any> = {
-        model: threeModel,
-        image_urls: [threeUrl],
-      };
-      if (threeModel === "asset-harvester" && threePrompt) {
-        body.prompt = threePrompt;
-      }
-      if (threeModel === "trellis2") {
-        body.resolution = threeResolution;
-      }
-
-      const r = await fj("/v1/3d/generations", {
-        method: "POST",
-        headers: authH(),
-        body: JSON.stringify(body),
-      });
-
-      if (r.job_id) {
-        setThreeStatus("polling");
-        setThreeStatusText(`Job submitted (ID: ${r.job_id.slice(0, 8)}\u2026). Polling for result\u2026`);
-        await pollJob(r.job_id);
-      } else if (r.data) {
-        processResult(r);
-      } else {
-        throw new Error("Unexpected response from 3D generation endpoint");
-      }
-    } catch (e: any) {
-      setThreeStatus("failed");
-      setThreeError(e.message);
-      sb("3d", false);
-    }
-  };
-
-  const pollJob = async (jobId: string) => {
-    try {
-      const r = await fj(`/v1/3d/jobs/${jobId}`, { headers: authH() });
-
-      if (r.status === "completed") {
-        processResult(r);
-        return;
-      }
-
-      if (r.status === "failed") {
-        setThreeStatus("failed");
-        setThreeError(r.error || "3D generation job failed.");
-        sb("3d", false);
-        return;
-      }
-
-      setThreeStatusText(`Job ${r.status}\u2026 Polling in 5s`);
-      pollRef.current = setTimeout(() => pollJob(jobId), 5000);
-    } catch (e: any) {
-      setThreeStatus("failed");
-      setThreeError(e.message);
-      sb("3d", false);
-    }
-  };
-
-  const processResult = (r: any) => {
-    const result: ThreeJobResult = {};
-    const item = r?.data?.[0];
-
-    if (item?.model_glb_b64_bytes) {
-      result.glbUrl = decodeBase64(item.model_glb_b64_bytes);
-    }
-    if (item?.model_ply_b64_bytes) {
-      result.plyUrl = decodeBase64(item.model_ply_b64_bytes);
-    }
-    if (item?.orbit_video_b64_bytes) {
-      result.videoUrl = decodeBase64(item.orbit_video_b64_bytes);
-    }
-    if (r?.usage) {
-      result.usage = r.usage;
-    }
-
-    setThreeResult(result);
-    setThreeStatus("completed");
-    setThreeStatusText("3D generation complete!");
-    sb("3d", false);
-  };
-
-  const priceMap: Record<string, string> = {};
-
-  if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to view available models and run the playground.</div></div>;
+  if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to browse available models.</div></div>;
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Models</div>
+        <div className={styles.catalogHeader}>
+          <div><h2>Models</h2><p>Explore capabilities and pricing, then try a model in Playground.</p></div>
+          <button type="button" className={styles.catalogPlaygroundLink} onClick={() => navigateConsole("playground")}>Open Playground <span aria-hidden="true">→</span></button>
+        </div>
         <div className={styles.tabs}>
           <button className={`playground-tab ${styles.playgroundTab} ${source === "p2g" ? styles.active : ""}`} onClick={() => setSource("p2g")}>P2G API</button>
           <button className={`playground-tab ${styles.playgroundTab} ${source === "gen" ? styles.active : ""}`} onClick={() => setSource("gen")}>Gen API</button>
@@ -501,143 +278,6 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
             );
           })}
         </div>
-      </section>
-
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Live playground</div>
-        <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test generation using {source === "p2g" ? "P2G API" : "Gen API"}. Every successful generation consumes credits.</p>
-        <div className={styles.tabs}>
-          {(source === "p2g" ? ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"] as const : ["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${t === "decision" ? styles.playgroundTabDecision : ""} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t === "decision" ? "Decisions" : t === "embedding" ? "Embeddings" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
-        </div>
-        {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{modelDisplayName(m)}</option>)}</select></label>
-          <textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} />
-          <button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button>
-          <pre className={styles.output}>{textOutput}</pre>
-        </div>}
-        {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}>
-            <option value="">Default</option>
-            {imageConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
-          </select></label>
-          <textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} />
-          <button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>
-          {imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}
-        </div>}
-        {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Video model<select value={videoModel} onChange={(e) => setVideoModel(e.target.value)}>
-            <option value="">Default</option>
-            {videoConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
-          </select></label>
-          <textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} />
-          <label>Duration
-            <select value={videoDur} onChange={(e) => setVideoDur(Number(e.target.value))}>
-              <option value={4}>4 seconds</option>
-              <option value={8}>8 seconds</option>
-              <option value={12}>12 seconds</option>
-              <option value={20}>20 seconds</option>
-              <option value={30}>30 seconds</option>
-            </select>
-          </label>
-          <button onClick={runVideo} disabled={busy.video}>{busy.video ? "Generating\u2026" : "Generate video"}</button>
-          {videoStatusText && videoStatus !== "idle" && (
-            <div className={styles.threeJobStatus}>
-              <div className={`${styles.threeStatusDot} ${videoStatus === "completed" ? styles.threeStatusDone : videoStatus === "failed" ? styles.threeStatusFailed : styles.threeStatusPending}`} />
-              <span>{videoStatusText}</span>
-            </div>
-          )}
-          {videoError && <div className={styles.threeError}>{videoError}</div>}
-          {videoStatus === "completed" && videoUrl && (
-            <div style={{ marginTop: "0.75rem" }}>
-              <video controls src={videoUrl} className={styles.mediaOutputMedia} />
-            </div>
-          )}
-          {videoStatus === "completed" && !videoUrl && (
-            <p className={`${styles.muted} ${styles.tiny}`}>Video generation complete. Use the asset CDN endpoint to retrieve the result.</p>
-          )}
-        </div>}
-        {tab === "audio" && (
-          <AudioPlayground
-            session={session}
-            apiBase={apiBase}
-            apiPrefix={source === "p2g" ? "/v1" : "/gen"}
-            models={source === "p2g" ? allModels : []}
-          />
-        )}
-        {source === "p2g" && tab === "embedding" && (
-          <EmbeddingStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
-        )}
-        {source === "p2g" && tab === "decision" && (<DecisionStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme} active />)}
-        {source === "p2g" && tab === "realtime" && (
-          <RealtimeStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
-        )}
-        {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
-            {allModels.filter((m: any) => m.type === "3d" || m.output_modalities?.includes("3d")).map((m: any) => (
-              <option key={m.id} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
-            ))}
-          </select></label>
-          {threeModel === "trellis2" && (
-            <label>Resolution<select value={threeResolution} onChange={(e) => setThreeResolution(e.target.value as any)}>
-              <option value="low">Low ($0.24)</option>
-              <option value="medium">Medium ($0.29)</option>
-              <option value="high">High ($0.35)</option>
-            </select></label>
-          )}
-          {threeModel === "asset-harvester" && <textarea rows={4} placeholder="Describe the 3D model (required for Asset Harvester)..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />}
-          <input type="text" placeholder="Image URL or base64 data URI (required)" value={threeUrl} onChange={(e) => setThreeUrl(e.target.value)} />
-          <p className={`${styles.muted} ${styles.tiny}`}>
-            {threeModel === "asset-harvester" && "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt."}
-            {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
-            {threeModel === "sf3d" && "SF3D produces a GLB model from a single image."}
-            {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
-            {" "}Async job polling: most jobs complete within 1 to 5 minutes.
-          </p>
-          <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? (threeStatus === "submitting" ? "Submitting\u2026" : "Generating\u2026") : "Generate 3D model"}</button>
-
-          {threeStatusText && threeStatus !== "idle" && (
-            <div className={styles.threeJobStatus}>
-              <div className={`${styles.threeStatusDot} ${threeStatus === "completed" ? styles.threeStatusDone : threeStatus === "failed" ? styles.threeStatusFailed : styles.threeStatusPending}`} />
-              <span>{threeStatusText}</span>
-            </div>
-          )}
-
-          {threeError && <div className={styles.threeError}>{threeError}</div>}
-
-          {threeResult && (
-            <div className={styles.threeOutput}>
-              {threeResult.glbUrl && (
-                <div className={styles.threeViewerWrap}>
-                  <model-viewer
-                    src={threeResult.glbUrl}
-                    alt="Generated 3D model"
-                    camera-controls
-                    auto-rotate
-                    shadow-intensity="1"
-                    style={{ width: "100%", height: "400px", background: "var(--surface-2)", borderRadius: "10px" }}
-                  />
-                </div>
-              )}
-              {threeResult.videoUrl && (
-                <div className={styles.threeMediaRow}>
-                  <span className={`${styles.muted} ${styles.tiny}`}>Orbit preview</span>
-                  <video controls src={threeResult.videoUrl} className={styles.mediaOutputMedia} />
-                </div>
-              )}
-              <div className={styles.threeDownloadRow}>
-                {threeResult.glbUrl && (
-                  <a href={threeResult.glbUrl} download="model.glb" className={styles.threeDownloadBtn}>Download GLB</a>
-                )}
-                {threeResult.plyUrl && (
-                  <a href={threeResult.plyUrl} download="model.ply" className={styles.threeDownloadBtn}>Download PLY</a>
-                )}
-              </div>
-              {threeResult.usage && (
-                <p className={`${styles.muted} ${styles.tiny}`}>Credits charged: ${threeResult.usage.payg_credits_charged}</p>
-              )}
-            </div>
-          )}
-        </div>}
       </section>
 
       {selectedDetailModel && (
