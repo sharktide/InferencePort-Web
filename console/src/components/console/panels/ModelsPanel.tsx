@@ -462,7 +462,7 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                 onClick={() => setSelectedDetailModel(m)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedDetailModel(m); }
-                }>
+                }}>
                 {modelLogoUrl(m) && (
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                     <img
