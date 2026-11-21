@@ -31,6 +31,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
   const moreRef = useRef<HTMLButtonElement>(null);
   const sideRef = useRef<HTMLElement>(null);
   const drawerCloseRef = useRef<HTMLButtonElement>(null);
+  const drawerOpenerRef = useRef<HTMLElement | null>(null);
   /* Keep off-canvas navigation out of the keyboard tab order on small screens. */
   useEffect(() => {
     const aside = sideRef.current;
@@ -56,9 +57,21 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
 
   useEffect(() => {
     if (isOpen && window.matchMedia("(max-width: 960px)").matches) {
+      drawerOpenerRef.current = document.activeElement instanceof HTMLElement
+        ? document.activeElement : null;
       drawerCloseRef.current?.focus();
     }
   }, [isOpen]);
+
+  const closeFromDrawer = () => {
+    onClose();
+    /* Return focus to whichever trigger opened the drawer: top hamburger or bottom More. */
+    window.requestAnimationFrame(() => {
+      const opener = drawerOpenerRef.current;
+      if (opener?.isConnected) opener.focus();
+      else moreRef.current?.focus();
+    });
+  };
 
   const navigate = (id: string) => { onTabChange(id); onClose(); };
   const dock = activeOrg ? (canSpend ? ORG_DOCK : ORG_READ_ONLY_DOCK) : PERSONAL_DOCK;
@@ -68,8 +81,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
-        moreRef.current?.focus();
+        closeFromDrawer();
         return;
       }
       if (event.key !== "Tab" || !window.matchMedia("(max-width: 960px)").matches) return;
@@ -100,12 +112,12 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
 
   return (
     <>
-      <div className={styles.mobileNavBackdrop + (isOpen ? " " + styles.visible : "")} onClick={onClose} aria-hidden="true" />
+      <div className={styles.mobileNavBackdrop + (isOpen ? " " + styles.visible : "")} onClick={closeFromDrawer} aria-hidden="true" />
       <aside id="console-sidebar-nav" ref={sideRef} className={styles.consoleNav + (isOpen ? " " + styles.mobileOpen : "")}
         aria-label="Console navigation">
         <div className={styles.drawerTitle}>
           <strong>Navigation</strong>
-          <button ref={drawerCloseRef} type="button" className={styles.drawerClose} aria-label="Close navigation" onClick={() => { onClose(); moreRef.current?.focus(); }}><Icon name="x" size={20} /></button>
+          <button ref={drawerCloseRef} type="button" className={styles.drawerClose} aria-label="Close navigation" onClick={closeFromDrawer}><Icon name="x" size={20} /></button>
         </div>
         <div className={styles.contextBlock}><ContextSwitcher variant="sidebar" className={styles.contextHeader} /></div>
         {groups.map((group) => (
