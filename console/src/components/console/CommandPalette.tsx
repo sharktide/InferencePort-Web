@@ -41,7 +41,7 @@ export default function CommandPalette({ open, activeOrg, onClose, onNavigate }:
           { id: "account", label: "Account", section: "Account" },
           { id: "organizations", label: "Organizations", section: "Account" },
         ];
-    const built = [...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace" })),
+    const built: Command[] = [...direct.map((item) => ({ id: item.id, label: item.label, section: "Workspace" })),
       ...more.map((item) => ({ id: item.id, label: item.label, section: "More tools" })), ...extra];
     return built.filter((item, index, all) => all.findIndex((other) => other.id === item.id) === index);
   }, [activeOrg, canSpend]);

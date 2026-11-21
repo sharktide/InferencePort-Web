@@ -30,6 +30,16 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
   const activeId = navHighlight(activeTab, !!activeOrg);
   const moreRef = useRef<HTMLButtonElement>(null);
   const sideRef = useRef<HTMLElement>(null);
+  /* Keep off-canvas navigation out of the keyboard tab order on small screens. */
+  useEffect(() => {
+    const aside = sideRef.current;
+    if (!aside) return;
+    const media = window.matchMedia("(max-width: 960px)");
+    const update = () => { aside.inert = media.matches && !isOpen; };
+    update();
+    media.addEventListener("change", update);
+    return () => { aside.inert = false; media.removeEventListener("change", update); };
+  }, [isOpen]);
 
   const allowed = (id: string) => !isOrgSection(id) || (!!activeOrg && orgSectionAllowed(id, activeOrg.role));
   const groups: NavGroup[] = activeOrg ? [
@@ -71,7 +81,7 @@ export default function Sidebar({ user, isOpen, onOpen, onClose, onSignOut, acti
     <>
       <div className={styles.mobileNavBackdrop + (isOpen ? " " + styles.visible : "")} onClick={onClose} aria-hidden="true" />
       <aside ref={sideRef} className={styles.consoleNav + (isOpen ? " " + styles.mobileOpen : "")}
-        aria-label="Console navigation" inert={!isOpen && typeof window !== "undefined" && window.matchMedia("(max-width: 960px)").matches}>
+        aria-label="Console navigation">
         <div className={styles.drawerTitle}>
           <strong>Navigation</strong>
           <button type="button" className={styles.drawerClose} aria-label="Close navigation" onClick={onClose}><Icon name="x" size={20} /></button>
