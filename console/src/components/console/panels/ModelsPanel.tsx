@@ -1,6 +1,7 @@
 "use client";
 
 import Icon from "../../Icon";
+import { navigateConsole } from "../ContextSwitcher";
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
 import AudioPlayground from "./AudioPlayground";
@@ -700,6 +701,17 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
               <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{modalities(selectedDetailModel)}</span></div>
               {selectedDetailModel.output_modalities && (
                 <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selectedDetailModel.output_modalities.map((v: string) => v.toUpperCase()).join(" / ")}</span></div>
+              )}
+              {isTextModel(selectedDetailModel) && !!slug(selectedDetailModel) && (
+                <button type="button" className={styles.modelDetailTry} onClick={() => {
+                  try {
+                    sessionStorage.setItem("console-playground-selected-model", JSON.stringify({ id: slug(selectedDetailModel), source }));
+                  } catch { /* Storage is optional; still open the playground. */ }
+                  setSelectedDetailModel(null);
+                  navigateConsole("playground");
+                }}>
+                  Try in Playground <span aria-hidden="true">→</span>
+                </button>
               )}
             </div>
           </div>

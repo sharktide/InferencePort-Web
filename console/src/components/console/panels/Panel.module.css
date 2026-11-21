@@ -327,3 +327,7 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
   .oauthGrantCard { padding: 1rem 1.1rem; }
   .oauthModal { padding: 1.25rem !important; }
 }
+
+.modelDetailTry { display: inline-flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; padding: .85rem 1rem; border: 1px solid var(--brand); border-radius: var(--r-1); background: var(--brand-dim); color: var(--text); font: 650 .9rem var(--sans); cursor: pointer; transition: background-color 150ms ease, transform 150ms ease; }
+.modelDetailTry:hover { background: var(--surface-2); transform: translateY(-1px); }
+.modelDetailTry:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }

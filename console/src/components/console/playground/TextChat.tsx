@@ -504,7 +504,7 @@ function StatsLine({ stats }: { stats: Stats }) {
 
 /* ---------- Component ---------- */
 
-export default function TextChat({ session, apiBase, apiPrefix, models }: StudioProps) {
+export default function TextChat({ session, apiBase, apiPrefix, models, preferredModelId }: StudioProps) {
   const list = useMemo(() => textModels(models), [models]);
 
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -550,6 +550,14 @@ export default function TextChat({ session, apiBase, apiPrefix, models }: Studio
   const canSend = !busy && (input.trim().length > 0 || images.length > 0);
   const maxTokens = parseMaxTokens(maxTokensText);
   const cfg: Cfg = { model: effModel, system, temperature, topP, maxTokens, stream: stream === "on" };
+
+  /* Model-catalog handoff opens a fresh draft without altering saved chat history. */
+  useEffect(() => {
+    if (preferredModelId && list.some((model) => slug(model) === preferredModelId)) {
+      setActiveId(null);
+      setModelPick(preferredModelId);
+    }
+  }, [preferredModelId, list]);
 
   /* Load saved threads once on mount, then persist when idle. */
   useEffect(() => {

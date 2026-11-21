@@ -74,14 +74,27 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
   const [visited, setVisited] = useState<Mode[]>(["text"]);
   const [models, setModels] = useState<any[]>([]);
   const [modelsState, setModelsState] = useState<"loading" | "ready" | "error">("loading");
+  const [preferredModelId, setPreferredModelId] = useState<string | undefined>();
 
   /* Restore the last-used source and mode after hydration (localStorage is client-only) */
   useEffect(() => {
     const m = readPref<Mode>("playground-mode", ALL_MODES, "text");
     const s = readPref<"p2g" | "gen">("playground-source", ["p2g", "gen"], "p2g");
-    setSource(s);
-    setMode(s === "gen" && P2G_ONLY.includes(m) ? "text" : m);
-    setVisited([m]);
+    let requested: { id: string; source: "gen" | "p2g" } | null = null;
+    try {
+      const raw = sessionStorage.getItem("console-playground-selected-model");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.id === "string" && parsed.id.length > 0 && parsed.id.length < 200) {
+          requested = { id: parsed.id, source: parsed.source === "gen" ? "gen" : "p2g" };
+        }
+        sessionStorage.removeItem("console-playground-selected-model");
+      }
+    } catch { /* Ignore invalid handoff data. */ }
+    setSource(requested?.source ?? s);
+    setMode(requested ? "text" : s === "gen" && P2G_ONLY.includes(m) ? "text" : m);
+    setVisited([requested ? "text" : m]);
+    if (requested) setPreferredModelId(requested.id);
   }, []);
 
   const apiPrefix: ApiPrefix = source === "p2g" ? "/v1" : "/gen";
@@ -117,8 +130,8 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
 
   const active = MODES.find((m) => m.id === mode)!;
   const studioProps: StudioProps = useMemo(
-    () => ({ session, apiBase, apiPrefix, models, theme }),
-    [session, apiBase, apiPrefix, models, theme],
+    () => ({ session, apiBase, apiPrefix, models, theme, preferredModelId }),
+    [session, apiBase, apiPrefix, models, theme, preferredModelId],
   );
 
   if (!session) {
