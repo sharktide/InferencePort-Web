@@ -62,7 +62,17 @@
 }
 .modelAccessToggle:hover { background: var(--surface-2); color: var(--text); }
 .modelAccessToggle:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
-.modelAccessChevron { width: 14px; height: 14px; flex: none; }
+.modelAccessChevron {
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--d-fast);
+  flex: none;
+  margin: 0 4px 0 3px;
+}
+.modelAccessChevronOpen { transform: rotate(45deg); }
 .nestedTab { padding-left: 1rem; }
 .nestedTab[hidden] { display: none; }
 
