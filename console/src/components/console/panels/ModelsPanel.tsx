@@ -673,6 +673,9 @@ export default function ModelsPanel({ config, session, apiBase, theme = "light" 
                   {String(modelType(selectedDetailModel)).toUpperCase()}
                 </span>
               </div>
+              {typeof selectedDetailModel.description === "string" && selectedDetailModel.description.trim().length > 0 && (
+                <p className={styles.modelDetailDescription}>{selectedDetailModel.description.trim()}</p>
+              )}
               <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(selectedDetailModel) || "None"}</span></div>
               <div className={styles.modelMeta}>
                 <span className={styles.modelKey}>Pricing</span>
