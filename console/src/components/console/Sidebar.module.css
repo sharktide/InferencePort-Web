@@ -3,7 +3,7 @@
   top: 60px;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1.7rem;
   padding: 1.25rem 0.75rem 1rem;
   background: var(--bg);
   border-right: 1px solid var(--border);
@@ -45,11 +45,11 @@
 .modelAccessToggle {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.65rem;
   width: 100%;
-  min-height: 36px;
+  min-height: 38px;
   margin-top: 0.3rem;
-  padding: 0.4rem 0.7rem;
+  padding: 0.5rem 0.7rem;
   border: 0;
   border-radius: var(--r-0);
   background: transparent;
@@ -63,16 +63,25 @@
 .modelAccessToggle:hover { background: var(--surface-2); color: var(--text); }
 .modelAccessToggle:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
 .modelAccessChevron {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--muted);
+}
+.modelAccessChevron::after {
+  content: "";
+  position: absolute;
   width: 8px;
   height: 8px;
+  left: 4px;
+  top: 4px;
   border-right: 1.5px solid currentColor;
   border-bottom: 1.5px solid currentColor;
   transform: rotate(-45deg);
   transition: transform var(--d-fast);
-  flex: none;
-  margin: 0 4px 0 3px;
 }
-.modelAccessChevronOpen { transform: rotate(45deg); }
+.modelAccessChevronOpen::after { transform: rotate(45deg); }
 .nestedTab { padding-left: 1rem; }
 .nestedTab[hidden] { display: none; }
 
