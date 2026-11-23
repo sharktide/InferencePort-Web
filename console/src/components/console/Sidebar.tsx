@@ -62,7 +62,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const ctx = useOptionalOrgContext();
   const activeOrg = ctx?.activeOrg ?? null;
-  const [modelAccessOpen, setModelAccessOpen] = useState(true);
+  const [modelAccessOpen, setModelAccessOpen] = useState(false);
 
   useEffect(() => {
     if (MODEL_ACCESS_IDS.has(activeTab)) setModelAccessOpen(true);
