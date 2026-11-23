@@ -13,7 +13,7 @@ export const PERSONAL_ITEMS = {
   agents: { label: "Agents", icon: "chat-circle-text" },
   buckets: { label: "Buckets (Preview)", icon: "cube" },
   rewards: { label: "Rewards", icon: "gift" },
-  "api-key": { label: "API key", icon: "key" },
+  "api-key": { label: "API Keys", icon: "key" },
   usage: { label: "Usage", icon: "chart-bar" },
   "gen-api": { label: "Generation (Subscription)", icon: "chat-circle-text" },
   "payg-api": { label: "P2G API", icon: "coins" },

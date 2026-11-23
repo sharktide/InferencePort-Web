@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import styles from "./Sidebar.module.css";
 import { PERSONAL_ITEMS } from "../../lib/consoleSections";
 import Icon, { type IconName } from "../Icon";
@@ -29,12 +30,14 @@ interface NavGroup {
 }
 
 const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
-  { title: "Account", ids: ["account", "billing"] },
-  { title: "Organization", ids: ["organizations"] },
-  { title: "Explore", ids: ["models", "playground", "deploy", "rewards"] },
-  { title: "Build", ids: ["agents", "buckets", "api-key", "usage", "gen-api", "payg-api", "mcp", "shield"] },
-  { title: "Access", ids: ["authorized-apps"] },
+  { title: "Products", ids: ["deploy", "buckets", "mcp", "agents", "shield"] },
+  { title: "Explore", ids: ["models", "playground", "rewards"] },
+  { title: "Developer", ids: ["api-key", "usage"] },
+  { title: "Model Access", ids: ["gen-api", "payg-api"] },
+  { title: "Account", ids: ["account", "organizations", "billing", "authorized-apps"] },
 ];
+
+const MODEL_ACCESS_IDS = new Set(["gen-api", "payg-api"]);
 
 /* Work tabs run billed to whichever context is active (the org header is set globally). */
 const WORK_IDS = ["models", "playground", "agents", "buckets"];
@@ -60,6 +63,11 @@ export default function Sidebar({
 }: SidebarProps) {
   const ctx = useOptionalOrgContext();
   const activeOrg = ctx?.activeOrg ?? null;
+  const [modelAccessOpen, setModelAccessOpen] = useState(false);
+
+  useEffect(() => {
+    if (MODEL_ACCESS_IDS.has(activeTab)) setModelAccessOpen(true);
+  }, [activeTab]);
 
   const groups: NavGroup[] = activeOrg
     ? [
@@ -91,9 +99,27 @@ export default function Sidebar({
         <ContextSwitcher variant="sidebar" className={styles.contextHeader} />
         {groups.map((group) => (
           <div key={group.key} className={styles.navGroup} role="group" aria-label={group.title}>
-            <span className={styles.consoleNavLabel} title={group.title}>{group.title}</span>
+            {!activeOrg && group.title === "Model Access" ? (
+              <button
+                type="button"
+                className={styles.modelAccessToggle}
+                aria-expanded={modelAccessOpen}
+                aria-controls="console-model-access-generation console-model-access-p2g"
+                onClick={() => setModelAccessOpen((open) => !open)}
+              >
+                <span className={`${styles.modelAccessChevron} ${modelAccessOpen ? styles.modelAccessChevronOpen : ""}`} aria-hidden="true" />
+                <span>Model Access</span>
+              </button>
+            ) : (
+              <span className={styles.consoleNavLabel} title={group.title}>{group.title}</span>
+            )}
             {group.items.map((tab) => (
-              <div key={tab.id} className={styles.navTabWrap}>
+              <div
+                key={tab.id}
+                className={`${styles.navTabWrap} ${!activeOrg && MODEL_ACCESS_IDS.has(tab.id) ? styles.nestedTab : ""}`}
+                id={!activeOrg && MODEL_ACCESS_IDS.has(tab.id) ? (tab.id === "gen-api" ? "console-model-access-generation" : "console-model-access-p2g") : undefined}
+                hidden={!activeOrg && MODEL_ACCESS_IDS.has(tab.id) && !modelAccessOpen}
+              >
                 <button
                   type="button"
                   className={`console-nav-tab ${styles.consoleNavTab} ${activeTab === tab.id ? styles.active : ""}`}
