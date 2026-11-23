@@ -106,16 +106,16 @@ export default function Sidebar({
                     type="button"
                     className={styles.modelAccessToggle}
                     aria-expanded={modelAccessOpen}
-                    aria-controls="console-model-access"
+                    aria-controls="console-model-access-generation console-model-access-p2g"
                     onClick={() => setModelAccessOpen((open) => !open)}
                   >
-                    <Icon name={modelAccessOpen ? "caret-down" : "caret-right"} className={styles.modelAccessChevron} />
+                    <span className={`${styles.modelAccessChevron} ${modelAccessOpen ? styles.modelAccessChevronOpen : ""}`} aria-hidden="true" />
                     <span>Model Access</span>
                   </button>
                 )}
               <div
                 className={`${styles.navTabWrap} ${!activeOrg && MODEL_ACCESS_IDS.has(tab.id) ? styles.nestedTab : ""}`}
-                id={!activeOrg && tab.id === "gen-api" ? "console-model-access" : undefined}
+                id={!activeOrg && MODEL_ACCESS_IDS.has(tab.id) ? (tab.id === "gen-api" ? "console-model-access-generation" : "console-model-access-p2g") : undefined}
                 hidden={!activeOrg && MODEL_ACCESS_IDS.has(tab.id) && !modelAccessOpen}
               >
                 <button
