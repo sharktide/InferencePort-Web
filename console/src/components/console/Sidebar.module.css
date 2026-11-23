@@ -41,6 +41,31 @@
   display: flex;
   align-items: center;
 }
+/* Secondary links under Developer keep the existing pages and routes intact. */
+.modelAccessToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 36px;
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  border-radius: var(--r-0);
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.modelAccessToggle:hover { background: var(--surface-2); color: var(--text); }
+.modelAccessToggle:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.modelAccessChevron { width: 14px; height: 14px; flex: none; }
+.nestedTab { padding-left: 1rem; }
+.nestedTab[hidden] { display: none; }
+
 
 .consoleNavTab {
   position: relative;
