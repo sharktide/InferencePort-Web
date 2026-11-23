@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Sidebar.module.css";
 import { PERSONAL_ITEMS } from "../../lib/consoleSections";
 import Icon, { type IconName } from "../Icon";
@@ -32,7 +32,8 @@ interface NavGroup {
 const PERSONAL_GROUPS: { title: string; ids: string[] }[] = [
   { title: "Products", ids: ["deploy", "buckets", "mcp", "agents", "shield"] },
   { title: "Explore", ids: ["models", "playground", "rewards"] },
-  { title: "Developer", ids: ["api-key", "usage", "gen-api", "payg-api"] },
+  { title: "Developer", ids: ["api-key", "usage"] },
+  { title: "Model Access", ids: ["gen-api", "payg-api"] },
   { title: "Account", ids: ["account", "organizations", "billing", "authorized-apps"] },
 ];
 
@@ -98,22 +99,23 @@ export default function Sidebar({
         <ContextSwitcher variant="sidebar" className={styles.contextHeader} />
         {groups.map((group) => (
           <div key={group.key} className={styles.navGroup} role="group" aria-label={group.title}>
-            <span className={styles.consoleNavLabel} title={group.title}>{group.title}</span>
+            {!activeOrg && group.title === "Model Access" ? (
+              <button
+                type="button"
+                className={styles.modelAccessToggle}
+                aria-expanded={modelAccessOpen}
+                aria-controls="console-model-access-generation console-model-access-p2g"
+                onClick={() => setModelAccessOpen((open) => !open)}
+              >
+                <span className={`${styles.modelAccessChevron} ${modelAccessOpen ? styles.modelAccessChevronOpen : ""}`} aria-hidden="true" />
+                <span>Model Access</span>
+              </button>
+            ) : (
+              <span className={styles.consoleNavLabel} title={group.title}>{group.title}</span>
+            )}
             {group.items.map((tab) => (
-              <Fragment key={tab.id}>
-                {!activeOrg && tab.id === "gen-api" && (
-                  <button
-                    type="button"
-                    className={styles.modelAccessToggle}
-                    aria-expanded={modelAccessOpen}
-                    aria-controls="console-model-access-generation console-model-access-p2g"
-                    onClick={() => setModelAccessOpen((open) => !open)}
-                  >
-                    <span className={`${styles.modelAccessChevron} ${modelAccessOpen ? styles.modelAccessChevronOpen : ""}`} aria-hidden="true" />
-                    <span>Model Access</span>
-                  </button>
-                )}
               <div
+                key={tab.id}
                 className={`${styles.navTabWrap} ${!activeOrg && MODEL_ACCESS_IDS.has(tab.id) ? styles.nestedTab : ""}`}
                 id={!activeOrg && MODEL_ACCESS_IDS.has(tab.id) ? (tab.id === "gen-api" ? "console-model-access-generation" : "console-model-access-p2g") : undefined}
                 hidden={!activeOrg && MODEL_ACCESS_IDS.has(tab.id) && !modelAccessOpen}
@@ -137,7 +139,6 @@ export default function Sidebar({
                   </span>
                 )}
               </div>
-              </Fragment>
             ))}
           </div>
         ))}
