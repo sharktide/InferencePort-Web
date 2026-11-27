@@ -14,14 +14,14 @@
   color: var(--text-2);
   background: var(--surface-2);
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--r-0);
   cursor: pointer;
   transition: background var(--d-fast), color var(--d-fast);
 }
 .ratioChip:hover { color: var(--text); }
 .ratioChip:active { transform: scale(0.97); }
 .ratioChip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.ratioOn { background: var(--brand-dim); color: var(--accent); }
+.ratioOn { background: var(--primary); color: var(--primary-ink); }
 
 /* Small text buttons (stage + Advanced). The global button rule forces nowrap and 40px min-height, so both are set here. */
 .smallBtn { min-height: 32px; padding: 0 0.7rem; font-size: 0.8rem; white-space: nowrap; }
@@ -76,7 +76,7 @@
   position: relative;
   margin: 0;
   min-width: 0;
-  border-radius: var(--r-2);
+  border-radius: var(--r-0);
   overflow: hidden;
   background: var(--surface-2);
   /* "backwards" so the entry animation never overrides anything afterwards. */
@@ -104,7 +104,7 @@
   min-height: 30px; width: 30px; height: 30px; padding: 0;
   color: var(--text-2);
   background: color-mix(in srgb, var(--surface) 88%, transparent);
-  box-shadow: var(--shadow);
+  box-shadow: none;
   backdrop-filter: blur(6px);
 }
 .actBtn:hover:not(:disabled) { color: var(--text); background: var(--surface); }
@@ -129,7 +129,7 @@
   display: flex; flex-direction: column;
   min-height: 0;
   background: var(--surface);
-  border-radius: var(--r-2);
+  border-radius: var(--r-0);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   animation: lbIn var(--d-move) var(--ease-out) both;
@@ -165,7 +165,7 @@
 .cmpTag {
   position: absolute; top: 0.25rem;
   padding: 0.2rem 0.55rem;
-  border-radius: 999px;
+  border-radius: var(--r-0);
   font: 600 0.7rem var(--sans);
   color: var(--text);
   background: color-mix(in srgb, var(--surface) 88%, transparent);

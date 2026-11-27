@@ -8,9 +8,7 @@
   gap: 1rem;
   padding: 0 1.5rem 0 1.25rem;
   height: 60px;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: saturate(140%) blur(14px);
-  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
@@ -25,10 +23,8 @@
 .brand > div { min-width: 0; }
 
 .brandLogo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  width: 18px;
+  height: 30px;
   flex: none;
 }
 
@@ -158,7 +154,7 @@
   }
 
   .brandLogo {
-    width: 32px;
-    height: 32px;
+    width: 16px;
+    height: 28px;
   }
 }

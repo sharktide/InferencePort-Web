@@ -86,8 +86,8 @@ export default function UsagePanel({ session, apiBase }: Props) {
       </section>
 
       <section className={styles.card + " " + styles.wide}>
-        <div className={styles.heading}>Generation plan limits <button type="button" className="ghost" style={{ float: "right" }} onClick={() => setReload((n) => n + 1)}>Refresh</button></div>
-        <p className={styles.muted}>Subscription generation allowances are separate from pay-as-you-go credits.</p>
+        <div className={styles.heading}>Generation plan limits <button type="button" className="ghost"  onClick={() => setReload((n) => n + 1)}>Refresh limits</button></div>
+        <p className={styles.muted}>These are subscription allowances. Pay-as-you-go wallet credits are tracked separately in Personal P2G usage.</p>
         {meterState?.error && <p className={styles.muted} role="alert">Unable to load plan limits: {meterState.error}</p>}
         {!meterState ? <p className={styles.muted}>Loading plan usage…</p> : genUsage ? (
           <div className={styles.statGrid}>
@@ -111,7 +111,7 @@ export default function UsagePanel({ session, apiBase }: Props) {
       </section>
 
       <section className={styles.card + " " + styles.wide}>
-        <div className={styles.heading}>Wallet transactions <span className={styles.muted} style={{ fontSize: "0.8rem", fontWeight: 400 }}>Recent credits, charges and adjustments</span></div>
+        <div className={styles.heading}>Wallet ledger <span className={styles.muted} style={{ fontSize: "0.8rem", fontWeight: 400 }}>Credits added, charges, and adjustments</span></div>
         <p className={styles.muted}>The latest 30 wallet entries, including purchases and credits added. For model-level charges, use the personal usage breakdown above.</p>
         <div className={styles.ledger}>
           <div className={styles.ledgerHeader}><span>Transaction</span><span>Credit change</span><span>Units</span><span>Date</span></div>

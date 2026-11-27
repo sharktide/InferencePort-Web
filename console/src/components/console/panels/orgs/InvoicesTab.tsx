@@ -591,6 +591,9 @@ function BillingDetailsSection({ api, org, canEdit }: { api: OrgApi; org: OrgDet
   const [notice, setNotice] = useState<Notice>(null);
   const [taxType, setTaxType] = useState(TAX_TYPES[0].value);
   const [taxValue, setTaxValue] = useState("");
+  const [addressOpen, setAddressOpen] = useState(false);
+  const [taxOpen, setTaxOpen] = useState(false);
+  const [optionalOpen, setOptionalOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -601,6 +604,9 @@ function BillingDetailsSection({ api, org, canEdit }: { api: OrgApi; org: OrgDet
       const f = formFrom(d);
       setForm(f);
       setSaved(f);
+      setAddressOpen(addressFilled(f));
+      setTaxOpen(d.tax_ids.length > 0);
+      setOptionalOpen(Boolean(f.po_number || f.invoice_footer));
     } catch (e) {
       setLoadError(errorText(e));
     } finally {
@@ -615,6 +621,8 @@ function BillingDetailsSection({ api, org, canEdit }: { api: OrgApi; org: OrgDet
   const save = async () => {
     const problem = validateForm(form);
     if (problem) {
+      setAddressOpen(true);
+      setOptionalOpen(true);
       setNotice({ tone: "error", text: problem });
       return;
     }
@@ -715,8 +723,16 @@ function BillingDetailsSection({ api, org, canEdit }: { api: OrgApi; org: OrgDet
             <span id="inv-company-hint" className={s.hint}>Printed on every invoice. Use the name your accounts team expects.</span>
           </label>
 
-          <fieldset className={styles.addressGroup} disabled={!canEdit || busy}>
-            <legend>Billing address</legend>
+          <details
+            className={`${styles.disclosure} ${styles.fullSpan}`}
+            open={addressOpen}
+            onToggle={(event) => setAddressOpen(event.currentTarget.open)}
+          >
+            <summary className={styles.disclosureSummary}>
+              <span>Billing address</span>
+              <span className={s.hint}>{addressFilled(form) ? "Address entered" : "Optional · used on invoices"}</span>
+            </summary>
+            <fieldset className={styles.addressGroup} aria-label="Billing address" disabled={!canEdit || busy}>
             <label className={`${shared.field} ${styles.addressWide} ${styles.touch}`}>
               Address line 1
               <input type="text" value={form.line1} maxLength={ADDRESS_MAX} onChange={set("line1")} autoComplete="address-line1" />
@@ -754,24 +770,36 @@ function BillingDetailsSection({ api, org, canEdit }: { api: OrgApi; org: OrgDet
               />
               <span id="inv-country-hint" className={s.hint}>ISO 3166 code, for example US, GB or DE.</span>
             </label>
-          </fieldset>
+            </fieldset>
+          </details>
 
-          <label className={`${shared.field} ${styles.touch}`}>
-            PO number
-            <input type="text" value={form.po_number} maxLength={PO_MAX} onChange={set("po_number")} />
-          </label>
-
-          <label className={`${shared.field} ${styles.fullSpan} ${styles.touch}`}>
-            Invoice footer
-            <textarea
-              value={form.invoice_footer}
-              maxLength={FOOTER_MAX}
-              rows={3}
-              onChange={set("invoice_footer")}
-              aria-describedby="inv-footer-hint"
-            />
-            <span id="inv-footer-hint" className={s.hint}>Free text printed at the bottom of invoices, for example a VAT notice or bank reference.</span>
-          </label>
+          <details
+            className={`${styles.disclosure} ${styles.fullSpan}`}
+            open={optionalOpen}
+            onToggle={(event) => setOptionalOpen(event.currentTarget.open)}
+          >
+            <summary className={styles.disclosureSummary}>
+              <span>Additional invoice details</span>
+              <span className={s.hint}>Optional · PO number and footer</span>
+            </summary>
+            <div className={styles.disclosureBody}>
+              <label className={`${shared.field} ${styles.touch}`}>
+                PO number
+                <input type="text" value={form.po_number} maxLength={PO_MAX} onChange={set("po_number")} />
+              </label>
+              <label className={`${shared.field} ${styles.touch}`}>
+                Invoice footer
+                <textarea
+                  value={form.invoice_footer}
+                  maxLength={FOOTER_MAX}
+                  rows={3}
+                  onChange={set("invoice_footer")}
+                  aria-describedby="inv-footer-hint"
+                />
+                <span id="inv-footer-hint" className={s.hint}>Free text printed at the bottom of invoices, for example a VAT notice or bank reference.</span>
+              </label>
+            </div>
+          </details>
         </div>
 
         {canEdit && (
@@ -785,8 +813,16 @@ function BillingDetailsSection({ api, org, canEdit }: { api: OrgApi; org: OrgDet
           </div>
         )}
 
-        <div style={{ display: "grid", gap: "0.6rem" }}>
-          <h3 className={s.cardTitle}>Tax IDs</h3>
+        <details
+          className={styles.disclosure}
+          open={taxOpen}
+          onToggle={(event) => setTaxOpen(event.currentTarget.open)}
+        >
+          <summary className={styles.disclosureSummary}>
+            <span className={s.cardTitle}>Tax IDs</span>
+            <span className={s.hint}>{d.tax_ids.length ? `${d.tax_ids.length} saved` : "Optional · VAT, GST and similar numbers"}</span>
+          </summary>
+          <div className={styles.disclosureBody}>
           {d.tax_ids.length === 0 ? (
             <p className={s.hint}>No tax IDs. Add one if your invoices need to show a VAT, GST or similar number.</p>
           ) : (
@@ -839,7 +875,8 @@ function BillingDetailsSection({ api, org, canEdit }: { api: OrgApi; org: OrgDet
               <p className={s.hint}>Tax IDs are saved as soon as you add or remove them.</p>
             </>
           )}
-        </div>
+          </div>
+        </details>
 
         <div className={s.fieldGrid}>
           <div style={{ display: "grid", gap: "0.35rem" }}>

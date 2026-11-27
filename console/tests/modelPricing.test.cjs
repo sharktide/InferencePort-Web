@@ -31,8 +31,8 @@ const marketplaceExports = vm.runInNewContext([
 
 const cases = [
   ["zero embedding rate falls back to a paid token rate", {"type":"embedding","input_pricing_per_million_tokens":"0","pricing":{"prompt":"0.000003"}}, 3, "$3/M tokens"],
-  ["zero realtime token rate does not mask paid hourly audio", {"type":"realtime","realtime_pricing_per_million_tokens":{"audio_in":"0"},"input_price_per_second":"0.01"}, 36, "Audio in: $0/M · Audio: $36/hour"],
-  ["text input zero does not mask paid output", {"type":"text","pricing":{"prompt":"0","completion":"0.000001"}}, 1, "In: $0/M · Out: $1/M"],
+  ["zero realtime token rate does not mask paid hourly audio", {"type":"realtime","realtime_pricing_per_million_tokens":{"audio_in":"0"},"input_price_per_second":"0.01"}, 36, "Audio in: $0/M tokens · Audio: $36/hour"],
+  ["text input zero does not mask paid output", {"type":"text","pricing":{"prompt":"0","completion":"0.000001"}}, 1, "In: $0/M tokens · Out: $1/M tokens"],
   ["untyped 3D output takes precedence over text", {"input_modalities":["text"],"output_modalities":["text","3d"],"price_tiers":{"low":"0.05","high":"0.07"}}, 0.05, "$0.05-$0.07/model"],
   ["tier zero does not mask a paid request", {"type":"3d","price_tiers":{"low":"0"},"pricing":{"request":"2"}}, 2, "$0.0000/model · Request: $2.0000/model"],
   ["per-character audio does not compare an unrelated request rate", {"type":"audio","billing_unit":"input_chars","price_per_1k_chars":"1.25","pricing":{"request":"0.01"}}, 1.25, "$1.25/1k chars"],
@@ -50,15 +50,15 @@ const cases = [
   ["scientific notation is a valid full numeric string", {"type":"embedding","pricing":{"prompt":" 1e-6 "}}, 1, "$1/M tokens"],
   ["no published rates remain unknown", {"type":"text","pricing":{}}, null, null],
   ["untyped image plus 3D uses the same pricing on both surfaces", {"output_modalities":["image","3d"],"price_tiers":{"low":"0.11"},"pricing":{"image":"0.02"}}, 0.11, "$0.1100/model"],
-  ["free text tokens still display a positive request fee", {"type":"text","pricing":{"prompt":0,"completion":0,"request":1.75}}, 1.75, "In: $0/M · Out: $0/M · $1.75/request"],
-  ["audio models fall back to generic token prices", {"type":"audio","billing_unit":"input_chars","pricing":{"prompt":"0.000004","completion":"0.000012"}}, 4, "In: $4/M · Out: $12/M"],
-  ["image models fall back to generic token prices", {"type":"image","pricing":{"prompt":"0.000002"}}, 2, "In: $2/M"],
-  ["3D models fall back to generic token prices", {"type":"3d","pricing":{"completion":"0.000009"}}, 9, "Out: $9/M"],
-  ["video models fall back to generic token prices", {"type":"video","pricing":{"prompt":"0.000005"}}, 5, "In: $5/M"],
+  ["free text tokens still display a positive request fee", {"type":"text","pricing":{"prompt":0,"completion":0,"request":1.75}}, 1.75, "In: $0/M tokens · Out: $0/M tokens · $1.75/request"],
+  ["audio models fall back to generic token prices", {"type":"audio","billing_unit":"input_chars","pricing":{"prompt":"0.000004","completion":"0.000012"}}, 4, "In: $4/M tokens · Out: $12/M tokens"],
+  ["image models fall back to generic token prices", {"type":"image","pricing":{"prompt":"0.000002"}}, 2, "In: $2/M tokens"],
+  ["3D models fall back to generic token prices", {"type":"3d","pricing":{"completion":"0.000009"}}, 9, "Out: $9/M tokens"],
+  ["video models fall back to generic token prices", {"type":"video","pricing":{"prompt":"0.000005"}}, 5, "In: $5/M tokens"],
   ["unclassified multimodal token prices remain visible", {"pricing":{"token_pricing":{"image_out":"0.8125"}}}, 0.8125, "Img Out: $0.8125/M tokens"],
-  ["zero video second fee does not hide paid token rates", {"type":"video","pricing":{"request":0,"prompt":"0.000005"}}, 5, "$0/sec · In: $5/M"],
-  ["zero audio second fee does not hide paid token rates", {"type":"audio","price_per_second":0,"pricing":{"prompt":"0.000008"}}, 8, "$0/sec · In: $8/M"],
-  ["unclassified mixed token and request rates remain visible", {"type":"text","pricing":{"token_pricing":{"text_in":2,"image_out":0.9},"prompt":"0.000003","request":0.2}}, 0.2, "In: $3/M · Text: $2/M tokens · Img Out: $0.9/M tokens · $0.2/request"],
+  ["zero video second fee does not hide paid token rates", {"type":"video","pricing":{"request":0,"prompt":"0.000005"}}, 5, "$0/sec · In: $5/M tokens"],
+  ["zero audio second fee does not hide paid token rates", {"type":"audio","price_per_second":0,"pricing":{"prompt":"0.000008"}}, 8, "$0/sec · In: $8/M tokens"],
+  ["unclassified mixed token and request rates remain visible", {"type":"text","pricing":{"token_pricing":{"text_in":2,"image_out":0.9},"prompt":"0.000003","request":0.2}}, 0.2, "In: $3/M tokens · Text: $2/M tokens · Img Out: $0.9/M tokens · $0.2/request"],
 ];
 
 for (const [surface, pricing] of [["console", consoleExports], ["marketplace", marketplaceExports]]) {

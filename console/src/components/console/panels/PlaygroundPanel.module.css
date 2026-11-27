@@ -1,14 +1,14 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1rem;
   grid-column: span 12;
   min-width: 0;
 }
 
 .head {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
@@ -16,18 +16,19 @@
 .titleBlock { min-width: 0; }
 .title {
   display: flex; align-items: center; gap: 0.55rem;
-  font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; color: var(--text);
+  font-size: 1.4rem; font-weight: 650; letter-spacing: -0.025em; color: var(--text);
 }
 .titleIcon { color: var(--gold); width: 1.15em; height: 1.15em; }
 .sub { margin-top: 0.25rem; font-size: 0.875rem; color: var(--muted); }
-.sourceWrap { width: 240px; max-width: 100%; }
+.sourceWrap { width: 310px; max-width: 100%; display: grid; gap: 0.3rem; }
+.sourceLabel { font-size: 0.7rem; font-weight: 600; color: var(--muted); }
 
-/* Modality rail: pill tabs with a soft brand highlight */
+/* Compact modality navigation with a clear yellow active state. */
 .modeRail {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0 0 0.6rem;
+  gap: 0.25rem;
+  padding: 0.15rem 0 0.7rem;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
   scrollbar-width: none;
@@ -36,8 +37,8 @@
 .modeBtn {
   position: relative;
   display: inline-flex; align-items: center; gap: 0.5rem;
-  min-height: 40px; padding: 0 1rem;
-  border: 1px solid transparent; border-radius: var(--r-1);
+  min-height: 38px; padding: 0 0.8rem;
+  border: 1px solid transparent; border-radius: var(--r-0);
   background: transparent; color: var(--text-2);
   font: 600 0.875rem var(--sans);
   cursor: pointer; white-space: nowrap;
@@ -48,17 +49,15 @@
 .modeBtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 .modeBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 .modeActive {
-  background: var(--brand-dim);
-  color: var(--accent);
-  border-color: var(--brand-border);
+  background: var(--primary);
+  color: var(--primary-ink);
+  border-color: color-mix(in srgb, var(--accent-2) 72%, var(--border));
 }
-.modeDecision.modeActive { background: rgba(101, 163, 13, 0.12); color: #4d7c0f; border-color: rgba(101, 163, 13, 0.30); }
-[data-theme="dark"] .modeDecision.modeActive { color: #bef264; }
 .modeIcon { width: 1.15em; height: 1.15em; transition: transform var(--d-move) var(--ease-spring); }
 .modeActive .modeIcon { transform: scale(1.12); }
 .lockTag {
   font: 700 0.62rem var(--sans); letter-spacing: 0.04em;
-  padding: 1px 5px; border-radius: 999px;
+  padding: 1px 5px; border-radius: var(--r-0);
   color: var(--gold-ink); background: var(--gold-dim); border: 1px solid var(--gold-border);
 }
 .railSpacer { flex: 1; }
@@ -72,6 +71,14 @@
 @media (max-width: 640px) {
   .title { font-size: 1.25rem; }
   .sourceWrap { width: 100%; }
+  .head { align-items: stretch; }
+  .titleBlock { flex: 1 1 100%; }
+  .modeRail { margin-inline: -0.25rem; padding-inline: 0.25rem; }
   .modeBtn { padding: 0 0.8rem; }
   .modelCount { display: none; }
+}
+
+@media (max-width: 420px) {
+  .modeBtn { min-height: 36px; gap: 0.35rem; padding-inline: 0.65rem; font-size: 0.8rem; }
+  .lockTag { display: none; }
 }

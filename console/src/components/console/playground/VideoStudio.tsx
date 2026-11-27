@@ -89,11 +89,14 @@ export default function VideoStudio(props: StudioProps) {
 
 /* ---------- Workspace ---------- */
 
-function VideoWorkspace({ session, apiBase, models }: StudioProps) {
+function VideoWorkspace({ session, apiBase, models, initialModel }: StudioProps) {
   const catalog = useMemo(() => videoModels(models), [models]);
 
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState("");
+  useEffect(() => {
+    if (initialModel && catalog.some((m) => slug(m) === initialModel)) setModel(initialModel);
+  }, [initialModel, catalog]);
   const [seconds, setSeconds] = useState(4);
   const [refFile, setRefFile] = useState<File | null>(null);
   const [refData, setRefData] = useState<string | null>(null);

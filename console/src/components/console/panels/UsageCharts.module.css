@@ -87,3 +87,9 @@
 .legendButton strong { color: var(--text-2); font-weight: 650; font-variant-numeric: tabular-nums; }
 .legendButton small { grid-column: 2 / -1; color: var(--muted); font-size: .7rem; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .arc { transition: none; } }
+.panel { border-radius: var(--r-1); }
+.topline { padding-bottom: .75rem; border-bottom: 1px solid var(--border); }
+.topline h4 { font-size: 1.05rem; }
+.metric { border-radius: var(--r-0); }
+.panelTitle p { line-height: 1.4; }
+.empty { border-radius: var(--r-1); }

@@ -1,3 +1,5 @@
+.panel button:where(:not(.primaryAction):not(.dangerAction):not(.bucketName):not(.link)),
+.dialog button:where(:not(.primaryAction):not(.dangerAction)) { background: var(--surface); color: var(--text); border: 1px solid var(--border-strong); }
 .panel section {
   display: flex;
   flex-direction: column;
@@ -138,6 +140,21 @@
 .priceCard .priceEffective { padding: 0.5rem 1rem 1rem; margin-top: auto; font-size: 0.78rem; }
 .rateVersion { display: block; overflow-wrap: anywhere; margin-top: 0.5rem; font-size: 0.75rem; }
 
+.detail { min-width: 0; }
+.breadcrumb { display: flex; align-items: center; gap: 0.55rem; color: var(--text-2); font-size: 0.875rem; }
+.breadcrumb button { min-height: 32px; padding: 0.2rem 0.55rem; background: transparent; border: 1px solid var(--border); color: var(--text); }
+.breadcrumb strong { color: var(--text); overflow-wrap: anywhere; }
+.detailHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.detailHeading > div { display: grid; gap: 0.35rem; min-width: 0; }
+.fileToolbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 0.65fr); align-items: end; gap: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--surface-2); }
+.fileToolbar .searchForm { margin: 0; }
+.fileToolbar .uploadLabel { display: grid; gap: 0.4rem; }
+.fileToolbar input[type="file"] { max-width: 100%; min-height: 42px; padding: 0.35rem; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); }
+.bucketName { min-height: auto !important; padding: 0 !important; background: transparent !important; border: 0 !important; color: var(--text) !important; font-weight: 650; text-decoration: underline; text-underline-offset: 0.18em; cursor: pointer; text-align: left; }
+.primaryAction { background: var(--accent-2, #fcd704) !important; color: #0b0f1a !important; border-color: var(--accent-2, #fcd704) !important; font-weight: 650; }
+.dangerAction { color: var(--danger, #b42318) !important; border-color: currentColor !important; background: transparent !important; }
+.panel .primaryAction:disabled, .panel .dangerAction:disabled { opacity: 0.55; cursor: not-allowed; }
+
 /* Portals render outside .panel: style their controls and content independently. */
 .dialogBackdrop { position: fixed; inset: 0; z-index: 2100; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.68); padding: 1rem; }
 .dialog { width: min(880px, 100%); max-height: calc(100dvh - 2rem); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); color: var(--text); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
@@ -173,6 +190,9 @@
   .tabs button { width: 100%; justify-content: center; }
   .sectionHeading { align-items: stretch; }
   .sectionHeading button { width: 100%; }
+  .detailHeading { align-items: stretch; flex-direction: column; }
+  .fileToolbar { grid-template-columns: minmax(0, 1fr); padding: 0.8rem; }
+  .fileToolbar .uploadLabel input[type="file"] { width: 100%; }
   .credentialForm { grid-template-columns: minmax(0, 1fr); }
   .credentialForm .checkbox { min-height: 30px; }
   .credentialHeader { align-items: flex-start; }

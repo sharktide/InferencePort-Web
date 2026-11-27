@@ -15,9 +15,12 @@ const SAMPLE = {
   urgent: { type: "noul", instructions: "Does the customer need urgent help?" },
 };
 
-export default function DecisionStudio({ session, apiBase, apiPrefix, models }: StudioProps) {
+export default function DecisionStudio({ session, apiBase, apiPrefix, models, initialModel }: StudioProps) {
   const catalog = useMemo(() => dedupe(models.filter((m) => m.type === "decision")), [models]);
   const [model, setModel] = useState("microsoft/decision-1");
+  useEffect(() => {
+    if (initialModel && catalog.some((m) => slug(m) === initialModel)) setModel(initialModel);
+  }, [initialModel, catalog]);
   const [state, setState] = useState("I was charged twice this month. Please help me get a refund.");
   const [stateFormat, setStateFormat] = useState("text");
   const [questions, setQuestions] = useState(JSON.stringify(SAMPLE, null, 2));
@@ -140,7 +143,7 @@ export default function DecisionStudio({ session, apiBase, apiPrefix, models }: 
           </div>;
         })}
         <Button icon="download" onClick={download}>Download JSON</Button>
-        <details><summary>Full response</summary><pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{JSON.stringify(result, null, 2)}</pre></details>
+        <details><summary>Full response JSON</summary><pre tabIndex={0} aria-label="Full decision response JSON" style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", maxHeight: "28rem", overflow: "auto" }}>{JSON.stringify(result, null, 2)}</pre></details>
       </div>}
     </section>
   </div>;

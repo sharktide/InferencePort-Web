@@ -1,0 +1,8 @@
+.panel :global(.oauthWarning) { border-radius: 8px; }
+.panel :global(.oauthToolbar) { margin: 1rem 0; }
+.panel :global(.oauthGrantCard) { background: var(--surface); border-radius: 8px; box-shadow: none; }
+.panel :global(.oauthGrantCard:hover) { transform: none; box-shadow: none; }
+.panel :global(.oauthScopeChip) { border-radius: 6px; }
+.panel :global(.oauthErrorCard) { border-radius: 8px; box-shadow: none; }
+.panel :global(.oauthStateBlock) { border-radius: 8px; }
+.panel :global(.oauthGrantFooter) { padding-top: .8rem; border-top: 1px solid var(--border); }

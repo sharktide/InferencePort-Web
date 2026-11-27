@@ -21,6 +21,8 @@ const PLAN_FRIENDLY_NAMES: Record<string, string> = {
 export default function BillingPanel({ config, session, apiBase }: BillingPanelProps) {
   const modal = useModal();
   const [wallet, setWallet] = useState<any>(null);
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingError, setBillingError] = useState("");
   const [usageSummary, setUsageSummary] = useState<any>(null);
   const [subscription, setSubscription] = useState<any>(null);
   const [ledger, setLedger] = useState<any[]>([]);
@@ -39,6 +41,8 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
 
   const loadBillingData = useCallback(async () => {
     if (!session?.access_token) return;
+    setBillingLoading(true);
+    setBillingError("");
     try {
       const [me, ledgerData, subData, tiers, deployData] = await Promise.all([
         fj("/v1/me", { headers: authH() }),
@@ -53,7 +57,11 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
       setDeployments(deployData.data || []);
       if (subData) setSubscription(subData);
       if (tiers) setTierConfig(tiers);
-    } catch { /* ignore */ }
+    } catch (error) {
+      setBillingError(error instanceof Error ? error.message : "Unable to load billing details.");
+    } finally {
+      setBillingLoading(false);
+    }
   }, [session, apiBase]);
 
   useEffect(() => { if (session?.access_token) loadBillingData(); }, [session, loadBillingData]);
@@ -87,8 +95,11 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
+      <div className={billingStyles.walletTopup}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>P2G credits (Pay-2-Go)</div>
+        <div className={styles.heading}>Pay-as-you-go wallet</div>
+        <p className={`${styles.muted} ${styles.tiny}`}>Prepaid credits for model API, storage, and hosting charges. These are separate from subscription plan allowances below.</p>
+        {billingError && <p className={`${styles.muted} ${styles.tiny}`} role="alert">Unable to load billing details: {billingError} <button type="button" className="ghost" onClick={loadBillingData}>Retry</button></p>}
         {wallet ? (
           <div className={billingStyles.walletContent}>
             <div className={billingStyles.balanceCard}>
@@ -121,11 +132,13 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
               </div>
             </div>
           </div>
-        ) : <div className={styles.lockedOverlay}>Sign in to view your credit balance.</div>}
+        ) : billingLoading ? <p className={styles.muted} role="status">Loading wallet balance…</p>
+          : billingError ? null : <div className={styles.lockedOverlay}>Sign in to view your credit balance.</div>}
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Top up credits</div>
+        <div className={styles.heading}>Add wallet credits</div>
+        <p className={`${styles.muted} ${styles.tiny}`}>Choose a credit pack. The price and credit amount are shown for each option.</p>
         <div className={showAllPacks ? billingStyles.packsGrid : `${billingStyles.packsGrid} ${billingStyles.packsGridConstrained}`}>
           {visiblePacks.map((p: any) => (
             <div key={p.label} className={billingStyles.packCard}>
@@ -168,9 +181,11 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
           {[`${config?.pricing?.textCreditPerMillionTokens} credits per 1,000,000 text tokens (including multimodal text payloads)`, `${config?.pricing?.imageCreditPerImage} credits per image`, `${config?.pricing?.videoCreditPerSecond} credits per second of video`, `${config?.pricing?.audioCreditPerSecond} credits per second of audio (music/sfx)`].map((r, i) => <li key={i} className={styles.rateListItem}>{r}</li>)}
         </ul>
       </section>
+      </div>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Subscription (Generation API)</div>
+        <div className={styles.heading}>Generation API subscription</div>
+        <p className={`${styles.muted} ${styles.tiny}`}>Plan access and usage limits are billed separately from pay-as-you-go wallet credits.</p>
         {subscription ? (
           <div>
             <div className={styles.statGrid} style={{ marginBottom: "1rem" }}>
@@ -267,7 +282,7 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
       </section>
 
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Available plans</div>
+        <div className={styles.heading}>Generation API plans</div>
         <div className={billingStyles.plansGrid}>
           {plans.sort((a: any, b: any) => a.order - b.order).map((plan: any) => {
             const isCurrent = plan.key === currentPlanKey;

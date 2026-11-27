@@ -4,22 +4,23 @@ import type { OrgRole } from "./orgs";
 
 /* Personal sections (ids are the panel keys in ConsoleLayout). */
 export const PERSONAL_ITEMS = {
-  account: { label: "Account management", icon: "user-circle" },
+  overview: { label: "Overview", icon: "gauge" },
+  account: { label: "Account", icon: "user-circle" },
   organizations: { label: "Organizations", icon: "user-circle" },
   billing: { label: "Billing", icon: "credit-card" },
   models: { label: "Models", icon: "cube" },
   playground: { label: "Playground", icon: "sparkle" },
-  deploy: { label: "Deploy (Featherless)", icon: "gauge" },
+  deploy: { label: "Deployments", icon: "gauge" },
   agents: { label: "Agents", icon: "chat-circle-text" },
-  buckets: { label: "Buckets (Preview)", icon: "cube" },
+  buckets: { label: "Buckets", icon: "cube" },
   rewards: { label: "Rewards", icon: "gift" },
-  "api-key": { label: "API Keys", icon: "key" },
+  "api-key": { label: "API keys", icon: "key" },
   usage: { label: "Usage", icon: "chart-bar" },
-  "gen-api": { label: "Generation (Subscription)", icon: "chat-circle-text" },
-  "payg-api": { label: "P2G API", icon: "coins" },
-  mcp: { label: "MCP (Council)", icon: "link" },
+  "gen-api": { label: "Generation API", icon: "chat-circle-text" },
+  "payg-api": { label: "Pay-as-you-go API", icon: "coins" },
+  mcp: { label: "Council", icon: "link" },
   shield: { label: "Shield", icon: "shield-check" },
-  "authorized-apps": { label: "Authorized Applications", icon: "plugs-connected" },
+  "authorized-apps": { label: "Connected apps", icon: "plugs-connected" },
 } satisfies Record<string, { label: string; icon: IconName }>;
 
 /* Organization sections. In org mode they are top-level sidebar items (no nested tab bar). */

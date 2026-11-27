@@ -855,9 +855,19 @@ export default function AgentsPanel({ session, apiBase }: Props) {
           <label className={agentStyles.formFull}>Description
             <input value={f.description} onChange={(e) => setF({ description: e.target.value })} />
           </label>
-          <label className={agentStyles.formFull}>System prompt
-            <textarea rows={4} value={f.systemPrompt} placeholder="Leave blank to keep the current prompt" onChange={(e) => setF({ systemPrompt: e.target.value })} />
-          </label>
+          <details className={agentStyles.advancedSection}>
+            <summary className={agentStyles.advancedSummary}>Advanced configuration <span>System prompt and MCP servers</span></summary>
+            <div className={agentStyles.advancedContent}>
+              <label>System prompt
+                <textarea rows={4} value={f.systemPrompt} placeholder="Leave blank to keep the current prompt" onChange={(e) => setF({ systemPrompt: e.target.value })} />
+              </label>
+              <div>
+                <div className={agentStyles.subLabel}>MCP servers</div>
+                <McpEditor servers={f.mcpServers} onChange={(servers) => setF({ mcpServers: servers })} />
+                {mcpBlocked && <div className={`${agentStyles.payerNote} ${agentStyles.payerNoteStrong}`} role="alert">{mcpToolWarning(f.model)}</div>}
+              </div>
+            </div>
+          </details>
           <label>Visibility
             <select value={f.visibility} onChange={(e) => setF({ visibility: e.target.value })}>
               <option value="private">Private (invite required)</option>
@@ -878,15 +888,6 @@ export default function AgentsPanel({ session, apiBase }: Props) {
               <option value="owner">Owner pays for every call</option>
             </select>
           </label>
-          <div className={agentStyles.formFull}>
-            <div className={agentStyles.subLabel}>MCP servers</div>
-            <McpEditor servers={f.mcpServers} onChange={(servers) => setF({ mcpServers: servers })} />
-            {mcpBlocked && (
-              <div className={`${agentStyles.payerNote} ${agentStyles.payerNoteStrong}`} role="alert">
-                {mcpToolWarning(f.model)}
-              </div>
-            )}
-          </div>
         </div>
         <div className={`${agentStyles.payerNote} ${f.payer === "owner" ? agentStyles.payerNoteStrong : ""}`}>
           {f.payer === "owner"
@@ -951,8 +952,8 @@ export default function AgentsPanel({ session, apiBase }: Props) {
         </div>
 
         <div className={agentStyles.agentsTabs}>
-          {([["mine", `My agents (${owned.length})`], ["create", "Create agent"], ["discover", `Discover (${registryAgents.length})`], ["catalog", `Catalog (${catalog.length})`], ["invites", `Invites (${invites.filter((i) => i.status === "pending").length})`]] as const).map(([id, label]) => (
-            <button key={id} type="button" className={`${agentStyles.agentsTab} ${tab === id ? agentStyles.active : ""}`} onClick={() => { setTab(id); setExpanded(null); }}>
+          {([["mine", `My agents (${owned.length})`], ["create", "Create agent"], ["discover", `Discover (${registryAgents.length})`], ["catalog", `My catalog (${catalog.length})`], ["invites", `Invites (${invites.filter((i) => i.status === "pending").length})`]] as const).map(([id, label]) => (
+            <button key={id} type="button" className={`${agentStyles.agentsTab} ${id === "create" ? agentStyles.createTab : ""} ${tab === id ? agentStyles.active : ""}`} onClick={() => { setTab(id); setExpanded(null); }}>
               {label}
             </button>
           ))}
@@ -1052,24 +1053,25 @@ export default function AgentsPanel({ session, apiBase }: Props) {
                   </select>
                 </label>
               )}
-              <label className={agentStyles.formFull}>System prompt
-                <textarea rows={5} placeholder="You are a helpful support agent…" value={form.systemPrompt} onChange={(e) => setForm({ ...form, systemPrompt: e.target.value })} />
-              </label>
+              <details className={agentStyles.advancedSection}>
+                <summary className={agentStyles.advancedSummary}>Advanced configuration <span>System prompt and MCP servers</span></summary>
+                <div className={agentStyles.advancedContent}>
+                  <label>System prompt
+                    <textarea rows={5} placeholder="You are a helpful support agent…" value={form.systemPrompt} onChange={(e) => setForm({ ...form, systemPrompt: e.target.value })} />
+                  </label>
+                  <div>
+                    <div className={agentStyles.subLabel}>MCP servers (optional)</div>
+                    <McpEditor servers={form.mcpServers} onChange={(mcpServers) => setForm({ ...form, mcpServers })} />
+                    {createMcpBlocked && <div className={`${agentStyles.payerNote} ${agentStyles.payerNoteStrong}`} role="alert">{mcpToolWarning(form.model)}</div>}
+                  </div>
+                </div>
+              </details>
               <label>Who pays
                 <select value={form.payer} onChange={(e) => setForm({ ...form, payer: e.target.value })}>
                   <option value="caller">Caller pays per token</option>
                   <option value="owner">Owner pays for every call</option>
                 </select>
               </label>
-              <div className={agentStyles.formFull}>
-                <div className={agentStyles.subLabel}>MCP servers (optional)</div>
-                <McpEditor servers={form.mcpServers} onChange={(mcpServers) => setForm({ ...form, mcpServers })} />
-                {createMcpBlocked && (
-                  <div className={`${agentStyles.payerNote} ${agentStyles.payerNoteStrong}`} role="alert">
-                    {mcpToolWarning(form.model)}
-                  </div>
-                )}
-              </div>
             </div>
             <div className={`${agentStyles.payerNote} ${form.payer === "owner" ? agentStyles.payerNoteStrong : ""}`}>
               {form.payer === "owner"

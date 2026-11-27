@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "InferencePort AI Developer Console",
-  description: "Pay-2-Go API dashboard for InferencePort AI",
+  description: "Build, deploy and manage AI with InferencePort.",
   icons: { icon: "/assets/logo.png" },
 };
 

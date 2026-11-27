@@ -157,6 +157,7 @@ function makeItems(
 
 export default function ImageStudio(props: StudioProps) {
   const { session, apiBase, apiPrefix, models } = props;
+  const { initialModel } = props;
 
   const genModels = useMemo(() => imageModels(models), [models]);
   const editInfo = useMemo(() => {
@@ -169,6 +170,10 @@ export default function ImageStudio(props: StudioProps) {
   const [editPrompt, setEditPrompt] = useState("");
   const [genModel, setGenModel] = useState("");
   const [editModel, setEditModel] = useState("");
+  useEffect(() => {
+    if (initialModel && genModels.some((m) => slug(m) === initialModel)) setGenModel(initialModel);
+    if (initialModel && editInfo.list.some((m) => slug(m) === initialModel)) setEditModel(initialModel);
+  }, [initialModel, genModels, editInfo.list]);
   const [sizeId, setSizeId] = useState("auto");
   const [count, setCount] = useState(1);
 

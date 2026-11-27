@@ -62,7 +62,7 @@ module.exports = async function mutations(browser, url) {
           assert.equal(await page.getByLabel('Secret access key', { exact: true }).inputValue(), 'fixture-secret');
           assert.equal(issues, 2);
         } else {
-          await page.getByRole('dialog').getByRole('status').filter({ hasText: 'Upload initiation returned no upload ID' }).waitFor();
+          await page.getByRole('region', { name: /Files in/ }).getByRole('status').filter({ hasText: 'Upload initiation returned no upload ID' }).waitFor();
           assert.equal(initiations, 2);
           assert(requests.some(r => r.method === 'DELETE' && r.query.includes('fixture-upload') && r.selected));
         }
@@ -71,11 +71,11 @@ module.exports = async function mutations(browser, url) {
       } else {
         await seen;
         if (['initiate', 'part'].includes(scenario)) {
-          // The hardened dialog cannot dismiss an active transfer. Workspace
+          // The inline browser cannot leave an active transfer. Workspace
           // identity can still change externally (session/org refresh); exercise it
           // through the harness without pretending the backdrop is clickable.
           await page.keyboard.press('Escape');
-          assert.equal(await page.getByRole('dialog').isVisible(), true);
+          assert.equal(await page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('button', { name: 'Buckets', exact: true }).isDisabled(), true);
         }
         const unavailable = scenario === 'issue' && !remount;
         const switcher = page.getByRole('button', { name: unavailable ? 'Select unavailable organization' : 'Select Personal', exact: true });

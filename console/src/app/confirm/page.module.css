@@ -104,17 +104,17 @@
   font-size: 0.875rem;
   padding: 0 1.15rem;
   border-radius: var(--r-1);
-  background: var(--accent);
-  color: var(--accent-ink);
-  border: 1px solid var(--accent);
+  background: var(--primary);
+  color: var(--primary-ink);
+  border: 1px solid var(--primary);
   text-decoration: none;
   font-weight: 600;
   transition: background-color 0.15s, border-color 0.15s;
 }
 
 .btnLink:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
   text-decoration: none;
 }
 
@@ -143,3 +143,12 @@
   from { stroke-dasharray: 60; stroke-dashoffset: 60; }
   to { stroke-dasharray: 60; stroke-dashoffset: 0; }
 }
+
+.card { border-radius: 8px; box-shadow: none; }
+.receiptBox { border-radius: 6px; }
+.btnLink { background: #fcd704; color: #171717; border-color: #fcd704; border-radius: 6px; }
+.btnLink:hover { background: #e8c400; border-color: #e8c400; }
+.btnLinkDocs { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btnLinkDocs:hover { background: var(--surface-2); border-color: var(--border-strong); }
+.checkmark { background: rgb(252 215 4 / 18%); }
+.checkmarkSvg { stroke: #8a7300; }

@@ -1,0 +1,26 @@
+.panel {
+  --panel-line: var(--border);
+}
+
+.panel :global(.apiKeyShell),
+.panel :global(.apiKeyListHeader),
+.panel :global(.apiKeyList) {
+  max-width: none;
+}
+
+.panel :global(.apiKeyListHeader) { margin-top: 0; }
+.panel :global(.apiKeyRow) { border-radius: 8px; background: var(--surface); }
+.panel :global(.apiKeyAdvancedSection),
+.panel :global(.apiKeyForm),
+.panel :global(.apiKeyReveal) { border-radius: 8px; box-shadow: none; }
+.panel :global(.apiKeyReveal) { border-color: var(--border); background: var(--surface-2); }
+.panel :global(.apiKeyCreateActions > button),
+.panel :global(.apiKeyReveal .row > button:first-child) { background: #fcd704; color: #171717; border-color: #fcd704; }
+.panel :global(.apiKeyName) { font-size: .94rem; }
+.panel :global(.apiKeyMeta) { margin-top: .45rem; }
+.panel :global(.apiKeyBadge) { border-radius: 6px; }
+.panel :global(.apiKeyActions) { border-top: 1px solid var(--border); padding-top: .7rem; }
+.panel :global(.card) { display: flex; flex-direction: column; }
+.panel :global(.apiKeyListHeader) { order: 1; }
+.panel :global(.apiKeyList) { order: 2; }
+.panel :global(.apiKeyShell) { order: 3; margin-top: 1.5rem; }

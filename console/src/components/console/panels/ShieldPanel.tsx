@@ -624,7 +624,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       </section>
 
       {result && (
-        <section className={styles.card + " " + styles.wide} aria-live="polite">
+        <section className={styles.card + " " + styles.wide + " " + ui.resultSection} aria-live="polite">
           <div className={ui.workHeading}><h2>Shield result</h2><code className={ui.endpoint}>{lastEndpoint}</code></div>
           {resultMode === "check" ? (
             <>
@@ -653,7 +653,7 @@ export default function ShieldPanel({ session, apiBase }: Props) {
               <div className={ui.stats}>
                 {([["Risk score", result.risk_score], ["Confidence", result.confidence], ["Decision", status], ["Recommended action", result.recommended_action || result.threat_level]] as const).map(([label, v]) => <div key={label} className={styles.shieldStat}>
                   <span className={styles.shieldStatLabel}>{label}</span>
-                  <span className={styles.shieldStatValue + " " + (label === "Decision" ? riskColor(String(v)) : "")}>{v ?? "—"}</span>
+                  <span className={styles.shieldStatValue + " " + (label === "Decision" ? riskColor(String(v)) + " " + ui.decisionValue : "")}>{v ?? "—"}</span>
                 </div>)}
               </div>
               {typeof result.is_phishing === "boolean" && <p className={ui.answer}><strong>{result.is_phishing ? "Phishing indicators detected." : "No phishing indicators detected."}</strong> {result.explanation}</p>}
@@ -673,7 +673,9 @@ export default function ShieldPanel({ session, apiBase }: Props) {
       )}
 
       <section className={styles.card + " " + styles.wide}>
-        <h2>API reference</h2>
+        <details className={ui.reference}>
+        <summary>API reference and task details</summary>
+        <div>
         <p className={styles.muted}>Four endpoints power all the Shield workflows. The tasks, features and categories below are read from the live capabilities endpoint whenever available.</p>
         <div className={ui.apiList}>{["POST /ai-shield/analyze", "POST /ai-shield/scan", "POST /ai-shield/detect-phishing", "POST /ai-shield/check", "GET /ai-shield/capabilities"].map((endpoint) => <code key={endpoint}>{endpoint}</code>)}</div>
         <details className={ui.details}>
@@ -686,6 +688,8 @@ export default function ShieldPanel({ session, apiBase }: Props) {
           {!!caps?.categories?.length && <div className={styles.shieldThreats}>{caps.categories.map((category) => <span className={styles.shieldThreatTag} key={category}>{category}</span>)}</div>}
         </details>
         <p className={styles.muted + " " + styles.tiny}><a href="https://docs.inferenceport.ai/en/latest/api/shield.html" target="_blank" rel="noreferrer">Full Shield documentation</a> · See also <code>ipx shield tasks</code> and <code>ipx shield check</code> in the CLI.</p>
+        </div>
+        </details>
       </section>
     </div>
   );

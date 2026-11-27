@@ -69,6 +69,7 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
   const [stats, setStats] = useState<any>(null);
   const [optedOut, setOptedOut] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [claiming, setClaiming] = useState<string | null>(null);
   const [showClaimEffect, setShowClaimEffect] = useState<Reward | null>(null);
   const [category, setCategory] = useState("all");
@@ -80,20 +81,21 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
       return;
     }
     setLoading(true);
+    setLoadError("");
     try {
       const res = await fetch(`${apiBase}/v1/rewards`, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      if (res.ok) {
-        const data = await res.json();
-        setRewards(data.rewards || []);
-        setDiscounts(data.active_discounts || {});
-        setStats(data.stats_summary || null);
-        setOptedOut(data.opted_out || false);
-        const unclaimed = (data.rewards || []).filter((r: Reward) => r.progress.earned && !r.progress.claimed).length;
-        onUnclaimedCount?.(unclaimed);
-      }
-    } catch {
+      if (!res.ok) throw new Error(`Could not load rewards (HTTP ${res.status}).`);
+      const data = await res.json();
+      setRewards(data.rewards || []);
+      setDiscounts(data.active_discounts || {});
+      setStats(data.stats_summary || null);
+      setOptedOut(data.opted_out || false);
+      const unclaimed = (data.rewards || []).filter((r: Reward) => r.progress.earned && !r.progress.claimed).length;
+      onUnclaimedCount?.(unclaimed);
+    } catch (e: any) {
+      setLoadError(e?.message || "Could not load rewards. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -164,6 +166,17 @@ export default function RewardsPanel({ session, apiBase, onUnclaimedCount }: Pro
         <div className={styles.emptyState}>
           <div className={styles.spinner} />
           <p>Loading rewards...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className={styles.rewardsPanel}>
+        <div className={styles.emptyState} role="alert">
+          <p>{loadError}</p>
+          <button type="button" className={styles.claimBtn} onClick={fetchData}>Try again</button>
         </div>
       </div>
     );

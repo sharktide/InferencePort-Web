@@ -504,7 +504,7 @@ function StatsLine({ stats }: { stats: Stats }) {
 
 /* ---------- Component ---------- */
 
-export default function TextChat({ session, apiBase, apiPrefix, models }: StudioProps) {
+export default function TextChat({ session, apiBase, apiPrefix, models, initialModel }: StudioProps) {
   const list = useMemo(() => textModels(models), [models]);
 
   const [threads, setThreads] = useState<Thread[]>([]);
@@ -533,6 +533,9 @@ export default function TextChat({ session, apiBase, apiPrefix, models }: Studio
 
   /* Model: fall back to the first text model when nothing valid is picked. */
   const effModel = list.some((m) => slug(m) === modelPick) ? modelPick : (list[0] ? slug(list[0]) : "") || "";
+  useEffect(() => {
+    if (initialModel && list.some((m) => slug(m) === initialModel)) setModelPick(initialModel);
+  }, [initialModel, list]);
   const selected = list.find((m) => slug(m) === effModel);
   const canAttach = !!selected && accepts(selected, "image");
 

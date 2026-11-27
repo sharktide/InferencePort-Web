@@ -1,0 +1,12 @@
+.councilPanel > section { border-radius: 6px; box-shadow: none; }
+.councilPanel > section + section { margin-top: 0.1rem; }
+.tabs { border-radius: 6px; }
+.snippet { border-radius: 4px; overflow-wrap: anywhere; }
+.councilPanel :global(button:not(.ghost)) { border-radius: 4px; }
+.councilPanel input { min-width: 0; }
+@media (max-width: 640px) {
+  .councilPanel > section { padding: 1.1rem; }
+  .tabs { width: 100%; }
+  .councilPanel :global(.row) { align-items: stretch; }
+  .councilPanel :global(.row) > button { min-height: 40px; }
+}

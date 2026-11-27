@@ -105,11 +105,14 @@ export function buildSession(m: any, voice: string, instructions: string): Recor
   return base;
 }
 
-export default function RealtimeStudio({ session, apiBase, apiPrefix, models, active = true }: StudioProps) {
+export default function RealtimeStudio({ session, apiBase, apiPrefix, models, active = true, initialModel }: StudioProps) {
   const org = useOptionalOrgContext();
   const activeOrg = org?.activeSlug ?? null;
   const catalog = useMemo(() => realtimeModels(models), [models]);
   const [model, setModel] = useState(DEFAULT_MODEL);
+  useEffect(() => {
+    if (initialModel && catalog.some((m) => slug(m) === initialModel)) setModel(initialModel);
+  }, [initialModel, catalog]);
   const [voice, setVoice] = useState("");
   const [instructions, setInstructions] = useState("You are a friendly assistant. Keep replies short.");
   const [sessionJson, setSessionJson] = useState("");

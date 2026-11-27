@@ -187,10 +187,10 @@ export default function OrganizationsPanel({ session }: Props) {
   }
 
   return (
-    <div className={`${styles.panel} ${styles.active}`}>
-      <section className={`${styles.card} ${styles.wide}`}>
+    <div className={`${styles.panel} ${styles.active} ${local.landing}`}>
+      <section className={`${styles.card} ${styles.wide} ${local.section}`}>
         <div className={styles.heading}>Organizations</div>
-        <p className={`${styles.muted} ${styles.tiny}`} style={{ margin: "0 0 1rem" }}>
+        <p className={`${styles.muted} ${styles.tiny} ${local.intro}`}>
           Share agents, API keys and wallet credits with your team. Choose an organization to work in it: the playground,
           models and agents then bill to that organization.
         </p>
@@ -212,7 +212,7 @@ export default function OrganizationsPanel({ session }: Props) {
               const current = o.slug === activeSlug;
               return (
                 <li key={o.id}>
-                  <button type="button" className={local.orgButton} onClick={() => openOrg(o.slug)} aria-label={`Open ${o.name}`}>
+                  <button type="button" className={local.orgButton} onClick={() => openOrg(o.slug)} aria-label={`Open ${o.name}`} aria-current={current ? "true" : undefined}>
                     <span className={local.orgMain}>
                       <span className={local.orgName}>{o.name}</span>
                       <span className={local.orgSlug}>{o.slug} · {o.member_count} member{o.member_count === 1 ? "" : "s"}</span>
@@ -230,7 +230,7 @@ export default function OrganizationsPanel({ session }: Props) {
         )}
       </section>
 
-      <section className={`${styles.card} ${styles.wide}`}>
+      <section className={`${styles.card} ${styles.wide} ${local.section}`}>
         <div className={styles.heading}>Plans</div>
         <div className={local.plansRow}>
           <p className={`${styles.muted} ${styles.tiny}`}>
@@ -240,7 +240,7 @@ export default function OrganizationsPanel({ session }: Props) {
         </div>
       </section>
 
-      <section className={`${styles.card} ${styles.wide}`}>
+      <section className={`${styles.card} ${styles.wide} ${local.section}`}>
         <div className={styles.heading}>Create organization</div>
         <form onSubmit={createOrg} className={local.createForm}>
           <div className={shared.formGrid}>

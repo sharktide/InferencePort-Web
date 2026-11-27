@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   background: var(--overlay);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,8 +16,8 @@
   max-width: 400px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.75rem;
+  border-radius: var(--radius-xl, 8px);
+  padding: 1.5rem;
   box-shadow: var(--shadow-lg);
   animation: scaleIn 0.15s ease;
 }
@@ -39,27 +39,27 @@
 .input {
   width: 100%;
   padding: 0.7rem 0.9rem;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--r-1, 6px);
   font-family: var(--sans);
   font-size: 0.88rem;
   color: var(--text);
   margin-bottom: 1.5rem;
   transition: border-color 0.15s, box-shadow 0.15s;
-  outline: 2px solid transparent;
+  outline: none;
 }
 
 .input:focus {
-  border-color: var(--accent);
+  border-color: var(--brand, var(--accent));
   box-shadow: 0 0 0 3px var(--brand-dim);
   outline: 2px solid var(--focus);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 .input::placeholder {
   color: var(--muted);
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .actions {
@@ -70,10 +70,11 @@
 
 .okBtn {
   padding: 0.55rem 1.5rem;
-  background: var(--text);
-  color: var(--bg);
-  border: none;
-  border-radius: 10px;
+  min-height: 40px;
+  background: var(--gold, #fcd704);
+  color: #0b0f1a;
+  border: 1px solid #0b0f1a;
+  border-radius: var(--r-1, 6px);
   font-family: var(--sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -81,16 +82,15 @@
   transition: opacity 0.15s;
 }
 
-.okBtn:hover {
-  opacity: 0.85;
-}
+.okBtn:hover { background: #e5c400; }
 
 .cancelBtn {
   padding: 0.55rem 1.25rem;
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  min-height: 40px;
+  background: var(--surface);
+  color: var(--text-2, var(--muted));
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--r-1, 6px);
   font-family: var(--sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -106,10 +106,11 @@
 
 .dangerBtn {
   padding: 0.55rem 1.5rem;
-  background: var(--danger);
-  color: var(--danger-ink);
-  border: none;
-  border-radius: 10px;
+  min-height: 40px;
+  background: var(--danger-solid, var(--danger));
+  color: var(--danger-solid-ink, var(--danger-ink));
+  border: 1px solid var(--danger-solid, var(--danger));
+  border-radius: var(--r-1, 6px);
   font-family: var(--sans);
   font-size: 0.85rem;
   font-weight: 600;
@@ -117,9 +118,7 @@
   transition: opacity 0.15s;
 }
 
-.dangerBtn:hover {
-  opacity: 0.85;
-}
+.dangerBtn:hover { background: var(--danger-solid-hover, var(--danger)); }
 
 @keyframes fadeIn {
   from { opacity: 0; }

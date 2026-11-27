@@ -1,9 +1,17 @@
 "use client";
 
-import ContextSwitcher from "./ContextSwitcher";
+import Icon from "../Icon";
+import { useOptionalOrgContext } from "./OrgContext";
 import styles from "./ContextChip.module.css";
 
-/* "Billing to: Personal / Acme" pill for work pages (Playground, Agents). Same switcher as the top bar. */
-export default function ContextChip() {
-  return <ContextSwitcher variant="chip" className={styles.wrap} />;
+/* Read-only billing context indicator for work pages; the primary switcher lives in the shell. */
+export default function ContextChip({ personal = false }: { personal?: boolean }) {
+  const ctx = useOptionalOrgContext();
+  if (!ctx) return null;
+  const label = personal ? "Personal" : ctx.activeOrg?.name ?? (ctx.activeSlug ? "Loading workspace…" : "Personal");
+  return <span className={styles.wrap} aria-label={`Billed to ${label}`}>
+    <Icon name="credit-card" size={14} aria-hidden="true" />
+    <span>Billing to</span>
+    <strong>{label}</strong>
+  </span>;
 }
