@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, memo, useCallback, useEffect, useRef, useState, type KeyboardEvent, type MouseEvent as ReactMouseEvent } from "react";
+import { Fragment, memo, useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent as ReactMouseEvent } from "react";
 import Icon from "../../Icon";
 import shared from "./Playground.module.css";
 import styles from "./AudioStudio.module.css";
@@ -780,8 +780,9 @@ function OutputCard({ result }: { result: Result }) {
 
 /* ---------- Studio ---------- */
 
-export default function AudioStudio({ session, apiBase, apiPrefix, models }: StudioProps) {
+export default function AudioStudio({ session, apiBase, apiPrefix, models, initialModel }: StudioProps) {
   const [taskId, setTaskId] = useState<TaskId>("music");
+  const appliedLaunch = useRef("");
   const [model, setModel] = useState("");
   const [prompt, setPrompt] = useState("");
   const [text, setText] = useState("");
@@ -826,10 +827,23 @@ export default function AudioStudio({ session, apiBase, apiPrefix, models }: Stu
     return () => URL.revokeObjectURL(u);
   }, [file]);
 
-  const modelsFor = (def: TaskDef): any[] =>
-    apiPrefix !== "/v1" ? [] : dedupe(models.filter((m) => m?.is_ready !== false && supportsTask(m, def)));
+  const modelsFor = useCallback((def: TaskDef): any[] =>
+    apiPrefix !== "/v1" ? [] : dedupe(models.filter((m) => m?.is_ready !== false && supportsTask(m, def))), [apiPrefix, models]);
 
-  const options = modelsFor(task);
+  const options = useMemo(() => modelsFor(task), [modelsFor, task.id]);
+  useEffect(() => {
+    const key = apiPrefix + ":" + (initialModel ?? "");
+    if (!initialModel || appliedLaunch.current === key) return;
+    const candidate = models.find((item) => slug(item) === initialModel);
+    const target = apiPrefix === "/v1"
+      ? TASKS.find((item) => candidate && supportsTask(candidate, item))
+      : candidate && (candidate.type === "audio" || candidate.output_modalities?.includes("audio")) ? TASKS[0] : undefined;
+    if (!target) return;
+    setTaskId(target.id);
+    setTimings(false);
+    setModel(initialModel);
+    appliedLaunch.current = key;
+  }, [initialModel, models, apiPrefix]);
   const available = apiPrefix === "/v1" ? options.length > 0 : task.id === "music";
 
   const selected = options.find((m) => slug(m) === model);

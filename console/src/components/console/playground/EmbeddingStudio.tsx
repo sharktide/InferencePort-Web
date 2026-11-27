@@ -49,9 +49,12 @@ export function decodeBase64Embedding(b64: string): number[] {
 
 const errText = (e: unknown, fallback: string) => (e instanceof Error && e.message ? e.message : fallback);
 
-export default function EmbeddingStudio({ session, apiBase, apiPrefix, models }: StudioProps) {
+export default function EmbeddingStudio({ session, apiBase, apiPrefix, models, initialModel }: StudioProps) {
   const catalog = useMemo(() => embeddingModels(models), [models]);
   const [model, setModel] = useState(DEFAULT_MODEL);
+  useEffect(() => {
+    if (initialModel && catalog.some((m) => slug(m) === initialModel)) setModel(initialModel);
+  }, [initialModel, catalog]);
   const [text, setText] = useState(SAMPLES.join("\n"));
   const [dimensions, setDimensions] = useState("");
   const [format, setFormat] = useState<"float" | "base64">("float");

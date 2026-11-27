@@ -306,21 +306,21 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       </div>
     </section>
     <div role="tabpanel" id="bucket-panel-files" aria-labelledby="bucket-tab-files" hidden={tab !== "files"} className={ui.tabPanel}>
-    <section className={`${styles.card} ${styles.wide}`}>
-      <div className={ui.sectionHeading}><div><h2 className={styles.heading}>Your buckets</h2><p>Manage storage, files and access within this workspace.</p></div>{canAdmin && <button type="button" onClick={() => { setVisibility("private"); setCreating(true); }} disabled={busy}>+ Create bucket</button>}</div>
+    {!selected && <section className={`${styles.card} ${styles.wide}`}>
+      <div className={ui.sectionHeading}><div><h2 className={styles.heading}>Your buckets</h2><p>Manage storage, files and access within this workspace.</p></div>{canAdmin && <button className={ui.primaryAction} type="button" onClick={() => { setVisibility("private"); setCreating(true); }} disabled={busy}>Create bucket</button>}</div>
       {catalog && catalog.status !== "not_available" && <>
         <p className={ui.helperText}>Bucket names are unique within this workspace. Your S3 credentials determine which workspace you can access.</p>
         <div className={ui.tableScroll} tabIndex={0}><table className={ui.bucketTable}><thead><tr><th>Name</th><th>Used / quota</th><th>Status</th><th>Actions</th></tr></thead><tbody>
           {buckets.length === 0 && <tr><td colSpan={4} className={ui.empty}>No buckets yet. Use Create bucket to get started.</td></tr>}
-          {buckets.map((bucket) => <tr key={bucket.id}><td data-label="Bucket"><strong>{bucket.name}</strong></td><td data-label="Storage">{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td data-label="Status"><span className={ui.statusPill}>{bucket.status === "read_only" ? "Uploads paused" : bucket.status === "active" ? "Active" : bucket.status}</span>{" "}<span className={ui.statusPill}>{bucket.visibility === "public" ? "Public" : "Private"}</span></td><td data-label="Actions" className={ui.actionCell}>
+          {buckets.map((bucket) => <tr key={bucket.id}><td data-label="Bucket"><button className={ui.bucketName} type="button" disabled={busy} onClick={() => void act(() => browse(bucket))}>{bucket.name}</button></td><td data-label="Storage">{bytes(bucket.bytes_used)} / {bytes(bucket.quota_bytes)}</td><td data-label="Status"><span className={ui.statusPill}>{bucket.status === "read_only" ? "Uploads paused" : bucket.status === "active" ? "Active" : bucket.status}</span>{" "}<span className={ui.statusPill}>{bucket.visibility === "public" ? "Public" : "Private"}</span></td><td data-label="Actions" className={ui.actionCell}>
             <button type="button" disabled={busy} onClick={() => void act(() => browse(bucket))}>Browse</button>{" "}
             {canAdmin && <button type="button" disabled={busy} onClick={() => setEditing(bucket)}>Settings</button>}{" "}
-            {canAdmin && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); recentBucketIds.current.delete(bucket.id); if (selected?.id === bucket.id) closeBrowse(); await refresh(); }); }}>Delete</button>}
+            {canAdmin && <button className={ui.dangerAction} type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete empty bucket ${bucket.name}?`)) void act(async () => { await call(`/v1/buckets/${bucket.id}`, { method: "DELETE" }); recentBucketIds.current.delete(bucket.id); await refresh(); }); }}>Delete</button>}
           </td></tr>)}
         </tbody></table></div>
         {bucketContinuation && <button disabled={busy} onClick={() => void act(async () => { const page = await call(`/v1/buckets?limit=100&continuation_token=${encodeURIComponent(bucketContinuation)}`); setBuckets((rows) => [...new Map([...rows, ...page.buckets].map((row: Bucket) => [row.id, row])).values()]); setBucketContinuation(page.continuation_token); })}>More buckets</button>}
       </>}
-    </section>
+    </section>}
     {creating && canAdmin && <BucketDialog title="Create a bucket" description="Create S3-compatible storage in this workspace. Buckets are private by default." busy={busy} onClose={() => setCreating(false)}>
       <form className={ui.createForm} onSubmit={(event) => { event.preventDefault(); void act(async () => {
         const created = await call("/v1/buckets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, quota_bytes: Math.floor(Number(quota) * 1024 ** 3), visibility }) });
@@ -334,7 +334,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
         <label>Bucket access <select aria-label="Bucket access" value={visibility} onChange={(event) => setVisibility(event.target.value as "private" | "public")}><option value="private">Private</option><option value="public">Public</option></select></label>
         <p className={ui.helperText}>{visibility === "public" ? "Anyone with a file URL can download it. Downloads are billed to this workspace. Uploads and listing still require permission." : "Only authorized users and credentials can download files."}</p>
         {message && <p role="status">{message}</p>}
-        <div className={ui.dialogActions}><button type="button" disabled={busy} onClick={() => setCreating(false)}>Cancel</button><button disabled={busy} type="submit">Create bucket</button></div>
+        <div className={ui.dialogActions}><button type="button" disabled={busy} onClick={() => setCreating(false)}>Cancel</button><button className={ui.primaryAction} disabled={busy} type="submit">Create bucket</button></div>
       </form>
     </BucketDialog>}
     {editing && canAdmin && <BucketDialog title={`Settings · ${editing.name}`} description="Manage bucket name, storage limit and upload availability." busy={busy} onClose={() => setEditing(null)}>
@@ -346,13 +346,18 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
       })} />
       {message && <p role="status">{message}</p>}
     </BucketDialog>}
-    {selected && <BucketDialog title={`Files · ${selected.name}`} description="Browse, upload and manage objects in this bucket." busy={busy} onClose={closeBrowse}>
-      <div className={ui.modalSection}>
+    {selected && <section className={`${styles.card} ${styles.wide} ${ui.detail}`} aria-label={`Files in ${selected.name}`}>
+      <nav className={ui.breadcrumb} aria-label="Breadcrumb">
+        <button type="button" disabled={busy} onClick={closeBrowse}>Buckets</button><span aria-hidden="true">/</span><strong>{selected.name}</strong>
+      </nav>
+      <div className={ui.detailHeading}><div><h2 className={styles.heading}>{selected.name}</h2><p>{bytes(selected.bytes_used)} used of {bytes(selected.quota_bytes)} · {selected.status === "read_only" ? "Uploads paused" : "Active"} · {selected.visibility === "public" ? "Public" : "Private"}</p></div>{canAdmin && <button type="button" disabled={busy} onClick={() => setEditing(selected)}>Settings</button>}</div>
+      <div className={ui.fileToolbar}>
         <form className={ui.searchForm} onSubmit={(event) => { event.preventDefault(); void act(() => browse(selected)); }}>
-          <label>Key prefix <input aria-label="Key prefix" maxLength={1024} placeholder="Search by prefix (optional)" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>
-          <button disabled={busy} type="submit">Search</button>
+          <label>Search by key prefix <input aria-label="Search by key prefix" maxLength={1024} placeholder="For example, models/" value={prefix} onChange={(e) => { setPrefix(e.target.value); setContinuation(null); }} /></label>
+          <button className={ui.primaryAction} disabled={busy} type="submit">Search</button>
         </form>
         {canWrite && <label className={ui.uploadLabel}>Upload file <input aria-label="Upload file" type="file" disabled={busy || !pricingReady || selected.status !== "active"} onChange={(e) => { const file = e.target.files?.[0]; if (file) void act(() => upload(file)); e.target.value = ""; }} /></label>}
+      </div>
         {canWrite && selected.status === "read_only" && <p role="status">Uploads are paused. {canAdmin ? "Open Settings to resume uploads." : "Ask a workspace administrator to resume uploads."}</p>}
         {canWrite && selected.status === "active" && !pricingReady && <p role="status">Uploads are paused until verified pricing is available. Refresh to retry.</p>}
         {message && <p role="status">{message}</p>}
@@ -362,7 +367,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
           {entries.map((entry) => <tr key={entry.entry}>
             <td data-label="Object key" className={ui.objectKey}>{entry.entry}</td><td data-label="Size">{bytes(entry.size_bytes)}</td>
             <td data-label="Actions" className={ui.actionCell}>{selected.visibility === "public" && entry.public_url && <button type="button" disabled={busy} onClick={() => void act(async () => { await navigator.clipboard.writeText(entry.public_url!); setMessage("Public URL copied. Anyone with this link can download the file."); })}>Copy public URL</button>}<button type="button" disabled={busy} onClick={() => void act(() => download(entry))}>Download</button>
-              {canWrite && <button type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(`/v1/buckets/${selected.id}/object?${new URLSearchParams({ key: entry.entry })}`, { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
+              {canWrite && <button className={ui.dangerAction} type="button" disabled={busy} onClick={() => { if (window.confirm(`Delete ${entry.entry}?`)) void act(async () => { await call(`/v1/buckets/${selected.id}/object?${new URLSearchParams({ key: entry.entry })}`, { method: "DELETE" }, true); await browse(selected); await refresh(); }); }}>Delete</button>}</td>
           </tr>)}
         </tbody></table></div>
         {continuation && <button disabled={busy} onClick={() => void act(() => browse(selected, continuation))}>Next page</button>}
@@ -371,8 +376,7 @@ export default function BucketsPanel({ apiBase, session }: { apiBase: string; se
           <p>Debited credits: {usage.debited_credits} · Pending holds: {usage.held_credits} · Fractional carry: {usage.carried_credits}</p>
           <p>Retained versions and pending data can remain billable after deletion; insufficient credits pauses new writes and does not delete objects.</p>
         </details>}
-      </div>
-    </BucketDialog>}
+    </section>}
     </div>
     <div role="tabpanel" id="bucket-panel-connect" aria-labelledby="bucket-tab-connect" hidden={tab !== "connect"} className={ui.tabPanel}>
       {catalog && catalog.status !== "not_available" && <BucketConnection endpoint={workspace.endpoint} buckets={buckets} selectedName={selected?.name} workspaceId={workspace.owner_id} workspaceKind={workspace.owner_kind} canAdmin={canAdmin} onCredentials={() => selectTab("credentials")} />}

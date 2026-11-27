@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Panel.module.css";
+import councilStyles from "./CouncilPanel.module.css";
 import { useOptionalOrgContext } from "../OrgContext";
 import { navigateConsole } from "../ContextSwitcher";
 
@@ -152,7 +153,7 @@ export default function McpPanel({ session, apiBase }: Props) {
   const toggle = (active: boolean) => `${styles.playgroundTab} ${active ? styles.active : ""}`;
 
   return (
-    <div className={`${styles.panel} ${styles.active}`}>
+    <div className={`${styles.panel} ${styles.active} ${councilStyles.councilPanel}`}>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Council MCP server</div>
         <p className={styles.muted}>
@@ -172,6 +173,53 @@ export default function McpPanel({ session, apiBase }: Props) {
           </p>
         </div>
       </section>
+
+
+      {!orgUnresolved && (<>
+      <section className={`${styles.card} ${styles.wide}`}>
+        <div className={styles.heading}>Connect a client</div>
+        <div className={`${styles.tabs} ${councilStyles.tabs}`} role="tablist" aria-label="Authentication method">
+          <button type="button" role="tab" aria-selected={auth === "oauth"} className={toggle(auth === "oauth")} onClick={() => setAuth("oauth")}>OAuth sign-in</button>
+          <button type="button" role="tab" aria-selected={auth === "key"} className={toggle(auth === "key")} onClick={() => setAuth("key")}>API key</button>
+        </div>
+        {auth === "oauth" ? (
+          <p className={`${styles.muted} ${styles.tiny}`}>
+            The client opens a browser window, you sign in to InferencePort and approve access. Nothing to copy or store. Approved clients appear under{" "}
+            <button type="button" style={LINK_BTN} onClick={() => (org ? switchToPersonal() : navigateConsole("authorized-apps"))}>Authorized Applications</button>
+            {org ? " (a personal page: this switches you to your personal account)" : ""}, where you can revoke them.
+          </p>
+        ) : (
+          <p className={`${styles.muted} ${styles.tiny}`}>
+            Replace <code>{KEY_PLACEHOLDER}</code> with a key from{" "}
+            <button type="button" style={LINK_BTN} onClick={() => navigateConsole(org ? "org-keys" : "api-key")}>{org ? "this organization's API keys" : "API key"}</button>.
+            {org ? " An organization key bills the organization." : " A personal key bills your personal wallet."} Keep keys secret and never commit them.
+          </p>
+        )}
+        <div className={`${styles.tabs} ${councilStyles.tabs}`} role="tablist" aria-label="Client" style={{ marginTop: "0.5rem" }}>
+          {CLIENTS.map((c) => (
+            <button key={c.id} type="button" role="tab" aria-selected={client === c.id} className={toggle(client === c.id)} onClick={() => setClient(c.id)}>{c.label}</button>
+          ))}
+        </div>
+        <pre className={`${styles.apiKeySecret} ${councilStyles.snippet}`} style={{ margin: "0 0 0.75rem" }} data-lang={snippet.lang}>{snippet.text}</pre>
+        <div className={styles.row}>
+          <button type="button" onClick={() => copy("snippet", snippet.text)}>{copied === "snippet" ? "Copied" : "Copy snippet"}</button>
+        </div>
+      </section>
+
+      <section className={`${styles.card} ${styles.wide}`}>
+        <div className={styles.heading}>Test the connection</div>
+        <p className={`${styles.muted} ${styles.tiny}`}>
+          Runs the MCP handshake against the server with your current sign-in{org ? ` as ${org.name}` : ""}. It does not run the council and costs nothing.
+        </p>
+        <div className={styles.row} style={{ marginTop: "0.5rem" }}>
+          <button type="button" onClick={runTest} disabled={!session || test.state === "running"}>{test.state === "running" ? "Testing…" : "Test connection"}</button>
+          {!session && <span className={`${styles.muted} ${styles.tiny}`}>Sign in to test.</span>}
+        </div>
+        {test.state !== "idle" && (
+          <p className={test.state === "error" ? styles.threeError : `${styles.muted} ${styles.tiny}`} role="status" style={{ marginTop: "0.75rem" }}>{test.text}</p>
+        )}
+      </section>
+      </>)}
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>{orgUnresolved ? "Billing" : org ? `Billing: ${org.name}` : "Billing"}</div>
@@ -202,51 +250,6 @@ export default function McpPanel({ session, apiBase }: Props) {
         </>)}
       </section>
 
-      {!orgUnresolved && (<>
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Connect a client</div>
-        <div className={styles.tabs} role="tablist" aria-label="Authentication method">
-          <button type="button" role="tab" aria-selected={auth === "oauth"} className={toggle(auth === "oauth")} onClick={() => setAuth("oauth")}>OAuth sign-in</button>
-          <button type="button" role="tab" aria-selected={auth === "key"} className={toggle(auth === "key")} onClick={() => setAuth("key")}>API key</button>
-        </div>
-        {auth === "oauth" ? (
-          <p className={`${styles.muted} ${styles.tiny}`}>
-            The client opens a browser window, you sign in to InferencePort and approve access. Nothing to copy or store. Approved clients appear under{" "}
-            <button type="button" style={LINK_BTN} onClick={() => (org ? switchToPersonal() : navigateConsole("authorized-apps"))}>Authorized Applications</button>
-            {org ? " (a personal page: this switches you to your personal account)" : ""}, where you can revoke them.
-          </p>
-        ) : (
-          <p className={`${styles.muted} ${styles.tiny}`}>
-            Replace <code>{KEY_PLACEHOLDER}</code> with a key from{" "}
-            <button type="button" style={LINK_BTN} onClick={() => navigateConsole(org ? "org-keys" : "api-key")}>{org ? "this organization's API keys" : "API key"}</button>.
-            {org ? " An organization key bills the organization." : " A personal key bills your personal wallet."} Keep keys secret and never commit them.
-          </p>
-        )}
-        <div className={styles.tabs} role="tablist" aria-label="Client" style={{ marginTop: "0.5rem" }}>
-          {CLIENTS.map((c) => (
-            <button key={c.id} type="button" role="tab" aria-selected={client === c.id} className={toggle(client === c.id)} onClick={() => setClient(c.id)}>{c.label}</button>
-          ))}
-        </div>
-        <pre className={styles.apiKeySecret} style={{ margin: "0 0 0.75rem" }} data-lang={snippet.lang}>{snippet.text}</pre>
-        <div className={styles.row}>
-          <button type="button" onClick={() => copy("snippet", snippet.text)}>{copied === "snippet" ? "Copied" : "Copy snippet"}</button>
-        </div>
-      </section>
-
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Test the connection</div>
-        <p className={`${styles.muted} ${styles.tiny}`}>
-          Runs the MCP handshake against the server with your current sign-in{org ? ` as ${org.name}` : ""}. It does not run the council and costs nothing.
-        </p>
-        <div className={styles.row} style={{ marginTop: "0.5rem" }}>
-          <button type="button" onClick={runTest} disabled={!session || test.state === "running"}>{test.state === "running" ? "Testing…" : "Test connection"}</button>
-          {!session && <span className={`${styles.muted} ${styles.tiny}`}>Sign in to test.</span>}
-        </div>
-        {test.state !== "idle" && (
-          <p className={test.state === "error" ? styles.threeError : `${styles.muted} ${styles.tiny}`} role="status" style={{ marginTop: "0.75rem" }}>{test.text}</p>
-        )}
-      </section>
-      </>)}
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Tools</div>

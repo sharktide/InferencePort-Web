@@ -24,21 +24,21 @@ export function Field({ label, hint, children, right }: { label: string; hint?: 
 
 /* ---------- Segmented control ---------- */
 export function Segmented<T extends string | number>({
-  value, onChange, options, size,
+  value, onChange, options, size, label,
 }: {
   value: T;
   onChange: (v: T) => void;
   options: { value: T; label: ReactNode; title?: string }[];
   size?: "sm";
+  label?: string;
 }) {
   return (
-    <div className={cx(shared.segmented, size === "sm" && shared.segSm)} role="tablist">
+    <div className={cx(shared.segmented, size === "sm" && shared.segSm)} role="group" aria-label={label}>
       {options.map((o) => (
         <button
           key={String(o.value)}
           type="button"
-          role="tab"
-          aria-selected={value === o.value}
+          aria-pressed={value === o.value}
           title={o.title}
           className={cx(shared.segBtn, value === o.value && shared.segActive)}
           onClick={() => onChange(o.value)}
@@ -103,11 +103,38 @@ export function ModelSelect({
     return models.filter((m) => `${displayName(m)} ${slug(m)} ${m?.publisher_url || ""}`.toLowerCase().includes(s));
   }, [models, q]);
 
-  const pick = (v: string) => { onChange(v); setOpen(false); setQ(""); };
+  const pick = (v: string) => {
+    onChange(v);
+    setOpen(false);
+    setQ("");
+    root.current?.querySelector<HTMLButtonElement>('[aria-haspopup="listbox"]')?.focus();
+  };
 
   return (
     <Field label={label} hint={hint}>
-      <div className={shared.picker} ref={root}>
+      <div className={shared.picker} ref={root} onKeyDown={(event) => {
+        if (event.key === "Escape" && open) {
+          event.preventDefault();
+          event.stopPropagation();
+          setOpen(false);
+          root.current?.querySelector<HTMLButtonElement>('[aria-haspopup="listbox"]')?.focus();
+          return;
+        }
+        if (event.key === "ArrowDown" && !open) {
+          event.preventDefault();
+          setOpen(true);
+          return;
+        }
+        if (!open || !["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+        if (event.target instanceof HTMLInputElement && ["Home", "End"].includes(event.key)) return;
+        const options = Array.from(root.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ?? []);
+        if (!options.length) return;
+        event.preventDefault();
+        const index = options.indexOf(document.activeElement as HTMLButtonElement);
+        const next = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 :
+          event.key === "ArrowDown" ? (index + 1) % options.length : (index - 1 + options.length) % options.length;
+        options[next].focus();
+      }}>
         <button
           type="button"
           className={cx(shared.pickerBtn, open && shared.pickerOpen)}
@@ -125,7 +152,7 @@ export function ModelSelect({
         </button>
         {open && (
           <div className={shared.pickerPop} id={listId} role="listbox">
-            <input autoFocus className={shared.pickerSearch} placeholder="Search models…" value={q} onChange={(e) => setQ(e.target.value)} />
+            <input autoFocus aria-label="Search models" className={shared.pickerSearch} placeholder="Search models…" value={q} onChange={(e) => setQ(e.target.value)} />
             <div className={shared.pickerList}>
               {defaultLabel && !q && (
                 <button type="button" role="option" aria-selected={!value} className={cx(shared.pickerItem, !value && shared.pickerSel)} onClick={() => pick("")}>

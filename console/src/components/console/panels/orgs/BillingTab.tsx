@@ -342,7 +342,7 @@ export default function BillingTab({ api, org, onChanged }: Props) {
       {actionError && (
         <Callout tone="error">
           <div className={s.cardHead}>
-            <span>{actionError}</span>
+            <span role="alert">{actionError}</span>
             <button className="text-btn" onClick={() => setActionError(null)} aria-label="Dismiss error">Dismiss</button>
           </div>
         </Callout>
@@ -525,6 +525,7 @@ export default function BillingTab({ api, org, onChanged }: Props) {
         <div className={s.cardHead}>
           <h2 id="billing-wallet" className={s.cardTitle}>Credits and spend</h2>
         </div>
+        <h3 className={s.subsectionTitle}>Credit balance</h3>
         <div className={s.stats}>
           <div className={s.stat}>
             <span className={s.statLabel}>Balance</span>
@@ -545,8 +546,9 @@ export default function BillingTab({ api, org, onChanged }: Props) {
           </div>
         </div>
 
+        <h3 className={s.subsectionTitle}>Monthly spend</h3>
         <div className={s.stat}>
-          <span className={s.statLabel}>This month&apos;s spend</span>
+            <span className={s.statLabel}>Spent this month (USD)</span>
           <span className={s.statValue}>
             {fmtUsd(billing.month_spend)} of {spendLimit == null ? "no monthly limit" : fmtUsd(spendLimit)}
           </span>
@@ -593,7 +595,7 @@ export default function BillingTab({ api, org, onChanged }: Props) {
 
         {packs.length > 0 && (
           <>
-            <h3 className={s.cardTitle}>Credit packs</h3>
+            <h3 className={s.subsectionTitle}>Add credits</h3>
             <div className={s.packs}>
               {packs.map((p) => (
                 <div key={p.id} className={s.pack}>

@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import ui from "./BucketsPanel.module.css";
 
-/** Focus-managed, scrollable dialog shared by bucket creation, browsing and settings. */
+/** Focus-managed, scrollable dialog used for bucket creation and settings. */
 export default function BucketDialog({ title, description, onClose, children, busy = false }: {
   title: string;
   description?: string;

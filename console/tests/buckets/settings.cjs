@@ -50,15 +50,15 @@ module.exports = async function settings(browser, url) {
     await row('shared').getByRole('cell', { name: 'Active Public', exact: true }).waitFor();
     await row('shared').getByRole('button', { name: 'Browse', exact: true }).click();
     await page.getByRole('button', { name: 'Copy public URL', exact: true }).waitFor();
-    await page.waitForFunction(() => !document.querySelector('button[aria-label="Close dialog"]').disabled);
+    await page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('button', { name: 'Buckets', exact: true }).waitFor();
     rows.set('shared', { ...rows.get('shared'), visibility: 'private' });
     await page.getByRole('button', { name: 'Refresh', exact: true }).evaluate(button => button.click());
     await page.getByRole('button', { name: 'Copy public URL', exact: true }).waitFor({ state: 'hidden' });
-    await page.getByRole('button', { name: 'Close dialog', exact: true }).click();
+    await page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('button', { name: 'Buckets', exact: true }).click();
     for (const name of ['new-first', 'new-second']) {
-      await page.getByRole('button', { name: '+ Create bucket', exact: true }).click();
-      await page.getByLabel('Bucket name', { exact: true }).fill(name);
       await page.getByRole('button', { name: 'Create bucket', exact: true }).click();
+      await page.getByLabel('Bucket name', { exact: true }).fill(name);
+      await page.getByRole('dialog').getByRole('button', { name: 'Create bucket', exact: true }).click();
       await page.getByRole('dialog').waitFor({ state: 'hidden' });
       await row(name).waitFor();
     }

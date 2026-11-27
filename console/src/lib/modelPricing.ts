@@ -108,10 +108,10 @@ export function formatRealtimePrice(m: any, pct = 1): string | null {
     const audioOut = num(rates.audio_out);
     const textIn = num(rates.text_in);
     const textOut = num(rates.text_out);
-    if (audioIn !== null) parts.push(`Audio in: $${fmtRate(audioIn * pct)}/M`);
-    if (audioOut !== null) parts.push(`Audio out: $${fmtRate(audioOut * pct)}/M`);
-    if (textIn !== null) parts.push(`Text in: $${fmtRate(textIn * pct)}/M`);
-    if (textOut !== null) parts.push(`Text out: $${fmtRate(textOut * pct)}/M`);
+    if (audioIn !== null) parts.push(`Audio in: $${fmtRate(audioIn * pct)}/M tokens`);
+    if (audioOut !== null) parts.push(`Audio out: $${fmtRate(audioOut * pct)}/M tokens`);
+    if (textIn !== null) parts.push(`Text in: $${fmtRate(textIn * pct)}/M tokens`);
+    if (textOut !== null) parts.push(`Text out: $${fmtRate(textOut * pct)}/M tokens`);
   }
   const seconds = num(m?.input_price_per_second);
   if (seconds !== null) parts.push(`Audio: $${fmtRate(seconds * 3600 * pct)}/hour`);
@@ -125,8 +125,8 @@ const tokenPriceParts = (p: any, pct: number): string[] => {
   const parts: string[] = [];
   const inRate = perMillionTokens(p.prompt);
   const outRate = perMillionTokens(p.completion);
-  if (inRate !== null) parts.push(`In: $${fmtRate(inRate * pct)}/M`);
-  if (outRate !== null) parts.push(`Out: $${fmtRate(outRate * pct)}/M`);
+  if (inRate !== null) parts.push(`In: $${fmtRate(inRate * pct)}/M tokens`);
+  if (outRate !== null) parts.push(`Out: $${fmtRate(outRate * pct)}/M tokens`);
   const tp = p.token_pricing || {};
   for (const [key, label] of [["text_in", "Text"], ["image_in", "Img In"], ["image_out", "Img Out"]]) {
     const rate = num(tp[key]);

@@ -48,7 +48,96 @@
 @media(max-width:850px){.legal-page .legal-hero{padding:60px 24px 36px}.legal-page .legal-layout{display:block;padding-top:24px}.legal-page .legal-nav{position:static;max-height:none;display:flex;flex-wrap:wrap;gap:0 16px;margin-bottom:28px}.legal-page .legal-nav .nav-heading{width:100%}.legal-page .legal-nav a{border-top:0;border-bottom:1px solid var(--border-light)}.legal-page .legal-contacts{grid-template-columns:1fr}}
 @media(max-width:576px){.legal-page .legal-hero{padding:50px 20px 32px}.legal-page .legal-layout{padding:22px 20px 60px}.legal-page .intro{font-size:1rem}.legal-page h1{font-size:clamp(2.15rem,9vw,3rem)}}
 @media print {.legal-page .legal-nav,ip-navbar,ip-footer{display:none!important}.legal-page .legal-layout{display:block;padding:0}.legal-page .legal-section{break-inside:avoid}.legal-page a{color:var(--ink)}}
+/* Document reading and navigation refinements. */
+.skip-to-content { position:fixed; z-index:1000; top:12px; left:12px; padding:10px 14px; transform:translateY(-160%); background:var(--surface); color:var(--text); border:2px solid var(--brand-ink); border-radius:var(--radius); }
+.skip-to-content:focus { transform:translateY(0); }
+.legal-page :focus-visible { outline:3px solid var(--brand-ink); outline-offset:3px; }
+.legal-page .legal-hero { padding-top:48px; padding-bottom:30px; }
+.legal-page .hero-inner { max-width:74ch; }
+.legal-page .legal-layout { grid-template-columns:230px minmax(0,74ch); justify-content:center; gap:36px; max-width:1240px; padding-top:32px; }
+.legal-page .legal-document { max-width:74ch; }
+.legal-page .legal-nav { top:24px; max-height:calc(100vh - 48px); }
+.legal-page .contents-links a:nth-child(4),.legal-page .contents-links a:nth-child(8),.legal-page .contents-links a:nth-child(12),.legal-page .contents-links a:nth-child(16) { margin-top:8px; padding-top:10px; border-top:1px solid var(--border); }
+.legal-page .legal-nav a[aria-current="location"] { color:var(--brand-ink); font-weight:700; background:var(--bg-alt); }
+.legal-page .legal-section, .legal-page h3[id] { scroll-margin-top:96px; }
+.legal-page .return-to-contents { display:inline-block; margin-top:12px; font-size:.8rem; font-weight:600; }
+@media(max-width:850px) {
+  .legal-page .legal-hero { padding-top:40px; padding-bottom:26px; }
+  .legal-page .legal-layout { display:block; max-width:74ch; padding-top:20px; }
+  .legal-page .legal-nav { display:block; padding:0; overflow:visible; }
+  .legal-page .contents-disclosure > summary { padding:14px 18px; cursor:pointer; font-weight:700; color:var(--text); list-style:none; }
+  .legal-page .contents-disclosure > summary::-webkit-details-marker { display:none; }
+  .legal-page .contents-disclosure > summary::after { content:"＋"; float:right; }
+  .legal-page .contents-disclosure[open] > summary::after { content:"−"; }
+  .legal-page .contents-links { padding:0 18px 14px; }
+  .legal-page .contents-links a { display:block; }
+  .legal-page .contents-links a:nth-child(4),.legal-page .contents-links a:nth-child(8),.legal-page .contents-links a:nth-child(12),.legal-page .contents-links a:nth-child(16) { margin-top:8px; padding-top:10px; border-top:1px solid var(--border); }
+}
+@media print {
+  .skip-to-content,.legal-page .legal-nav { display:none!important; }
+  .legal-page .legal-hero { padding:0 0 18px; }
+  .legal-page .legal-layout { max-width:none; padding:0; }
+  .legal-page .legal-document { max-width:none; }
+  .legal-page .legal-section { break-inside:auto; page-break-inside:auto; margin-bottom:22px; padding-bottom:16px; }
+  .legal-page h2,.legal-page h3 { break-after:avoid; page-break-after:avoid; }
+  .legal-page p,.legal-page li,.legal-page .legal-contacts div { break-inside:avoid; page-break-inside:avoid; }
+  .legal-page .return-to-contents { display:none; }
+}
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.getElementById('main-content');
+  const nav = document.querySelector('.legal-nav');
+  if (!main || !nav) return;
+  main.tabIndex = -1;
+
+  const skip = document.createElement('a');
+  skip.className = 'skip-to-content';
+  skip.href = '#main-content';
+  skip.textContent = 'Skip to policy content';
+  document.body.insertBefore(skip, document.body.firstChild);
+
+  nav.id = 'page-contents';
+  const heading = nav.querySelector('.nav-heading');
+  const links = [...nav.querySelectorAll('a[href^="#"]')];
+  const disclosure = document.createElement('details');
+  disclosure.className = 'contents-disclosure';
+  disclosure.open = !window.matchMedia('(max-width: 850px)').matches;
+  const summary = document.createElement('summary');
+  const summaryLabel = document.createElement('span');
+  summaryLabel.className = 'nav-heading';
+  summaryLabel.textContent = heading.textContent;
+  summary.append(summaryLabel);
+  const linkList = document.createElement('div');
+  linkList.className = 'contents-links';
+  links.forEach(link => linkList.append(link));
+  disclosure.append(summary, linkList);
+  nav.append(disclosure);
+
+  const sections = links.map(link => document.getElementById(decodeURIComponent(link.hash.slice(1)))).filter(Boolean);
+  const setActive = id => links.forEach(link => {
+    if (decodeURIComponent(link.hash.slice(1)) === id) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible.length) setActive(visible[0].target.id);
+    }, { rootMargin: '-12% 0px -72% 0px', threshold: 0 });
+    sections.forEach(section => observer.observe(section));
+  }
+  links.forEach(link => link.addEventListener('click', () => setActive(decodeURIComponent(link.hash.slice(1)))));
+  window.addEventListener('hashchange', () => setActive(decodeURIComponent(location.hash.slice(1))));
+
+  sections.forEach(section => {
+    const back = document.createElement('a');
+    back.className = 'return-to-contents';
+    back.href = '#page-contents';
+    back.textContent = 'Back to contents ↑';
+    section.append(back);
+  });
+});
+</script>
 <script data-goatcounter="https://ipai.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>

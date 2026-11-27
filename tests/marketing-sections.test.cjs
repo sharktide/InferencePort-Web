@@ -25,7 +25,7 @@ test("every link from the shared navbar to the homepage has a stable anchor", ()
   assert.match(home, /<main class="lp" id="main-content">/);
 });
 
-test("final API workbench offers all eight documented modalities", () => {
+test("API workbench offers all eight documented modalities", () => {
   const examples=[...home.matchAll(/<div class="lp-code-example"[^>]*data-example-panel="([^"]+)"[^>]*>[\s\S]*?<pre><code>([\s\S]*?)<\/code><\/pre>/g)];
   assert.equal(examples.length,8);
   const fields={
@@ -51,7 +51,7 @@ test("final API workbench offers all eight documented modalities", () => {
     if(model)assert.equal(body.model,model);
     assert.ok(body[field],key+" must include "+field);
   }
-  assert.ok(home.indexOf('id="quickstart"')>home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="quickstart"')<home.indexOf('id="platform-details"'));
   assert.ok(home.indexOf('id="customers"') < home.indexOf('id="products"'));
   assert.doesNotMatch(home,/class="lp-hero-demo"/);
   assert.match(home,/event\.key === "ArrowRight"/);
@@ -76,7 +76,7 @@ test("product sections link to usable next steps", () => {
 test("homepage has intentional layout variation and responsive themes", () => {
   const sectionCount = [...home.matchAll(/<section\b/g)].length;
   assert.ok(sectionCount <= 10, "Homepage has excessive sections");
-  assert.match(home, /class="lp-modality-matrix"/);
+  assert.match(home, /class="lp-directory"/);
   assert.match(home, /class="lp-product-grid"/);
   assert.match(home, /class="lp-proof-agent"/);
   assert.match(home, /class="lp-proof-pair"/);
@@ -84,7 +84,7 @@ test("homepage has intentional layout variation and responsive themes", () => {
   assert.match(home, /class="lp-workspace-layout"/);
   assert.match(home, /class="lp-org-spec"/);
   assert.match(home, /class="lp-shield-schema lp-shield-demo"/);
-  assert.equal([...home.matchAll(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)].length,4);
+  assert.equal([...home.matchAll(/class="lp-tool-entry"/g)].length,4);
   assert.doesNotMatch(home, /class="checks"|class="pgrid"|class="pc c-/);
   assert.match(home, /href="styles\/shared\.css"/);
   assert.match(home, /href="styles\/landing\.css"/);
@@ -131,7 +131,7 @@ test("every hosted model modality is prominent and opens its actual Marketplace 
     embedding: ["text-embedding-3-small"],
     decision: ["microsoft/decision-1"],
   };
-  assert.equal([...home.matchAll(/class="lp-modality-row"/g)].length, 8,
+  assert.equal([...home.matchAll(/class="lp-example-description"/g)].length, 8,
     "All eight modalities should use the same presentation");
   for (const [type, ids] of Object.entries(examples)) {
     const href = 'href="marketplace.html?modality=' + type + '"';
@@ -177,7 +177,7 @@ test("full product directory restores all twelve destinations without decorative
 test("homepage follows the 7-part hierarchy with restrained group accents", () => {
   const hero = home.indexOf('class="lp-hero"');
   const products = home.indexOf('class="lp-section lp-products" id="products"');
-  const api = home.indexOf('class="lp-section lp-models" id="api"');
+  const api = home.indexOf('class="lp-closing lp-quickstart" id="quickstart"');
   const details = home.indexOf('class="lp-section lp-stack" id="platform-details"');
   const workspace = home.indexOf('class="lp-section lp-workflow"');
   const ecosystem = home.indexOf('class="lp-section lp-more"');
@@ -194,7 +194,7 @@ test("homepage follows the 7-part hierarchy with restrained group accents", () =
   assert.match(css, /\.lp-modality-matrix \{[^}]*border-top:3px solid var\(--gold\)/);
   assert.doesNotMatch(css, /\.lp-product-card:hover \{[^}]*box-shadow/);
   assert.equal([...home.matchAll(/class="lp-product-card"/g)].length, 12);
-  assert.equal([...home.matchAll(/class="lp-modality-row"/g)].length, 8);
+  assert.equal([...home.matchAll(/class="lp-example-description"/g)].length, 8);
 });
 
 test("product category icons match their labels", () => {
@@ -330,13 +330,13 @@ test("responsive architecture keeps useful model and infrastructure controls vis
   assert.doesNotMatch(css,/\.lp-topology/);
 });
 
-test("quickstart is a dedicated final section after the marketing narrative", () => {
+test("quickstart precedes pricing and retains all example panels", () => {
   assert.match(home, /class="lp-closing lp-quickstart" id="quickstart"/);
   assert.match(home, /class="lp-code lp-quickstart-workbench"/);
   assert.match(home, /class="ip-architecture"/);
   assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
   assert.equal([...home.matchAll(/data-example-panel=/g)].length,8);
-  assert.ok(home.indexOf('id="quickstart"') > home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="quickstart"') < home.indexOf('id="pricing"'));
 });
 
 test("active paths are meaningful and context loss restores accessible fallback", () => {
@@ -379,7 +379,7 @@ test("graph rotation remains readable after extreme input and can reset", () => 
 });
 
 test("product actions are real prominent buttons and deploy links resolve to its console", () => {
-  assert.equal([...home.matchAll(/class="lp-proof-link"/g)].length,10);
+  assert.equal([...home.matchAll(/class="lp-proof-link"/g)].length,6);
   assert.match(home,/class="lp-deploy-preview-footer"[\s\S]*?<a class="lp-preview-action" href="\/console\/deploy">Deploy model/);
   assert.match(home,/href="\/console\/deploy">Browse deployments/);
   assert.match(home,/href="\/console\/deploy"><span>DEPLOYMENTS<\/span>/);
@@ -392,12 +392,12 @@ test("product actions are real prominent buttons and deploy links resolve to its
 
 test("preview accent colors and workspace padding are intentionally differentiated", () => {
   for (const name of ["lp-deploy-preview-status","lp-bucket-preview-symbol","lp-shield-indicator",
-    "lp-council-indicator","lp-lightning-workspace","lp-desktop-window"]) {
+    "lp-council-toolname","lp-lightning-workspace","lp-desktop-window"]) {
     assert.ok(home.includes(name),"Missing purposeful preview element "+name);
   }
   for (const selector of [".lp-deploy-preview {",".lp-bucket-visual {",".lp-proof-interface {",
-    ".lp-council-visual {","#cli .lp-ecosystem-visual {","#lightning .lp-ecosystem-visual {",
-    "#app .lp-ecosystem-visual {"]) {
+    ".lp-council-visual {","#lp-tool-preview-cli {","#lp-tool-preview-lightning {",
+    "#lp-tool-preview-app {"]) {
     assert.ok(css.includes(selector),"Missing preview styling "+selector);
   }
   assert.match(css,/\.lp-workspace-layout > \.lp-workspace-console,[\s\S]*?padding:clamp\(32px,4vw,64px\)!important/);
@@ -405,17 +405,17 @@ test("preview accent colors and workspace padding are intentionally differentiat
 });
 
 test("featured infrastructure and developer ecosystem have readable dedicated spotlights", () => {
-  assert.equal([...home.matchAll(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)].length,4);
+  assert.equal([...home.matchAll(/class="lp-tool-entry"/g)].length,4);
   for(const id of ["council","cli","lightning","app"]) {
-    assert.match(home,new RegExp('<article class="lp-ecosystem-spotlight[^"]*" id="'+id+'"'));
+    assert.match(home,new RegExp('<article class="lp-tool-entry" id="'+id+'"'));
   }
   assert.doesNotMatch(home,/class="lp-builder-grid"|class="lp-experience-links"/);
   assert.match(home,/class="lp-deploy-preview" aria-label="Illustrative deployment setup controls"/);
   assert.match(home,/class="lp-bucket-visual"/);
   assert.match(css,/\.lp-proof-pair \{display:flex;flex-direction:column;/);
-  assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?grid-template-columns:/);
-  assert.match(css,/\.lp-ecosystem-spotlight--reverse \.lp-ecosystem-copy/);
-  assert.match(css,/@media \(max-width:900px\) \{[\s\S]*?\.lp-ecosystem-spotlight \{grid-template-columns:1fr;/);
+  assert.match(css,/\.lp-tools-workspace \{[^}]*grid-template-columns:/);
+  assert.match(css,/\.lp-tools-previews \[hidden\]/);
+  assert.match(css,/@media\(max-width:900px\)[^\n]*\.lp-tools-workspace \{ grid-template-columns:1fr;/);
 });
 
 test("unnecessary all-caps section kickers have been removed", () => {
@@ -425,7 +425,7 @@ test("unnecessary all-caps section kickers have been removed", () => {
 
 
 test("product spotlights restore main-site capability depth without a wall of cards", () => {
-  const details = ["agents","deploy","buckets","shield","council","cli","lightning","app"];
+  const details = ["agents","deploy","buckets","shield"];
   assert.doesNotMatch(home.slice(home.indexOf('class="lp-hero-grid"'),home.indexOf('id="customers"')),/class="lp-feature-points"/);
   for(const id of details) {
     const at=home.indexOf('id="'+id+'"');
@@ -472,7 +472,7 @@ test("restored detail keeps working CTAs, API tabs and semantic structure", () =
   assert.match(home,/href="install.html#install">Download the desktop app/);
   assert.match(home,/href="\/console\/agents">Configure an agent/);
   assert.equal((home.match(/data-example-tab=/g)||[]).length,8);
-  assert.equal((home.match(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)||[]).length,4);
+  assert.equal((home.match(/class="lp-tool-entry"/g)||[]).length,4);
 });
 
 
@@ -490,9 +490,9 @@ test("Shield retains original protection scope and shows a concrete example resp
 });
 
 test("Lightning is clearly a browser chat product separate from the API", () => {
-  const light=home.slice(home.indexOf('id="lightning"'),home.indexOf('</article>',home.indexOf('id="lightning"')));
-  assert.match(light,/Lightning: chat and create in your browser/);
-  assert.match(light,/not the hosted model API/);
+  const light=home.slice(home.indexOf('id="lightning"'),home.indexOf('id="app"')) + home.slice(home.indexOf('id="lp-tool-preview-lightning"'),home.indexOf('id="lp-tool-preview-app"'));
+  assert.match(light,/Chat in your browser/);
+  assert.match(light,/for programmatic requests and usage-based billing/i);
   assert.match(light,/href="#api">Pay-to-Go model API/);
   assert.match(light,/href="chat\/">Try Lightning chat/);
   assert.match(light,/class="lp-lightning-workspace"/);
@@ -506,8 +506,8 @@ test("technical demos present meaningful workflows without fake live claims or r
     "lp-lightning-compose","Actual app screenshot"]) {
     assert.ok(home.includes(term),"Missing purposeful product preview: "+term);
   }
-  assert.match(css,/#council \.lp-ecosystem-visual,/);
-  assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?padding:clamp\(55px,6\.2vw,88px\) 0;/);
+  assert.match(css,/\.lp-tools-previews \.lp-ecosystem-visual/);
+  assert.match(css,/\.lp-tool-entry \{[^}]*border-bottom:/);
   assert.match(css,/\.lp-desktop-visual \.lp-desktop-window img \{[\s\S]*?max-height:none/);
 });
 
@@ -650,4 +650,39 @@ test("six recognizable marks are grouped as customers and startup-program member
   assert.deepEqual([...footerProgramRow.matchAll(/aria-label="([^"]+ for Startups)"/g)].map(m=>m[1]),["E2B for Startups","OpenRouter for Startups","Microsoft for Startups"]);
 
   assert.match(read("styles/shared.css"),/\.ipf-startup-list > a:focus-visible/);
+});
+
+
+test("workflow comparison shows six concrete layers and honest integration boundaries", () => {
+  const comparison = home.match(/<section class="lp-integration-compare"[\s\S]*?<\/section>/)?.[0] || "";
+  assert.ok(comparison.includes("Amazon Bedrock Guardrails"));
+  assert.ok(comparison.includes("OpenRouter"));
+  assert.ok(comparison.includes("Azure Blob Storage"));
+  assert.ok(comparison.includes("POST /ai-shield/scan"));
+  assert.ok(comparison.includes("POST /v1/chat/completions"));
+  assert.ok(comparison.includes("InferencePort Buckets"));
+  assert.equal((comparison.match(/<li>/g) || []).length, 12);
+  assert.match(comparison, /Your backend still controls the sequence/);
+  const council = home.slice(home.indexOf('id="lp-tool-preview-council"'), home.indexOf('id="lp-tool-preview-cli"'));
+  assert.doesNotMatch(council, /Model [ABC]<\/span>|lp-council-indicator|lp-council-command/);
+  for (const id of ["deepseek-v4.1-flash-1017", "claude-sonnet-5", "beam-1.0-501b-a23b"]) assert.ok(council.includes(id));
+  assert.match(council, /Not live output/);
+});
+
+
+test("deployment and storage previews use documented request paths and fields", () => {
+  for (const field of ["GET /v1/deploy/models", "GET /v1/deploy/model-status/{model_id}", "POST /v1/deploy", "display_model_id", "/{owner_id}/s3"]) assert.ok(home.includes(field), field);
+  assert.match(home, /git diff \| ipx shield scan --task dlp --fail-on review/);
+});
+
+
+test("catalog is a live list-price preview and request examples are optional", () => {
+  assert.match(home, /data-home-models/);
+  assert.match(home, /<details class="lp-api-examples" id="api-examples">/);
+  const js=read("scripts/home-product-preview.js");
+  assert.match(js, /https:\/\/api\.inferenceport\.ai\/v1\/models/);
+  assert.match(js, /data-tool-select/);
+  assert.match(css, /:root\[data-theme="dark"\] \.lp-quickstart \.lp-button-clear/);
+  assert.equal([...home.matchAll(/data-tool-select=/g)].length,4);
+  assert.equal([...home.matchAll(/data-tool-preview=/g)].length,4);
 });

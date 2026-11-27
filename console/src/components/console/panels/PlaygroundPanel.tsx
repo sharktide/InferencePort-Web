@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ComponentType } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react";
 import dynamic from "next/dynamic";
 import Icon, { type IconName } from "../../Icon";
 import panel from "./Panel.module.css";
@@ -9,6 +9,7 @@ import shared from "../playground/Playground.module.css";
 import { Segmented, cx } from "../playground/ui";
 import type { ApiPrefix, StudioProps } from "../playground/types";
 import ContextChip from "../ContextChip";
+import { slug } from "../playground/models";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
 
@@ -72,8 +73,34 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
   const [mode, setMode] = useState<Mode>("text");
   const [source, setSource] = useState<"p2g" | "gen">("p2g");
   const [visited, setVisited] = useState<Mode[]>(["text"]);
-  const [models, setModels] = useState<any[]>([]);
+  const [loadedModels, setLoadedModels] = useState<any[]>([]);
+  const [modelsOwner, setModelsOwner] = useState("");
+  const modelOwner = [apiBase, session?.access_token ?? "", source].join(":");
+  const models = useMemo(() => modelsOwner === modelOwner ? loadedModels : [], [modelsOwner, modelOwner, loadedModels]);
+  const modelRequest = useRef<AbortController | null>(null);
   const [modelsState, setModelsState] = useState<"loading" | "ready" | "error">("loading");
+  const [initialModel, setInitialModel] = useState<string | undefined>();
+
+  const applyLaunch = useCallback((candidate: unknown) => {
+    if (!candidate || typeof candidate !== "object") return;
+    const launch = candidate as { source?: unknown; mode?: unknown; modelId?: unknown };
+    if ((launch.source !== "p2g" && launch.source !== "gen") ||
+        typeof launch.mode !== "string" || !ALL_MODES.includes(launch.mode as Mode)) return;
+    const nextMode = launch.mode as Mode;
+    if (launch.source === "gen" && P2G_ONLY.includes(nextMode)) return;
+    const modelId = typeof launch.modelId === "string" ? launch.modelId.trim() : "";
+
+    setSource(launch.source);
+    setMode(nextMode);
+    setVisited((v) => v.includes(nextMode) ? v : [...v, nextMode]);
+    setInitialModel(modelId || undefined);
+    try {
+      localStorage.setItem("playground-source", launch.source);
+      localStorage.setItem("playground-mode", nextMode);
+    } catch { /* preferences are optional */ }
+  }, []);
+  const applyLaunchRef = useRef(applyLaunch);
+  useEffect(() => { applyLaunchRef.current = applyLaunch; }, [applyLaunch]);
 
   /* Restore the last-used source and mode after hydration (localStorage is client-only) */
   useEffect(() => {
@@ -82,26 +109,62 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
     setSource(s);
     setMode(s === "gen" && P2G_ONLY.includes(m) ? "text" : m);
     setVisited([m]);
+    try {
+      const raw = sessionStorage.getItem("console-playground-launch");
+      if (raw) {
+        sessionStorage.removeItem("console-playground-launch");
+        applyLaunchRef.current(JSON.parse(raw));
+      }
+    } catch { /* malformed or unavailable session storage */ }
   }, []);
+
+  useEffect(() => {
+    const onLaunch = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (detail && typeof detail === "object") {
+        try { sessionStorage.removeItem("console-playground-launch"); } catch { /* storage is optional */ }
+        applyLaunch(detail);
+      }
+      else {
+        try {
+          const raw = sessionStorage.getItem("console-playground-launch");
+          if (raw) { sessionStorage.removeItem("console-playground-launch"); applyLaunch(JSON.parse(raw)); }
+        } catch { /* ignore invalid handoff */ }
+      }
+    };
+    window.addEventListener("console-playground-launch", onLaunch);
+    return () => window.removeEventListener("console-playground-launch", onLaunch);
+  }, [applyLaunch]);
 
   const apiPrefix: ApiPrefix = source === "p2g" ? "/v1" : "/gen";
 
   const loadModels = useCallback(async () => {
+    modelRequest.current?.abort();
+    const controller = new AbortController();
+    modelRequest.current = controller;
     setModelsState("loading");
     try {
       const headers: Record<string, string> = {};
       if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
-      const r = await fetch(`${apiBase}/v1/models`, { headers });
+      const r = await fetch(`${apiBase}/${source === "gen" ? "gen" : "v1"}/models`, { headers, signal: controller.signal });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error("models");
-      setModels((Array.isArray(d.data) ? d.data : []).filter((m: any) => m.is_ready !== false));
+      if (controller.signal.aborted) return;
+      setLoadedModels((Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []).filter((m: any) => m.is_ready !== false));
+      setModelsOwner(modelOwner);
       setModelsState("ready");
     } catch {
+      if (controller.signal.aborted) return;
       setModelsState("error");
     }
-  }, [apiBase, session?.access_token]);
+  }, [apiBase, session?.access_token, source, modelOwner]);
 
-  useEffect(() => { loadModels(); }, [loadModels]);
+  useEffect(() => { void loadModels(); return () => modelRequest.current?.abort(); }, [loadModels]);
+  useEffect(() => {
+    if (modelsOwner === modelOwner && modelsState === "ready" && initialModel && !models.some((m) => slug(m) === initialModel || m?.id === initialModel || m?.name === initialModel)) {
+      setInitialModel(undefined);
+    }
+  }, [modelsOwner, modelOwner, modelsState, models, initialModel]);
 
   const choose = (next: Mode) => {
     setMode(next);
@@ -110,6 +173,7 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
   };
 
   const chooseSource = (next: "p2g" | "gen") => {
+    setInitialModel(undefined);
     setSource(next);
     try { localStorage.setItem("playground-source", next); } catch { /* ignore */ }
     if (next === "gen" && P2G_ONLY.includes(mode)) choose("text");
@@ -117,8 +181,8 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
 
   const active = MODES.find((m) => m.id === mode)!;
   const studioProps: StudioProps = useMemo(
-    () => ({ session, apiBase, apiPrefix, models, theme }),
-    [session, apiBase, apiPrefix, models, theme],
+    () => ({ session, apiBase, apiPrefix, models, theme, initialModel }),
+    [session, apiBase, apiPrefix, models, theme, initialModel],
   );
 
   if (!session) {
@@ -138,14 +202,16 @@ export default function PlaygroundPanel({ session, apiBase, theme = "light" }: P
           </h1>
           <p className={styles.sub}>{active.blurb}</p>
         </div>
-        <ContextChip />
+        <ContextChip personal={source === "gen" || mode === "decision"} />
         <div className={styles.sourceWrap}>
+          <span className={styles.sourceLabel}>Billing source</span>
           <Segmented
+            label="Billing source"
             value={source}
             onChange={chooseSource}
             options={[
-              { value: "p2g", label: "P2G API", title: "Pay-to-go credits, all modalities" },
-              { value: "gen", label: "Gen API", title: "Subscription API: text, image and music" },
+              { value: "p2g", label: "P2G · Credits", title: "Pay as you go using credits; supports all listed modalities" },
+              { value: "gen", label: "Gen · Subscription", title: "Subscription usage for text, image and music" },
             ]}
           />
         </div>

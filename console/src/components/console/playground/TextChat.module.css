@@ -71,7 +71,7 @@
 .plain {
   padding: 0.55rem 0.9rem;
   background: var(--surface-2);
-  border-radius: 16px 16px 4px 16px;
+  border-radius: var(--r-0);
   color: var(--text);
   font-size: 0.9rem;
   line-height: 1.55;
@@ -293,7 +293,7 @@
   color: var(--text-2);
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--r-0);
   cursor: pointer;
   animation: msgIn var(--d-move) var(--ease-out) both;
   transition: border-color var(--d-fast), color var(--d-fast), background var(--d-fast);
@@ -313,7 +313,7 @@
   padding: 0.5rem 1.25rem 1rem;
   transition: background var(--d-fast);
 }
-.composerDrag { background: var(--brand-dim); border-radius: var(--r-2); }
+.composerDrag { background: var(--brand-dim); border-radius: var(--r-0); }
 .errorRow { display: flex; flex-direction: column; align-items: flex-start; gap: 0.4rem; }
 .errorRow > * { width: 100%; }
 .errorRow > button { width: auto; }
@@ -333,8 +333,8 @@
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 999px;
-  box-shadow: var(--shadow);
+  border-radius: var(--r-0);
+  box-shadow: none;
   cursor: pointer;
   animation: msgIn var(--d-fast) var(--ease-out) both;
   transition: background var(--d-fast);
@@ -369,14 +369,15 @@
 }
 .thumbX:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 
-/* One rounded field: attach, input and send all live inside it. */
+/* Keep the composer aligned with the shared field controls. */
 .inputRow {
   display: flex;
   align-items: flex-end;
   gap: 0.25rem;
   padding: 0.35rem 0.35rem 0.35rem 0.4rem;
-  background: var(--surface-2);
-  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-0);
   transition: box-shadow var(--d-fast), background var(--d-fast);
 }
 .inputRow:focus-within { box-shadow: 0 0 0 2px var(--brand-dim); }
@@ -401,14 +402,14 @@
   height: 34px;
   min-height: 0;
   padding: 0;
-  color: var(--accent-ink);
-  background: var(--accent);
+  color: var(--primary-ink);
+  background: var(--primary);
   border: none;
   border-radius: 50%;
   cursor: pointer;
   transition: background var(--d-fast), transform var(--d-fast) var(--ease-spring), opacity var(--d-fast);
 }
-.sendBtn:hover:not(:disabled) { background: var(--accent-hover); }
+.sendBtn:hover:not(:disabled) { background: var(--primary-hover); }
 .sendBtn:active:not(:disabled) { transform: scale(0.94); }
 .sendBtn:disabled { opacity: 0.3; cursor: not-allowed; }
 .sendBtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

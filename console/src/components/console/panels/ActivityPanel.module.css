@@ -3,7 +3,7 @@
 .statCard {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-2);
   padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
@@ -36,7 +36,7 @@
 .modelCard {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--r-2);
   padding: 1rem 1.15rem;
   display: flex;
   flex-direction: column;
@@ -179,7 +179,7 @@
   font-size: 0.88rem;
   background: var(--surface-2);
   border: 1.5px dashed var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-2);
   padding: 1.5rem;
 }
 
@@ -206,7 +206,7 @@
   gap: 0.35rem;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r-2);
   padding: 4px;
   width: fit-content;
   margin-bottom: 1rem;
@@ -230,6 +230,12 @@
   font-weight: 600;
 }
 .timeBtn:hover:not(.timeBtnActive) { color: var(--text); }
+.errorState { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; padding: .8rem 1rem; border: 1px solid var(--danger-border, var(--border)); border-radius: var(--r-1); color: var(--text-2); font-size: .84rem; }
+.errorState button { min-height: 34px; padding: 0 .8rem; border: 1px solid var(--border); border-radius: var(--r-0); background: var(--surface); color: var(--text); cursor: pointer; }
+.statCard, .modelCard, .tableHeader, .tableRow, .emptyState, .timeFilter { border-radius: var(--r-1); }
+.timeFilter { margin-bottom: 1rem; }
+.sectionLabel { color: var(--text-2); font-size: .76rem; text-transform: uppercase; letter-spacing: .06em; }
+.sectionLabel::before { display: none; }
 
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(6px); }

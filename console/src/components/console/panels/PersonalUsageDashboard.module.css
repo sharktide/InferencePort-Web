@@ -26,3 +26,11 @@
 .error { border-style: solid; color: var(--crit); }
 @media (max-width: 620px) { .controls label, .controls > button { flex: 1 1 100%; } .summary { grid-template-columns: repeat(2,minmax(0,1fr)); } .segmented { flex-wrap: wrap; } }
 @media (max-width: 390px) { .summary { grid-template-columns: 1fr; } }
+.layout { gap: 1.1rem; }
+.header { padding-bottom: .8rem; border-bottom: 1px solid var(--border); }
+.header h3 { font-size: 1.2rem; letter-spacing: -.025em; }
+.controls { padding: .8rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); }
+.summary > div { border-radius: var(--r-1); background: var(--surface); }
+.note { border-radius: 0 var(--r-0) var(--r-0) 0; }
+.segmented { max-width: 100%; flex-wrap: wrap; }
+.tableWrap { border-radius: var(--r-1); }

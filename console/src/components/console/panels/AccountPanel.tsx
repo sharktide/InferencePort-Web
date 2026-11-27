@@ -384,7 +384,7 @@ export default function AccountPanel({ config, session, supabase }: AccountPanel
         </div>
       </section>
 
-      <section className={`${styles.card} ${accountStyles.dangerSection}`}>
+        <section className={`${styles.card} ${accountStyles.dangerSection}`}>
         <div className={styles.heading}>Danger Zone</div>
         <div className={accountStyles.dangerContent}>
           <div className={accountStyles.dangerInfo}>
@@ -396,7 +396,7 @@ export default function AccountPanel({ config, session, supabase }: AccountPanel
       </section>
 
       {notices.length > 0 && (
-        <section className={`${styles.card} ${styles.wide}`}>
+        <section className={`${styles.card} ${styles.wide} ${accountStyles.notificationsSection}`}>
           <div className={styles.heading}>Notifications</div>
           <div className={styles.stack}>
             {notices.map((n: any, i: number) => <article key={i} className={accountStyles.notice}><strong className={accountStyles.noticeLevel}>{(n.level || "info").toUpperCase()}</strong><p className={accountStyles.noticeMessage}>{n.message}</p></article>)}

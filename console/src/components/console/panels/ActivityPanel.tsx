@@ -53,6 +53,7 @@ function isWithinPeriod(iso: string | undefined, period: string) {
 export default function ActivityPanel({ session, apiBase }: Props) {
   const [entries, setEntries] = useState<LedgerEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [period, setPeriod] = useState<"24h" | "7d" | "30d" | "all">("all");
 
   const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
@@ -66,10 +67,11 @@ export default function ActivityPanel({ session, apiBase }: Props) {
   const load = useCallback(async () => {
     if (!session?.access_token) return;
     setLoading(true);
+    setLoadError("");
     try {
       const data = await fj("/v1/credits/ledger/models?limit=500", { headers: authH() });
       setEntries(data.entries || []);
-    } catch { /* ignore */ }
+    } catch (error) { setLoadError(error instanceof Error ? error.message : "Unable to load activity."); }
     setLoading(false);
   }, [session, apiBase]);
 
@@ -143,6 +145,8 @@ export default function ActivityPanel({ session, apiBase }: Props) {
         </div>
       </div>
 
+      {loadError && <div className={s.errorState} role="alert">Could not load activity: {loadError}<button type="button" onClick={load}>Retry</button></div>}
+
       {modelStats.length > 0 && (
         <>
           <div className={s.sectionLabel}>Model breakdown</div>
@@ -180,7 +184,7 @@ export default function ActivityPanel({ session, apiBase }: Props) {
       <div className={s.sectionLabel} style={{ marginTop: "1.5rem" }}>Recent activity</div>
       {loading ? (
         <div className={s.emptyState}>Loading activity...</div>
-      ) : filtered.length === 0 ? (
+      ) : loadError ? null : filtered.length === 0 ? (
         <div className={s.emptyState}>No model activity yet.</div>
       ) : (
         <div className={s.activityTable}>

@@ -293,11 +293,11 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
           {org && " Deployments are shared with the whole organization and billed to the organization wallet (paid credits only)."}
         </p>
         {org && !canManage && (
-          <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "4px" }}>
+          <p className={`${styles.muted} ${styles.tiny} ${deployStyles.inlineNote}`}>
             Only organization owners and admins can deploy or change deployments. You can use the deployed models below.
           </p>
         )}
-        <p className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "4px" }}>
+        <p className={`${styles.muted} ${styles.tiny} ${deployStyles.inlineNote}`}>
           Disclaimer: If a deployed model is removed from Featherless, the deployment will be cancelled without refund of the monthly fee.
         </p>
       </section>
@@ -364,16 +364,10 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                           <div className={deployStyles.deploymentModel}>
                             {d.featherless_model_id}
                             {d.status === "cancelled_pending" && (
-                              <span className={deployStyles.statusBadge} style={{ marginLeft: "8px", fontSize: "11px" }}>Canceling</span>
+                              <span className={`${deployStyles.statusBadge} ${deployStyles.cancelingBadge}`}>Canceling</span>
                             )}
                             {d.status === "active" && d.model_state && d.model_state !== "unknown" && (
-                              <span className={deployStyles.statusBadge} style={{
-                                marginLeft: "8px",
-                                fontSize: "11px",
-                                color: d.model_state === "warm" ? "#22c55e" : d.model_state === "loading" ? "#f59e0b" : "#ef4444",
-                                background: d.model_state === "warm" ? "rgba(34,197,94,0.12)" : d.model_state === "loading" ? "rgba(245,158,11,0.12)" : "rgba(239,68,68,0.12)",
-                                borderColor: d.model_state === "warm" ? "rgba(34,197,94,0.3)" : d.model_state === "loading" ? "rgba(245,158,11,0.3)" : "rgba(239,68,68,0.3)",
-                              }}>
+                              <span className={`${deployStyles.statusBadge} ${deployStyles[`state${d.model_state[0].toUpperCase()}${d.model_state.slice(1)}`] || ""}`}>
                                 {d.model_state === "warm" ? "Warm" : d.model_state === "loading" ? "Initializing" : "Cold"}
                               </span>
                             )}
@@ -395,18 +389,18 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                         {d.status === "cancelled_pending" && (
                           <>
                             {canManage && (
-                              <button className={deployStyles.cancelBtn} onClick={() => handleUncancel(d.id)} style={{ background: "var(--accent)", color: "#fff", borderColor: "var(--accent)" }}>
+                              <button className={`${deployStyles.cancelBtn} ${deployStyles.secondaryBtn}`} onClick={() => handleUncancel(d.id)}>
                                 Restore
                               </button>
                             )}
-                            <span className={styles.muted} style={{ fontSize: "12px", alignSelf: "center" }}>
+                            <span className={`${styles.muted} ${deployStyles.inlineMeta}`}>
                               Active until {d.billing_cycle_end ? new Date(d.billing_cycle_end).toLocaleDateString() : "None"}
                             </span>
                           </>
                         )}
                       </div>
                     </div>
-                    <div className={styles.statGrid} style={{ marginTop: "12px" }}>
+                    <div className={`${styles.statGrid} ${deployStyles.statGridSpaced}`}>
                       <div className={styles.statArticle}>
                         <div className={styles.statLabel}>Monthly Fee</div>
                         <div className={styles.statValue}>${d.monthly_fee?.toFixed(2)}</div>
@@ -426,7 +420,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                         <div className={styles.statValue}>${d.pricing_completion_per_million?.toFixed(2)}</div>
                       </div>
                     </div>
-                    <div className={`${styles.muted} ${styles.tiny}`} style={{ marginTop: "8px" }}>
+                    <div className={`${styles.muted} ${styles.tiny} ${deployStyles.callHint}`}>
                       Call with: <code>{d.display_model_id}</code> via /v1/chat/completions
                     </div>
                   </div>
@@ -453,7 +447,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                         </div>
                       </div>
                     </div>
-                    <div className={styles.statGrid} style={{ marginTop: "8px" }}>
+                    <div className={`${styles.statGrid} ${deployStyles.statGridCompact}`}>
                       <div className={styles.statArticle}>
                         <div className={styles.statLabel}>Created</div>
                         <div className={styles.statValue}>
@@ -477,19 +471,16 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
 
       {tab === "browse" && (
         <section className={`${styles.card} ${styles.wide}`}>
-          <div className={styles.heading}>Featherless Model Catalog</div>
+          <div className={styles.heading}>Find a model to deploy</div>
+          <p className={`${styles.muted} ${deployStyles.catalogNote}`}>Browse available models here. Running deployments and their status, pricing and controls are listed in Deployments.</p>
           <input
             type="text"
             placeholder="Search models (e.g. llama, qwen, deepseek)..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            style={{
-              width: "100%", padding: "10px 14px", border: "1px solid var(--border)",
-              borderRadius: "8px", background: "var(--surface)", color: "var(--text)",
-              fontSize: "14px", fontFamily: "var(--mono)", marginBottom: "12px",
-            }}
+            className={deployStyles.searchInput}
           />
-          <div className={styles.muted} style={{ marginBottom: "12px", fontSize: "12px" }}>
+          <div className={`${styles.muted} ${deployStyles.searchMeta}`}>
             {searching ? "Searching..." : `${searchTotal.toLocaleString()} models found`}
             {searchTotalPages > 1 && `, page ${searchPage} of ${searchTotalPages}`}
           </div>
@@ -510,7 +501,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
                           <img src={featherlessLogoUrl(theme)} alt="" className={deployStyles.providerLogoSmall} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                           <div className={deployStyles.modelId}>{m.featherless_model_id}</div>
                         </div>
-                        <div className={styles.muted} style={{ fontSize: "12px" }}>
+                        <div className={`${styles.muted} ${deployStyles.modelRate}`}>
                           Context: {m.context_length?.toLocaleString()} | Our rate: ${m.our_pricing_per_million?.input?.toFixed(2)} in / ${m.our_pricing_per_million?.output?.toFixed(2)} out per M tokens | Fee: ${m.deployment_fee_monthly}/mo
                         </div>
                     </div>
@@ -528,7 +519,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
           )}
 
           {searchTotalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "16px" }}>
+            <div className={deployStyles.pagination}>
               <button
                 className={deployStyles.pageBtn}
                 disabled={searchPage <= 1}
@@ -536,7 +527,7 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
               >
                 Previous
               </button>
-              <span className={styles.muted} style={{ alignSelf: "center", fontSize: "13px" }}>
+              <span className={`${styles.muted} ${deployStyles.paginationLabel}`}>
                 Page {searchPage} / {searchTotalPages}
               </span>
               <button
@@ -553,28 +544,24 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
 
       {confirmDeploy && (
         <div className={deployStyles.provisionOverlay}>
-          <div className={deployStyles.provisionModal} style={{ maxWidth: "440px" }}>
-            <div style={{ fontSize: "16px", fontWeight: 600, marginBottom: "16px", color: "var(--text)" }}>
+          <div className={deployStyles.provisionModal}>
+            <div className={deployStyles.confirmTitle}>
               Deploy Model
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-              <img src={INFERPORT_LOGO} alt="" style={{ width: 28, height: 28, borderRadius: 6 }} />
-              <img src={featherlessLogoUrl(theme)} alt="" style={{ width: 28, height: 28, borderRadius: 6 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-              <div style={{ fontFamily: "var(--mono)", fontSize: "14px", fontWeight: 500 }}>{confirmDeploy.featherless_model_id}</div>
+            <div className={deployStyles.confirmModel}>
+              <img src={INFERPORT_LOGO} alt="" />
+              <img src={featherlessLogoUrl(theme)} alt="" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              <div className={deployStyles.confirmModelName}>{confirmDeploy.featherless_model_id}</div>
             </div>
 
-            <div style={{ background: "var(--surface-2)", border: "1px solid var(--border)", borderRadius: "8px", padding: "12px 14px", marginBottom: "14px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
-                <span style={{ fontSize: "12px", color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Model State</span>
-                <span style={{
-                  fontSize: "12px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px",
-                  color: confirmModelState === "warm" ? "#22c55e" : confirmModelState === "loading" ? "#f59e0b" : confirmModelState === "cold" ? "#ef4444" : "var(--muted)",
-                  background: confirmModelState === "warm" ? "rgba(34,197,94,0.12)" : confirmModelState === "loading" ? "rgba(245,158,11,0.12)" : confirmModelState === "cold" ? "rgba(239,68,68,0.12)" : "var(--surface)",
-                }}>
+            <div className={deployStyles.confirmState}>
+              <div className={deployStyles.confirmStateRow}>
+                <span className={deployStyles.confirmStateLabel}>Model state</span>
+                <span className={`${deployStyles.statusBadge} ${deployStyles[`state${confirmModelState[0]?.toUpperCase()}${confirmModelState.slice(1)}`] || ""}`}>
                   {confirmModelState === "warm" ? "Warm (Ready)" : confirmModelState === "loading" ? "Initializing" : confirmModelState === "cold" ? "Cold (Not Loaded)" : "Checking..."}
                 </span>
               </div>
-              <div style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.5 }}>
+              <div className={deployStyles.confirmCopy}>
                 {confirmModelState === "warm" && "This model is already loaded and ready for inference. Requests will complete immediately."}
                 {confirmModelState === "loading" && "This model is currently being provisioned. It may take 5-15 minutes to become ready."}
                 {confirmModelState === "cold" && "This model is not yet loaded. The first request will trigger loading, which can take 5-15 minutes."}
@@ -582,13 +569,13 @@ export default function DeployPanel({ session, apiBase, config, theme = "light" 
               </div>
             </div>
 
-            <div style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.5, marginBottom: "18px" }}>
-              A <strong style={{ color: "var(--text)" }}>${DEPLOYMENT_FEE}/mo</strong> deployment fee will be charged immediately to {ownerLabel}{org ? "'s wallet" : ""}. Usage is billed at Featherless rates + $0.05/M token markup. You can cancel anytime. Access continues until the end of the billing cycle.
+            <div className={deployStyles.confirmFee}>
+              A <strong>${DEPLOYMENT_FEE}/mo</strong> deployment fee will be charged immediately to {ownerLabel}{org ? "'s wallet" : ""}. Usage is billed at Featherless rates + $0.05/M token markup. You can cancel anytime. Access continues until the end of the billing cycle.
             </div>
 
-            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+            <div className={deployStyles.confirmActions}>
               <button
-                className={deployStyles.cancelBtn}
+                className={`${deployStyles.cancelBtn} ${deployStyles.secondaryBtn}`}
                 onClick={() => setConfirmDeploy(null)}
               >
                 Cancel

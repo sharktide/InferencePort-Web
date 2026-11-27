@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>InferencePort AI Tools</title>
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+		<link rel="canonical" href="https://inferenceport.ai/tools.html" />
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
@@ -13,54 +14,79 @@
 		<script src="components/ip-footer.js"></script>
 		<script src="scripts/animations.js"></script>
 		<style>
+			main { padding:0 16px; }
 			.hero { padding:72px 0 40px; text-align:center; }
 			.hero h1 { color:var(--text); font-weight:800; letter-spacing:-.03em; }
 			.hero p { color:var(--muted); max-width:680px; margin:12px auto 0; }
 			.search-shell { max-width:840px; margin:20px auto 0; display:grid; gap:10px; }
-			.search-row { display:grid; grid-template-columns:1fr auto; gap:10px; }
+			.search-label { display:block; text-align:left; color:var(--text); font-size:.85rem; font-weight:600; margin-bottom:6px; }
+			.search-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; }
 			.input {
 				background:var(--surface); border:1px solid var(--border); color:var(--text-body); border-radius:10px;
-				padding:11px 14px; font-size:.9rem;
+				padding:11px 14px; font-size:.9rem; width:100%;
 			}
-			.input:focus { outline:none; border-color:rgba(79,124,255,.5); box-shadow:0 0 0 3px rgba(79,124,255,.16); }
-		.btn-open {
-			background:var(--brand-dim); border:1px solid var(--brand-border); color:var(--brand);
-			border-radius:10px; padding:10px 16px; font-weight:600;
-		}
+			.input:focus-visible, button:focus-visible, a:focus-visible { outline:3px solid var(--brand); outline-offset:3px; }
+			.btn-open, .clear-search {
+				background:var(--brand-dim); border:1px solid var(--brand-border); color:var(--brand);
+				border-radius:10px; padding:10px 16px; font-weight:600;
+			}
+			.clear-search { padding:6px 10px; font-size:.82rem; }
+			.search-tools-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; }
+			.search-feedback { max-width:840px; min-height:1.5em; margin:14px auto 0; color:var(--muted); font-size:.88rem; }
+			.manual-error { color:#d1495b; font-size:.82rem; text-align:left; }
+			.manual-import { max-width:840px; margin:24px auto 0; padding-top:18px; border-top:1px solid var(--border); }
 			.tools-grid { max-width:1100px; margin:24px auto 70px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
-			.tool-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; display:grid; gap:10px; }
-			.tool-name { font-weight:700; color:var(--text); }
+			.tool-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; display:grid; align-content:start; gap:10px; min-width:0; }
+			.tool-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+			.tool-name { font-weight:700; color:var(--text); font-size:1.05rem; }
 			.tool-meta { font-size:.76rem; color:var(--muted); font-family:"JetBrains Mono",monospace; word-break:break-all; }
 			.tool-desc { font-size:.84rem; color:var(--text-body); line-height:1.55; min-height:46px; }
 			.tool-actions { display:flex; gap:8px; }
-		.tool-btn {
-			flex:1; background:var(--brand-dim); border:1px solid var(--brand-border);
-			color:var(--brand); border-radius:9px; padding:8px 10px; font-size:.82rem; font-weight:600; text-align:center; text-decoration:none;
-		}
-		.tool-btn:hover { background:rgba(79,124,255,.15); color:var(--brand-hover); }
+			.tool-btn {
+				flex:1; background:var(--brand-dim); border:1px solid var(--brand-border);
+				color:var(--brand); border-radius:9px; padding:8px 10px; font-size:.82rem; font-weight:600; text-align:center; text-decoration:none;
+			}
+			.tool-btn:hover, .btn-open:hover, .clear-search:hover { background:rgba(79,124,255,.15); color:var(--brand-hover); }
+			.copy-id { flex:none; background:transparent; color:var(--brand); border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:.75rem; }
 			.empty { max-width:840px; margin:24px auto 0; color:var(--muted); text-align:center; }
 			@media (max-width: 980px) { .tools-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-			@media (max-width: 640px) { .tools-grid { grid-template-columns:1fr; } .search-row { grid-template-columns:1fr; } }
+			@media (max-width: 640px) { .hero { padding:48px 0 28px; } .tools-grid { grid-template-columns:1fr; margin-top:18px; } .search-row, .search-tools-row { grid-template-columns:1fr; } }
 		</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 	<body>
-		<ip-navbar></ip-navbar>
+		<ip-navbar active="tools"></ip-navbar>
+		<main id="main-content">
 		<section class="hero">
 			<div class="container">
-				<h1>Tool Marketplace</h1>
-				<p>Explore available tools and open InferencePort AI with a deep link to import by tool UUID.</p>
+				<h1>Tool catalog</h1>
+				<p>Browse tools and open one in the desktop app to import it into your workspace.</p>
 				<div class="search-shell">
-					<input id="search-tools" class="input" placeholder="Search tools by name, language, UUID, or author" />
-					<div class="search-row">
-						<input id="manual-tool-id" class="input" placeholder="Paste tool UUID to open app import flow" />
-						<button id="open-manual-tool" class="btn-open" type="button">Open in App</button>
+					<label class="search-label" for="search-tools">Search tools</label>
+					<div class="search-tools-row">
+						<input id="search-tools" class="input" type="search" placeholder="Name, language, UUID, or author" />
+						<button id="clear-search" class="clear-search" type="button">Clear search</button>
 					</div>
 				</div>
 			</div>
 		</section>
-		<div id="empty" class="empty" style="display:none;">No matching tools found.</div>
-		<section id="tools-grid" class="tools-grid"></section>
+		<div id="results-status" class="search-feedback" role="status" aria-live="polite" aria-atomic="true">Loading tools…</div>
+		<div id="load-error" class="empty" role="alert" hidden>Unable to load tools. Check your connection and try again. <button id="retry-load" class="clear-search" type="button">Retry</button></div>
+		<div id="empty" class="empty" hidden>No tools are available yet.</div>
+		<div id="no-matches" class="empty" hidden>No matching tools found. Try a different search.</div>
+		<section id="tools-grid" class="tools-grid" aria-label="Available tools"></section>
+		<section class="manual-import" aria-labelledby="manual-heading">
+			<h2 id="manual-heading" class="h5">Import by UUID</h2>
+			<p class="text-muted">Have a tool UUID? Open its import page in the desktop app.</p>
+			<label class="search-label" for="manual-tool-id">Tool UUID</label>
+			<div class="search-row">
+				<input id="manual-tool-id" class="input" type="text" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" aria-describedby="manual-error" />
+				<button id="open-manual-tool" class="btn-open" type="button">Open in app</button>
+			</div>
+			<div id="manual-error" class="manual-error" aria-live="polite"></div>
+			<p><a href="install.html">Download InferencePort AI</a></p>
+		</section>
+		</main>
 
 		<ip-footer></ip-footer>
 
@@ -77,6 +103,11 @@
 			const manualInput = document.getElementById("manual-tool-id");
 			const openManualBtn = document.getElementById("open-manual-tool");
 			const emptyState = document.getElementById("empty");
+			const noMatches = document.getElementById("no-matches");
+			const status = document.getElementById("results-status");
+			const loadError = document.getElementById("load-error");
+			const manualError = document.getElementById("manual-error");
+			let loaded = false;
 
 			function deepLinkForTool(id) {
 				return `inferenceport-ai:///renderer/chat?tool=${encodeURIComponent(id)}`;
@@ -93,31 +124,34 @@
 
 			function renderTools(list) {
 				toolsGrid.innerHTML = "";
-				if (!list.length) {
-					emptyState.style.display = "block";
-					return;
-				}
-				emptyState.style.display = "none";
+				emptyState.hidden = !loaded || allTools.length > 0;
+				noMatches.hidden = !loaded || allTools.length === 0 || list.length > 0;
+				status.textContent = loaded ? `${list.length} ${list.length === 1 ? "tool" : "tools"} found` : "Loading tools…";
 				list.forEach((tool) => {
 					const card = document.createElement("article");
 					card.className = "tool-card";
 					const desc = tool.functionality || tool.openai?.description || "No description provided.";
 					const id = tool.id || "";
 					card.innerHTML = `
-						<div class="tool-name">${escapeHtml(tool.name || "Unnamed Tool")}</div>
+						<div class="tool-card-header"><div class="tool-name">${escapeHtml(tool.name || "Unnamed Tool")}</div><button class="copy-id" type="button" data-copy-id="${escapeHtml(id)}" aria-label="Copy tool UUID">Copy UUID</button></div>
 						<div class="tool-meta">${escapeHtml(id)} • ${escapeHtml((tool.language || "unknown").toUpperCase())}</div>
 						<div class="tool-meta">by ${escapeHtml(tool.authorEmail || "unknown")}</div>
 						<div class="tool-desc">${escapeHtml(desc)}</div>
 						<div class="tool-actions">
-							<a class="tool-btn" href="${deepLinkForTool(id)}">Get in App</a>
+							<a class="tool-btn" href="${deepLinkForTool(id)}">Open in app</a>
 						</div>
 					`;
 					toolsGrid.appendChild(card);
 				});
+				toolsGrid.querySelectorAll("[data-copy-id]").forEach((button) => button.addEventListener("click", async () => {
+					try { await navigator.clipboard.writeText(button.dataset.copyId); button.textContent = "Copied"; setTimeout(() => { button.textContent = "Copy UUID"; }, 1500); }
+					catch { status.textContent = "Could not copy UUID. Select and copy it from the card."; }
+				}));
 			}
 
 			function applyFilter() {
 				const q = (searchInput.value || "").trim().toLowerCase();
+				if (!loaded) return;
 				if (!q) return renderTools(allTools);
 				const filtered = allTools.filter((tool) => {
 					const bag = [
@@ -137,26 +171,47 @@
 			}
 
 			async function loadTools() {
+				loaded = false;
+				emptyState.hidden = true;
+				noMatches.hidden = true;
+				loadError.hidden = true;
+				status.textContent = "Loading tools…";
 				try {
 					const response = await fetch(REGISTRY_URL);
 					if (!response.ok) throw new Error(`HTTP ${response.status}`);
 					const payload = await response.json();
 					allTools = Array.isArray(payload.tools) ? payload.tools : [];
-					renderTools(allTools);
+					loaded = true;
+					applyFilter();
 				} catch (error) {
-					emptyState.style.display = "block";
-					emptyState.textContent = "Unable to load tools right now.";
+					loaded = false;
+					toolsGrid.innerHTML = "";
+					status.textContent = "";
+					loadError.hidden = false;
 				}
 			}
 
 			searchInput.addEventListener("input", applyFilter);
-			openManualBtn.addEventListener("click", () => {
+			document.getElementById("clear-search").addEventListener("click", () => { searchInput.value = ""; searchInput.focus(); applyFilter(); });
+			document.getElementById("retry-load").addEventListener("click", loadTools);
+			function openManualImport() {
 				const id = (manualInput.value || "").trim();
-				if (!id) return;
+				if (!id) {
+					manualError.textContent = "Enter the tool ID you want to import.";
+					manualInput.setAttribute("aria-invalid", "true");
+					manualInput.focus();
+					return;
+				}
+				manualError.textContent = "";
+				manualInput.removeAttribute("aria-invalid");
 				window.location.href = deepLinkForTool(id);
-			});
+			}
+			openManualBtn.addEventListener("click", openManualImport);
+			manualInput.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); openManualImport(); } });
+			manualInput.addEventListener("input", () => { manualError.textContent = ""; manualInput.removeAttribute("aria-invalid"); });
 
-			const hashId = decodeURIComponent((window.location.hash || "").replace(/^#/, ""));
+			let hashId = "";
+			try { hashId = decodeURIComponent((window.location.hash || "").replace(/^#/, "")); } catch { hashId = ""; }
 			if (hashId) manualInput.value = hashId;
 
 			loadTools();

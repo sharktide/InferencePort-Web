@@ -6,7 +6,7 @@
 /* Summary first: hairline-divided figures, the first one is the hero */
 .summaryRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
 
-.summaryCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem 1rem; display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.summaryCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--r-2); padding: 1.25rem 1rem; display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
 
 .summaryLabel {
   font-size: 0.8125rem;
@@ -352,3 +352,7 @@
     grid-template-columns: 1fr;
   }
 }
+.summaryCard, .chartContainer { border-radius: var(--r-1); }
+.controls { padding: .8rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); }
+.metricToggle { border-radius: var(--r-0); }
+.bar { border-radius: 2px 2px 0 0; }

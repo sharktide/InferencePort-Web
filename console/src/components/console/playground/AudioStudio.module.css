@@ -19,26 +19,26 @@
 /* Task chips: plain text, the active one gets a soft tint. */
 .chipRow { display: flex; flex-wrap: wrap; gap: 0.2rem; }
 .taskChip {
-  min-height: 0; padding: 0.3rem 0.6rem; border: none; border-radius: 999px;
+  min-height: 0; padding: 0.3rem 0.6rem; border: 1px solid transparent; border-radius: var(--r-0);
   background: transparent; color: var(--muted);
   font: 600 0.8rem var(--sans); white-space: nowrap; cursor: pointer;
   transition: color var(--d-fast), background var(--d-fast);
 }
 .taskChip:hover { color: var(--text); }
 .taskChip:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.taskChipOn { color: var(--accent); background: var(--brand-dim); }
+.taskChipOn { color: var(--primary-ink); background: var(--primary); }
 
 /* Sample prompts and voice presets */
 .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .chipBtn {
-  min-height: 0; max-width: 100%; padding: 0.25rem 0.6rem; border-radius: 999px;
-  border: none; background: var(--surface-2); color: var(--text-2);
+  min-height: 0; max-width: 100%; padding: 0.25rem 0.6rem; border-radius: var(--r-0);
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2);
   font: 600 0.72rem var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
   transition: color var(--d-fast), background var(--d-fast);
 }
 .chipBtn:hover { color: var(--text); }
 .chipBtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-.chipOn { color: var(--accent); background: var(--brand-dim); }
+.chipOn { color: var(--gold-ink); background: var(--gold-dim); border-color: var(--gold-border); }
 
 .toggle {
   display: flex; align-items: center; gap: 0.5rem;
@@ -116,10 +116,10 @@
 .playBtn {
   flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: none;
   display: grid; place-items: center; cursor: pointer;
-  background: var(--accent); color: var(--accent-ink);
+  background: var(--primary); color: var(--primary-ink);
   transition: background var(--d-fast), transform var(--d-fast) var(--ease-spring);
 }
-.playBtn:hover { background: var(--accent-hover); }
+.playBtn:hover { background: var(--primary-hover); }
 .playBtn:active { transform: scale(0.94); }
 .playBtn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .seek { flex: 1 1 160px; min-width: 0; }

@@ -33,7 +33,7 @@
 .tiny { font-size: 0.8125rem; }
 
 /* Section heads: sentence case, weight and size, never tracked caps */
-.heading { font-size: 1.125rem; font-weight: 600; letter-spacing: -0.012em; line-height: 1.3; color: var(--text); margin-bottom: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+.heading { font-size: 1.125rem; font-weight: 600; letter-spacing: -0.012em; line-height: 1.3; color: var(--text); margin-bottom: 1.1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .subheading { font-size: 0.95rem; font-weight: 600; color: var(--text); margin: 1.75rem 0 0.7rem; }
 
 .authCard { grid-column: span 5; display: flex; flex-direction: column; }
@@ -328,3 +328,21 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
   .oauthGrantCard { padding: 1rem 1.1rem; }
   .oauthModal { padding: 1.25rem !important; }
 }
+
+/* A single accessible interaction per catalog card. */
+.modelCard[role="button"] { cursor:pointer; }
+.modelCard[role="button"]:focus-visible { outline:2px solid var(--text);outline-offset:3px; }
+.modelDetailImageWrap { flex-shrink: 0; min-height: 100px; }
+.modelDetailImageWrap:has(.modelDetailImagePlaceholder) { min-height: 180px; }
+.modelDetailImage { height: auto; object-fit: contain; }
+.modelDetailImagePlaceholder { padding: 2rem; text-align: center; }
+.modelPublisherLogo { display: block; width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 6px; object-fit: contain; margin-bottom: .35rem; }
+.modelDetailContent > .modelPublisherLogo { width: 36px; height: 36px; border-radius: 8px; margin: 0; }
+.modelCard .modelValue, .modelDetailContent .modelValue { word-break: normal; overflow-wrap: anywhere; }
+.modelDetailName { min-width: 0; overflow-wrap: anywhere; }
+.modelSearch { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font-size: 14px; font-family: var(--mono); margin-bottom: 12px; }
+.modelCount { margin-bottom: 12px; font-size: 12px; }
+.modelPriceOriginal { text-decoration: line-through; opacity: .65; margin-right: .4rem; }
+.modelPriceDiscount { color: var(--danger); font-weight: 600; }
+.apiKeyPanel .apiKeyShell, .apiKeyPanel .apiKeyListHeader, .apiKeyPanel .apiKeyList { max-width: none; }
+.apiKeyPanel .apiKeyForm { width: 100%; min-width: 0; }

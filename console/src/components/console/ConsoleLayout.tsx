@@ -25,11 +25,12 @@ import AgentsPanel from "./panels/AgentsPanel";
 import BucketsPanel from "./panels/BucketsPanel";
 import McpPanel from "./panels/McpPanel";
 import OrganizationsPanel from "./panels/OrganizationsPanel";
+import OverviewPanel from "./OverviewPanel";
 import PersistentRewardsPanel from "./PersistentRewardsPanel";
 import styles from "./ConsoleLayout.module.css";
 
 /* Personal-only sections. In organization mode the org sections (and the work tabs) replace them. */
-const PERSONAL_ONLY_TABS = new Set(["billing", "rewards", "api-key", "usage", "authorized-apps"]);
+const PERSONAL_ONLY_TABS = new Set(["overview", "billing", "rewards", "api-key", "usage", "authorized-apps"]);
 const SLUG_RE = /^[a-z0-9-]{1,40}$/i;
 
 /* Invitation and organization deep links must not be overridden by the models redirect below */
@@ -49,7 +50,7 @@ function hasExplicitLanding(): boolean {
 
 /* First paint tab: query-based invitations and org links take priority over tab paths and saved tabs. */
 function initialTab(): string {
-  if (typeof window === "undefined") return "account";
+  if (typeof window === "undefined") return "overview";
   const params = new URLSearchParams(window.location.search);
   if (params.has("invite")) return "agents";
   if (params.has("org_invite")) return "organizations";
@@ -57,9 +58,9 @@ function initialTab(): string {
   const routeTab = consoleTabFromPath(window.location.pathname);
   if (routeTab) return routeTab;
   try {
-    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "account";
+    return normalizeConsoleTab(localStorage.getItem("console-active-tab")) || "overview";
   } catch {
-    return "account";
+    return "overview";
   }
 }
 
@@ -77,7 +78,7 @@ function tabAvailable(tab: string, org: OrgSummary | null): boolean {
 }
 
 function defaultTab(org: OrgSummary | null): string {
-  return org ? "org-overview" : "models";
+  return org ? "org-overview" : "overview";
 }
 
 const FALLBACK_API_BASE = "https://us-east-2.api.inferenceport.ai";
@@ -215,7 +216,7 @@ export default function ConsoleLayout() {
             if (s) {
               hadSession.current = true;
               /* Keep the tab the user was on; only land on Models on a first visit or right after signing in */
-              if ((!hadSavedTab.current || fromAuthRedirect.current) && !hasExplicitLanding()) replaceTab("models");
+              if ((!hadSavedTab.current || fromAuthRedirect.current) && !hasExplicitLanding()) replaceTab("overview");
             }
           }
           client.auth.onAuthStateChange(async (_event, s) => {
@@ -229,7 +230,7 @@ export default function ConsoleLayout() {
             }
             if (s) {
               /* Token refreshes and repeated SIGNED_IN events (e.g. returning to the browser tab) must not reset the tab */
-              if (!hadSession.current && !hasExplicitLanding()) replaceTab("models");
+              if (!hadSession.current && !hasExplicitLanding()) replaceTab("overview");
               hadSession.current = true;
             } else {
               const wasSignedIn = hadSession.current;
@@ -374,6 +375,7 @@ function ConsoleFrame({
       return <p className={styles.waiting}>Loading organization…</p>;
     }
     const panelMap: Record<string, ReactNode> = {
+      overview: <OverviewPanel session={session} apiBase={apiBase} />,
       account: <AccountPanel config={config} session={session} supabase={supabase} />,
       billing: <BillingPanel config={config} session={session} apiBase={apiBase} />,
       models: <ModelsPanel config={config} session={session} apiBase={apiBase} theme={theme} />,

@@ -1,6 +1,6 @@
 /* Invoices & receipts and billing details (V3). Cards, stats and form primitives come from billing.module.css; tables, badges and callouts from orgs.module.css. */
 
-.stack { display: grid; gap: 1.25rem; min-width: 0; }
+.stack { display: grid; gap: 1rem; min-width: 0; }
 
 .toolbar { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; justify-content: space-between; }
 .toolbarGroup { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; min-width: 0; }
@@ -36,13 +36,13 @@
 .payLink {
   padding: 0 1rem;
   border-radius: var(--r-1);
-  background: var(--accent);
+  background: var(--gold);
   color: var(--accent-ink);
   font-weight: 600;
   font-size: 0.875rem;
   text-decoration: none;
 }
-.payLink:hover { background: var(--accent-hover); color: var(--accent-ink); text-decoration: none; }
+.payLink:hover { background: var(--primary-hover); color: var(--primary-ink); text-decoration: none; }
 
 .openBox { display: grid; gap: 0.6rem; }
 .openRow { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem 0.9rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--text); }
@@ -91,6 +91,28 @@
 }
 .addressGroup legend { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); padding: 0 0.3rem; }
 .addressWide { grid-column: 1 / -1; }
+.disclosure {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-1);
+  background: var(--surface);
+}
+.disclosure[open] { background: var(--surface-2); }
+.disclosureSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  min-height: 48px;
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+  list-style-position: inside;
+  color: var(--text);
+}
+.disclosureSummary::marker { color: var(--accent); }
+.disclosureSummary > :last-child { text-align: right; }
+.disclosureBody { display: grid; gap: 0.75rem; padding: 0 0.85rem 0.85rem; }
+.addressGroup { margin-top: 0.1rem; }
 .formActions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
 
 /* Tax IDs */
@@ -111,6 +133,11 @@
 .addRow { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-end; }
 .addRow > label { flex: 1 1 180px; min-width: 0; }
 
+.actionLink:focus-visible,
+.payLink:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.rowActions button { white-space: normal; }
+.moreRow button { min-height: 44px; }
+
 @media (max-width: 640px) {
   .toolbarGroup,
   .addRow { width: 100%; }
@@ -120,4 +147,6 @@
   .addressGroup { grid-template-columns: 1fr; }
   .formActions > * { flex: 1 1 100%; }
   .taxRow > button { width: 100%; }
+  .disclosureSummary { align-items: flex-start; }
+  .disclosureSummary > :last-child { max-width: 55%; }
 }

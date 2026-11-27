@@ -12,28 +12,38 @@
   <script src="scripts/theme.js"></script>
   <script src="components/ip-navbar.js"></script>
   <script src="components/ip-footer.js"></script>
-  <style>pre{overflow:auto;padding:1.25rem;border:1px solid var(--line,#ddd);border-radius:12px;line-height:1.65} .guide{max-width:900px;padding-bottom:80px}.guide h2{margin-top:2.5rem}.guide p,.guide li{line-height:1.8}</style>
+  <style>
+    .guide{max-width:900px;padding-bottom:80px}.guide h2{margin-top:2.5rem}.guide p,.guide li{line-height:1.8}
+    .guide pre{position:relative;overflow:auto;max-height:32rem;padding:1.25rem;padding-top:3.4rem;border:1px solid var(--line,#ddd);border-radius:12px;line-height:1.55;tab-size:2}
+    .guide pre code{white-space:pre;overflow-wrap:normal}.guide .copy-code{position:absolute;top:.65rem;right:.65rem;padding:.4rem .7rem;border:1px solid var(--line,#ddd);border-radius:7px;background:var(--surface,#fff);color:inherit;font:inherit;font-size:.85rem;cursor:pointer}
+    .guide .copy-status{min-height:1.4em;font-size:.9rem}.guide .contents{display:flex;flex-wrap:wrap;gap:.5rem 1rem;padding-left:1.2rem}.guide summary{cursor:pointer;font-weight:600}.guide details{margin-top:1rem}
+  </style>
 </head>
 <body>
-  <ip-navbar active="platform"></ip-navbar>
+  <ip-navbar active="decision"></ip-navbar>
   <main>
     <section class="h-hero"><div class="wrap">
       <div class="h-kicker">P2G API guide</div>
       <h1 class="h-title">Decisions, with probabilities.</h1>
       <p class="h-lede">Classify requests, evaluate gates and score outcomes using typed questions on the unified API.</p>
-      <p><a href="console/">Open the console → Playground → Decisions</a> · <a href="marketplace.html">Browse models</a></p>
+      <p><a href="console/">Open console</a> (sign in, choose <strong>Playground → P2G API → Decisions</strong>) · <a href="marketplace.html?modality=decision">Browse decision models</a></p>
     </div></section>
     <article class="wrap guide">
-      <h2>One endpoint, configurable providers</h2>
-      <p><code>POST /v1/systemone</code> accepts a model, text or JSON state, and named questions. Microsoft Decision 1 is available through the Foundry East US integration. Discover decision models with <code>GET /v1/decision/models</code> or <code>GET /v1/models</code>.</p>
-      <p>Authenticate with your InferencePort bearer token or API key. Add <code>X-InferencePort-Org</code> to bill an organization. Decision models use P2G wallet credits and have their own modality policy.</p>
-      <h2>Ask typed questions</h2>
-      <ul>
-        <li><code>choice</code>: select a named criterion and inspect the returned probabilities.</li>
-        <li><code>noul</code>: evaluate a question as a value from zero to one.</li>
-        <li><code>score</code>: score against an ordered list of criteria.</li>
-      </ul>
-      <pre><code>{
+      <nav aria-label="On this page"><ul class="contents">
+        <li><a href="#overview">Endpoint and access</a></li><li><a href="#request">Request</a></li><li><a href="#response">Reading results</a></li><li><a href="#tools">Console and CLI</a></li><li><a href="#pricing">Pricing and billing</a></li>
+      </ul></nav>
+
+      <section id="overview" aria-labelledby="overview-title">
+        <h2 id="overview-title">One endpoint, configurable providers</h2>
+        <p><code>POST /v1/systemone</code> accepts a model, text or JSON state, and named questions. Microsoft Decision 1 is available through the Foundry East US integration. Discover decision models with <code>GET /v1/decision/models</code> or <code>GET /v1/models</code>.</p>
+        <p>Use an InferencePort bearer token or API key in the authorization header. To bill an organization, add <code>X-InferencePort-Org: your-org-slug</code>. Decision models use P2G wallet credits and follow the account’s decision-modality policy.</p>
+      </section>
+
+      <section id="request" aria-labelledby="request-title">
+        <h2 id="request-title">Send a decision request</h2>
+        <p>Set your API key in the shell, save the JSON body as <code>request.json</code>, then send it with curl. Keep the key private.</p>
+        <pre data-code-label="Shell setup"><code>export INFERENCEPORT_API_KEY="your-api-key"</code></pre>
+        <pre data-code-label="request.json"><code>{
   "model": "microsoft/decision-1",
   "state": "I was charged twice. Please refund me.",
   "questions": {
@@ -51,23 +61,77 @@
     }
   }
 }</code></pre>
-      <p>Save the request as <code>request.json</code>, then call your configured API base:</p>
-      <pre><code>curl "$INFERENCEPORT_API_BASE/v1/systemone" \
+        <pre data-code-label="curl request"><code>curl https://api.inferenceport.ai/v1/systemone \
   -H "Authorization: Bearer $INFERENCEPORT_API_KEY" \
-  -H 'Content-Type: application/json' \
+  -H "Content-Type: application/json" \
   --data-binary @request.json</code></pre>
-      <p>Results preserve the provider’s <code>answers</code> object. Read <code>usage.input_tokens</code> and <code>usage.payg_credits_charged</code> for usage and cost. Requests support up to 64 questions, 2–64 choice or score criteria, and 1 MB of serialized state/questions.</p>
-      <h2>Try it in the console or CLI</h2>
-      <p>The Decisions playground lets you select a model, edit state and question JSON, inspect choices and probabilities, and download the complete response.</p>
-      <pre><code>ipx p2g models --type decision
+        <p>For organization billing, add <code>-H "X-InferencePort-Org: your-org-slug"</code> to the curl command.</p>
+      </section>
+
+      <section id="response" aria-labelledby="response-title">
+        <h2 id="response-title">Question types and results</h2>
+        <ul>
+          <li><code>choice</code> selects among named criteria. The answer includes a <code>choice</code>; when supplied, <code>probabilities</code> gives a value for each criterion.</li>
+          <li><code>noul</code> returns a value from zero to one in <code>noul</code>, useful for a yes/no gate or graded assessment.</li>
+          <li><code>score</code> rates an ordered list of criteria. Read its <code>score</code> and any returned probabilities.</li>
+        </ul>
+        <p>Answers are returned under <code>answers</code>, keyed by your question names. The response also reports usage such as <code>usage.input_tokens</code> and <code>usage.payg_credits_charged</code>. The console displays choices, probabilities, scores and the full provider response.</p>
+      </section>
+
+      <section id="tools" aria-labelledby="tools-title">
+        <h2 id="tools-title">Try it in the console or CLI</h2>
+        <p>In the console, sign in, open <strong>Playground</strong>, select <strong>P2G API</strong>, then choose <strong>Decisions</strong>. Enter state and question JSON, evaluate, and download the full response.</p>
+        <p>CLI examples:</p>
+        <pre data-code-label="ipx CLI"><code>ipx p2g models --type decision
 ipx p2g prices --type decision
 ipx p2g decision --file request.json --output result.json
 cat request.json | ipx p2g decision --file - --json</code></pre>
-      <h2>Pricing and provider setup</h2>
-      <p>Decision models bill per input token at the configured catalog rate. Microsoft Decision 1 starts at $0.042 per million input tokens. Check the live model catalog for current prices. Normal account discounts, markups and wallet rounding apply. Charges round to 0.0001 credits. Missing provider usage is estimated across questions; failed provider requests are not charged.</p>
-      <p>Operators manage providers and retail rates in <code>InferencePort-Lightning/src/models/decision.json</code>. The Foundry entry uses the server-side <code>FOUNDRY_KEY</code> secret. Add System One compatible deployments such as D3 or JEV with their URL, upstream ID, authentication variable and desired input-token rate. Clients continue using their InferencePort credentials.</p>
+        <p>Requests support up to 64 questions, 2–64 criteria for <code>choice</code> or <code>score</code>, and 1 MB of serialized state and questions.</p>
+      </section>
+
+      <section id="pricing" aria-labelledby="pricing-title">
+        <h2 id="pricing-title">Pricing and billing</h2>
+        <p>Decision models bill per input token at the configured catalog rate. Microsoft Decision 1 starts at $0.042 per million input tokens; check the live model catalog for current rates. Account discounts, markups and wallet rounding apply. Charges round to 0.0001 credits. If provider usage is missing, usage is estimated across questions; failed provider requests are not charged.</p>
+        <p>Personal requests use your P2G wallet. Add <code>X-InferencePort-Org</code> with an organization slug to bill that organization, subject to its billing setup and modality policy.</p>
+        <details>
+          <summary>Operator configuration reference</summary>
+          <p>Operators manage providers and retail rates in <code>InferencePort-Lightning/src/models/decision.json</code>. The Foundry entry uses the server-side <code>FOUNDRY_KEY</code> secret. A System One compatible deployment can be configured with its URL, upstream ID, authentication variable and input-token rate. Clients continue to use InferencePort credentials.</p>
+        </details>
+      </section>
+      <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
     </article>
   </main>
   <ip-footer></ip-footer>
+  <script>
+    (() => {
+      const status = document.getElementById("copy-status");
+      document.querySelectorAll(".guide pre").forEach((pre, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "copy-code";
+        button.textContent = "Copy code";
+        button.setAttribute("aria-label", `Copy ${pre.dataset.codeLabel || `code example ${index + 1}`}`);
+        button.addEventListener("click", async () => {
+          const code = pre.querySelector("code")?.textContent || "";
+          try {
+            await navigator.clipboard.writeText(code);
+            status.textContent = `${pre.dataset.codeLabel || "Code"} copied.`;
+          } catch {
+            const field = document.createElement("textarea");
+            field.value = code;
+            field.setAttribute("readonly", "");
+            field.style.position = "fixed";
+            field.style.opacity = "0";
+            document.body.appendChild(field);
+            field.select();
+            const copied = document.execCommand("copy");
+            field.remove();
+            status.textContent = copied ? `${pre.dataset.codeLabel || "Code"} copied.` : "Copy failed. Select the code and copy it manually.";
+          }
+        });
+        pre.appendChild(button);
+      });
+    })();
+  </script>
 </body>
 </html>

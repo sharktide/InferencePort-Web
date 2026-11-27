@@ -3,6 +3,7 @@
 import Icon from "../../Icon";
 import { useState, useEffect, useCallback } from "react";
 import styles from "./Panel.module.css";
+import panelStyles from "./AuthorizedAppsPanel.module.css";
 
 interface Props { session: any; config: any; apiBase: string; supabase: any; }
 
@@ -133,10 +134,10 @@ export default function AuthorizedAppsPanel({ session, config, apiBase, supabase
       return pb - pa;
     });
 
-  if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to view applications you&apos;ve authorized.</div></div>;
+  if (!session) return <div className={`${styles.panel} ${styles.active} ${panelStyles.panel}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to view applications you&apos;ve authorized.</div></div>;
 
   return (
-    <div className={`${styles.panel} ${styles.active}`}>
+    <div className={`${styles.panel} ${styles.active} ${panelStyles.panel}`}>
       <section className={`${styles.card} ${styles.wide}`}>
         <h2>Authorized applications</h2>
         <div className={styles.oauthWarning}><span className={styles.oauthWarningIcon} aria-hidden="true"><Icon name="warning" /></span><p>Applications with access to your account can act according to the permissions you&apos;ve granted. Revoke access for apps you no longer trust.</p></div>

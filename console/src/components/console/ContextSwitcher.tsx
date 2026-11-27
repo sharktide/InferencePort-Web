@@ -56,7 +56,7 @@ export default function ContextSwitcher({ variant = "topbar", className }: Conte
 
   if (!ctx) return null;
   const { orgs, activeOrg, setActiveSlug } = ctx;
-  const label = activeOrg ? activeOrg.name : "Personal";
+  const label = activeOrg?.name ?? ctx.activeSlug ?? "Personal";
 
   const close = (returnFocus: boolean) => {
     setOpen(false);

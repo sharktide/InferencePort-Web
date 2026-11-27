@@ -25,10 +25,8 @@
 .brand > div { min-width: 0; }
 
 .brandLogo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+  width: 18px;
+  height: 30px;
   flex: none;
 }
 
@@ -158,7 +156,7 @@
   }
 
   .brandLogo {
-    width: 32px;
-    height: 32px;
+    width: 16px;
+    height: 28px;
   }
 }

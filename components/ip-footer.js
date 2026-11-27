@@ -5,26 +5,30 @@ class IpFooter extends HTMLElement {
 	<div class="ipf-top">
 		<div>
 			<span class="ipf-brand"><svg width="16" height="28" viewBox="170 30 320 565" fill="#FCD704" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z"/></svg>InferencePort <em>AI</em></span>
-			<p class="ipf-blurb">Run models on your hardware, in our cloud, or both — governed from a single account and a single console.</p>
+			<p class="ipf-blurb">Build, run and protect AI from one account.</p>
 		</div>
 		<div>
 			<h4>Build</h4>
 			<ul>
 				<li><a href="/index.html#api">Pay-to-Go API</a></li>
+				<li><a href="/decision.html">Decision Models</a></li>
 				<li><a href="/index.html#agents">Managed Agents</a></li>
 				<li><a href="/index.html#council">Council MCP</a></li>
 				<li><a href="/ipx.html">ipx CLI</a></li>
-				<li><a href="/console">Developer Console</a></li>
+				<li><a href="/tools.html">Tools Registry</a></li>
 			</ul>
 		</div>
 		<div>
 			<h4>Run &amp; protect</h4>
 			<ul>
 				<li><a href="/index.html#deploy">Model Deployments</a></li>
+				<li><a href="/index.html#buckets">Buckets</a></li>
+				<li><a href="/marketplace.html">Model Catalog</a></li>
 				<li><a href="/install.html">Desktop App</a></li>
 				<li><a href="/lightning.html">Lightning Chat</a></li>
 				<li><a href="/shield.html">AI Shield</a></li>
 				<li><a href="/platform.html#organizations">Organizations</a></li>
+				<li><a href="/console">Open console</a></li>
 			</ul>
 		</div>
 		<div>
@@ -32,7 +36,6 @@ class IpFooter extends HTMLElement {
 			<ul>
 				<li><a href="/index.html#customers">Customers &amp; programs</a></li>
 				<li><a href="/pricing.html">Pricing</a></li>
-				<li><a href="/marketplace.html">Model catalog</a></li>
 				<li><a href="/platform.html">Platform guide</a></li>
 				<li><a href="/security.html#security">Security</a></li>
 				<li><a href="/security.html#privacy">Privacy Policy</a></li>

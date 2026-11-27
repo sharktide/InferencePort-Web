@@ -378,18 +378,19 @@ function KeyDialog({
           <p className={manage.hintText}>Expiry rules: {planHint("key_policies")}</p>
         )}
 
-        <div className={shared.sectionHead}>
-          <span className={shared.sectionTitle}>Restrictions</span>
-        </div>
-        <LimitsEditor
-          idPrefix="key-limits"
-          draft={draft}
-          onChange={setDraft}
-          fields={["description", "budget", "models", "modalities", "rpm", "ip"]}
-          locks={locks}
-          disabled={busy}
-          budgetLabel="Monthly credit budget"
-        />
+        <details className={manage.advanced}>
+          <summary>Advanced key restrictions</summary>
+          <p className={manage.hintText}>Narrow this key by budget, models, modalities, request rate or IP range.</p>
+          <LimitsEditor
+            idPrefix="key-limits"
+            draft={draft}
+            onChange={setDraft}
+            fields={["description", "budget", "models", "modalities", "rpm", "ip"]}
+            locks={locks}
+            disabled={busy}
+            budgetLabel="Monthly credit budget"
+          />
+        </details>
 
         {error && <Callout tone="error">{error}</Callout>}
         <div className={shared.dialogActions}>

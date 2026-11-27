@@ -2,14 +2,16 @@
 
 .workspace {
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
   min-width: 0;
 }
 
 .head {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.55rem;
   min-width: 0;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .crumbs {
@@ -35,7 +37,7 @@
 
 .title {
   margin: 0;
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.25;
@@ -47,10 +49,11 @@
 
 .body {
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
   min-width: 0;
 }
 .body > * { min-width: 0; }
+.body > :global(section), .body > :global(div) { min-width: 0; }
 
 .muted { color: var(--muted); font-size: 0.9375rem; }
 

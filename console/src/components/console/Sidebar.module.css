@@ -34,6 +34,7 @@
 .contextHeader {
   width: 100%;
   margin-bottom: 0.1rem;
+  display: none;
 }
 
 .navTabWrap {
@@ -41,50 +42,6 @@
   display: flex;
   align-items: center;
 }
-/* Model Access is a full sibling section, not an indented Developer item. */
-.modelAccessToggle {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.65rem;
-  width: 100%;
-  min-height: 38px;
-  padding: 0.5rem 0.7rem;
-  border: 0;
-  border-radius: var(--r-0);
-  background: transparent;
-  color: var(--text-2);
-  font: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-align: left;
-  cursor: pointer;
-}
-.modelAccessToggle:hover { background: var(--surface-2); color: var(--text); }
-.modelAccessToggle:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
-.modelAccessChevron {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  flex: none;
-  color: var(--muted);
-}
-.modelAccessChevron::after {
-  content: "";
-  position: absolute;
-  width: 9px;
-  height: 9px;
-  left: 3px;
-  top: 3px;
-  border-right: 1.75px solid currentColor;
-  border-bottom: 1.75px solid currentColor;
-  transform: rotate(-45deg);
-  transition: transform var(--d-fast);
-}
-.modelAccessChevronOpen::after { transform: rotate(45deg); }
-.nestedTab { padding-left: 0.5rem; }
-.nestedTab[hidden] { display: none; }
-
 .consoleNavTab {
   position: relative;
   width: 100%;
@@ -121,11 +78,11 @@
 .consoleNavTab:hover:not(.active) .navIcon { color: var(--text-2); }
 
 .consoleNavTab.active {
-  background: var(--brand-dim);
+  background: var(--gold-dim);
   color: var(--text);
   font-weight: 600;
 }
-.consoleNavTab.active .navIcon { color: var(--brand); }
+.consoleNavTab.active .navIcon { color: var(--gold-ink); }
 .consoleNavTab.active::before {
   content: '';
   position: absolute;
@@ -134,7 +91,7 @@
   bottom: 8px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--brand);
+  background: var(--gold);
 }
 
 /* Unclaimed rewards: a gold count chip (the console's one gold highlight) */
@@ -271,4 +228,14 @@
   }
 
   .consoleNavTab { min-height: 44px; }
+  .contextHeader { display: flex; }
+}
+
+.consoleNavSummary { cursor: pointer; padding: 0.55rem 0.7rem; font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+.consoleNavSummary:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.navGroup[open] .consoleNavSummary { margin-bottom: 0.25rem; color: var(--text); }
+
+.mobileClose { display:none; }
+@media (max-width:960px) {
+  .mobileClose { display:inline-flex; align-self:flex-end; gap:0.4rem; min-height:44px; padding:0.5rem 0.75rem; border:1px solid var(--border); background:var(--surface); color:var(--text); }
 }

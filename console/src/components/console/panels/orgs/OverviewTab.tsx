@@ -12,7 +12,7 @@ import {
   type OrgMember,
 } from "../../../../lib/orgs";
 import shared from "./orgs.module.css";
-import s from "./billing.module.css";
+import s from "./OverviewTab.module.css";
 import { Badge, Callout, PLAN_LABELS, errorText, formatDate } from "./shared";
 import PlansModal from "./PlansModal";
 
@@ -158,9 +158,56 @@ export default function OverviewTab({ api, org, onChanged, userId, onExit, onNav
     <div className={s.page}>
       {notice && <Callout tone={notice.tone === "error" ? "error" : "ok"}>{notice.text}</Callout>}
 
+      {/* Operational status is the first thing admins see. */}
+      <section className={s.card} aria-labelledby="ov-usage">
+        <div className={s.cardHead}>
+          <div>
+            <h2 id="ov-usage" className={s.cardTitle}>Organization at a glance</h2>
+            <p className={s.lead}>Current capacity and access for {org.name}.</p>
+          </div>
+          <button type="button" className="ghost" onClick={() => setPlansOpen(true)}>Compare plans</button>
+        </div>
+        <div className={s.meters}>
+          {meters.map((m) => {
+            const pct = m.limit ? Math.min(100, Math.round((m.value / m.limit) * 100)) : 0;
+            const warn = !!m.limit && pct >= 80;
+            return (
+              <article key={m.label} className={`${s.meter} ${warn ? s.meterWarn : ""}`}>
+                <span className={s.statLabel}>{m.label}</span>
+                <span className={s.statValue}>
+                  {m.value}
+                  {m.limit === null ? " (no limit)" : m.limit === 0 ? "" : ` of ${m.limit}`}
+                </span>
+                {m.limit === 0 && <span className={s.hint}>Not included on your plan</span>}
+                {m.limit !== null && m.limit > 0 && (
+                  <span className={s.meterTrack} role="progressbar" aria-label={`${m.label} plan capacity`} aria-valuemin={0} aria-valuemax={m.limit} aria-valuenow={Math.min(m.limit, m.value)}>
+                    <span className={s.meterFill} style={{ width: `${pct}%` }} />
+                  </span>
+                )}
+              </article>
+            );
+          })}
+        </div>
+        {ent.max_teams === 0 && <p className={s.hint}>Teams are not included on your current plan. See Compare plans.</p>}
+        <nav className={s.shortcuts} aria-label="Organization administration shortcuts">
+          <div className={s.shortcutGroup}>
+            <span className={s.label}>People</span>
+            {onNavigate && <><button type="button" className={s.linkBtn} onClick={() => onNavigate("org-members")}>Members</button><button type="button" className={s.linkBtn} onClick={() => onNavigate("org-teams")}>Teams</button></>}
+          </div>
+          <div className={s.shortcutGroup}>
+            <span className={s.label}>Spend &amp; access</span>
+            {onNavigate && <><button type="button" className={s.linkBtn} onClick={() => onNavigate("org-usage")}>Usage</button><button type="button" className={s.linkBtn} onClick={() => onNavigate("org-keys")}>API keys</button>{canSeeBilling && <button type="button" className={s.linkBtn} onClick={() => onNavigate("org-billing")}>Billing</button>}</>}
+          </div>
+          <div className={s.shortcutGroup}>
+            <span className={s.label}>Security</span>
+            {onNavigate && <><button type="button" className={s.linkBtn} onClick={() => onNavigate("org-security")}>Security &amp; SSO</button><button type="button" className={s.linkBtn} onClick={() => onNavigate("org-audit")}>Audit log</button></>}
+          </div>
+        </nav>
+      </section>
+
       {/* Details */}
       <section className={s.card} aria-labelledby="ov-details">
-        <h2 id="ov-details" className={s.cardTitle}>Details</h2>
+        <h2 id="ov-details" className={s.cardTitle}>Organization details</h2>
         <dl className={shared.dl}>
           <dt>Name</dt>
           <dd>{org.name}</dd>
@@ -178,7 +225,7 @@ export default function OverviewTab({ api, org, onChanged, userId, onExit, onNav
           <dt>Billing email</dt>
           <dd>
             {org.billing_email ?? `${org.owner_email ?? "The owner"} (owner's email)`}
-            <div style={{ marginTop: "0.35rem" }}>
+            <div className={s.detailAction}>
               {onNavigate && canSeeBilling ? (
                 <button type="button" className={s.linkBtn} onClick={() => onNavigate("org-billing")}>
                   Change in Billing
@@ -212,42 +259,12 @@ export default function OverviewTab({ api, org, onChanged, userId, onExit, onNav
         )}
       </section>
 
-      {/* Usage vs plan */}
-      <section className={s.card} aria-labelledby="ov-usage">
-        <div className={s.cardHead}>
-          <h2 id="ov-usage" className={s.cardTitle}>Usage against plan limits</h2>
-          <button type="button" className="ghost" onClick={() => setPlansOpen(true)}>Compare plans</button>
-        </div>
-        <div className={s.meters}>
-          {meters.map((m) => {
-            const pct = m.limit ? Math.min(100, Math.round((m.value / m.limit) * 100)) : 0;
-            const warn = !!m.limit && pct >= 80;
-            return (
-              <article key={m.label} className={`${s.meter} ${warn ? s.meterWarn : ""}`}>
-                <span className={s.statLabel}>{m.label}</span>
-                <span className={s.statValue}>
-                  {m.value}
-                  {m.limit === null ? " (no limit)" : m.limit === 0 ? "" : ` of ${m.limit}`}
-                </span>
-                {m.limit === 0 && <span className={s.hint}>Not included on your plan</span>}
-                {m.limit !== null && m.limit > 0 && (
-                  <span className={s.meterTrack} aria-hidden="true">
-                    <span className={s.meterFill} style={{ width: `${pct}%` }} />
-                  </span>
-                )}
-              </article>
-            );
-          })}
-        </div>
-        {ent.max_teams === 0 && <p className={s.hint}>Teams are not included on your current plan. See Compare plans.</p>}
-      </section>
-
       {/* Edit */}
       {canEdit && (
         <section className={s.card} aria-labelledby="ov-edit">
           <h2 id="ov-edit" className={s.cardTitle}>Edit details</h2>
           <form onSubmit={save} className={shared.stack}>
-            <label className={shared.field} style={{ maxWidth: 420 }}>
+            <label className={`${shared.field} ${s.editName}`}>
               Organization name
               <input value={name} maxLength={80} required onChange={(e) => setName(e.target.value)} />
             </label>
@@ -275,7 +292,7 @@ export default function OverviewTab({ api, org, onChanged, userId, onExit, onNav
         {isOwner && (
           <>
             <div className={s.dangerRow}>
-              <div style={{ display: "grid", gap: "0.3rem", flex: "1 1 260px" }}>
+              <div className={s.transferField}>
                 <label className={shared.field}>
                   Transfer ownership to
                   <select

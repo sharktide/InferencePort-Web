@@ -28,16 +28,13 @@ export default function TopBar({
   return (
     <header className={styles.topbar}>
       <div className={styles.brand}>
-        <img src="/console/assets/logo.png" alt="InferencePort AI" className={styles.brandLogo} />
+        <svg className={styles.brandLogo} viewBox="170 30 320 565" fill="#fcd704" aria-hidden="true"><path d="M320 45h145L352 233h121L183 580l105-252H183z" /></svg>
         <div>
           <h1 id="app-name">
             <span className={styles.brandEmphasis}>{appName}</span>{" "}
             <span className={styles.brandDesktop}>Developer Console</span>
             <span className={styles.brandMobile}>Console</span>
           </h1>
-          <p className={styles.brandDesktop}>
-            <span className={styles.brandEmphasis}>{appName}</span> Pay-2-Go API dashboard
-          </p>
         </div>
       </div>
       <div className={styles.topActions}>

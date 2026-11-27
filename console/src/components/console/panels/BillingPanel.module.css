@@ -4,6 +4,8 @@
   gap: 1.25rem;
 }
 
+
+
 .balanceCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 14px; padding: 1.75rem; }
 
 .balanceLabel {
@@ -99,8 +101,8 @@
   margin-top: auto;
   min-height: 38px;
   padding: 0 0.9rem;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--primary);
+  color: var(--primary-ink);
   border: none;
   border-radius: var(--r-1);
   font-family: var(--sans);
@@ -110,7 +112,7 @@
 }
 
 .packBtn:hover:not(:disabled) {
-  background: var(--accent-hover);
+  background: var(--primary-hover);
 }
 
 .packBtn:disabled {
@@ -140,6 +142,12 @@
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
+}
+
+@media (max-width: 620px) {
+  .statsRow { grid-template-columns: 1fr; gap: .55rem; }
+  .balanceCard { padding: 1rem; }
+  .packsGrid { grid-template-columns: repeat(auto-fit, minmax(min(145px, 100%), 1fr)); }
 }
 
 .showMorePacks:hover {
@@ -319,14 +327,14 @@
 }
 
 .planBtnUpgrade {
-  background: var(--accent);
-  color: var(--accent-ink);
-  border-color: var(--accent);
+  background: var(--primary);
+  color: var(--primary-ink);
+  border-color: var(--primary);
 }
 
 .planBtnUpgrade:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .planBtnFree {

@@ -18,6 +18,15 @@ fs.mkdirSync(screenshots,{recursive:true});
 const BASE=process.env.HOME_TEST_URL||"http://127.0.0.1:4173";
 
 async function checkScene(page,name) {
+  await page.route("https://api.inferenceport.ai/v1/models", route => route.fulfill({
+    json:{data:[
+      {id:"deepseek-v4.1-flash-1017",name:"DeepSeek Flash",type:"text",pricing:{prompt:0.0000002,completion:0.0000008}},
+      {id:"claude-sonnet-5",name:"Claude Sonnet",type:"text",input_pricing_per_million_tokens:3,output_pricing_per_million_tokens:15},
+      {id:"missing-price",type:"text",pricing:{prompt:0}},
+      {id:"unavailable",type:"text",is_ready:false,pricing:{prompt:0,completion:0}},
+      {id:"image-test",type:"image",pricing:{prompt:0,completion:0}}
+    ]},headers:{"access-control-allow-origin":"*"}
+  }));
   await page.goto(BASE+"/",{waitUntil:"domcontentloaded"});
   const shell=page.locator("#lp-topology");
   await shell.scrollIntoViewIfNeeded();
@@ -122,7 +131,7 @@ async function checkScene(page,name) {
     name+" Agent story contrast is not accessible: "+JSON.stringify(agentsContrast));
 
   // Visual QA of the areas that used to be cramped card walls.
-  assert.equal(await page.locator(".lp-ecosystem-spotlight").count(),4);
+  assert.equal(await page.locator(".lp-tool-entry").count(),4);
   assert.equal(await page.locator(".lp-proof-compact").count(),2);
   await page.locator("#platform-details").screenshot({
     path:path.join(screenshots,name+"-infrastructure.png")
@@ -148,21 +157,35 @@ async function checkScene(page,name) {
   assert.ok(workspacePadding>=19,name+" workspace padding collapsed: "+workspacePadding);
 
   // Main-site product detail is restored while keeping concise product stories.
-  const richSections=["agents","deploy","buckets","shield","council","cli","lightning","app"];
-  // The full API workbench lives at the end of the homepage now, not inside the hero.
+  const richSections=["agents","deploy","buckets","shield"];
+  // The API workbench follows the product directory.
   assert.equal(await page.locator(".lp-hero-demo").count(),0);
   assert.equal(await page.locator("#quickstart [data-example-tab]").count(),8);
+  await page.locator(".lp-catalog-model").first().waitFor();
+  assert.equal(await page.locator(".lp-catalog-model").count(),2);
+  assert.match(await page.locator(".lp-catalog-model").first().innerText(),/Input: \$0\.20\/M/);
+  assert.equal(await page.locator(".lp-catalog-model").first().getAttribute("href"),"marketplace.html#deepseek-v4.1-flash-1017");
+  assert.equal(await page.locator("[data-tool-preview]:not([hidden])").count(),1);
+  await page.evaluate(()=>document.documentElement.setAttribute("data-theme","dark"));
+  const docsColor=await page.locator("#quickstart .lp-button-clear").evaluate(el=>getComputedStyle(el).color);
+  assert.equal(docsColor,"rgb(241, 245, 249)");
+  await page.evaluate(()=>document.documentElement.setAttribute("data-theme","light"));
+  assert.equal(await page.locator("#api-examples").getAttribute("open"),null);
+  await page.locator("#api-examples > summary").click();
+  assert.ok(await page.locator("#lp-panel-text").isVisible());
+  await page.locator("#api-examples > summary").click();
   assert.equal(await page.locator("#quickstart [data-example-panel]").count(),8);
   assert.equal(await page.locator("#quickstart [data-example-panel]:not([hidden])").count(),1);
   assert.ok(await page.locator("#quickstart").evaluate(el=>{
     const pricing=document.querySelector("#pricing");
-    return pricing && pricing.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING;
-  }),name+" quickstart should follow pricing");
+    return pricing && el.compareDocumentPosition(pricing)&Node.DOCUMENT_POSITION_FOLLOWING;
+  }),name+" quickstart should precede pricing");
   for(const id of richSections){
     const element=page.locator('[id="'+id+'"] .lp-feature-points').first();
     assert.equal(await element.count(),1,name+" missing rich feature descriptions for "+id);
     assert.equal(await element.locator("li").count(),id==="shield"?5:3,name+" should show specific feature detail for "+id);
   }
+  await page.locator('[data-tool-select="app"]').click();
   const desktopImage=page.locator(".lp-desktop-window img");
   await desktopImage.scrollIntoViewIfNeeded();
   await desktopImage.evaluate(img=>img.decode());
@@ -171,7 +194,7 @@ async function checkScene(page,name) {
   }));
   assert.ok(imgInfo.width>100&&imgInfo.height>100,
     name+" original desktop screenshot did not load "+JSON.stringify(imgInfo));
-  await page.locator("#app").screenshot({
+  await page.locator("#lp-tool-preview-app").screenshot({
     path:path.join(screenshots,name+"-desktop-product-detail.png")
   });
   // Every illustrative demo should convey a specific product workflow, not
@@ -184,15 +207,20 @@ async function checkScene(page,name) {
     ["app",".lp-desktop-visual",".lp-desktop-window img"]
   ];
   for(const [product,container,content] of productPreviews){
-    assert.equal(await page.locator("#"+product+" "+container).count(),1,
+    const scope=product==="shield"?"#shield":"#lp-tool-preview-"+product;
+    if(product!=="shield") {
+      await page.locator(`[data-tool-select="${product}"]`).click();
+      assert.equal(await page.locator("[data-tool-preview]:not([hidden])").count(),1);
+    }
+    assert.equal(await page.locator(scope+(product==="shield"?" ":"")+container).count(),1,
       name+" missing "+product+" product interface");
-    assert.ok(await page.locator("#"+product+" "+content).isVisible(),
+    assert.ok(await page.locator(scope+" "+content).isVisible(),
       name+" missing visible "+product+" workflow");
-    await page.locator("#"+product).screenshot({
+    await page.locator(scope).screenshot({
       path:path.join(screenshots,name+"-"+product+"-proof.png")
     });
   }
-  assert.match(await page.locator("#lightning h3").innerText(),/Lightning: chat and create/);
+  assert.match(await page.locator("#lightning h3").innerText(),/Lightning chat/);
   assert.ok(await page.locator("#shield .lp-feature-points li").count()>=5);
 
 

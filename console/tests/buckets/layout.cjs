@@ -41,7 +41,10 @@ module.exports = async function layout(browser, url) {
         await page.waitForFunction((disabled) => document.querySelector('input[aria-label="Upload file"]')?.disabled === disabled, !pricesReady);
         assert.equal(await page.getByLabel('Upload file').isDisabled(), !pricesReady, 'Upload availability must reflect verified pricing');
       }
-      if (populated) await page.getByRole('button', { name: 'Close dialog' }).click();
+      if (populated) {
+        assert.equal(await page.getByRole('dialog').count(), 0, 'File browsing must remain inline');
+        await page.getByRole('navigation', { name: 'Breadcrumb' }).getByRole('button', { name: 'Buckets', exact: true }).click();
+      }
       assert.equal(await page.getByLabel('Bucket name', { exact: true }).count(), 0);
       await page.getByRole('button', { name: /Create bucket/ }).click();
       await page.getByRole('dialog', { name: 'Create a bucket' }).waitFor();

@@ -1,7 +1,17 @@
 /* Placement only: the pill itself is styled by ContextSwitcher.module.css (variant "chip"). */
 
 .wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-0);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 0.75rem;
   flex: none;
   max-width: 100%;
   align-self: flex-start;
 }
+.wrap strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 600; }

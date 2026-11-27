@@ -1,12 +1,12 @@
 /* Billing, plans, notifications and overview layouts for organizations (U2). Shared primitives live in orgs.module.css. */
 
-.page { display: grid; gap: 1.25rem; min-width: 0; }
+.page { display: grid; gap: 1rem; min-width: 0; }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-2);
-  padding: 1.25rem;
+  padding: 1.15rem;
   display: grid;
   gap: 0.9rem;
   min-width: 0;
@@ -22,11 +22,12 @@
 
 .cardTitle {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--text);
 }
+.subsectionTitle { margin: 0; font-size: 0.9rem; font-weight: 650; color: var(--text); }
 
 .lead { margin: 0; font-size: 0.875rem; line-height: 1.55; color: var(--text-2); }
 .hint { margin: 0; font-size: 0.8125rem; line-height: 1.5; color: var(--muted); }
@@ -38,8 +39,9 @@
 .explainer {
   margin: 0;
   padding: 0.8rem 1rem;
-  border-left: 3px solid var(--brand);
-  background: var(--brand-dim);
+  border: 1px solid var(--gold-border);
+  border-left: 3px solid var(--gold);
+  background: var(--gold-dim);
   border-radius: var(--r-1);
   font-size: 0.9rem;
   line-height: 1.6;
@@ -162,6 +164,20 @@
 }
 .packTitle { font-size: 0.95rem; font-weight: 600; color: var(--text); }
 .packPrice { font-size: 1.2rem; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Keep related billing controls visually grouped and preserve a clear focus target. */
+.card > .actions { padding-top: 0.1rem; }
+.progress { height: 10px; }
+.progressFill { background: var(--gold); }
+.progressWarn { background: var(--warn); }
+.planCurrent { border-color: var(--gold-border); box-shadow: inset 0 0 0 1px var(--gold-border); }
+.planFoot > button { min-height: 42px; }
+.pack > button { margin-top: 0.25rem; }
+.loading { min-height: 3rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 1.8s; }
+}
 
 /* Chips (alert percents, recipients) */
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }

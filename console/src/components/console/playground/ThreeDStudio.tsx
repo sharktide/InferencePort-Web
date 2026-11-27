@@ -157,7 +157,7 @@ const fmtCredits = (c: number) => `$${c < 0.01 ? c.toFixed(4) : c.toFixed(2)}`;
 /* ---------- Component ---------- */
 
 export default function ThreeDStudio(props: StudioProps) {
-  const { session, apiBase, apiPrefix, models, theme } = props;
+  const { session, apiBase, apiPrefix, models, theme, initialModel } = props;
 
   const catalog: any[] = useMemo(() => {
     const list = threeDModels(models);
@@ -166,6 +166,9 @@ export default function ThreeDStudio(props: StudioProps) {
 
   /* Request settings */
   const [model, setModel] = useState("");
+  useEffect(() => {
+    if (initialModel && catalog.some((m) => slug(m) === initialModel)) setModel(initialModel);
+  }, [initialModel, catalog]);
   const [resolution, setResolution] = useState<Resolution>("medium");
   const [prompt, setPrompt] = useState("");
   const [sourceMode, setSourceMode] = useState<SourceMode>("upload");

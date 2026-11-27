@@ -576,3 +576,17 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Progress stays clear while the reward cards remain secondary to core console work. */
+.statCard, .rewardCard, .discountSection { border-radius: 8px; box-shadow: none; }
+.statCard { padding: .9rem 1rem; }
+.rewardCard { background: var(--surface); }
+.rewardCard:hover { border-color: var(--border-strong); }
+.rewardCardEarned { border-color: var(--success); }
+.rewardIcon { border-radius: 8px; }
+.rewardTier, .rewardLabel, .claimedBadge { border-radius: 6px; }
+.progressBar { height: 7px; }
+.progressFill { background: #fcd704; }
+.claimBtn { border-radius: 6px; background: #fcd704; color: #171717; }
+.claimBtn:hover { background: #e8c400; }
+.optOutBtn { border-radius: 6px; }

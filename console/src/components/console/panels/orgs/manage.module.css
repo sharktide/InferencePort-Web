@@ -70,6 +70,11 @@
 
 .dialogActions { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
 
+.advanced { display: grid; gap: 0.75rem; padding: 0.85rem 0.95rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); }
+.advanced summary { color: var(--text); font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+.advanced summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 3px; }
+.advanced[open] summary { margin-bottom: 0.1rem; }
+
 @media (max-width: 960px) {
   .rowActions { flex-wrap: wrap; justify-content: flex-start; }
   .cellHint { margin-left: 0; text-align: left; max-width: none; }

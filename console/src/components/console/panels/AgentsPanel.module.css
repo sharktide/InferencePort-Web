@@ -10,6 +10,8 @@
 .agentsTab { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; border-radius: 999px; padding: 0.35rem 0.9rem; cursor: pointer; min-height: 32px; }
 .agentsTab.active { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
 .agentsTab:hover:not(.active) { color: var(--text); }
+.createTab, .createTab.active { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); border-radius: 7px; }
+.createTab:hover:not(.active) { background: var(--primary-hover); color: var(--primary-ink); }
 
 .agentList { display: grid; gap: 0.85rem; }
 .agentRow { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; display: grid; gap: 0.6rem; min-width: 0; }
@@ -18,7 +20,7 @@
 .agentName { font-weight: 600; color: var(--text); }
 .agentModelId { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); word-break: break-all; }
 .agentBadges { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
-.badge { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.55rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); white-space: nowrap; }
+.badge { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.55rem; border-radius: var(--r-1); border: 1px solid var(--border); background: var(--surface); color: var(--text); white-space: nowrap; }
 .badgeOwnerPays { border-color: color-mix(in srgb, var(--brand) 45%, var(--border)); background: var(--brand-dim); color: var(--accent); }
 .badgeCallerPays { border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--text); }
 .badgePublic { border-color: color-mix(in srgb, var(--success) 40%, var(--border)); }
@@ -46,7 +48,7 @@
   .mcpAuth { grid-template-columns: 1fr; }
 }
 .inviteLinkRow { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-.inviteLink { font-family: var(--mono); font-size: 0.75rem; word-break: break-all; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.55rem; flex: 1; min-width: 200px; }
+.inviteLink { font-family: var(--mono); font-size: 0.75rem; word-break: break-all; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-1); padding: 0.4rem 0.55rem; flex: 1; min-width: 200px; }
 
 .editBox { display: grid; gap: 0.75rem; padding-top: 0.65rem; border-top: 1px solid var(--border); }
 
@@ -92,3 +94,17 @@
 .settingsRow input[type="checkbox"] { margin-top: 0.25rem; width: 16px; height: 16px; accent-color: var(--brand); flex-shrink: 0; }
 .settingsLabel { font-size: 0.9rem; font-weight: 600; color: var(--text); }
 .settingsHint { font-size: 0.8125rem; color: var(--muted); line-height: 1.45; margin-top: 0.2rem; }
+
+.advancedSection { grid-column: 1 / -1; border: 1px solid var(--border); border-radius: var(--r-1); min-width: 0; }
+.advancedSummary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.65rem 0.85rem; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--text); }
+.advancedSummary span { color: var(--muted); font-size: 0.78rem; font-weight: 400; text-align: right; }
+.advancedContent { display: grid; gap: 1rem; padding: 0.9rem; border-top: 1px solid var(--border); }
+.advancedContent > label { display: grid; gap: 0.4rem; }
+.agentsTab:focus-visible, .advancedSummary:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+@media (max-width: 560px) {
+  .agentsTabs { display: grid; grid-template-columns: 1fr 1fr; }
+  .agentsTab { text-align: left; }
+  .advancedSummary { align-items: flex-start; flex-direction: column; justify-content: center; gap: 0.1rem; }
+  .inviteOverlay { padding: 0.75rem; align-items: flex-end; }
+  .inviteDialog { max-height: 90dvh; overflow: auto; padding: 1.25rem; border-radius: var(--r-2) var(--r-2) var(--r-0) var(--r-0); }
+}

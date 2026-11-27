@@ -1,713 +1,224 @@
 "use client";
 
-import Icon from "../../Icon";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Panel.module.css";
-import AudioPlayground from "./AudioPlayground";
-import DecisionStudio from "../playground/DecisionStudio";
-import EmbeddingStudio from "../playground/EmbeddingStudio";
-import RealtimeStudio from "../playground/RealtimeStudio";
-import {
-  formatDiscountedPrice,
-  formatModelPrice,
-  formatPricing,
-  modelStartingPrice,
-  matchesModelPriceRange,
-  compareModelPrice,
-  modelType,
-} from "../../../lib/modelPricing";
+import Icon from "../../Icon";
+import { navigateConsole } from "../ContextSwitcher";
+import { useOptionalOrgContext } from "../OrgContext";
+import { formatModelPrice, formatPricing, modelType, modelStartingPrice, matchesModelPriceRange, compareModelPrice, formatDiscountedPrice } from "../../../lib/modelPricing";
 
 interface Props { config: any; session: any; apiBase: string; theme?: "light" | "dark"; }
+type Source = "p2g" | "gen";
+type Mode = "text" | "image" | "video" | "audio" | "3d" | "embedding" | "realtime" | "decision";
 
-interface ThreeJobResult {
-  glbUrl?: string;
-  plyUrl?: string;
-  videoUrl?: string;
-  usage?: { payg_credits_charged: number; model_count: number };
+function modelId(model: any) { return model?.id || model?.upstream_id || model?.openrouter?.slug || ""; }
+function displayName(model: any) {
+  const name = model?.name || modelId(model) || "Unnamed model";
+  return (model?.type === "agent" || model?.managed_by === "inferenceport-agents") && model?.owned_by ? "@" + model.owned_by + "/" + name : name;
+}
+function ModelArtwork({ model }: { model: any }) {
+  const [status, setStatus] = useState("loading");
+  const normalized = String(modelId(model) || model?.name || "").toLowerCase().replace(/\//g, "_");
+  const url = `https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/${encodeURIComponent(normalized)}.webp?download=true`;
+  return <div className={styles.modelDetailImageWrap}>
+    {status !== "error" && <img className={styles.modelDetailImage} src={url} alt={displayName(model)} onLoad={() => setStatus("loaded")} onError={() => setStatus("error")} />}
+    {status !== "loaded" && <div className={styles.modelDetailImagePlaceholder}>{displayName(model)}</div>}
+  </div>;
+}
+function PublisherLogo({ model, theme }: { model: any; theme: "light" | "dark" }) {
+  const [failed, setFailed] = useState(false);
+  const explicit = typeof model?.logo === "string" ? model.logo.trim() : "";
+  const publisher = model?.publisher_url;
+  const url = explicit || (publisher === "inferenceport.ai"
+    ? "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png"
+    : publisher ? `https://cdn.brandfetch.io/${encodeURIComponent(publisher)}?c=1idhv9JFxNDhJr50XTx${theme === "dark" ? "&theme=dark" : ""}` : "");
+  useEffect(() => setFailed(false), [url]);
+  return url && !failed ? <img className={styles.modelPublisherLogo} src={url} alt="" loading="lazy" onError={() => setFailed(true)} /> : null;
+}
+function pillClass(model: any) {
+  switch (String(modelType(model)).toLowerCase()) {
+    case "text": return styles.isText;
+    case "image": return styles.isConfigImage;
+    case "3d": return styles.isConfig3d;
+    case "audio": return styles.isConfigAudio;
+    case "embedding": return styles.isConfigEmbedding;
+    case "decision": return styles.isConfigDecision;
+    case "realtime": return styles.isConfigRealtime;
+    case "video": return styles.isConfigVideo;
+    default: return styles.isConfig;
+  }
+}
+function isTextModel(model: any) {
+  return Array.isArray(model?.input_modalities) && model.input_modalities.includes("text") && Array.isArray(model?.output_modalities) && model.output_modalities.includes("text");
+}
+function getMode(model: any, source: Source): Mode {
+  const type = String(modelType(model)).toLowerCase();
+  if (["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"].includes(type)) {
+    if (source === "gen" && !["text", "image", "audio"].includes(type)) return "text";
+    return type as Mode;
+  }
+  return "text";
+}
+function launchPlayground(source: Source, mode: Mode, id: string) {
+  const launch = { source, mode, ...(id ? { modelId: id } : {}) };
+  try { sessionStorage.setItem("console-playground-launch", JSON.stringify(launch)); } catch { /* storage can be unavailable */ }
+  window.dispatchEvent(new CustomEvent("console-playground-launch", { detail: launch }));
+  navigateConsole("playground");
 }
 
-export default function ModelsPanel({ config, session, apiBase, theme = "light" }: Props) {
-  const [allModels, setAllModels] = useState<any[]>([]);
-  const [genModels, setGenModels] = useState<any[]>([]);
-  const [source, setSource] = useState<"p2g" | "gen">("p2g");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedDetailModel, setSelectedDetailModel] = useState<any | null>(null);
-  const [tab, setTab] = useState("text");
-  const [modelSearch, setModelSearch] = useState("");
+export default function ModelsPanel({ session, apiBase, theme = "light" }: Props) {
+  const [source, setSource] = useState<Source>("p2g");
+  const [models, setModels] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<any | null>(null);
   const [priceRange, setPriceRange] = useState("all");
   const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
-  const [busy, setBusy] = useState<Record<string, boolean>>({});
-  const [modelDiscounts, setModelDiscounts] = useState<Record<string, number>>({});
-  const [fixedPrices, setFixedPrices] = useState<Record<string, number>>({});
-  const [rewardsOptedOut, setRewardsOptedOut] = useState(false);
-  const [textPrompt, setTextPrompt] = useState("");
-  const [textOutput, setTextOutput] = useState("");
-  const [imageModel, setImageModel] = useState("");
-  const [imagePrompt, setImagePrompt] = useState("");
-  const [imageOutput, setImageOutput] = useState("");
-  const [videoPrompt, setVideoPrompt] = useState("");
-  const [videoModels, setVideoModels] = useState<any[]>([]);
-  const [videoModel, setVideoModel] = useState("");
-  const [videoDur, setVideoDur] = useState(4);
-  const [videoStatus, setVideoStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
-  const [videoStatusText, setVideoStatusText] = useState("");
-  const [videoError, setVideoError] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [threeModel, setThreeModel] = useState("tripoSR");
-  const [threeResolution, setThreeResolution] = useState<"low" | "medium" | "high">("low");
-  const [threePrompt, setThreePrompt] = useState("");
-  const [threeUrl, setThreeUrl] = useState("");
-  const [threeStatus, setThreeStatus] = useState<"idle" | "submitting" | "polling" | "completed" | "failed">("idle");
-  const [threeStatusText, setThreeStatusText] = useState("");
-  const [threeResult, setThreeResult] = useState<ThreeJobResult | null>(null);
-  const [threeError, setThreeError] = useState("");
-  const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [rewards, setRewards] = useState<{ owner: string; discounts: Record<string, number> }>({ owner: "", discounts: {} });
+  const [catalogOwner, setCatalogOwner] = useState("");
+  const ctx = useOptionalOrgContext();
+  const owner = [apiBase, session?.access_token ?? "", ctx?.activeOrg?.id ?? "personal", source].join(":");
+  const request = useRef<AbortController | null>(null);
+  const detailRef = useRef<HTMLElement>(null);
 
-  const isTextModel = (m: any) => { const i = Array.isArray(m?.input_modalities) ? m.input_modalities : []; const o = Array.isArray(m?.output_modalities) ? m.output_modalities : []; return modelType(m).toLowerCase() === "text" && i.includes("text") && o.includes("text"); };
-  const slug = (m: any) => m?.id || m?.upstream_id || m?.openrouter?.slug || "";
-  const modelDisplayName = (m: any) => {
-    const name = m?.name || m?.id || "Unnamed model";
-    if ((m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by) return `@${m.owned_by}/${name}`;
-    return name;
-  };
-  const modalities = (m: any) => { const arr = Array.isArray(m?.input_modalities) ? m.input_modalities : []; return arr.length ? arr.map((v: string) => v.toUpperCase()).join(" / ") : "Configured model"; };
-  const configPillClass = (m: any) => {
-    const t = modelType(m);
-    if (t === "image") return styles.isConfigImage;
-    if (t === "3d" || t === "3D") return styles.isConfig3d;
-    if (t === "audio") return styles.isConfigAudio;
-    if (t === "embedding") return styles.isConfigEmbedding;
-    if (t === "decision") return styles.isConfigDecision;
-    if (t === "realtime") return styles.isConfigRealtime;
-    return styles.isConfigVideo;
-  };
-
-  const modelImageUrl = (m: any) => {
-    const name = m?.name || m?.id || "";
-    const modelId = (slug(m) || name).toLowerCase().replace(/\//g, "_");
-    return `https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/${encodeURIComponent(modelId)}.webp?download=true`;
-  };
-
-  const publisherLogoUrl = (publisherUrl: string | undefined) => {
-    if (!publisherUrl) return "";
-    if (publisherUrl === "inferenceport.ai") return "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png";
-    const themeParam = theme === "dark" ? "&theme=dark" : "";
-    return `https://cdn.brandfetch.io/${encodeURIComponent(publisherUrl)}?c=1idhv9JFxNDhJr50XTx${themeParam}`;
-  };
-
-  const modelLogoUrl = (m: any) => {
-    const explicit = typeof m?.logo === "string" ? m.logo.trim() : "";
-    if (explicit) return explicit;
-    return publisherLogoUrl(m?.publisher_url);
-  };
-
-  const textModels = useCallback(() => {
-    const textOnly = allModels.filter((m: any) => isTextModel(m) && m.is_ready !== false);
-    const seen = new Set();
-    return textOnly.filter((m: any) => { const k = slug(m) || m.name; if (!k || seen.has(k)) return false; seen.add(k); return true; });
-  }, [allModels]);
-
-  const nonTextConfigModels = useCallback(() => {
-    return allModels.filter((m: any) => !isTextModel(m) && m.is_ready !== false);
-  }, [allModels]);
-
-  const imageConfigModels = useCallback(() => {
-    return allModels.filter((m: any) => m.output_modalities?.includes("image") && m.is_ready !== false);
-  }, [allModels]);
-
-  const videoConfigModels = useCallback(() => {
-    return allModels.filter((m: any) => m.output_modalities?.includes("video") && m.is_ready !== false);
-  }, [allModels]);
-
-  const getModelDiscount = (m: any) => {
-    const id = m?.id || "";
-    if (fixedPrices[id]) return { type: "fixed" as const, fixedPrice: fixedPrices[id], percent: 0 };
-    if (modelDiscounts[id]) return { type: "percent" as const, percent: modelDiscounts[id], fixedPrice: 0 };
-    if (modelDiscounts["__all_models__"]) return { type: "percent" as const, percent: modelDiscounts["__all_models__"], fixedPrice: 0 };
-    for (const [pattern, pct] of Object.entries(modelDiscounts)) {
-      if (pattern.startsWith("__")) continue;
-      if (pattern.endsWith("-*") && id.startsWith(pattern.slice(0, -2))) return { type: "percent" as const, percent: pct as number, fixedPrice: 0 };
-      if (pattern === id) return { type: "percent" as const, percent: pct as number, fixedPrice: 0 };
-    }
-    return { type: "none" as const, percent: 0, fixedPrice: 0 };
-  };
 
   const loadModels = useCallback(async () => {
+    request.current?.abort();
+    const controller = new AbortController();
+    request.current = controller;
+    setLoading(true);
+    setError("");
     try {
-      if (source === "p2g") {
-        const headers: Record<string, string> = {};
-        if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`;
-        const r = await fetch(`${apiBase}/v1/models`, { headers });
-        const d = await r.json().catch(() => ({}));
-        const remoteModels = (Array.isArray(d.data) ? d.data : []).filter((m: any) => m.is_ready !== false);
-        setAllModels(remoteModels);
-        setVideoModels(remoteModels.filter((m: any) => m.output_modalities?.includes("video") && m.is_ready !== false));
-      } else {
-        const r = await fetch(`${apiBase}/gen/models`);
-        const d = await r.json().catch(() => ({}));
-        setGenModels(Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []);
-      }
-    } catch { /* ignore */ }
-  }, [source, apiBase, session]);
+      const headers: Record<string, string> = {};
+      if (session?.access_token) headers.Authorization = "Bearer " + session.access_token;
+      const endpoint = source === "p2g" ? "/v1/models" : "/gen/models";
+      const response = await fetch(apiBase + endpoint, { headers, signal: controller.signal });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(body?.detail || body?.error || "Unable to load models (" + response.status + ")");
+      const data = Array.isArray(body) ? body : Array.isArray(body?.data) ? body.data : [];
+      if (controller.signal.aborted) return;
+      setCatalogOwner(owner);
+      setModels(data.filter((model: any) => model?.is_ready !== false));
+    } catch (e: any) {
+      if (controller.signal.aborted) return;
+      setModels([]);
+      setError(e?.message || "Unable to load models.");
+    } finally { if (!controller.signal.aborted) setLoading(false); }
+  }, [apiBase, session?.access_token, source, owner]);
 
-  useEffect(() => { loadModels(); }, [loadModels]);
-
+  useEffect(() => { void loadModels(); return () => request.current?.abort(); }, [loadModels]);
+  useEffect(() => { setSelected(null); }, [owner]);
   useEffect(() => {
     if (!session?.access_token) return;
-    fetch(`${apiBase}/v1/rewards`, {
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    })
-      .then((r) => r.json())
-      .then((d) => {
-        const optedOut = d.opted_out || false;
-        setRewardsOptedOut(optedOut);
-        if (optedOut) {
-          setModelDiscounts({});
-          setFixedPrices({});
-          return;
-        }
-        const raw = d.active_discounts || {};
-        const pctDiscounts: Record<string, number> = {};
-        const fixed: Record<string, number> = {};
-        for (const [k, v] of Object.entries(raw)) {
-          if (k.startsWith("__fixed_")) {
-            const modelId = k.replace("__fixed_", "").replace("__", "");
-            fixed[modelId] = v as number;
-          } else if (!k.startsWith("__")) {
-            pctDiscounts[k] = v as number;
-          } else if (k === "__all_models__") {
-            pctDiscounts[k] = v as number;
-          }
-        }
-        setModelDiscounts(pctDiscounts);
-        setFixedPrices(fixed);
-      })
-      .catch(() => {});
-  }, [session, apiBase]);
-
+    const controller = new AbortController();
+    void fetch(apiBase + "/v1/rewards", { headers: { Authorization: "Bearer " + session.access_token }, signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!controller.signal.aborted) setRewards({ owner, discounts: data.opted_out ? {} : data.active_discounts || {} });
+      }).catch(() => {});
+    return () => controller.abort();
+  }, [apiBase, session?.access_token, owner]);
   useEffect(() => {
-    //@ts-ignore
-    import("@google/model-viewer/dist/model-viewer");
-  }, []);
+    if (!selected) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    detailRef.current?.querySelector<HTMLElement>("button")?.focus();
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelected(null);
+      if (event.key !== "Tab") return;
+      const controls = Array.from(detailRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href]') ?? []);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    window.addEventListener("keydown", close);
+    return () => { window.removeEventListener("keydown", close); document.body.style.overflow = previousOverflow; previous?.focus(); };
+  }, [selected]);
 
-  useEffect(() => {
-    return () => { if (pollRef.current) clearTimeout(pollRef.current); };
-  }, []);
+  const visibleModels = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (catalogOwner !== owner) return [];
+    const filtered = models.filter((model) => (!needle || [model?.name, model?.id, model?.upstream_id, model?.description, model?.publisher_url, modelType(model), model?.owned_by]
+        .filter(Boolean).join(" ").toLowerCase().includes(needle)) &&
+      (source !== "p2g" || matchesModelPriceRange(modelStartingPrice(model), priceRange)));
+    return source === "p2g" && priceSort !== "default" ? [...filtered].sort((a, b) => compareModelPrice(a, b, priceSort)) : filtered;
+  }, [models, query, priceRange, priceSort, source, catalogOwner, owner]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setSelectedDetailModel(null); };
-    if (selectedDetailModel) window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [selectedDetailModel]);
-
-  const query = modelSearch.trim().toLowerCase();
-  const matchesSearch = (m: any) => {
-    if (!query) return true;
-    const haystack = [m?.name, m?.id, m?.upstream_id, m?.description, m?.publisher_url, modelType(m), (m?.type === "agent" || m?.managed_by === "inferenceport-agents") && m?.owned_by ? `@${m.owned_by}` : ""]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(query);
+  const price = (model: any) => {
+    if (source === "gen") return "1x multiplier";
+    const listPrice = formatModelPrice(model) || formatPricing(model) || "Pricing varies";
+    const discounts = rewards.owner === owner ? rewards.discounts : {};
+    const id = modelId(model);
+    const fixed = discounts["__fixed_" + id + "__"];
+    if (typeof fixed === "number" && Number.isFinite(fixed) && fixed >= 0) return <><span className={styles.modelPriceOriginal}>{listPrice}</span><span className={styles.modelPriceDiscount}>${fixed.toFixed(2)}/M tokens</span></>;
+    const match = Object.entries(discounts).find(([pattern]) => !pattern.startsWith("__") && pattern.endsWith("-*") && id.startsWith(pattern.slice(0, -2)));
+    const percent = discounts[id] ?? discounts.__all_models__ ?? match?.[1] ?? 0;
+    const discounted = formatDiscountedPrice(model, { type: "percent", percent, fixedPrice: 0 });
+    return percent > 0 && discounted ? <><span className={styles.modelPriceOriginal}>{listPrice}</span><span className={styles.modelPriceDiscount}>{discounted}</span></> : listPrice;
   };
-  // Price browsing applies to P2G list rates only. Gen API models use multipliers.
-  const catalogModels = (source === "p2g" ? [...textModels(), ...nonTextConfigModels()] : genModels)
-    .filter(matchesSearch)
-    .filter((m: any) => source !== "p2g" || matchesModelPriceRange(modelStartingPrice(m), priceRange));
-  if (source === "p2g" && priceSort !== "default") {
-    catalogModels.sort((a: any, b: any) => compareModelPrice(a, b, priceSort));
-  }
-  const visibleCount = catalogModels.length;
-  const authH = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` });
-  const fj = async (path: string, opts: RequestInit = {}) => { const r = await fetch(`${apiBase}${path}`, opts); const d = await r.json().catch(() => ({})); if (!r.ok) { const errMsg = d.detail || (typeof d.error === "object" ? d.error?.message : d.error) || `HTTP ${r.status}`; throw new Error(errMsg); } return d; };
-  const sb = (k: string, v: boolean) => setBusy((p) => ({ ...p, [k]: v }));
-
-  const decodeBase64 = (b64: string): string => {
-    const binary = atob(b64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return URL.createObjectURL(new Blob([bytes]));
-  };
-
-  const runText = async () => { if (!session) return alert("Sign in required"); sb("text", true); setTextOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/chat/completions" : "/gen/chat/completions"; setTextOutput(JSON.stringify(await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ stream: false, model: selectedModel || undefined, messages: [{ role: "user", content: textPrompt || "Hello" }] }) }), null, 2)); } catch (e: any) { setTextOutput(e.message); } sb("text", false); };
-  const runImage = async () => { if (!session) return alert("Sign in required"); sb("image", true); setImageOutput("Generating\u2026"); try { const path = source === "p2g" ? "/v1/images/generations" : "/gen/images/generations"; const r = await fj(path, { method: "POST", headers: authH(), body: JSON.stringify({ prompt: imagePrompt || "A colorful neon city.", model: imageModel || undefined }) }); const b = r?.data?.[0]?.b64_json; if (!b) throw new Error("No image returned"); setImageOutput(`data:image/jpeg;base64,${b}`); } catch (e: any) { setImageOutput(e.message); } sb("image", false); };
-  const runVideo = async () => {
-    if (!session) return alert("Sign in required");
-    if (source === "gen") { setVideoError("Video generation is only available via the P2G API."); return; }
-    sb("video", true);
-    setVideoStatus("submitting");
-    setVideoStatusText("Submitting video generation job\u2026");
-    setVideoError("");
-    try {
-      const body: Record<string, any> = { prompt: videoPrompt };
-      if (videoModel) body.model = videoModel;
-      if (videoDur) body.seconds = videoDur;
-      const r = await fj("/v1/videos", { method: "POST", headers: authH(), body: JSON.stringify(body) });
-      if (r.id) {
-        setVideoStatus("polling");
-        setVideoStatusText(`Job submitted (ID: ${r.id.slice(0, 8)}\u2026). Polling for result\u2026`);
-        await pollVideoJob(r.id);
-      } else {
-        throw new Error("Unexpected response from video generation endpoint");
-      }
-    } catch (e: any) {
-      setVideoStatus("failed");
-      setVideoError(e.message);
-      sb("video", false);
-    }
-  };
-
-  const fetchVideoContent = async (jobId: string): Promise<string> => {
-    const r = await fetch(`${apiBase}/v1/videos/${jobId}/content`, {
-      headers: { Authorization: `Bearer ${session?.access_token}` },
-    });
-    if (r.ok) {
-      const blob = await r.blob();
-      return URL.createObjectURL(blob);
-    }
-    return "";
-  };
-
-  const pollVideoJob = async (jobId: string) => {
-    try {
-      const r = await fj(`/v1/videos/${jobId}`, { headers: authH() });
-      if (r.status === "completed") {
-        setVideoStatus("completed");
-        setVideoStatusText("Video generation complete!");
-        try {
-          const url = await fetchVideoContent(jobId);
-          if (url) setVideoUrl(url);
-        } catch { /* ignore content fetch errors */ }
-        sb("video", false);
-        return;
-      }
-      if (r.status === "failed") {
-        setVideoStatus("failed");
-        setVideoError(r.error?.message || (typeof r.error === "string" ? r.error : "Video generation job failed."));
-        sb("video", false);
-        return;
-      }
-      setVideoStatusText(`Job ${r.status}${r.progress ? ` (${r.progress}%)` : ""}\u2026 Polling in 3s`);
-      pollRef.current = setTimeout(() => pollVideoJob(jobId), 3000);
-    } catch (e: any) {
-      setVideoStatus("failed");
-      setVideoError(e.message);
-      sb("video", false);
-    }
-  };
-  const run3d = async () => {
-    if (!session) return alert("Sign in required");
-    if (source === "gen") { setThreeError("3D generation is only available via the P2G API."); return; }
-    if (!threeUrl?.trim()) { setThreeError("An image URL or base64 data URI is required."); return; }
-    sb("3d", true);
-    setThreeStatus("submitting");
-    setThreeStatusText("Submitting 3D generation job\u2026");
-    setThreeResult(null);
-    setThreeError("");
-
-    try {
-      const body: Record<string, any> = {
-        model: threeModel,
-        image_urls: [threeUrl],
-      };
-      if (threeModel === "asset-harvester" && threePrompt) {
-        body.prompt = threePrompt;
-      }
-      if (threeModel === "trellis2") {
-        body.resolution = threeResolution;
-      }
-
-      const r = await fj("/v1/3d/generations", {
-        method: "POST",
-        headers: authH(),
-        body: JSON.stringify(body),
-      });
-
-      if (r.job_id) {
-        setThreeStatus("polling");
-        setThreeStatusText(`Job submitted (ID: ${r.job_id.slice(0, 8)}\u2026). Polling for result\u2026`);
-        await pollJob(r.job_id);
-      } else if (r.data) {
-        processResult(r);
-      } else {
-        throw new Error("Unexpected response from 3D generation endpoint");
-      }
-    } catch (e: any) {
-      setThreeStatus("failed");
-      setThreeError(e.message);
-      sb("3d", false);
-    }
-  };
-
-  const pollJob = async (jobId: string) => {
-    try {
-      const r = await fj(`/v1/3d/jobs/${jobId}`, { headers: authH() });
-
-      if (r.status === "completed") {
-        processResult(r);
-        return;
-      }
-
-      if (r.status === "failed") {
-        setThreeStatus("failed");
-        setThreeError(r.error || "3D generation job failed.");
-        sb("3d", false);
-        return;
-      }
-
-      setThreeStatusText(`Job ${r.status}\u2026 Polling in 5s`);
-      pollRef.current = setTimeout(() => pollJob(jobId), 5000);
-    } catch (e: any) {
-      setThreeStatus("failed");
-      setThreeError(e.message);
-      sb("3d", false);
-    }
-  };
-
-  const processResult = (r: any) => {
-    const result: ThreeJobResult = {};
-    const item = r?.data?.[0];
-
-    if (item?.model_glb_b64_bytes) {
-      result.glbUrl = decodeBase64(item.model_glb_b64_bytes);
-    }
-    if (item?.model_ply_b64_bytes) {
-      result.plyUrl = decodeBase64(item.model_ply_b64_bytes);
-    }
-    if (item?.orbit_video_b64_bytes) {
-      result.videoUrl = decodeBase64(item.orbit_video_b64_bytes);
-    }
-    if (r?.usage) {
-      result.usage = r.usage;
-    }
-
-    setThreeResult(result);
-    setThreeStatus("completed");
-    setThreeStatusText("3D generation complete!");
-    sb("3d", false);
-  };
-
-  const priceMap: Record<string, string> = {};
-
-  if (!session) return <div className={`${styles.panel} ${styles.active}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to view available models and run the playground.</div></div>;
+  const detailMode = selected ? getMode(selected, source) : "text";
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Models</div>
-        <div className={styles.tabs}>
-          <button className={`playground-tab ${styles.playgroundTab} ${source === "p2g" ? styles.active : ""}`} onClick={() => setSource("p2g")}>P2G API</button>
-          <button className={`playground-tab ${styles.playgroundTab} ${source === "gen" ? styles.active : ""}`} onClick={() => setSource("gen")}>Gen API</button>
+        <div className={styles.tabs} role="tablist" aria-label="Model API source">
+          {(["p2g", "gen"] as const).map((value) => <button key={value} type="button" role="tab" aria-selected={source === value} className={`playground-tab ${styles.playgroundTab} ${source === value ? styles.active : ""}`} onClick={() => { setSource(value); setSelected(null); }}>{value === "p2g" ? "P2G API" : "Gen API"}</button>)}
         </div>
-        <input
-          type="search"
-          placeholder="Search models by name, slug or publisher..."
-          aria-label="Search models"
-          value={modelSearch}
-          onChange={(e) => setModelSearch(e.target.value)}
-          style={{
-            width: "100%", padding: "10px 14px", border: "1px solid var(--border)",
-            borderRadius: "8px", background: "var(--surface)", color: "var(--text)",
-            fontSize: "14px", fontFamily: "var(--mono)", marginBottom: "12px",
-          }}
-        />
+        <input type="search" placeholder="Search models by name, slug or publisher..." aria-label="Search models" value={query} onChange={(event) => setQuery(event.target.value)} className={styles.modelSearch} />
         <div className={styles.modelPriceControls}>
-          <label htmlFor="models-price-range">Starting price
-            <select id="models-price-range" value={priceRange} onChange={(e) => setPriceRange(e.target.value)} disabled={source !== "p2g"}>
-              <option value="all">All prices</option>
-              <option value="zero">$0 rate</option>
-              <option value="lt1">Under $1</option>
-              <option value="1to5">$1–$5</option>
-              <option value="5to20">$5–$20</option>
-              <option value="gte20">$20+</option>
-            </select>
-          </label>
-          <label htmlFor="models-price-sort">Sort by
-            <select id="models-price-sort" value={priceSort} onChange={(e) => setPriceSort(e.target.value as "default" | "asc" | "desc")} disabled={source !== "p2g"}>
-              <option value="default">Default order</option>
-              <option value="asc">Price: low to high</option>
-              <option value="desc">Price: high to low</option>
-            </select>
-          </label>
+          <label>Starting price<select value={priceRange} onChange={(event) => setPriceRange(event.target.value)} disabled={source !== "p2g"}>
+            <option value="all">All prices</option><option value="zero">$0 rate</option><option value="lt1">Under $1</option><option value="1to5">$1–$5</option><option value="5to20">$5–$20</option><option value="gte20">$20+</option>
+          </select></label>
+          <label>Sort by<select value={priceSort} onChange={(event) => setPriceSort(event.target.value as "default" | "asc" | "desc")} disabled={source !== "p2g"}>
+            <option value="default">Default order</option><option value="asc">Price: low to high</option><option value="desc">Price: high to low</option>
+          </select></label>
         </div>
-        <p className={styles.modelPriceHint}>
-          {source === "p2g"
-            ? "Uses the lowest published list rate per model (before rewards). Billing units vary by modality; models without prices sort last and are excluded from price ranges."
-            : "Gen API uses credit multipliers rather than comparable USD model rates. Price controls are available for P2G API."}
-        </p>
-        <div className={styles.muted} style={{ marginBottom: "12px", fontSize: "12px" }} aria-live="polite">
-          {query ? `${visibleCount} model${visibleCount === 1 ? "" : "s"} match "${modelSearch.trim()}"` : `${visibleCount} models`}
-        </div>
+        <p className={styles.modelPriceHint}>{source === "p2g" ? "Uses the lowest published list rate per model (before rewards). Billing units vary by modality; models without prices sort last and are excluded from price ranges." : "Gen API uses credit multipliers rather than comparable USD model rates. Price controls are available for P2G API."}</p>
+        <p className={`${styles.muted} ${styles.modelCount}`} aria-live="polite">{loading ? "Loading models…" : error || visibleModels.length + " model" + (visibleModels.length === 1 ? "" : "s")}</p>
+        {!session && <p className={`${styles.muted} ${styles.tiny}`}>Sign in to view your available models and use Playground.</p>}
+        {error && <button type="button" className="ghost" onClick={() => void loadModels()}>Retry models</button>}
         <div className={styles.modelsGrid}>
-          {visibleCount === 0 && (
-            <p className={styles.muted} style={{ gridColumn: "1 / -1" }}>
-              {query ? `No models match "${modelSearch.trim()}".` : "No models available."}
-            </p>
-          )}
-          {catalogModels.map((m: any, i: number) => {
-            const isConfigModel = source === "p2g" && !isTextModel(m);
-            const dynamicPrice = formatModelPrice(m);
-            const label = source === "gen" ? "1x multiplier" : dynamicPrice || (isConfigModel ? "Existing configuration" : formatPricing(m) || "Pricing unavailable");
-            const disc = source === "p2g" ? getModelDiscount(m) : { type: "none", percent: 0, fixedPrice: 0 };
-            const discountedLabel = source === "p2g" ? formatDiscountedPrice(m, disc) : null;
-            return (
-              <div key={`${slug(m) || "model"}-${i}`} className={styles.modelCard} onClick={() => setSelectedDetailModel(m)} style={{ cursor: "pointer" }}>
-                {modelLogoUrl(m) && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
-                    <img
-                      src={modelLogoUrl(m)}
-                      alt=""
-                      style={{ width: 32, height: 32, borderRadius: 6, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
-                      loading="lazy"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                    />
-                  </div>
-                )}
-                <div className={styles.modelCardTop}>
-                  <span className={styles.modelCardName}>{modelDisplayName(m)}</span>
-                  <div style={{ display: "flex", gap: "0.4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                    {!isConfigModel && m.model_state && (
-                      <span className={styles.modelPill} style={{
-                        color: m.model_state === "warm" ? "#22c55e" : "#f59e0b",
-                        background: m.model_state === "warm" ? "rgba(34,197,94,0.12)" : "rgba(245,158,11,0.12)",
-                        borderColor: m.model_state === "warm" ? "rgba(34,197,94,0.22)" : "rgba(245,158,11,0.22)",
-                      }}>{m.model_state === "warm" ? "Warm" : "Loading"}</span>
-                    )}
-                    <span className={`${styles.modelPill} ${isConfigModel ? configPillClass(m) : isTextModel(m) ? styles.isText : styles.isConfig}`}>
-                      {String(modelType(m)).toUpperCase()}
-                    </span>
-                  </div>
-                </div>
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(m) || "None"}</span></div>
-                <div className={styles.modelMeta}>
-                  <span className={styles.modelKey}>Pricing</span>
-                  <span className={styles.modelValue}>
-                    {disc.type === "fixed" ? (
-                      <>
-                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${disc.fixedPrice.toFixed(2)}/M tokens</span>
-                      </>
-                    ) : disc.type === "percent" && disc.percent > 0 && discountedLabel ? (
-                      <>
-                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{label}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{discountedLabel}</span>
-                      </>
-                    ) : (
-                      label
-                    )}
-                  </span>
+          {!loading && !error && visibleModels.length === 0 && <p className={styles.muted}>No matching models.</p>}
+          {visibleModels.map((model, index) => {
+            const id = modelId(model);
+            const mode = getMode(model, source);
+            return <article className={styles.modelCard} key={(id || "model") + "-" + index} role="button" tabIndex={0} aria-label={`Open ${displayName(model)} details`} aria-haspopup="dialog" onClick={() => setSelected(model)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(model); } }}>
+              <PublisherLogo model={model} theme={theme} />
+              <div className={styles.modelCardTop}>
+                <span className={styles.modelCardName}>{displayName(model)}</span>
+                <div style={{ display: "flex", gap: ".4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                  {isTextModel(model) && model.model_state && <span className={styles.modelPill} style={{ color: model.model_state === "warm" ? "var(--success-ink)" : "var(--warn)" }}>{model.model_state === "warm" ? "Warm" : "Loading"}</span>}
+                  <span className={`${styles.modelPill} ${pillClass(model)}`}>{String(modelType(model) || model?.type || mode).toUpperCase()}</span>
                 </div>
               </div>
-            );
+              <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{id || "Not listed"}</span></div>
+              <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{price(model)}</span></div>
+
+            </article>;
           })}
         </div>
       </section>
 
-      <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Live playground</div>
-        <p className={`${styles.muted} ${styles.tiny}`} style={{ marginBottom: "1.25rem" }}>Test generation using {source === "p2g" ? "P2G API" : "Gen API"}. Every successful generation consumes credits.</p>
-        <div className={styles.tabs}>
-          {(source === "p2g" ? ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"] as const : ["text", "image", "video", "audio", "3d"] as const).map((t) => <button key={t} className={`playground-tab ${styles.playgroundTab} ${t === "decision" ? styles.playgroundTabDecision : ""} ${tab === t ? styles.active : ""}`} onClick={() => setTab(t)}>{t === "3d" ? "3D" : t === "decision" ? "Decisions" : t === "embedding" ? "Embeddings" : t.charAt(0).toUpperCase() + t.slice(1)}</button>)}
-        </div>
-        {tab === "text" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Text model<select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>{textModels().map((m, i) => <option key={i} value={m.id || m.upstream_id || slug(m)}>{modelDisplayName(m)}</option>)}</select></label>
-          <textarea rows={5} placeholder="Ask something..." value={textPrompt} onChange={(e) => setTextPrompt(e.target.value)} />
-          <button onClick={runText} disabled={busy.text}>{busy.text ? "Generating\u2026" : "Generate text"}</button>
-          <pre className={styles.output}>{textOutput}</pre>
-        </div>}
-        {tab === "image" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Image model<select value={imageModel} onChange={(e) => setImageModel(e.target.value)}>
-            <option value="">Default</option>
-            {imageConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
-          </select></label>
-          <textarea rows={4} placeholder="Describe an image..." value={imagePrompt} onChange={(e) => setImagePrompt(e.target.value)} />
-          <button onClick={runImage} disabled={busy.image}>{busy.image ? "Generating\u2026" : "Generate image"}</button>
-          {imageOutput?.startsWith("data:") ? <img src={imageOutput} alt="Generated" className={styles.mediaOutputMedia} /> : <div className={styles.output}>{imageOutput}</div>}
-        </div>}
-        {tab === "video" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>Video model<select value={videoModel} onChange={(e) => setVideoModel(e.target.value)}>
-            <option value="">Default</option>
-            {videoConfigModels().map((m: any, i: number) => <option key={i} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>)}
-          </select></label>
-          <textarea rows={4} placeholder="Describe a video..." value={videoPrompt} onChange={(e) => setVideoPrompt(e.target.value)} />
-          <label>Duration
-            <select value={videoDur} onChange={(e) => setVideoDur(Number(e.target.value))}>
-              <option value={4}>4 seconds</option>
-              <option value={8}>8 seconds</option>
-              <option value={12}>12 seconds</option>
-              <option value={20}>20 seconds</option>
-              <option value={30}>30 seconds</option>
-            </select>
-          </label>
-          <button onClick={runVideo} disabled={busy.video}>{busy.video ? "Generating\u2026" : "Generate video"}</button>
-          {videoStatusText && videoStatus !== "idle" && (
-            <div className={styles.threeJobStatus}>
-              <div className={`${styles.threeStatusDot} ${videoStatus === "completed" ? styles.threeStatusDone : videoStatus === "failed" ? styles.threeStatusFailed : styles.threeStatusPending}`} />
-              <span>{videoStatusText}</span>
-            </div>
-          )}
-          {videoError && <div className={styles.threeError}>{videoError}</div>}
-          {videoStatus === "completed" && videoUrl && (
-            <div style={{ marginTop: "0.75rem" }}>
-              <video controls src={videoUrl} className={styles.mediaOutputMedia} />
-            </div>
-          )}
-          {videoStatus === "completed" && !videoUrl && (
-            <p className={`${styles.muted} ${styles.tiny}`}>Video generation complete. Use the asset CDN endpoint to retrieve the result.</p>
-          )}
-        </div>}
-        {tab === "audio" && (
-          <AudioPlayground
-            session={session}
-            apiBase={apiBase}
-            apiPrefix={source === "p2g" ? "/v1" : "/gen"}
-            models={source === "p2g" ? allModels : []}
-          />
-        )}
-        {source === "p2g" && tab === "embedding" && (
-          <EmbeddingStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
-        )}
-        {source === "p2g" && tab === "decision" && (<DecisionStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme} active />)}
-        {source === "p2g" && tab === "realtime" && (
-          <RealtimeStudio session={session} apiBase={apiBase} apiPrefix="/v1" models={allModels} theme={theme ?? "light"} active />
-        )}
-        {tab === "3d" && <div className={`${styles.playgroundPanel} ${styles.active}`}>
-          <label>3D Model<select value={threeModel} onChange={(e) => setThreeModel(e.target.value as any)}>
-            {allModels.filter((m: any) => m.type === "3d" || m.output_modalities?.includes("3d")).map((m: any) => (
-              <option key={m.id} value={m.id}>{modelDisplayName(m)}{formatModelPrice(m) ? ` (${formatModelPrice(m)})` : ""}</option>
-            ))}
-          </select></label>
-          {threeModel === "trellis2" && (
-            <label>Resolution<select value={threeResolution} onChange={(e) => setThreeResolution(e.target.value as any)}>
-              <option value="low">Low ($0.24)</option>
-              <option value="medium">Medium ($0.29)</option>
-              <option value="high">High ($0.35)</option>
-            </select></label>
-          )}
-          {threeModel === "asset-harvester" && <textarea rows={4} placeholder="Describe the 3D model (required for Asset Harvester)..." value={threePrompt} onChange={(e) => setThreePrompt(e.target.value)} />}
-          <input type="text" placeholder="Image URL or base64 data URI (required)" value={threeUrl} onChange={(e) => setThreeUrl(e.target.value)} />
-          <p className={`${styles.muted} ${styles.tiny}`}>
-            {threeModel === "asset-harvester" && "Asset Harvester produces GLB + PLY + orbit video. Requires a prompt."}
-            {threeModel === "tripoSR" && "TripoSR produces a GLB model from a single image."}
-            {threeModel === "sf3d" && "SF3D produces a GLB model from a single image."}
-            {threeModel === "trellis2" && `Trellis 2 produces a GLB model. Resolution: ${threeResolution}.`}
-            {" "}Async job polling: most jobs complete within 1 to 5 minutes.
-          </p>
-          <button onClick={run3d} disabled={busy["3d"]}>{busy["3d"] ? (threeStatus === "submitting" ? "Submitting\u2026" : "Generating\u2026") : "Generate 3D model"}</button>
-
-          {threeStatusText && threeStatus !== "idle" && (
-            <div className={styles.threeJobStatus}>
-              <div className={`${styles.threeStatusDot} ${threeStatus === "completed" ? styles.threeStatusDone : threeStatus === "failed" ? styles.threeStatusFailed : styles.threeStatusPending}`} />
-              <span>{threeStatusText}</span>
-            </div>
-          )}
-
-          {threeError && <div className={styles.threeError}>{threeError}</div>}
-
-          {threeResult && (
-            <div className={styles.threeOutput}>
-              {threeResult.glbUrl && (
-                <div className={styles.threeViewerWrap}>
-                  <model-viewer
-                    src={threeResult.glbUrl}
-                    alt="Generated 3D model"
-                    camera-controls
-                    auto-rotate
-                    shadow-intensity="1"
-                    style={{ width: "100%", height: "400px", background: "var(--surface-2)", borderRadius: "10px" }}
-                  />
-                </div>
-              )}
-              {threeResult.videoUrl && (
-                <div className={styles.threeMediaRow}>
-                  <span className={`${styles.muted} ${styles.tiny}`}>Orbit preview</span>
-                  <video controls src={threeResult.videoUrl} className={styles.mediaOutputMedia} />
-                </div>
-              )}
-              <div className={styles.threeDownloadRow}>
-                {threeResult.glbUrl && (
-                  <a href={threeResult.glbUrl} download="model.glb" className={styles.threeDownloadBtn}>Download GLB</a>
-                )}
-                {threeResult.plyUrl && (
-                  <a href={threeResult.plyUrl} download="model.ply" className={styles.threeDownloadBtn}>Download PLY</a>
-                )}
-              </div>
-              {threeResult.usage && (
-                <p className={`${styles.muted} ${styles.tiny}`}>Credits charged: ${threeResult.usage.payg_credits_charged}</p>
-              )}
-            </div>
-          )}
-        </div>}
-      </section>
-
-      {selectedDetailModel && (
-        <div className={styles.modelDetailOverlay} onClick={() => setSelectedDetailModel(null)}>
-          <div className={styles.modelDetailTray} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.modelDetailClose} onClick={() => setSelectedDetailModel(null)} aria-label="Close"><Icon name="x" size={18} /></button>
-            <div className={styles.modelDetailImageWrap}>
-              <img
-                className={styles.modelDetailImage}
-                src={modelImageUrl(selectedDetailModel)}
-                alt={modelDisplayName(selectedDetailModel)}
-                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                onLoad={(e) => { const img = e.target as HTMLImageElement; img.classList.add(styles.loaded); const ph = img.nextElementSibling as HTMLElement; if (ph) ph.style.display = "none"; }}
-              />
-              <div className={styles.modelDetailImagePlaceholder}>
-                {modelDisplayName(selectedDetailModel)}
-              </div>
-            </div>
-            <div className={styles.modelDetailContent}>
-              {modelLogoUrl(selectedDetailModel) && (
-                <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", marginBottom: "0.25rem" }}>
-                  <img
-                    src={modelLogoUrl(selectedDetailModel)}
-                    alt=""
-                    style={{ width: 36, height: 36, borderRadius: 8, flexShrink: 0, objectFit: "contain", border: "1px solid var(--border)" }}
-                    loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
-                </div>
-              )}
-              <div className={styles.modelDetailHeader}>
-                <span className={styles.modelDetailName}>{modelDisplayName(selectedDetailModel)}</span>
-                <span className={`${styles.modelPill} ${isTextModel(selectedDetailModel) ? styles.isText : styles.isConfig}`}>
-                  {String(modelType(selectedDetailModel)).toUpperCase()}
-                </span>
-              </div>
-              {typeof selectedDetailModel.description === "string" && selectedDetailModel.description.trim().length > 0 && (
-                <p className={styles.modelDetailDescription}>{selectedDetailModel.description.trim()}</p>
-              )}
-              <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{slug(selectedDetailModel) || "None"}</span></div>
-              <div className={styles.modelMeta}>
-                <span className={styles.modelKey}>Pricing</span>
-                <span className={styles.modelValue}>
-                  {(() => {
-                    const d = getModelDiscount(selectedDetailModel);
-                    const dp = formatDiscountedPrice(selectedDetailModel, d);
-                    const base = formatModelPrice(selectedDetailModel) || formatPricing(selectedDetailModel);
-                    if (d.type === "fixed") {
-                      return <>
-                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{base}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>${d.fixedPrice.toFixed(2)}/M tokens</span>
-                      </>;
-                    }
-                    if (d.type === "percent" && d.percent > 0 && dp) {
-                      return <>
-                        <span style={{ textDecoration: "line-through", opacity: 0.5, marginRight: "0.4rem" }}>{base}</span>
-                        <span style={{ color: "#dc2626", fontWeight: 600 }}>{dp}</span>
-                      </>;
-                    }
-                    return base;
-                  })()}
-                </span>
-              </div>
-              <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{modalities(selectedDetailModel)}</span></div>
-              {selectedDetailModel.output_modalities && (
-                <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selectedDetailModel.output_modalities.map((v: string) => v.toUpperCase()).join(" / ")}</span></div>
-              )}
-            </div>
+      {selected && catalogOwner === owner && <div className={styles.modelDetailOverlay} onClick={() => setSelected(null)}>
+        <section ref={detailRef} className={styles.modelDetailTray} role="dialog" aria-modal="true" aria-labelledby="model-detail-title" onClick={(event) => event.stopPropagation()}>
+          <button type="button" className={styles.modelDetailClose} onClick={() => setSelected(null)} aria-label="Close model details"><Icon name="x" size={18} /></button>
+          <ModelArtwork key={modelId(selected)} model={selected} />
+          <div className={styles.modelDetailContent}>
+            <PublisherLogo model={selected} theme={theme} />
+            <div className={styles.modelDetailHeader}><h2 className={styles.modelDetailName} id="model-detail-title">{displayName(selected)}</h2><span className={`${styles.modelPill} ${pillClass(selected)}`}>{String(modelType(selected) || selected?.type || detailMode).toUpperCase()}</span></div>
+            {typeof selected.description === "string" && selected.description.trim() && <p className={styles.modelDetailDescription}>{selected.description.trim()}</p>}
+            <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{modelId(selected) || "Not listed"}</span></div>
+            <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{price(selected)}</span></div>
+            <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{Array.isArray(selected.input_modalities) && selected.input_modalities.length ? selected.input_modalities.map((v: string) => v.toUpperCase()).join(" / ") : "Configured model"}</span></div>
+            <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{Array.isArray(selected.output_modalities) && selected.output_modalities.length ? selected.output_modalities.map((v: string) => v.toUpperCase()).join(" / ") : "Not specified"}</span></div>
+            <div className={styles.row}><button type="button" onClick={() => launchPlayground(source, detailMode, modelId(selected))} disabled={!session || !modelId(selected)}>Try in Playground</button></div>
           </div>
-        </div>
-      )}
+        </section>
+      </div>}
     </div>
   );
 }
