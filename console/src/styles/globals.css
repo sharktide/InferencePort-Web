@@ -1,48 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* =====================================================================
    InferencePort AI Developer Console: design tokens (single source).
-   Brand: site blue #4f7cff, with yellow #fcd704 for primary actions.
-   Existing variable names are kept so every module
+   Brand: site blue #4f7cff with gold #fbbf24 as the sparing secondary,
+   cool gray neutrals. Existing variable names are kept so every module
    keeps working; new tokens are added below them.
    ===================================================================== */
 :root {
   /* ---- Existing names, new values ---- */
-  --bg: #ffffff;              /* page */
+  --bg: #f8f6f0;              /* page */
   --surface: #ffffff;         /* raised surfaces */
-  --surface-2: #f7f7f5;       /* warm neutral bands, tracks and hover */
-  --border: #e3e3df;          /* hairlines */
-  --text: #0b0f1a;
-  --muted: #6b7280;
-  --accent: #2f56c9;          /* accessible blue links */
-  --accent-2: #fcd704;
+  --surface-2: #f3f4f6;       /* one tonal step: bands, tracks, hover */
+  --border: #e5e7eb;          /* hairlines */
+  --text: #111827;
+  --muted: #636b78;           /* muted text; #9ca3af fails AA as text (2.5:1) */
+  --accent: #3b6ae0;          /* small text and white-on-blue fills: 4.86:1 with white */
+  --accent-2: #fbbf24;        /* brand gold (was console yellow #f5c400) */
   --accent-3: #4f7cff;        /* canonical brand blue */
-  --danger: #b42318;
-  --danger-border: rgba(180,35,24,0.3);
-  --radius: 6px;
+  --danger: #be185d;          /* critical; true red fails colorblind separation next to amber */
+  --radius: 14px;
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --shadow: 0 1px 0 rgba(11, 15, 26, 0.04);
-  --shadow-lg: 0 24px 50px -24px rgba(11, 15, 26, 0.32);
+  --sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-lg: 0 16px 48px -12px rgba(17, 24, 39, 0.18), 0 2px 6px rgba(17, 24, 39, 0.06);
 
   /* ---- New tokens ---- */
-  --text-2: #3f4756;
-  --border-strong: #c8c8c2;
+  --text-2: #4b5563;          /* body and secondary text */
+  --border-strong: #9ca3af;   /* control borders */
   --brand: #4f7cff;           /* large fills, chart marks, focus, active markers */
   --brand-dim: rgba(79, 124, 255, 0.08);
-  --brand-border: rgba(79, 124, 255, 0.28);
-  --brand-hover: #3b6ae0;
-  --brand-ink: #2f56c9;
-  --accent-hover: #3b6ae0;
-  --primary: #fcd704;
-  --primary-hover: #e5c400;
-  --primary-ink: #0b0f1a;
-  --accent-ink: #ffffff;
+  --brand-border: rgba(79, 124, 255, 0.24);
+  --accent-hover: #2f5ac9;
+  --accent-ink: #ffffff;      /* text on --accent fills */
+  --primary: var(--accent);
+  --primary-hover: var(--accent-hover);
+  --primary-ink: var(--accent-ink);
+  --brand-hover: var(--accent-hover);
+  --brand-ink: var(--accent);
+  --danger-border: color-mix(in srgb, var(--danger) 32%, transparent);
+  --radius-lg: var(--r-2);
+  --radius-xl: var(--r-2);
   --focus: #4f7cff;
-  --gold: #fcd704;
-  --gold-dim: rgba(252, 215, 4, 0.16);
-  --gold-border: rgba(252, 215, 4, 0.6);
-  --gold-ink: #7a5a00;
+  --gold: #fbbf24;
+  --gold-dim: rgba(251, 191, 36, 0.12);
+  --gold-border: rgba(251, 191, 36, 0.45);
+  --gold-ink: #92400e;        /* dark amber on gold-dim: 6.4:1 */
   --success: #10b981;         /* brand success, marks and icons */
   --success-ink: #047857;     /* success as text */
   --warn: #a16207;            /* status: expired, pending, challenge, review, rate limit */
@@ -54,11 +56,9 @@
   --danger-solid-ink: #ffffff;
   --overlay: rgba(17, 24, 39, 0.45);
 
-  --r-0: 4px;
-  --r-1: 6px;
-  --r-2: 8px;
-  --radius-lg: 6px;
-  --radius-xl: 8px;
+  --r-0: 8px;                 /* chips */
+  --r-1: 10px;                /* buttons, inputs */
+  --r-2: 14px;                /* panels, media */
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
   --d-fast: 160ms;
@@ -80,43 +80,39 @@
 
 /* Dark: continuous with the existing console dark family */
 [data-theme="dark"] {
-  --bg: #101216;
-  --surface: #1c2028;
-  --surface-2: #181c23;
-  --border: #363c49;
-  --text: #f1f3f7;
-  --muted: #a5afbe;
-  --accent: #a8bfff;
-  --accent-2: #fcd704;
-  --accent-3: #8eabff;
-  --danger: #fb7185;
-  --danger-border: rgba(251,113,133,0.32);
-  --shadow: 0 1px 0 rgba(0,0,0,.12);
-  --shadow-lg: 0 28px 54px -20px rgba(0,0,0,.62);
+  --bg: #111113;
+  --surface: #1a1a1f;
+  --surface-2: #222228;
+  --border: #2e2e35;
+  --text: #edeef1;
+  --muted: #8c929d;
+  --accent: #6ea6ff;
+  --accent-2: #fbbf24;
+  --accent-3: #4a90ff;
+  --danger: #e0527e;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-lg: 0 16px 48px -12px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
 
-  --text-2: #c3cad5;
-  --border-strong: #505766;
-  --brand: #8eabff;
-  --brand-dim: rgba(142, 171, 255, 0.13);
-  --brand-border: rgba(142, 171, 255, 0.36);
-  --brand-hover: #a9beff;
-  --brand-ink: #a8bfff;
-  --accent-hover: #a9beff;
-  --primary-hover: #fce34f;
+  --text-2: #a7adb8;
+  --border-strong: #4b4f59;
+  --brand: #4a90ff;
+  --brand-dim: rgba(74, 144, 255, 0.12);
+  --brand-border: rgba(74, 144, 255, 0.32);
+  --accent-hover: #8ab8ff;
   --accent-ink: #0b1020;
-  --focus: #8eabff;
-  --gold-dim: rgba(252, 215, 4, 0.12);
-  --gold-border: rgba(252, 215, 4, 0.36);
-  --gold-ink: #f4db83;
+  --focus: #6ea6ff;
+  --gold-dim: rgba(251, 191, 36, 0.14);
+  --gold-border: rgba(251, 191, 36, 0.4);
+  --gold-ink: #fcd34d;
   --success-ink: #34d399;
-  --warn: #f4c95d;
-  --crit: #fb7185;
-  --ok: #c3cad5;
-  --danger-ink: #101216;
-  --danger-solid: #d6335a;
-  --danger-solid-hover: #c92b50;
+  --warn: #b8881a;
+  --crit: #e0527e;
+  --ok: #a7adb8;
+  --danger-ink: #111113;
+  --danger-solid: #d6335a;    /* destructive button fill; white text 4.7:1, fill vs surface 3.7:1, vs page 4.0:1 */
+  --danger-solid-hover: #c92b50; /* hover fill; white text 5.3:1 */
   --danger-solid-ink: #ffffff;
-  --overlay: rgba(11, 15, 26, 0.68);
+  --overlay: rgba(0, 0, 0, 0.6);
   color-scheme: dark;
 }
 
@@ -130,7 +126,10 @@ body {
   line-height: 1.55;
   color: var(--text);
   background-color: var(--bg);
-  background-image: none;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(251, 191, 36, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(79, 124, 255, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 80% 5%, rgba(79, 124, 255, 0.07) 0%, transparent 40%);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
@@ -138,7 +137,7 @@ body {
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-::selection { background: var(--gold); color: var(--text); }
+::selection { background: rgba(79, 124, 255, 0.22); }
 
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
 
@@ -171,26 +170,8 @@ code {
   color: var(--text);
 }
 
-/* Tables use the same quiet hairlines as the rest of the console. */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-}
-th, td {
-  padding: 0.7rem 0.85rem;
-  border-bottom: 1px solid var(--border);
-  text-align: left;
-  vertical-align: top;
-}
-thead th {
-  background: var(--surface-2);
-  color: var(--text-2);
-  font-size: 0.8125rem;
-  font-weight: 600;
-}
-tbody tr:hover { background: var(--surface-2); }
-.num { font-variant-numeric: tabular-nums; }
+/* Numbers in JetBrains Mono and tables line up */
+.num, table { font-variant-numeric: tabular-nums; }
 
 .muted { color: var(--muted); }
 .tiny { font-size: 0.8125rem; }
@@ -199,9 +180,9 @@ tbody tr:hover { background: var(--surface-2); }
 .row { display: flex; gap: 0.65rem; align-items: center; }
 
 input, select, textarea {
+  min-width: 0;
   font-family: var(--sans);
   font-size: 0.9375rem;
-  min-width: 0;
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--border-strong);
@@ -249,13 +230,11 @@ button {
 button:active:not(:disabled) { transform: scale(0.97); }
 
 button:where(:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack])) {
-  background: var(--gold);
-  color: #0b0f1a;
-  border: 1px solid #0b0f1a;
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 button:where(:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack])):where(:hover) {
-  background: var(--primary-hover);
-  border-color: #0b0f1a;
+  background: var(--accent-hover);
 }
 button:where(:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack])):where(:disabled) {
   opacity: 0.45;
@@ -270,7 +249,6 @@ button.ghost {
 }
 button.ghost:hover { border-color: var(--text-2); background: var(--surface-2); }
 button.ghost:disabled { opacity: 0.45; cursor: not-allowed; }
-button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 button.text-btn {
   background: transparent;

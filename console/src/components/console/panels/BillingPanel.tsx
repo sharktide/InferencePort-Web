@@ -95,7 +95,6 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
-      <div className={billingStyles.walletTopup}>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Pay-as-you-go wallet</div>
         <p className={`${styles.muted} ${styles.tiny}`}>Prepaid credits for model API, storage, and hosting charges. These are separate from subscription plan allowances below.</p>
@@ -181,7 +180,6 @@ export default function BillingPanel({ config, session, apiBase }: BillingPanelP
           {[`${config?.pricing?.textCreditPerMillionTokens} credits per 1,000,000 text tokens (including multimodal text payloads)`, `${config?.pricing?.imageCreditPerImage} credits per image`, `${config?.pricing?.videoCreditPerSecond} credits per second of video`, `${config?.pricing?.audioCreditPerSecond} credits per second of audio (music/sfx)`].map((r, i) => <li key={i} className={styles.rateListItem}>{r}</li>)}
         </ul>
       </section>
-      </div>
 
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Generation API subscription</div>

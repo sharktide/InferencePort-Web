@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import styles from "./Panel.module.css";
-import panelStyles from "./ApiKeyPanel.module.css";
 import { useModal } from "../../Modal";
 import LimitsEditor, { draftFrom, emptyDraft, parseDraft, type LimitsDraft } from "./orgs/LimitsEditor";
 
@@ -174,10 +173,10 @@ export default function ApiKeyPanel({ session, apiBase }: Props) {
     Boolean(createLimits.budget.trim() || createLimits.models.trim() || createLimits.modalities.length);
   const hasAdvancedSettings = Boolean(keyExpiry.trim() || configuredRestrictions);
 
-  if (!session) return <div className={`${styles.panel} ${styles.active} ${panelStyles.panel}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to create and manage Lightning API keys.</div></div>;
+  if (!session) return <div className={`${styles.panel} ${styles.active} ${styles.apiKeyPanel}`}><div className={`${styles.lockedOverlay} ${styles.panelLock}`}>Sign in to create and manage Lightning API keys.</div></div>;
 
   return (
-    <div className={`${styles.panel} ${styles.active} ${panelStyles.panel}`}>
+    <div className={`${styles.panel} ${styles.active} ${styles.apiKeyPanel}`}>
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Lightning API keys</div>
         <div className={styles.apiKeyShell}>

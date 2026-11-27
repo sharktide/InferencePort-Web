@@ -4,10 +4,9 @@
   gap: 1.25rem;
 }
 
-.walletTopup { display: grid; gap: .85rem; min-width: 0; }
-.walletTopup > section { min-width: 0; }
 
-.balanceCard { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-1); padding: 1.25rem; }
+
+.balanceCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 14px; padding: 1.75rem; }
 
 .balanceLabel {
   font-size: 0.8125rem;
@@ -34,7 +33,7 @@
 
 .statsRow { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
 
-.statItem { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-1); padding: .9rem 1rem; min-width: 0; }
+.statItem { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1.25rem; min-width: 0; }
 
 .statLabel {
   display: block;
@@ -64,8 +63,8 @@
 .packCard {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--r-1);
-  padding: .9rem;
+  border-radius: var(--r-2);
+  padding: 1.1rem 1.1rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
@@ -145,10 +144,6 @@
   cursor: pointer;
 }
 
-@media (min-width: 900px) {
-  .walletTopup { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: stretch; }
-  .walletTopup > section { height: 100%; }
-}
 @media (max-width: 620px) {
   .statsRow { grid-template-columns: 1fr; gap: .55rem; }
   .balanceCard { padding: 1rem; }

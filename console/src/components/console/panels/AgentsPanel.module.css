@@ -6,22 +6,21 @@
 .usernameGate { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
 .usernameGate input { max-width: 260px; min-height: 38px; }
 
-.agentsTabs { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 1.25rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.55rem; }
-.agentsTab { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; border-radius: 6px; padding: 0.4rem 0.85rem; cursor: pointer; min-height: 36px; }
-.agentsTab.active { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); box-shadow: inset 0 -2px 0 var(--brand); }
-.createTab { border-color: var(--gold-border, #d7b900); background: var(--gold, #fcd704); color: #181818; }
-.createTab:hover { background: var(--gold, #fcd704); color: #181818; }
-.createTab.active { border-color: var(--gold-border, #d7b900); background: var(--gold, #fcd704); color: #181818; box-shadow: inset 0 -2px 0 #b59500; }
+.agentsTabs { display: flex; gap: 0.35rem; flex-wrap: wrap; margin: 1.25rem 0 1rem; }
+.agentsTab { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; border-radius: 999px; padding: 0.35rem 0.9rem; cursor: pointer; min-height: 32px; }
+.agentsTab.active { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
 .agentsTab:hover:not(.active) { color: var(--text); }
+.createTab, .createTab.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.createTab:hover:not(.active) { background: var(--accent-hover); color: var(--accent-ink); }
 
 .agentList { display: grid; gap: 0.85rem; }
-.agentRow { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; display: grid; gap: 0.65rem; min-width: 0; }
+.agentRow { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; display: grid; gap: 0.6rem; min-width: 0; }
 .agentRowHead { display: flex; justify-content: space-between; gap: 0.75rem; align-items: flex-start; flex-wrap: wrap; }
 .agentRowTitle { min-width: 0; }
 .agentName { font-weight: 600; color: var(--text); }
 .agentModelId { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); word-break: break-all; }
 .agentBadges { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
-.badge { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.55rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); white-space: nowrap; }
+.badge { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.55rem; border-radius: var(--r-1); border: 1px solid var(--border); background: var(--surface); color: var(--text); white-space: nowrap; }
 .badgeOwnerPays { border-color: color-mix(in srgb, var(--brand) 45%, var(--border)); background: var(--brand-dim); color: var(--accent); }
 .badgeCallerPays { border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); background: color-mix(in srgb, var(--warn) 10%, transparent); color: var(--text); }
 .badgePublic { border-color: color-mix(in srgb, var(--success) 40%, var(--border)); }
@@ -49,7 +48,7 @@
   .mcpAuth { grid-template-columns: 1fr; }
 }
 .inviteLinkRow { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-.inviteLink { font-family: var(--mono); font-size: 0.75rem; word-break: break-all; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.55rem; flex: 1; min-width: 200px; }
+.inviteLink { font-family: var(--mono); font-size: 0.75rem; word-break: break-all; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-1); padding: 0.4rem 0.55rem; flex: 1; min-width: 200px; }
 
 .editBox { display: grid; gap: 0.75rem; padding-top: 0.65rem; border-top: 1px solid var(--border); }
 
@@ -65,7 +64,7 @@
 }
 
 .catalogGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 0.85rem; }
-.catalogCard { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; display: grid; gap: 0.55rem; min-width: 0; }
+.catalogCard { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; display: grid; gap: 0.55rem; min-width: 0; }
 .catalogDesc { font-size: 0.85rem; color: var(--text-2); line-height: 1.45; }
 
 /* Invite accept/deny dialog */
@@ -73,7 +72,7 @@
 .inviteDialog { max-width: 460px; width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-2); box-shadow: var(--shadow-lg, 0 20px 40px rgba(15, 23, 42, 0.25)); padding: 1.75rem; display: grid; gap: 0.85rem; }
 .inviteDialogTitle { margin: 0; font-size: 1.15rem; font-weight: 600; color: var(--text); letter-spacing: -0.015em; }
 .inviteDialogBody { font-size: 0.9rem; line-height: 1.55; color: var(--text-2); }
-.inviteDialogMeta { display: grid; gap: 0.4rem; padding: 0.75rem 0.9rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-2); font-size: 0.85rem; color: var(--text); }
+.inviteDialogMeta { display: grid; gap: 0.4rem; padding: 0.75rem 0.9rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; font-size: 0.85rem; color: var(--text); }
 .inviteDialogMetaRow { display: flex; justify-content: space-between; gap: 1rem; }
 .inviteDialogMetaKey { color: var(--muted); font-weight: 600; font-size: 0.8rem; }
 .inviteDialogActions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.35rem; }
@@ -91,12 +90,12 @@
 .memberRoleSelect { min-height: 34px; padding: 0 0.5rem; font-size: 0.8rem; }
 
 /* Settings toggle */
-.settingsRow { display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.85rem 1rem; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: var(--r-2); margin-bottom: 1rem; }
+.settingsRow { display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.85rem 1rem; background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 1rem; }
 .settingsRow input[type="checkbox"] { margin-top: 0.25rem; width: 16px; height: 16px; accent-color: var(--brand); flex-shrink: 0; }
 .settingsLabel { font-size: 0.9rem; font-weight: 600; color: var(--text); }
 .settingsHint { font-size: 0.8125rem; color: var(--muted); line-height: 1.45; margin-top: 0.2rem; }
 
-.advancedSection { grid-column: 1 / -1; border: 1px solid var(--border); border-radius: 6px; min-width: 0; }
+.advancedSection { grid-column: 1 / -1; border: 1px solid var(--border); border-radius: var(--r-1); min-width: 0; }
 .advancedSummary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.65rem 0.85rem; cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--text); }
 .advancedSummary span { color: var(--muted); font-size: 0.78rem; font-weight: 400; text-align: right; }
 .advancedContent { display: grid; gap: 1rem; padding: 0.9rem; border-top: 1px solid var(--border); }
@@ -107,5 +106,5 @@
   .agentsTab { text-align: left; }
   .advancedSummary { align-items: flex-start; flex-direction: column; justify-content: center; gap: 0.1rem; }
   .inviteOverlay { padding: 0.75rem; align-items: flex-end; }
-  .inviteDialog { max-height: 90dvh; overflow: auto; padding: 1.25rem; border-radius: 8px 8px 4px 4px; }
+  .inviteDialog { max-height: 90dvh; overflow: auto; padding: 1.25rem; border-radius: var(--r-2) var(--r-2) var(--r-0) var(--r-0); }
 }
