@@ -178,7 +178,7 @@
                 <li><strong>Your application</strong><span>Keep your authentication, UI and business logic.</span></li>
                 <li><strong><a href="#shield">AI Shield</a></strong><code>POST /ai-shield/scan</code><span>Use content_moderation or prompt_guard; apply the returned decision.</span></li>
                 <li><strong><a href="#api">Unified model API</a></strong><code>POST /v1/chat/completions</code><span>Use a catalog model such as deepseek-v4.1-flash-1017.</span></li>
-                <li><strong><a href="#agents">Managed agents</a></strong><code>agent/&lt;username&gt;/support-bot</code><span>Configure instructions and MCP tools once; call the agent as a model.</span></li>
+                <li><strong><a href="#agents">Managed agents</a></strong><code>agent/&lt;username&gt;/support-bot</code><span>For tool-enabled replies, configure instructions and MCP tools once and use the agent ID in place of a raw model ID.</span></li>
                 <li><strong><a href="#buckets">InferencePort Buckets</a></strong><span>Store exports using the workspace S3 endpoint and scoped SigV4 credentials.</span></li>
                 <li><strong><a href="#organizations">Organizations &amp; usage</a></strong><span>Track service spend and configure API key and model restrictions from one console.</span></li>
               </ol>
@@ -415,10 +415,10 @@ asyncio.run(main())</code></pre></div>
             <div class="lp-deploy-preview" aria-label="Illustrative deployment setup controls">
               <div class="lp-preview-heading"><strong>Set up a deployment</strong><span>Illustrative preview</span></div>
               <div class="lp-deploy-preview-status"><span class="lp-preview-status-dot" aria-hidden="true"></span> Ready to configure <span>Cloud deployment</span></div>
-              <div class="lp-deploy-preview-field"><span>Model</span><strong>Search the deployable catalog <i aria-hidden="true">⌄</i></strong></div>
-              <div class="lp-model-catalog" aria-label="Illustrative open-model search results"><div><strong>Qwen</strong><span>Explore context &amp; availability</span></div><div><strong>Llama</strong><span>Deploy to your workspace</span></div><div><strong>DeepSeek</strong><span>Call with the unified API</span></div></div>
+              <div class="lp-deploy-preview-field"><span>Model catalog</span><strong><code>GET /v1/deploy/models</code></strong></div>
+              <div class="lp-model-catalog" aria-label="Deployment API sequence"><div><strong>Check availability</strong><span><code>GET /v1/deploy/model-status/{model_id}</code></span></div><div><strong>Deploy</strong><span><code>POST /v1/deploy</code> · model_id</span></div><div><strong>Run inference</strong><span><code>POST /v1/chat/completions</code> · display_model_id</span></div></div>
               <div class="lp-deploy-preview-field"><span>Destination</span><strong>Personal or organization <i aria-hidden="true">⌄</i></strong></div>
-              <div class="lp-deploy-preview-field"><span>Model details</span><strong>Context and availability</strong></div>
+              <div class="lp-deploy-preview-field"><span>Model details</span><strong>Returned display_model_id is the inference model ID</strong></div>
               <div class="lp-deploy-preview-footer"><span>Deployment fee and inference usage are billed separately.</span><a class="lp-preview-action" href="/console/deploy">Deploy model ↗</a></div>
             </div>
           </article>
@@ -437,6 +437,7 @@ asyncio.run(main())</code></pre></div>
               <div class="lp-bucket-preview-symbol" aria-hidden="true"><span class="lp-bucket-preview-mark">▱</span><div><strong>Your object storage</strong><small>S3-compatible access</small></div></div>
               <div class="lp-bucket-visual-row"><span>Protocol</span><strong>S3-compatible / AWS Signature V4</strong></div>
               <div class="lp-bucket-visual-row"><span>Access</span><strong>Scoped, revocable credentials</strong></div>
+              <div class="lp-bucket-visual-row"><span>Workspace endpoint</span><strong><code>/{owner_id}/s3</code></strong></div>
               <div class="lp-bucket-files" aria-label="Example objects in a model-artifacts bucket">
                 <div class="lp-bucket-files-head"><strong>model-artifacts</strong><span>Example contents</span></div>
                 <div><span class="lp-bucket-object-icon" aria-hidden="true">▤</span><strong>weights/</strong><small>Folder</small></div>
@@ -527,7 +528,7 @@ asyncio.run(main())</code></pre></div>
           <article class="lp-ecosystem-spotlight" id="council">
             <div class="lp-ecosystem-copy">
               <h3>Council MCP</h3>
-              <p>Send a problem to <code>council_reason</code> from Claude Code, Cursor, VS Code or another MCP client. Models answer independently, then cross-review and judges synthesize their findings. Configure the tier, custom_models, custom_judges and iteration_rounds (1–3 review rounds). Connect with OAuth or API key.</p>
+              <p>Send a problem to <code>council_reason</code> from Claude Code, Cursor, VS Code, Claude Desktop or another MCP client. Models answer independently, then cross-review and judges synthesize their findings. Configure the tier, custom_models, custom_judges and iteration_rounds (1–3 review rounds). Connect with OAuth or API key.</p>
               <a class="lp-proof-link" href="ipx.html">Explore Council MCP <span aria-hidden="true">↗</span></a>
             </div>
             <div class="lp-ecosystem-visual lp-council-visual" aria-label="Illustrative Council MCP review flow">
@@ -565,7 +566,7 @@ asyncio.run(main())</code></pre></div>
                   <pre><code><span class="lp-cli-prompt">$</span> ipx org keys create ci --monthly-limit 25
 <span class="lp-cli-prompt">$</span> ipx agent chat acme-bot/support</code></pre>
                   <div class="lp-cli-step-label">Security in CI</div>
-                  <pre><code><span class="lp-cli-prompt">$</span> git diff | ipx shield scan --fail-on review</code></pre>
+                  <pre><code><span class="lp-cli-prompt">$</span> git diff | ipx shield scan --task dlp --fail-on review</code></pre>
                 </div>
                 <div class="lp-cli-terminal-foot"><span>API keys</span><span>Agents</span><span>Shield</span><span>Organizations</span></div>
               </div>
@@ -584,8 +585,8 @@ asyncio.run(main())</code></pre></div>
                 <aside class="lp-lightning-sidebar" aria-label="Example chat sidebar"><strong>Chats</strong><span class="lp-lightning-sidebar-active">API debugging</span><span>Writing notes</span><span>Image ideas</span></aside>
                 <div class="lp-lightning-conversation">
                   <div class="lp-lightning-model-bar"><span class="lp-lightning-live-dot" aria-hidden="true"></span><strong>Lightning Text v2</strong><span>Streaming chat</span></div>
-                  <div class="lp-lightning-message lp-lightning-message--user">Help me debug an API request.</div>
-                  <div class="lp-lightning-message lp-lightning-message--assistant"><strong>Lightning</strong><p>Start by checking the endpoint, authorization header and model ID. Then inspect the response status and error body.</p></div>
+                  <div class="lp-lightning-message lp-lightning-message--user">Why does /v1/chat/completions return 401?</div>
+                  <div class="lp-lightning-message lp-lightning-message--assistant"><strong>Lightning</strong><p>Check that the request uses Authorization: Bearer $IP_API_KEY and that the API key is active. If it still fails, inspect the response body before retrying.</p></div>
                   <div class="lp-lightning-compose"><span>Ask anything...</span><b aria-hidden="true">↗</b></div>
                 </div>
               </div>

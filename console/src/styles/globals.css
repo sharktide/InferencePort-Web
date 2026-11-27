@@ -42,8 +42,8 @@
   --radius-xl: var(--r-2);
   --focus: #4f7cff;
   --gold: #fcd704;
-  --gold-dim: rgba(251, 191, 36, 0.12);
-  --gold-border: rgba(251, 191, 36, 0.45);
+  --gold-dim: rgba(252, 215, 4, 0.16);
+  --gold-border: rgba(252, 215, 4, 0.6);
   --gold-ink: #92400e;        /* dark amber on gold-dim: 6.4:1 */
   --success: #10b981;         /* brand success, marks and icons */
   --success-ink: #047857;     /* success as text */
@@ -101,8 +101,8 @@
   --accent-hover: #8ab8ff;
   --accent-ink: #0b1020;
   --focus: #6ea6ff;
-  --gold-dim: rgba(251, 191, 36, 0.14);
-  --gold-border: rgba(251, 191, 36, 0.4);
+  --gold-dim: rgba(252, 215, 4, 0.12);
+  --gold-border: rgba(252, 215, 4, 0.36);
   --gold-ink: #fcd34d;
   --success-ink: #34d399;
   --warn: #b8881a;

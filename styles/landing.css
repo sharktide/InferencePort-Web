@@ -2097,3 +2097,7 @@
   .lp-integration-flow li { min-height: 75px; }
   .lp-council-voices > div { grid-template-columns: 1fr; gap: 4px; }
 }
+
+.lp-deploy-preview-field code, .lp-model-catalog code, .lp-bucket-visual-row code { font-size: .72rem; overflow-wrap: anywhere; white-space: normal; }
+.lp-integration-flow ol { grid-template-rows: repeat(6, minmax(92px, auto)); }
+@media (max-width: 760px) { .lp-integration-flow ol { grid-template-rows: none; } }

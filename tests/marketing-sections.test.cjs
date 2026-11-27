@@ -668,3 +668,9 @@ test("workflow comparison shows six concrete layers and honest integration bound
   for (const id of ["deepseek-v4.1-flash-1017", "claude-sonnet-5", "beam-1.0-501b-a23b"]) assert.ok(council.includes(id));
   assert.match(council, /Not live output/);
 });
+
+
+test("deployment and storage previews use documented request paths and fields", () => {
+  for (const field of ["GET /v1/deploy/models", "GET /v1/deploy/model-status/{model_id}", "POST /v1/deploy", "display_model_id", "/{owner_id}/s3"]) assert.ok(home.includes(field), field);
+  assert.match(home, /git diff \| ipx shield scan --task dlp --fail-on review/);
+});
