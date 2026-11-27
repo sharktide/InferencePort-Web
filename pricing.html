@@ -230,10 +230,8 @@
 			}
 
 					/* ── Organizations section ── */
-			:root {
-				--muted: #636b78;
-				--success-ink: #047857;
-			}
+			:root { --success-ink: #047857; }
+			:root[data-theme="dark"] { --success-ink: #6ee7b7; }
 			.org-hero-link {
 				text-align: center;
 				font-size: 0.9rem;
@@ -407,6 +405,66 @@
 					text-align: center;
 				}
 			}
+			/* Pricing-only layout: consistent with the homepage, no extra card layers. */
+			.page-hero { padding: clamp(52px,7vw,90px) 0 38px; background: var(--bg); }
+			.page-hero .section-tag { display:none; }
+			.page-title { font-size: clamp(2rem,4vw,3.35rem); max-width: 900px; margin:0 auto; }
+			.page-title .accent { color:var(--gold-ink); }
+			.page-sub { max-width: 700px; color:var(--text-body); }
+			.service-nav { gap:10px 24px; margin-top:24px; }
+			.service-nav a { font-weight:600; font-size:.85rem; text-decoration:underline; text-underline-offset:4px; }
+			.pricing-section > .container, .org-section > .container { width: min(1392px, calc(100% - 48px)); max-width:none; padding:0; }
+			.pricing-heading { display:flex; justify-content:space-between; align-items:baseline; gap:20px; margin-bottom:28px; }
+			.pricing-heading h2 { font-size:clamp(1.5rem,2.5vw,2rem); font-weight:750; margin:0; }
+			.pricing-heading p { max-width:540px; color:var(--text-body); font-size:.92rem; line-height:1.6; margin:0; }
+			.api-pricing { background:var(--bg-alt); border-block:1px solid var(--border); }
+			.service-rates { border-top:1px solid var(--border); }
+			.service-rate { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,.65fr); gap:20px; align-items:center; padding:20px 0; border-bottom:1px solid var(--border); }
+			.service-rate h3 { font-size:1rem; font-weight:700; margin:0 0 6px; }
+			.service-rate p { font-size:.85rem; margin:0; line-height:1.55; color:var(--text-body); }
+			.service-rate-value { color:var(--text); font-size:.9rem; font-weight:650; }
+			.service-rate-value small { display:block; margin-top:4px; font-weight:400; color:var(--text-muted); }
+			.service-rate > a { font-size:.84rem; font-weight:600; justify-self:end; text-decoration:underline; text-underline-offset:3px; }
+			.pricing-actions { display:flex; align-items:center; flex-wrap:wrap; gap:14px 22px; margin-top:22px; }
+			.pricing-actions .btn { width:auto; margin:0; padding:10px 18px; }
+			.pricing-actions > a:not(.btn) { font-size:.85rem; font-weight:600; }
+			.plan-grid { grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; align-items:stretch; }
+			.plan-grid > .col-md { width:auto; min-width:0; padding:0; }
+			.plan-card { border-radius:8px; padding:22px 16px; transform:none; }
+			.plan-card:hover { transform:none; border-color:var(--gold-border); }
+			.plan-card.popular { border-color:#c4a500; background:var(--gold-dim); }
+			.popular-pill { background:var(--gold); color:#111827; letter-spacing:0; text-transform:none; }
+			.plan-desc { min-height:2.5em; color:var(--text-muted); }
+			.plan-period { min-height:2.3em; }
+			.plan-section { color:var(--gold-ink); text-transform:none; letter-spacing:0; font-size:.75rem; }
+			.plan-feature { color:var(--text-body); }
+			.plan-card > .btn { margin-top:auto; }
+			.plan-card > .btn::before { content:none; }
+			.plan-card > .btn { position:relative; top:0; }
+			.plan-card > .plan-feature:last-of-type, .plan-card > .org-features { margin-bottom:20px; }
+			.btn-plan-primary, .org-btn-primary, .org-cta { background:var(--gold); color:#111827; border:1px solid var(--gold); }
+			.btn-plan-primary:hover, .org-btn-primary:hover, .org-cta:hover { background:#e9c700; color:#111827; border-color:#e9c700; opacity:1; }
+			.btn-plan-outline { background:var(--surface); color:var(--text); border-color:var(--border); }
+			.btn-plan-outline:hover { background:var(--surface-hover); color:var(--text); border-color:var(--brand-border); }
+			.pricing-table-wrap, .org-table-wrap { background:var(--surface); border-radius:8px; overflow:auto; }
+			.pricing-table-wrap table, .org-table { width:100%; border-collapse:collapse; }
+			.pricing-table-wrap thead th, .org-table thead th { color:var(--text); background:var(--bg-alt); padding:12px 14px; border-bottom:1px solid var(--border); text-align:left; }
+			.pricing-table-wrap tbody td, .org-table tbody td { color:var(--text-body); padding:12px 14px; font-size:.84rem; border-bottom:1px solid var(--border-light); }
+			.pricing-table-wrap tbody tr:nth-child(even) th, .org-table tbody tr:nth-child(even) > * { background:var(--bg-alt); }
+			.pricing-table-wrap td.yes, .org-table td.org-yes { color:var(--success-ink); }
+			.pricing-table-wrap td.not-included, .org-table td.org-no { color:var(--text-muted); }
+			.org-table-wrap:focus-visible { outline:2px solid var(--brand); outline-offset:3px; }
+			.org-section { scroll-margin-top:88px; }
+			.org-plan .plan-desc { min-height:3.8em; }
+			.org-plan .plan-period { min-height:2.8em; }
+			.local-includes, .upgrade-box, .org-note { max-width:none; padding:20px 0; border:0; border-top:1px solid var(--border); border-radius:0; background:transparent; }
+			.local-includes { margin-top:24px; }
+			#upgrade-instructions { padding-top:0!important; padding-bottom:0!important; }
+			#upgrade-instructions .upgrade-box { text-align:left!important; }
+			#upgrade-instructions .upgrade-box p { margin-bottom:0; }
+			@media (max-width:1199px) { .plan-grid { grid-template-columns:repeat(6,minmax(0,1fr)); } .plan-grid > * { grid-column:span 2; } .plan-grid > :nth-last-child(-n+2) { grid-column:span 3; } }
+			@media (max-width:767px) { .pricing-section > .container, .org-section > .container { width:calc(100% - 34px); } .pricing-heading { display:block; } .pricing-heading p { margin-top:10px; } .service-rate { grid-template-columns:1fr; gap:8px; } .service-rate > a { justify-self:start; } .plan-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .plan-grid > *, .plan-grid > :nth-last-child(-n+2) { grid-column:auto; } .plan-grid > :last-child { grid-column:1/-1; } .org-plan .plan-desc, .org-plan .plan-period { min-height:0; } }
+			@media (max-width:480px) { .plan-grid { grid-template-columns:1fr; } .plan-desc,.plan-period { min-height:0; } .plan-card { padding:20px; } }
 		</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -417,23 +475,32 @@
 			<div class="container">
 				<div class="section-tag">Plans & Pricing</div>
 				<h1 class="page-title">
-					Start Free. <span class="accent">Scale to Cloud.</span>
+					Pricing for <span class="accent">AI infrastructure and chat.</span>
 				</h1>
 				<p class="page-sub">
-					Every plan includes unlimited local chat. Upgrade to unlock
-					cloud generation at scale.
+					Pay for model and infrastructure usage, choose a cloud chat subscription, or set up a shared organization wallet.
 					</p>
-					<p class="org-hero-link">
-						<a href="#organizations">Teams? See Organization plans &darr;</a>
-				</p>
+					<nav class="service-nav" aria-label="Pricing sections"><a href="#api-wallet">API &amp; infrastructure</a><a href="#cloud-plans">Cloud chat plans</a><a href="#organizations">Organizations</a><a href="#feature-comparison">Compare chat plans</a></nav>
 			</div>
 		</div>
 
+		<section class="py-5 pricing-section api-pricing" id="api-wallet" aria-labelledby="api-wallet-heading">
+			<div class="container">
+				<div class="pricing-heading"><h2 id="api-wallet-heading">Pay-to-Go API &amp; infrastructure</h2><p>Prepaid wallet credits cover usage-based services separately from monthly chat subscriptions. Review the applicable rates before making requests.</p></div>
+				<div class="service-rates">
+					<div class="service-rate"><div><h3>Model API</h3><p>Text, images, video, audio, 3D, embeddings, realtime and decision models through the unified API.</p></div><div class="service-rate-value">Model-specific rates<small>Tokens, requests or other model-specific units</small></div><a href="marketplace.html">View per-model pricing ↗</a></div>
+					<div class="service-rate"><div><h3>Model deployments</h3><p>On-demand hosted model deployments, with inference billed separately.</p></div><div class="service-rate-value">Deployment fee + usage</div><a href="/console/deploy">View deployments ↗</a></div>
+					<div class="service-rate"><div><h3>Buckets</h3><p>S3-compatible object storage.</p></div><div class="service-rate-value">Storage, requests &amp; transfer</div><a href="https://docs.inferenceport.ai/en/latest/api/buckets.html">Bucket documentation ↗</a></div>
+					<div class="service-rate"><div><h3>AI Shield</h3><p>Risk analysis, content moderation and application protection.</p></div><div class="service-rate-value">Service-specific usage</div><a href="shield.html">Explore Shield ↗</a></div>
+				</div>
+				<div class="pricing-actions"><a class="btn btn-plan-primary" href="/console/billing">View wallet &amp; credit packs</a><a href="https://docs.inferenceport.ai/en/latest/api/p2g-api.html">API documentation ↗</a></div>
+			</div>
+		</section>
+
 		<section class="py-5 pricing-section" id="cloud-plans" aria-labelledby="cloud-plans-heading">
 			<div class="container">
-				<h2 class="visually-hidden" id="cloud-plans-heading">Cloud chat plans and API wallet pricing</h2>
-				<nav class="service-nav" aria-label="Pricing sections"><a href="#cloud-plans">Cloud chat plans</a><a href="#api-wallet">API wallet</a><a href="#local-includes">Local features</a><a href="#feature-comparison">Compare plans</a><a href="#organizations">Organizations</a></nav>
-				<h2 class="visually-hidden" id="chat-plans-heading">Cloud chat plans</h2>
+				<div class="pricing-heading"><h2 id="cloud-plans-heading">Cloud chat subscriptions</h2><p>Monthly plans for the hosted chat and generation experience. Local chat remains available on every plan.</p></div>
+				<h3 class="visually-hidden" id="chat-plans-heading">Cloud chat plans</h3>
 				<div class="plan-grid" aria-labelledby="chat-plans-heading">
 					<div class="col-md col-sm-6">
 						<div class="plan-card">
@@ -454,7 +521,7 @@
 							<div class="plan-feature">🛡️ 2 AI Shield / day</div>
 							<a
 								href="install.html"
-								class="btn btn-plan-outline mt-3"
+								class="btn btn-plan-outline"
 								>Get Started Free</a
 							>
 						</div>
@@ -476,7 +543,7 @@
 							<div class="plan-feature">🎬 10 Videos / day</div>
 							<div class="plan-feature">🔊 5 Audio / week</div>
 							<div class="plan-feature">🛡️ 25 AI Shield / day</div>
-							<a href="#upgrade-instructions" class="btn btn-plan-outline mt-3"
+							<a href="#upgrade-instructions" class="btn btn-plan-outline"
 								>Subscribe</a
 							>
 						</div>
@@ -507,7 +574,7 @@
 							<div class="plan-feature hi">
 								🛡️ 50 AI Shield / day
 							</div>
-							<a href="#upgrade-instructions" class="btn btn-plan-primary mt-3"
+							<a href="#upgrade-instructions" class="btn btn-plan-primary"
 								>Subscribe</a
 							>
 						</div>
@@ -537,7 +604,7 @@
 							<div class="plan-feature hi">
 								🛡️ 200 AI Shield / day
 							</div>
-							<a href="#upgrade-instructions" class="btn btn-plan-outline mt-3"
+							<a href="#upgrade-instructions" class="btn btn-plan-outline"
 								>Subscribe</a
 							>
 						</div>
@@ -563,58 +630,17 @@
 						</div>
 						<div class="plan-feature">🔊 75 Audio / week</div>
 						<div class="plan-feature">🛡️ 500 AI Shield / day</div>
-						<a href="#upgrade-instructions" class="btn btn-plan-outline mt-3"
+						<a href="#upgrade-instructions" class="btn btn-plan-outline"
 							>Subscribe</a
 						>
 					</div>
 				</div>
 				</div>
-				<div class="pricing-section mt-4" id="api-wallet" aria-labelledby="api-wallet-heading">
-					<h2 class="visually-hidden" id="api-wallet-heading">API wallet offer</h2>
-					<div class="plan-card">
-						<div class="plan-name">Pay-to-Go</div>
-						<div class="plan-desc">
-							Billed by usage — pay only for what you use
-						</div>
-						<div class="plan-price" style="font-size:1.5rem;">Credit Packs</div>
-						<div class="plan-period">variable by request</div>
-						<hr class="plan-hr" />
-						<div class="plan-section">☁ API</div>
-						<div class="plan-feature hi">
-							🔗 OpenAI-Compatible Endpoint
-						</div>
-						<div class="plan-feature hi">
-							💬 Pay-per-token Text Generation
-						</div>
-						<div class="plan-feature hi">
-							🖼️ Per-Image Pricing
-						</div>
-						<div class="plan-feature hi">
-							🎬 Per-Video Pricing
-						</div>
-						<div class="plan-feature hi">
-							🔊 Per-Audio Pricing
-						</div>
-						<div class="plan-feature hi">
-							🧊 3D Generation
-						</div>
-						<div class="plan-feature hi">
-							🧬 Per-Token Embeddings
-						</div>
-						<div class="plan-feature hi">
-							🎙 Realtime Voice &amp; Transcription
-						</div>
-						<a href="marketplace.html" class="btn btn-plan-outline mt-3"
-							>View Per-Model Pricing</a
-						>
-					</div>
-				</div>
-			</div>
+
 			<div class="upgrade-box local-includes pricing-section" id="local-includes" aria-labelledby="local-includes-heading">
 				<strong id="local-includes-heading" style="color:var(--text)">Included with every plan: local features</strong>
 				<p style="color:var(--muted);font-size:.88rem;margin:8px 0 0">Unlimited Local Chat · Marketplace Access · HuggingFace Spaces · Remote Server</p>
 			</div>
-		</div>
 		</section>
 
 		<section class="py-4 pricing-section" id="upgrade-instructions" aria-labelledby="upgrade-heading">
@@ -650,12 +676,12 @@
 						margin-bottom: 32px;
 					"
 				>
-					Feature Comparison
+					Compare chat plans
 				</h2>
 				<p class="table-scroll-hint">On smaller screens, scroll horizontally to see every plan.</p>
 				<div class="pricing-table-wrap" tabindex="0" role="region" aria-label="Feature comparison table; scroll horizontally on small screens">
 					<table>
-						<caption class="visually-hidden">Features included in each cloud and API pricing plan</caption>
+						<caption class="visually-hidden">Chat subscription features and API billing comparison</caption>
 						<thead>
 						<tr>
 							<th scope="col">Feature</th>
@@ -706,12 +732,12 @@
 						</tr>
 						<tr>
 							<th scope="row">Unlimited Cloud Chat</th>
-							<td style="opacity: 0.3">—</td>
+							<td class="not-included">—</td>
 							<td class="yes">✓</td>
 							<td class="yes">✓</td>
 							<td class="yes">✓</td>
 							<td class="yes">✓</td>
-							<td style="opacity: 0.3">—</td>
+							<td class="not-included">—</td>
 						</tr>
 						<tr>
 							<th scope="row">Cloud Image Gen</th>
@@ -747,33 +773,33 @@
 							<td>50/day</td>
 							<td>200/day</td>
 							<td>500/day</td>
-							<td style="opacity: 0.3">—</td>
+							<td class="not-included">—</td>
 						</tr>
 						<tr>
 							<th scope="row">3D Generation</th>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
 							<td>Pay-per-model</td>
 						</tr>
 						<tr>
 							<th scope="row">Embeddings</th>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
 							<td>Pay-per-token</td>
 						</tr>
 						<tr>
 							<th scope="row">Realtime Voice</th>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
-							<td style="opacity: 0.3">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
+							<td class="not-included">—</td>
 							<td>Pay-per-token / second</td>
 						</tr>
 						</tbody>
@@ -785,14 +811,12 @@
 		<section class="py-5 org-section" id="organizations" aria-labelledby="org-heading">
 			<div class="container">
 				<div class="org-head">
-					<div class="section-tag">Organizations</div>
+
 					<h2 class="org-title" id="org-heading">
-						One credit wallet for <span class="accent">your whole team</span>
+						Organization plans
 					</h2>
 					<p class="org-sub">
-						Share credits across members and API keys, set budgets per
-						member and per key, and pay per seat. Start free with up to 3
-						members.
+						Share credits across members and API keys. Paid plans are billed per seat, separately from usage charges. Start free with up to 3 members.
 					</p>
 				</div>
 
@@ -812,7 +836,7 @@
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Org-billed usage in the playground</span></li>
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Invite by link or email</span></li>
 							</ul>
-							<a href="https://console.inferenceport.ai/" class="btn btn-plan-outline mt-3">Create a free organization</a>
+							<a href="https://console.inferenceport.ai/" class="btn btn-plan-outline">Create a free organization</a>
 						</article>
 					</div>
 
@@ -837,7 +861,7 @@
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Verified domains &amp; invite domain restrictions</span></li>
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Email support</span></li>
 							</ul>
-							<a href="https://console.inferenceport.ai/" class="btn org-btn-primary mt-3">Start with Starter</a>
+							<a href="https://console.inferenceport.ai/" class="btn org-btn-primary">Start with Starter</a>
 						</article>
 					</div>
 
@@ -861,7 +885,7 @@
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Usage reports emailed on demand</span></li>
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Priority email support</span></li>
 							</ul>
-							<a href="https://console.inferenceport.ai/" class="btn org-btn-primary mt-3">Start with Team</a>
+							<a href="https://console.inferenceport.ai/" class="btn org-btn-primary">Start with Team</a>
 						</article>
 					</div>
 
@@ -877,7 +901,7 @@
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Unlimited members, teams and API keys</span></li>
 								<li class="plan-feature hi"><span class="org-check" aria-hidden="true">✓</span><span>Audit retention up to 7 years</span></li>
 							</ul>
-							<a href="mailto:support@inferenceport.ai?subject=InferencePort%20Enterprise" class="btn btn-plan-outline mt-3">Contact sales</a>
+							<a href="mailto:support@inferenceport.ai?subject=InferencePort%20Enterprise" class="btn btn-plan-outline">Contact sales</a>
 						</article>
 					</div>
 				</div>
