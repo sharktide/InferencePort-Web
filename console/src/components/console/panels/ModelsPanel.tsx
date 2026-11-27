@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Panel.module.css";
+import Icon from "../../Icon";
 import { navigateConsole } from "../ContextSwitcher";
 import { useOptionalOrgContext } from "../OrgContext";
 import { formatModelPrice, formatPricing, modelType, modelStartingPrice, matchesModelPriceRange, compareModelPrice, formatDiscountedPrice } from "../../../lib/modelPricing";
@@ -24,6 +25,29 @@ function ModelArtwork({ model }: { model: any }) {
     {status !== "loaded" && <div className={styles.modelDetailImagePlaceholder}>{displayName(model)}</div>}
   </div>;
 }
+function PublisherLogo({ model, theme }: { model: any; theme: "light" | "dark" }) {
+  const [failed, setFailed] = useState(false);
+  const explicit = typeof model?.logo === "string" ? model.logo.trim() : "";
+  const publisher = model?.publisher_url;
+  const url = explicit || (publisher === "inferenceport.ai"
+    ? "https://dpixehhdbtzsbckfektd.supabase.co/storage/v1/object/public/general/inferenceport-ai-logo.png"
+    : publisher ? `https://cdn.brandfetch.io/${encodeURIComponent(publisher)}?c=1idhv9JFxNDhJr50XTx${theme === "dark" ? "&theme=dark" : ""}` : "");
+  useEffect(() => setFailed(false), [url]);
+  return url && !failed ? <img className={styles.modelPublisherLogo} src={url} alt="" loading="lazy" onError={() => setFailed(true)} /> : null;
+}
+function pillClass(model: any) {
+  switch (String(modelType(model)).toLowerCase()) {
+    case "text": return styles.isText;
+    case "image": return styles.isConfigImage;
+    case "3d": return styles.isConfig3d;
+    case "audio": return styles.isConfigAudio;
+    case "embedding": return styles.isConfigEmbedding;
+    case "decision": return styles.isConfigDecision;
+    case "realtime": return styles.isConfigRealtime;
+    case "video": return styles.isConfigVideo;
+    default: return styles.isConfig;
+  }
+}
 function isTextModel(model: any) {
   return Array.isArray(model?.input_modalities) && model.input_modalities.includes("text") && Array.isArray(model?.output_modalities) && model.output_modalities.includes("text");
 }
@@ -42,14 +66,13 @@ function launchPlayground(source: Source, mode: Mode, id: string) {
   navigateConsole("playground");
 }
 
-export default function ModelsPanel({ session, apiBase }: Props) {
+export default function ModelsPanel({ session, apiBase, theme = "light" }: Props) {
   const [source, setSource] = useState<Source>("p2g");
   const [models, setModels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<any | null>(null);
-  const [modality, setModality] = useState("all");
   const [priceRange, setPriceRange] = useState("all");
   const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
   const [rewards, setRewards] = useState<{ owner: string; discounts: Record<string, number> }>({ owner: "", discounts: {} });
@@ -118,41 +141,35 @@ export default function ModelsPanel({ session, apiBase }: Props) {
   const visibleModels = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (catalogOwner !== owner) return [];
-    const filtered = models.filter((model) => (modality === "all" || getMode(model, source) === modality) &&
-      (!needle || [model?.name, model?.id, model?.upstream_id, model?.description, model?.publisher_url, modelType(model), model?.owned_by]
+    const filtered = models.filter((model) => (!needle || [model?.name, model?.id, model?.upstream_id, model?.description, model?.publisher_url, modelType(model), model?.owned_by]
         .filter(Boolean).join(" ").toLowerCase().includes(needle)) &&
       (source !== "p2g" || matchesModelPriceRange(modelStartingPrice(model), priceRange)));
     return source === "p2g" && priceSort !== "default" ? [...filtered].sort((a, b) => compareModelPrice(a, b, priceSort)) : filtered;
-  }, [models, query, modality, priceRange, priceSort, source, catalogOwner, owner]);
+  }, [models, query, priceRange, priceSort, source, catalogOwner, owner]);
 
   const price = (model: any) => {
-    if (source === "gen") return "1× subscription multiplier";
+    if (source === "gen") return "1x multiplier";
     const listPrice = formatModelPrice(model) || formatPricing(model) || "Pricing varies";
     const discounts = rewards.owner === owner ? rewards.discounts : {};
     const id = modelId(model);
     const fixed = discounts["__fixed_" + id + "__"];
-    if (typeof fixed === "number" && Number.isFinite(fixed) && fixed >= 0) return listPrice + " · Your rate $" + fixed.toFixed(2) + "/M tokens";
+    if (typeof fixed === "number" && Number.isFinite(fixed) && fixed >= 0) return <><span className={styles.modelPriceOriginal}>{listPrice}</span><span className={styles.modelPriceDiscount}>${fixed.toFixed(2)}/M tokens</span></>;
     const match = Object.entries(discounts).find(([pattern]) => !pattern.startsWith("__") && pattern.endsWith("-*") && id.startsWith(pattern.slice(0, -2)));
     const percent = discounts[id] ?? discounts.__all_models__ ?? match?.[1] ?? 0;
     const discounted = formatDiscountedPrice(model, { type: "percent", percent, fixedPrice: 0 });
-    return discounted ? listPrice + " · Your rate " + discounted : listPrice;
+    return percent > 0 && discounted ? <><span className={styles.modelPriceOriginal}>{listPrice}</span><span className={styles.modelPriceDiscount}>{discounted}</span></> : listPrice;
   };
   const detailMode = selected ? getMode(selected, source) : "text";
 
   return (
     <div className={`${styles.panel} ${styles.active}`}>
       <section className={`${styles.card} ${styles.wide}`}>
-        <div className={styles.heading}>Model catalog</div>
-        <p className={`${styles.muted} ${styles.tiny}`}>Browse models, check their capabilities and pricing, then open one in Playground.</p>
+        <div className={styles.heading}>Models</div>
         <div className={styles.tabs} role="tablist" aria-label="Model API source">
-          {(["p2g", "gen"] as const).map((value) => <button key={value} type="button" role="tab" aria-selected={source === value} className={`playground-tab ${styles.playgroundTab} ${source === value ? styles.active : ""}`} onClick={() => { setSource(value); setModality("all"); setSelected(null); }}>{value === "p2g" ? "P2G API" : "Gen API"}</button>)}
+          {(["p2g", "gen"] as const).map((value) => <button key={value} type="button" role="tab" aria-selected={source === value} className={`playground-tab ${styles.playgroundTab} ${source === value ? styles.active : ""}`} onClick={() => { setSource(value); setSelected(null); }}>{value === "p2g" ? "P2G API" : "Gen API"}</button>)}
         </div>
-        <input type="search" placeholder="Search by model, slug or publisher" aria-label="Search models" value={query} onChange={(event) => setQuery(event.target.value)} style={{ width: "100%", marginBottom: "1rem" }} />
+        <input type="search" placeholder="Search models by name, slug or publisher..." aria-label="Search models" value={query} onChange={(event) => setQuery(event.target.value)} className={styles.modelSearch} />
         <div className={styles.modelPriceControls}>
-          <label>Model type<select value={modality} onChange={(event) => setModality(event.target.value)}>
-            <option value="all">All types</option>
-            {(source === "gen" ? ["text", "image", "audio"] : ["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"]).map((value) => <option key={value} value={value}>{value === "3d" ? "3D" : value[0].toUpperCase() + value.slice(1)}</option>)}
-          </select></label>
           <label>Starting price<select value={priceRange} onChange={(event) => setPriceRange(event.target.value)} disabled={source !== "p2g"}>
             <option value="all">All prices</option><option value="zero">$0 rate</option><option value="lt1">Under $1</option><option value="1to5">$1–$5</option><option value="5to20">$5–$20</option><option value="gte20">$20+</option>
           </select></label>
@@ -160,8 +177,8 @@ export default function ModelsPanel({ session, apiBase }: Props) {
             <option value="default">Default order</option><option value="asc">Price: low to high</option><option value="desc">Price: high to low</option>
           </select></label>
         </div>
-        <p className={styles.modelPriceHint}>{source === "p2g" ? "Starting prices use published list rates before rewards. Billing units vary by model; unpriced models sort last." : "Generation uses subscription allowances. USD price controls apply to the P2G API."}</p>
-        <p className={`${styles.muted} ${styles.tiny}`} aria-live="polite">{loading ? "Loading models…" : error || visibleModels.length + " model" + (visibleModels.length === 1 ? "" : "s")}</p>
+        <p className={styles.modelPriceHint}>{source === "p2g" ? "Uses the lowest published list rate per model (before rewards). Billing units vary by modality; models without prices sort last and are excluded from price ranges." : "Gen API uses credit multipliers rather than comparable USD model rates. Price controls are available for P2G API."}</p>
+        <p className={`${styles.muted} ${styles.modelCount}`} aria-live="polite">{loading ? "Loading models…" : error || visibleModels.length + " model" + (visibleModels.length === 1 ? "" : "s")}</p>
         {!session && <p className={`${styles.muted} ${styles.tiny}`}>Sign in to view your available models and use Playground.</p>}
         {error && <button type="button" className="ghost" onClick={() => void loadModels()}>Retry models</button>}
         <div className={styles.modelsGrid}>
@@ -169,15 +186,17 @@ export default function ModelsPanel({ session, apiBase }: Props) {
           {visibleModels.map((model, index) => {
             const id = modelId(model);
             const mode = getMode(model, source);
-            const modalities = [...new Set([...(Array.isArray(model?.input_modalities) ? model.input_modalities : []), ...(Array.isArray(model?.output_modalities) ? model.output_modalities : [])])];
             return <article className={styles.modelCard} key={(id || "model") + "-" + index} role="button" tabIndex={0} aria-label={`Open ${displayName(model)} details`} aria-haspopup="dialog" onClick={() => setSelected(model)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(model); } }}>
+              <PublisherLogo model={model} theme={theme} />
               <div className={styles.modelCardTop}>
                 <span className={styles.modelCardName}>{displayName(model)}</span>
-                <span className={`${styles.modelPill} ${isTextModel(model) ? styles.isText : styles.isConfig}`}>{String(modelType(model) || model?.type || mode).toUpperCase()}</span>
+                <div style={{ display: "flex", gap: ".4rem", alignItems: "center", flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                  {isTextModel(model) && model.model_state && <span className={styles.modelPill} style={{ color: model.model_state === "warm" ? "var(--success-ink)" : "var(--warn)" }}>{model.model_state === "warm" ? "Warm" : "Loading"}</span>}
+                  <span className={`${styles.modelPill} ${pillClass(model)}`}>{String(modelType(model) || model?.type || mode).toUpperCase()}</span>
+                </div>
               </div>
-              <div className={styles.modelMeta}><span className={styles.modelKey}>Model ID</span><span className={styles.modelValue}>{id || "Not listed"}</span></div>
+              <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{id || "Not listed"}</span></div>
               <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{price(model)}</span></div>
-              {modalities.length > 0 && <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{modalities.join(" / ")}</span></div>}
 
             </article>;
           })}
@@ -186,15 +205,16 @@ export default function ModelsPanel({ session, apiBase }: Props) {
 
       {selected && catalogOwner === owner && <div className={styles.modelDetailOverlay} onClick={() => setSelected(null)}>
         <section ref={detailRef} className={styles.modelDetailTray} role="dialog" aria-modal="true" aria-labelledby="model-detail-title" onClick={(event) => event.stopPropagation()}>
-          <button type="button" className={styles.modelDetailClose} onClick={() => setSelected(null)} aria-label="Close model details">×</button>
+          <button type="button" className={styles.modelDetailClose} onClick={() => setSelected(null)} aria-label="Close model details"><Icon name="x" size={18} /></button>
           <ModelArtwork key={modelId(selected)} model={selected} />
           <div className={styles.modelDetailContent}>
-            <div className={styles.modelDetailHeader}><h2 className={styles.modelDetailName} id="model-detail-title">{displayName(selected)}</h2><span className={styles.modelPill}>{String(modelType(selected) || selected?.type || detailMode).toUpperCase()}</span></div>
+            <PublisherLogo model={selected} theme={theme} />
+            <div className={styles.modelDetailHeader}><h2 className={styles.modelDetailName} id="model-detail-title">{displayName(selected)}</h2><span className={`${styles.modelPill} ${pillClass(selected)}`}>{String(modelType(selected) || selected?.type || detailMode).toUpperCase()}</span></div>
             {typeof selected.description === "string" && selected.description.trim() && <p className={styles.modelDetailDescription}>{selected.description.trim()}</p>}
-            <div className={styles.modelMeta}><span className={styles.modelKey}>Model ID</span><span className={styles.modelValue}>{modelId(selected) || "Not listed"}</span></div>
+            <div className={styles.modelMeta}><span className={styles.modelKey}>Slug</span><span className={styles.modelValue}>{modelId(selected) || "Not listed"}</span></div>
             <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{price(selected)}</span></div>
-            <div className={styles.modelMeta}><span className={styles.modelKey}>Input</span><span className={styles.modelValue}>{selected.input_modalities?.join(" / ") || "Not specified"}</span></div>
-            <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{selected.output_modalities?.join(" / ") || "Not specified"}</span></div>
+            <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{Array.isArray(selected.input_modalities) && selected.input_modalities.length ? selected.input_modalities.map((v: string) => v.toUpperCase()).join(" / ") : "Configured model"}</span></div>
+            <div className={styles.modelMeta}><span className={styles.modelKey}>Output</span><span className={styles.modelValue}>{Array.isArray(selected.output_modalities) && selected.output_modalities.length ? selected.output_modalities.map((v: string) => v.toUpperCase()).join(" / ") : "Not specified"}</span></div>
             <div className={styles.row}><button type="button" onClick={() => launchPlayground(source, detailMode, modelId(selected))} disabled={!session || !modelId(selected)}>Try in Playground</button></div>
           </div>
         </section>
