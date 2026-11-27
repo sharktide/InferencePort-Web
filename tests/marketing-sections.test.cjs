@@ -691,6 +691,9 @@ test("catalog is a live list-price preview and request examples are optional", (
 test("pricing distinguishes wallet charges from subscription plans and preserves plan rates", () => {
   const pricing = read("pricing.html");
   assert.ok(pricing.indexOf('id="api-wallet"') < pricing.indexOf('id="cloud-plans"'));
+  let depth=0;
+  for(const tag of pricing.matchAll(/<\/?div\b[^>]*>/gi)){ depth += tag[0].startsWith("</") ? -1 : 1; assert.ok(depth>=0,"Unexpected closing div"); }
+  assert.equal(depth,0,"Unclosed pricing container");
   for (const id of ["api-wallet","cloud-plans","local-includes","feature-comparison","organizations","upgrade-instructions"]) assert.equal([...pricing.matchAll(new RegExp('id="'+id+'"','g'))].length,1,id);
   for (const value of ["9.99","15.99","29.99","99.99","7.99","20"]) assert.ok(pricing.includes("<sup>$</sup>"+value));
   assert.match(pricing,/grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
