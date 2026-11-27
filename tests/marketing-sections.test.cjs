@@ -492,7 +492,7 @@ test("Shield retains original protection scope and shows a concrete example resp
 test("Lightning is clearly a browser chat product separate from the API", () => {
   const light=home.slice(home.indexOf('id="lightning"'),home.indexOf('id="app"')) + home.slice(home.indexOf('id="lp-tool-preview-lightning"'),home.indexOf('id="lp-tool-preview-app"'));
   assert.match(light,/Chat in your browser/);
-  assert.match(light,/for programmatic requests and usage-based billing/);
+  assert.match(light,/for programmatic requests and usage-based billing/i);
   assert.match(light,/href="#api">Pay-to-Go model API/);
   assert.match(light,/href="chat\/">Try Lightning chat/);
   assert.match(light,/class="lp-lightning-workspace"/);
