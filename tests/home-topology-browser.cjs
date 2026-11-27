@@ -122,7 +122,7 @@ async function checkScene(page,name) {
     name+" Agent story contrast is not accessible: "+JSON.stringify(agentsContrast));
 
   // Visual QA of the areas that used to be cramped card walls.
-  assert.equal(await page.locator(".lp-ecosystem-spotlight").count(),4);
+  assert.equal(await page.locator(".lp-tool-entry").count(),4);
   assert.equal(await page.locator(".lp-proof-compact").count(),2);
   await page.locator("#platform-details").screenshot({
     path:path.join(screenshots,name+"-infrastructure.png")
@@ -152,6 +152,10 @@ async function checkScene(page,name) {
   // The API workbench follows the product directory.
   assert.equal(await page.locator(".lp-hero-demo").count(),0);
   assert.equal(await page.locator("#quickstart [data-example-tab]").count(),8);
+  assert.equal(await page.locator("#api-examples").getAttribute("open"),null);
+  await page.locator("#api-examples > summary").click();
+  assert.ok(await page.locator("#lp-panel-text").isVisible());
+  await page.locator("#api-examples > summary").click();
   assert.equal(await page.locator("#quickstart [data-example-panel]").count(),8);
   assert.equal(await page.locator("#quickstart [data-example-panel]:not([hidden])").count(),1);
   assert.ok(await page.locator("#quickstart").evaluate(el=>{
@@ -163,6 +167,7 @@ async function checkScene(page,name) {
     assert.equal(await element.count(),1,name+" missing rich feature descriptions for "+id);
     assert.equal(await element.locator("li").count(),id==="shield"?5:3,name+" should show specific feature detail for "+id);
   }
+  await page.locator('[data-tool-select="app"]').click();
   const desktopImage=page.locator(".lp-desktop-window img");
   await desktopImage.scrollIntoViewIfNeeded();
   await desktopImage.evaluate(img=>img.decode());
@@ -171,7 +176,7 @@ async function checkScene(page,name) {
   }));
   assert.ok(imgInfo.width>100&&imgInfo.height>100,
     name+" original desktop screenshot did not load "+JSON.stringify(imgInfo));
-  await page.locator("#app").screenshot({
+  await page.locator("#lp-tool-preview-app").screenshot({
     path:path.join(screenshots,name+"-desktop-product-detail.png")
   });
   // Every illustrative demo should convey a specific product workflow, not
@@ -184,15 +189,17 @@ async function checkScene(page,name) {
     ["app",".lp-desktop-visual",".lp-desktop-window img"]
   ];
   for(const [product,container,content] of productPreviews){
-    assert.equal(await page.locator("#"+product+" "+container).count(),1,
+    const scope=product==="shield"?"#shield":"#lp-tool-preview-"+product;
+    if(product!=="shield") await page.locator(`[data-tool-select="${product}"]`).click();
+    assert.equal(await page.locator(scope+(product==="shield"?" ":"")+container).count(),1,
       name+" missing "+product+" product interface");
-    assert.ok(await page.locator("#"+product+" "+content).isVisible(),
+    assert.ok(await page.locator(scope+" "+content).isVisible(),
       name+" missing visible "+product+" workflow");
-    await page.locator("#"+product).screenshot({
+    await page.locator(scope).screenshot({
       path:path.join(screenshots,name+"-"+product+"-proof.png")
     });
   }
-  assert.match(await page.locator("#lightning h3").innerText(),/Lightning: chat and create/);
+  assert.match(await page.locator("#lightning h3").innerText(),/Lightning chat/);
   assert.ok(await page.locator("#shield .lp-feature-points li").count()>=5);
 
 

@@ -84,7 +84,7 @@ test("homepage has intentional layout variation and responsive themes", () => {
   assert.match(home, /class="lp-workspace-layout"/);
   assert.match(home, /class="lp-org-spec"/);
   assert.match(home, /class="lp-shield-schema lp-shield-demo"/);
-  assert.equal([...home.matchAll(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)].length,4);
+  assert.equal([...home.matchAll(/class="lp-tool-entry"/g)].length,4);
   assert.doesNotMatch(home, /class="checks"|class="pgrid"|class="pc c-/);
   assert.match(home, /href="styles\/shared\.css"/);
   assert.match(home, /href="styles\/landing\.css"/);
@@ -379,7 +379,7 @@ test("graph rotation remains readable after extreme input and can reset", () => 
 });
 
 test("product actions are real prominent buttons and deploy links resolve to its console", () => {
-  assert.equal([...home.matchAll(/class="lp-proof-link"/g)].length,10);
+  assert.equal([...home.matchAll(/class="lp-proof-link"/g)].length,6);
   assert.match(home,/class="lp-deploy-preview-footer"[\s\S]*?<a class="lp-preview-action" href="\/console\/deploy">Deploy model/);
   assert.match(home,/href="\/console\/deploy">Browse deployments/);
   assert.match(home,/href="\/console\/deploy"><span>DEPLOYMENTS<\/span>/);
@@ -405,9 +405,9 @@ test("preview accent colors and workspace padding are intentionally differentiat
 });
 
 test("featured infrastructure and developer ecosystem have readable dedicated spotlights", () => {
-  assert.equal([...home.matchAll(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)].length,4);
+  assert.equal([...home.matchAll(/class="lp-tool-entry"/g)].length,4);
   for(const id of ["council","cli","lightning","app"]) {
-    assert.match(home,new RegExp('<article class="lp-ecosystem-spotlight[^"]*" id="'+id+'"'));
+    assert.match(home,new RegExp('<article class="lp-tool-entry" id="'+id+'"'));
   }
   assert.doesNotMatch(home,/class="lp-builder-grid"|class="lp-experience-links"/);
   assert.match(home,/class="lp-deploy-preview" aria-label="Illustrative deployment setup controls"/);
@@ -472,7 +472,7 @@ test("restored detail keeps working CTAs, API tabs and semantic structure", () =
   assert.match(home,/href="install.html#install">Download the desktop app/);
   assert.match(home,/href="\/console\/agents">Configure an agent/);
   assert.equal((home.match(/data-example-tab=/g)||[]).length,8);
-  assert.equal((home.match(/class="lp-ecosystem-spotlight(?: lp-ecosystem-spotlight--reverse)?"/g)||[]).length,4);
+  assert.equal((home.match(/class="lp-tool-entry"/g)||[]).length,4);
 });
 
 
@@ -490,7 +490,7 @@ test("Shield retains original protection scope and shows a concrete example resp
 });
 
 test("Lightning is clearly a browser chat product separate from the API", () => {
-  const light=home.slice(home.indexOf('id="lightning"'),home.indexOf('</article>',home.indexOf('id="lightning"')));
+  const light=home.slice(home.indexOf('id="lightning"'),home.indexOf('id="app"')) + home.slice(home.indexOf('id="lp-tool-preview-lightning"'),home.indexOf('id="lp-tool-preview-app"'));
   assert.match(light,/Chat in your browser/);
   assert.match(light,/for programmatic requests and usage-based billing/);
   assert.match(light,/href="#api">Pay-to-Go model API/);
@@ -506,7 +506,7 @@ test("technical demos present meaningful workflows without fake live claims or r
     "lp-lightning-compose","Actual app screenshot"]) {
     assert.ok(home.includes(term),"Missing purposeful product preview: "+term);
   }
-  assert.match(css,/#council \.lp-ecosystem-visual,/);
+  assert.match(css,/\.lp-tools-previews \.lp-ecosystem-visual/);
   assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?padding:clamp\(55px,6\.2vw,88px\) 0;/);
   assert.match(css,/\.lp-desktop-visual \.lp-desktop-window img \{[\s\S]*?max-height:none/);
 });
@@ -663,7 +663,7 @@ test("workflow comparison shows six concrete layers and honest integration bound
   assert.ok(comparison.includes("InferencePort Buckets"));
   assert.equal((comparison.match(/<li>/g) || []).length, 12);
   assert.match(comparison, /Your backend still controls the sequence/);
-  const council = home.slice(home.indexOf('id="council"'), home.indexOf('id="cli"'));
+  const council = home.slice(home.indexOf('id="lp-tool-preview-council"'), home.indexOf('id="lp-tool-preview-cli"'));
   assert.doesNotMatch(council, /Model [ABC]<\/span>|lp-council-indicator|lp-council-command/);
   for (const id of ["deepseek-v4.1-flash-1017", "claude-sonnet-5", "beam-1.0-501b-a23b"]) assert.ok(council.includes(id));
   assert.match(council, /Not live output/);
@@ -673,4 +673,16 @@ test("workflow comparison shows six concrete layers and honest integration bound
 test("deployment and storage previews use documented request paths and fields", () => {
   for (const field of ["GET /v1/deploy/models", "GET /v1/deploy/model-status/{model_id}", "POST /v1/deploy", "display_model_id", "/{owner_id}/s3"]) assert.ok(home.includes(field), field);
   assert.match(home, /git diff \| ipx shield scan --task dlp --fail-on review/);
+});
+
+
+test("catalog is a live list-price preview and request examples are optional", () => {
+  assert.match(home, /data-home-models/);
+  assert.match(home, /<details class="lp-api-examples" id="api-examples">/);
+  const js=read("scripts/home-product-preview.js");
+  assert.match(js, /https:\/\/api\.inferenceport\.ai\/v1\/models/);
+  assert.match(js, /data-tool-select/);
+  assert.match(css, /:root\[data-theme="dark"\] \.lp-quickstart \.lp-button-clear/);
+  assert.equal([...home.matchAll(/data-tool-select=/g)].length,4);
+  assert.equal([...home.matchAll(/data-tool-preview=/g)].length,4);
 });
