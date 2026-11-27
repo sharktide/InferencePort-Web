@@ -328,3 +328,9 @@ details[open] > .shieldConfigSummary::before { transform: rotate(45deg); }
   .oauthGrantCard { padding: 1rem 1.1rem; }
   .oauthModal { padding: 1.25rem !important; }
 }
+
+/* A single accessible interaction per catalog card. */
+.modelCard[role="button"] { cursor:pointer; }
+.modelCard[role="button"]:focus-visible { outline:2px solid var(--text);outline-offset:3px; }
+.modelDetailImageWrap { aspect-ratio:16/9;flex-shrink:0; }
+.modelDetailImage { height:100%;object-fit:cover; }

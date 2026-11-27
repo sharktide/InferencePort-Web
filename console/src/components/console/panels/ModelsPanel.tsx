@@ -15,6 +15,15 @@ function displayName(model: any) {
   const name = model?.name || modelId(model) || "Unnamed model";
   return (model?.type === "agent" || model?.managed_by === "inferenceport-agents") && model?.owned_by ? "@" + model.owned_by + "/" + name : name;
 }
+function ModelArtwork({ model }: { model: any }) {
+  const [status, setStatus] = useState("loading");
+  const normalized = String(modelId(model) || model?.name || "").toLowerCase().replace(/\//g, "_");
+  const url = `https://huggingface.co/buckets/inferenceport-ai/model-info/resolve/compressed/${encodeURIComponent(normalized)}.webp?download=true`;
+  return <div className={styles.modelDetailImageWrap}>
+    {status !== "error" && <img className={styles.modelDetailImage} src={url} alt={displayName(model)} onLoad={() => setStatus("loaded")} onError={() => setStatus("error")} />}
+    {status !== "loaded" && <div className={styles.modelDetailImagePlaceholder}>{displayName(model)}</div>}
+  </div>;
+}
 function isTextModel(model: any) {
   return Array.isArray(model?.input_modalities) && model.input_modalities.includes("text") && Array.isArray(model?.output_modalities) && model.output_modalities.includes("text");
 }
@@ -161,7 +170,7 @@ export default function ModelsPanel({ session, apiBase }: Props) {
             const id = modelId(model);
             const mode = getMode(model, source);
             const modalities = [...new Set([...(Array.isArray(model?.input_modalities) ? model.input_modalities : []), ...(Array.isArray(model?.output_modalities) ? model.output_modalities : [])])];
-            return <article className={styles.modelCard} key={(id || "model") + "-" + index}>
+            return <article className={styles.modelCard} key={(id || "model") + "-" + index} role="button" tabIndex={0} aria-label={`Open ${displayName(model)} details`} aria-haspopup="dialog" onClick={() => setSelected(model)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(model); } }}>
               <div className={styles.modelCardTop}>
                 <span className={styles.modelCardName}>{displayName(model)}</span>
                 <span className={`${styles.modelPill} ${isTextModel(model) ? styles.isText : styles.isConfig}`}>{String(modelType(model) || model?.type || mode).toUpperCase()}</span>
@@ -169,10 +178,7 @@ export default function ModelsPanel({ session, apiBase }: Props) {
               <div className={styles.modelMeta}><span className={styles.modelKey}>Model ID</span><span className={styles.modelValue}>{id || "Not listed"}</span></div>
               <div className={styles.modelMeta}><span className={styles.modelKey}>Pricing</span><span className={styles.modelValue}>{price(model)}</span></div>
               {modalities.length > 0 && <div className={styles.modelMeta}><span className={styles.modelKey}>Modalities</span><span className={styles.modelValue}>{modalities.join(" / ")}</span></div>}
-              <div className={styles.row}>
-                <button type="button" className="ghost" onClick={() => setSelected(model)}>Details</button>
-                <button type="button" onClick={() => launchPlayground(source, mode, id)} disabled={!session || !id}>Try in Playground</button>
-              </div>
+
             </article>;
           })}
         </div>
@@ -181,6 +187,7 @@ export default function ModelsPanel({ session, apiBase }: Props) {
       {selected && catalogOwner === owner && <div className={styles.modelDetailOverlay} onClick={() => setSelected(null)}>
         <section ref={detailRef} className={styles.modelDetailTray} role="dialog" aria-modal="true" aria-labelledby="model-detail-title" onClick={(event) => event.stopPropagation()}>
           <button type="button" className={styles.modelDetailClose} onClick={() => setSelected(null)} aria-label="Close model details">×</button>
+          <ModelArtwork key={modelId(selected)} model={selected} />
           <div className={styles.modelDetailContent}>
             <div className={styles.modelDetailHeader}><h2 className={styles.modelDetailName} id="model-detail-title">{displayName(selected)}</h2><span className={styles.modelPill}>{String(modelType(selected) || selected?.type || detailMode).toUpperCase()}</span></div>
             {typeof selected.description === "string" && selected.description.trim() && <p className={styles.modelDetailDescription}>{selected.description.trim()}</p>}
