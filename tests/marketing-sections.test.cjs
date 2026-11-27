@@ -392,7 +392,7 @@ test("product actions are real prominent buttons and deploy links resolve to its
 
 test("preview accent colors and workspace padding are intentionally differentiated", () => {
   for (const name of ["lp-deploy-preview-status","lp-bucket-preview-symbol","lp-shield-indicator",
-    "lp-council-indicator","lp-lightning-workspace","lp-desktop-window"]) {
+    "lp-council-toolname","lp-lightning-workspace","lp-desktop-window"]) {
     assert.ok(home.includes(name),"Missing purposeful preview element "+name);
   }
   for (const selector of [".lp-deploy-preview {",".lp-bucket-visual {",".lp-proof-interface {",
@@ -650,4 +650,21 @@ test("six recognizable marks are grouped as customers and startup-program member
   assert.deepEqual([...footerProgramRow.matchAll(/aria-label="([^"]+ for Startups)"/g)].map(m=>m[1]),["E2B for Startups","OpenRouter for Startups","Microsoft for Startups"]);
 
   assert.match(read("styles/shared.css"),/\.ipf-startup-list > a:focus-visible/);
+});
+
+
+test("workflow comparison shows six concrete layers and honest integration boundaries", () => {
+  const comparison = home.match(/<section class="lp-integration-compare"[\s\S]*?<\/section>/)?.[0] || "";
+  assert.ok(comparison.includes("Amazon Bedrock Guardrails"));
+  assert.ok(comparison.includes("OpenRouter"));
+  assert.ok(comparison.includes("Azure Blob Storage"));
+  assert.ok(comparison.includes("POST /ai-shield/scan"));
+  assert.ok(comparison.includes("POST /v1/chat/completions"));
+  assert.ok(comparison.includes("InferencePort Buckets"));
+  assert.equal((comparison.match(/<li>/g) || []).length, 12);
+  assert.match(comparison, /Your backend still controls the sequence/);
+  const council = home.slice(home.indexOf('id="council"'), home.indexOf('id="cli"'));
+  assert.doesNotMatch(council, /Model [ABC]<\/span>|lp-council-indicator|lp-council-command/);
+  for (const id of ["deepseek-v4.1-flash-1017", "claude-sonnet-5", "beam-1.0-501b-a23b"]) assert.ok(council.includes(id));
+  assert.match(council, /Not live output/);
 });

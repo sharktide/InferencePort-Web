@@ -15,7 +15,7 @@
   --text: #111827;
   --muted: #636b78;           /* muted text; #9ca3af fails AA as text (2.5:1) */
   --accent: #3b6ae0;          /* small text and white-on-blue fills: 4.86:1 with white */
-  --accent-2: #fbbf24;        /* brand gold (was console yellow #f5c400) */
+  --accent-2: #fcd704;        /* brand gold (was console yellow #f5c400) */
   --accent-3: #4f7cff;        /* canonical brand blue */
   --danger: #be185d;          /* critical; true red fails colorblind separation next to amber */
   --radius: 14px;
@@ -32,16 +32,16 @@
   --brand-border: rgba(79, 124, 255, 0.24);
   --accent-hover: #2f5ac9;
   --accent-ink: #ffffff;      /* text on --accent fills */
-  --primary: var(--accent);
-  --primary-hover: var(--accent-hover);
-  --primary-ink: var(--accent-ink);
+  --primary: #fcd704;
+  --primary-hover: #e5c400;
+  --primary-ink: #111827;
   --brand-hover: var(--accent-hover);
   --brand-ink: var(--accent);
   --danger-border: color-mix(in srgb, var(--danger) 32%, transparent);
   --radius-lg: var(--r-2);
   --radius-xl: var(--r-2);
   --focus: #4f7cff;
-  --gold: #fbbf24;
+  --gold: #fcd704;
   --gold-dim: rgba(251, 191, 36, 0.12);
   --gold-border: rgba(251, 191, 36, 0.45);
   --gold-ink: #92400e;        /* dark amber on gold-dim: 6.4:1 */
@@ -87,7 +87,7 @@
   --text: #edeef1;
   --muted: #8c929d;
   --accent: #6ea6ff;
-  --accent-2: #fbbf24;
+  --accent-2: #fcd704;
   --accent-3: #4a90ff;
   --danger: #e0527e;
   --shadow: 0 2px 12px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
@@ -214,7 +214,7 @@ button {
   font-size: 0.875rem;
   font-weight: 600;
   border: none;
-  border-radius: var(--r-1);
+  border-radius: 7px;
   padding: 0.7rem 1.15rem;
   min-height: 40px;
   cursor: pointer;
@@ -230,11 +230,11 @@ button {
 button:active:not(:disabled) { transform: scale(0.97); }
 
 button:where(:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack])) {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--primary);
+  color: var(--primary-ink);
 }
 button:where(:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack])):where(:hover) {
-  background: var(--accent-hover);
+  background: var(--primary-hover);
 }
 button:where(:not(.ghost):not(.text-btn):not(.danger-btn):not(.playground-tab):not(.console-nav-tab):not([data-auth]):not([data-pack])):where(:disabled) {
   opacity: 0.45;

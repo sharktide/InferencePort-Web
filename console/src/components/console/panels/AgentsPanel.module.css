@@ -10,8 +10,8 @@
 .agentsTab { border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; border-radius: 999px; padding: 0.35rem 0.9rem; cursor: pointer; min-height: 32px; }
 .agentsTab.active { background: var(--surface-2); color: var(--text); border-color: var(--border-strong); }
 .agentsTab:hover:not(.active) { color: var(--text); }
-.createTab, .createTab.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.createTab:hover:not(.active) { background: var(--accent-hover); color: var(--accent-ink); }
+.createTab, .createTab.active { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); border-radius: 7px; }
+.createTab:hover:not(.active) { background: var(--primary-hover); color: var(--primary-ink); }
 
 .agentList { display: grid; gap: 0.85rem; }
 .agentRow { background: var(--surface-2); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; display: grid; gap: 0.6rem; min-width: 0; }

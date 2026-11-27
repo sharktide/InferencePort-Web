@@ -47,8 +47,8 @@
       <div class="lp-wrap">
         <div class="lp-hero-grid">
           <div class="lp-hero-copy">
-            <h1 id="lp-title">Models are<br />just the start.<br /><em>Build the rest.</em></h1>
-            <p>Start with an OpenAI-compatible API. Deploy your own models, run agents, and track what your team spends from the same console.</p>
+            <h1 id="lp-title">One API for models.<br /><em>Infrastructure to run them.</em></h1>
+            <p>Call text, image, video, audio, 3D, embedding, realtime and decision models through an OpenAI-compatible API. Add managed agents, model deployments, content moderation and S3-compatible storage from the same account.</p>
             <div class="lp-actions">
               <a class="lp-button lp-button-primary" href="/console">Open console <span aria-hidden="true">↗</span></a>
               <a class="lp-button lp-button-outline" href="marketplace.html">Browse models <span aria-hidden="true">↗</span></a>
@@ -125,8 +125,8 @@
         <section class="lp-trust" id="customers" aria-label="Customers and startup-program memberships">
           <div class="lp-trust-row lp-trust-row--customers">
             <div class="lp-trust-intro">
-              <h2 id="lp-trust-customers-title"><a class="lp-trust-case-study" href="/partnerships/pollinations.html">Pollinations collaboration <span aria-hidden="true">↗</span></a></h2>
-              <p class="lp-trust-description">Used by 1k+ teams and enterprises building in production.</p>
+              <h2 id="lp-trust-customers-title">Used by 1k+ teams and enterprises building in production.</h2>
+              <a class="lp-trust-case-study" href="/partnerships/pollinations.html">Pollinations collaboration <span aria-hidden="true">↗</span></a>
             </div>
             <ul class="lp-trust-list lp-trust-customers" aria-labelledby="lp-trust-customers-title">
               <li><a class="lp-trust-mark lp-trust-mark--pollinations" href="https://pollinations.ai/" target="_blank" rel="noopener noreferrer" aria-label="Pollinations.ai"><img src="/img/brands/pollinations.svg" alt="Pollinations.ai" width="140" height="35" loading="lazy"></a></li>
@@ -155,6 +155,37 @@
           <div><h2 id="lp-products-title">Explore the platform</h2></div>
 
         </div>
+        <section class="lp-integration-compare" aria-labelledby="lp-integration-title">
+          <div class="lp-integration-heading">
+            <h3 id="lp-integration-title">What it takes to run an AI application</h3>
+            <p>For a support assistant that checks user messages, generates replies, stores conversation exports and tracks spend, compare the integrations your backend needs to maintain.</p>
+          </div>
+          <div class="lp-integration-flows">
+            <div class="lp-integration-flow">
+              <h4>Example multi-provider stack</h4>
+              <ol>
+                <li><strong>Your application</strong><span>Authenticate users and apply application logic.</span></li>
+                <li><strong>Amazon Bedrock Guardrails</strong><code>ApplyGuardrail</code><span>Moderate input; translate the provider verdict into your policy.</span></li>
+                <li><strong>OpenRouter</strong><code>/api/v1/chat/completions</code><span>Choose and call a model with separate credentials.</span></li>
+                <li><strong>Custom agent backend</strong><span>Maintain instructions, tool execution and model calls.</span></li>
+                <li><strong>Azure Blob Storage</strong><span>Write approved conversation exports; manage storage credentials.</span></li>
+                <li><strong>Custom usage reporting</strong><span>Reconcile provider bills and implement team-level limits.</span></li>
+              </ol>
+            </div>
+            <div class="lp-integration-flow lp-integration-flow--ip">
+              <h4>With InferencePort</h4>
+              <ol>
+                <li><strong>Your application</strong><span>Keep your authentication, UI and business logic.</span></li>
+                <li><strong><a href="#shield">AI Shield</a></strong><code>POST /ai-shield/scan</code><span>Use content_moderation or prompt_guard; apply the returned decision.</span></li>
+                <li><strong><a href="#api">Unified model API</a></strong><code>POST /v1/chat/completions</code><span>Use a catalog model such as deepseek-v4.1-flash-1017.</span></li>
+                <li><strong><a href="#agents">Managed agents</a></strong><code>agent/&lt;username&gt;/support-bot</code><span>Configure instructions and MCP tools once; call the agent as a model.</span></li>
+                <li><strong><a href="#buckets">InferencePort Buckets</a></strong><span>Store exports using the workspace S3 endpoint and scoped SigV4 credentials.</span></li>
+                <li><strong><a href="#organizations">Organizations &amp; usage</a></strong><span>Track service spend and configure API key and model restrictions from one console.</span></li>
+              </ol>
+            </div>
+          </div>
+          <p class="lp-integration-note">Both are valid architectures. The InferencePort version reduces separate integrations and billing surfaces. Your backend still controls the sequence, enforces moderation decisions and chooses what to store; the S3 endpoint uses its own credentials.</p>
+        </section>
         <div class="lp-directory">
           <div class="lp-product-group lp-product-group--build">
             <div class="lp-product-group-heading"><h3>Build</h3></div>
@@ -342,8 +373,8 @@ asyncio.run(main())</code></pre></div>
     <section class="lp-section lp-stack" id="platform-details" aria-labelledby="lp-stack-title">
       <div class="lp-wrap">
         <div class="lp-stack-heading">
-          <div><h2 id="lp-stack-title">The pieces work better together.</h2></div>
-          <p>Add hosting, storage and security to your application without managing each service in a separate platform.</p>
+          <div><h2 id="lp-stack-title">How the infrastructure works</h2></div>
+          <p>Configure each service independently, then connect it from your application through documented APIs and standard clients.</p>
         </div>
         <article class="lp-proof-agent" id="agents" aria-labelledby="lp-agents-title">
           <div class="lp-proof-copy">
@@ -357,16 +388,16 @@ asyncio.run(main())</code></pre></div>
             <a class="lp-proof-link" href="/console/agents">Configure an agent <span aria-hidden="true">↗</span></a>
           </div>
           <div class="lp-proof-interface" aria-label="Illustration of the available agent configuration controls">
-            <div class="lp-preview-header"><span>Agent · support-bot</span><span>Illustrative preview</span></div>
+            <div class="lp-preview-header"><span>POST /v1/agents</span><span>Illustrative preview</span></div>
             <div class="lp-preview-body">
-              <div class="lp-preview-row"><span>Backing model</span><strong>Select from the model catalog</strong></div>
-              <div class="lp-preview-row lp-preview-row-block"><span>System instructions</span><div class="lp-preview-input">Define how the agent should behave and respond…</div></div>
-              <div class="lp-preview-row"><span>MCP servers</span><strong>HTTP or SSE tools · Configurable connections <i aria-hidden="true">＋</i></strong></div>
+              <div class="lp-preview-row"><span>Backing model</span><strong><code>deepseek-v4.1-flash-1017</code></strong></div>
+              <div class="lp-preview-row lp-preview-row-block"><span>System instructions</span><div class="lp-preview-input">Answer support questions using the supplied documentation. If the answer is missing, say so.</div></div>
+              <div class="lp-preview-row"><span>MCP servers</span><strong>HTTP or SSE tools · mcp_servers</strong></div>
               <div class="lp-preview-choice"><span>Visibility</span><div><b>Private</b><span>Unlisted</span><span>Published</span></div></div>
               <div class="lp-preview-choice"><span>Request billing</span><div><b>Caller pays</b><span>Owner pays</span></div></div>
             </div>
             <div class="lp-agent-journey" aria-label="Agent setup workflow"><span><b>1</b> Configure</span><span><b>2</b> Connect tools</span><span><b>3</b> Call via API</span></div>
-            <p class="lp-preview-caption">Illustrative control layout · not a live agent.</p>
+            <p class="lp-preview-caption">Illustrative control layout · agent_id: support-bot · model, system_prompt, visibility, payer and mcp_servers are creation fields.</p>
           </div>
         </article>
         <div class="lp-proof-pair">
@@ -432,8 +463,8 @@ asyncio.run(main())</code></pre></div>
           <div class="lp-shield-schema lp-shield-demo" aria-label="Illustrative Shield API request and response">
             <div class="lp-shield-schema-head"><code>POST /ai-shield/analyze</code><span class="lp-shield-indicator"><i aria-hidden="true"></i> Example response</span></div>
             <div class="lp-shield-demo-input">
-              <span>Signals supplied by your application</span>
-              <div><code>email</code><code>ip</code><code>device</code><code>content</code></div>
+              <span>Example request fields</span>
+              <div><code>task: signup</code><code>email</code><code>ip</code><code>device_fingerprint</code><code>content</code></div>
             </div>
             <div class="lp-shield-example-head"><strong>Structured assessment</strong><small>Illustrative only · Response fields</small></div>
             <pre class="lp-shield-json"><code>{
@@ -496,25 +527,25 @@ asyncio.run(main())</code></pre></div>
           <article class="lp-ecosystem-spotlight" id="council">
             <div class="lp-ecosystem-copy">
               <h3>Council MCP</h3>
-              <p>Choose model and judge tiers and run 1–3 review rounds from Claude Code, Cursor, VS Code, Claude Desktop or another MCP client. Connect with OAuth or API key.</p>
+              <p>Send a problem to <code>council_reason</code> from Claude Code, Cursor, VS Code or another MCP client. Models answer independently, then cross-review and judges synthesize their findings. Configure the tier, custom_models, custom_judges and iteration_rounds (1–3 review rounds). Connect with OAuth or API key.</p>
               <a class="lp-proof-link" href="ipx.html">Explore Council MCP <span aria-hidden="true">↗</span></a>
             </div>
             <div class="lp-ecosystem-visual lp-council-visual" aria-label="Illustrative Council MCP review flow">
-              <div class="lp-council-toolbar"><span class="lp-council-toolname"><span class="lp-council-indicator" aria-hidden="true">◈</span> council_reason</span><span>MCP tool · Example</span></div>
-              <div class="lp-council-request"><span>Your assistant asks</span><strong>“Is this migration safe?”</strong></div>
+              <div class="lp-council-toolbar"><code class="lp-council-toolname">council_reason</code></div>
+              <div class="lp-council-request"><span>Your assistant asks</span><strong>“Is this database migration safe?”</strong></div>
               <div class="lp-council-review-stages" aria-label="Three-stage model review">
-                <div class="lp-council-stage-heading"><b>01</b><strong>Independent answers</strong><span>Parallel</span></div>
+                <div class="lp-council-stage-heading"><b>01</b><strong>Independent answers</strong></div>
                 <div class="lp-council-voices">
-                  <div><span>Model A</span><p>Check compatibility and test coverage</p></div>
-                  <div><span>Model B</span><p>Review rollout and rollback options</p></div>
-                  <div><span>Model C</span><p>Look for operational and security risks</p></div>
+                  <div><span>deepseek-v4.1-flash-1017</span><p>Check schema compatibility and test coverage.</p></div>
+                  <div><span>claude-sonnet-5</span><p>Review rollout and rollback options.</p></div>
+                  <div><span>beam-1.0-501b-a23b</span><p>Look for operational risks and locking.</p></div>
                 </div>
-                <div class="lp-council-stage-heading"><b>02</b><strong>Cross-review</strong><span>1–3 rounds</span></div>
+                <div class="lp-council-stage-heading"><b>02</b><strong>Cross-review</strong></div>
                 <div class="lp-council-review-note">The models critique each other’s answers and identify disagreements.</div>
-                <div class="lp-council-stage-heading"><b>03</b><strong>Judge synthesis</strong><span>One answer</span></div>
-                <div class="lp-council-synthesis"><span aria-hidden="true">◆</span> A consolidated answer, with competing perspectives considered.</div>
+                <div class="lp-council-stage-heading"><b>03</b><strong>Judge synthesis</strong></div>
+                <div class="lp-council-synthesis">Compare the answers and flag unresolved risks before recommending a rollout.</div>
               </div>
-              <div class="lp-council-command"><code>council_reason · callable from your MCP client</code></div>
+              <p class="lp-council-example-note">Illustrative review with catalog model IDs; available council and judge models depend on tier and configuration. Not live output.</p>
             </div>
           </article>
           <article class="lp-ecosystem-spotlight lp-ecosystem-spotlight--reverse" id="cli">
