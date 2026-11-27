@@ -1,12 +1,12 @@
 .page { display: grid; gap: 1rem; min-width: 0; }
-.card { display: grid; gap: 1rem; min-width: 0; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.card { display: grid; gap: 1rem; min-width: 0; padding: 1rem; border: 1px solid var(--border); border-radius: var(--r-2); background: var(--surface); }
 .cardHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem 1rem; flex-wrap: wrap; }
 .cardTitle { margin: 0; color: var(--text); font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; }
 .lead { margin: 0.3rem 0 0; color: var(--text-2); font-size: 0.875rem; line-height: 1.5; }
 .hint { margin: 0; color: var(--muted); font-size: 0.8125rem; line-height: 1.5; }
 .label { color: var(--text-2); font-size: 0.75rem; font-weight: 600; }
 .meters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 0.65rem; }
-.meter { display: grid; align-content: start; gap: 0.35rem; min-width: 0; padding: 0.8rem; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-2); }
+.meter { display: grid; align-content: start; gap: 0.35rem; min-width: 0; padding: 0.8rem; border: 1px solid var(--border); border-radius: var(--r-1); background: var(--surface-2); }
 .meterWarn { border-color: color-mix(in srgb, var(--warn) 55%, var(--border)); }
 .statLabel { color: var(--muted); font-size: 0.75rem; font-weight: 600; }
 .statValue { color: var(--text); font-size: 1.125rem; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -21,7 +21,7 @@
 .detailAction { margin-top: 0.3rem; }
 .editName { max-width: 420px; }
 .transferField { display: grid; flex: 1 1 260px; gap: 0.3rem; }
-.dangerZone { display: grid; gap: 0.75rem; min-width: 0; padding: 1rem; border: 1px solid color-mix(in srgb, var(--danger-solid) 45%, var(--border)); border-radius: 8px; background: color-mix(in srgb, var(--danger-solid) 5%, var(--surface)); }
+.dangerZone { display: grid; gap: 0.75rem; min-width: 0; padding: 1rem; border: 1px solid color-mix(in srgb, var(--danger-solid) 45%, var(--border)); border-radius: var(--r-2); background: color-mix(in srgb, var(--danger-solid) 5%, var(--surface)); }
 .dangerTitle { margin: 0; color: var(--text); font-size: 0.9rem; font-weight: 600; }
 .dangerRow { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem 1rem; flex-wrap: wrap; }
 .capList { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }

@@ -2042,8 +2042,6 @@
 .lp-hero .lp-trust { grid-template-columns: 1fr; gap: 18px; }
 .lp-hero .lp-trust-case-study { font-size: inherit; color: inherit; }
 .lp-hero .lp-trust-row--programs { padding: 16px 0 0; border: 0; border-top: 1px solid var(--trust-rule); }
-.lp-hero .lp-trust-row--programs h2 { font-size: 1rem; }
-.lp-hero .lp-trust-row--programs .lp-trust-mark { height: 54px; }
 @media (min-width: 761px) {
   .lp-hero .lp-trust-row { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 32px; }
 }
@@ -2052,50 +2050,16 @@
   .lp-directory .lp-product-card { min-height: 72px; }
 }
 
-/* Homepage art direction: narrow display type, ink rules and exposed interfaces. */
-.homepage .lp { --lp-divider:var(--border); }
-.homepage .lp-wrap { width:min(1280px,calc(100% - 80px)); }
-.homepage .lp-weather { opacity:.12; }
-.homepage .lp-hero { border-bottom:0; }
-.homepage .lp-hero::before { display:none; }
-.homepage .lp-hero-grid { padding:64px 0 54px;gap:32px; }
-.homepage .lp-hero-copy h1 { font-family:"Archivo Narrow",Inter,sans-serif;font-size:clamp(4rem,6.7vw,6.5rem);font-weight:600;letter-spacing:-.045em;line-height:.99; }
-.homepage .lp-hero-copy h1 em { font-style:normal; }
-.homepage .lp-hero-copy > .lp-edition { margin:0 0 26px;font:500 .65rem/1.6 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted); }
-.homepage .lp-hero-copy > p:not(.lp-edition) { max-width:440px;font-size:1rem;line-height:1.75;margin:26px 0; }
-.homepage .lp-hero-meta { max-width:420px;gap:7px 18px;font-size:.68rem; }
-.homepage .lp-section { padding:76px 0; }
-.homepage .lp h2 { font-family:"Archivo Narrow",Inter,sans-serif;font-weight:600;font-size:clamp(2.5rem,4vw,3.7rem);line-height:1.04;letter-spacing:-.035em; }
-.homepage .lp-products-intro,.homepage .lp-stack-heading,.homepage .lp-workflow-header { padding-top:22px;border-top:2px solid var(--ink);margin-bottom:36px; }
-.homepage .lp-directory { gap:36px; }
-.homepage .lp-product-group-heading { border-bottom:1px solid var(--ink);padding:0 0 14px; }
-.homepage .lp-product-group-heading h3 { font:600 .75rem/1.5 var(--mono);letter-spacing:.04em;text-transform:uppercase; }
-.homepage .lp-directory .lp-product-card { min-height:110px;padding:18px 0;gap:4px 12px; }
-.homepage .lp-directory .lp-product-card h4 { font-size:.95rem; }
-.homepage .lp-directory .lp-product-card p { font-size:.8rem;line-height:1.55; }
-.homepage .lp-directory .lp-product-symbol { background:transparent;border:0;box-shadow:none;border-radius:0; }
-.homepage .lp-closing.lp-quickstart { padding:64px 0;background:#121923;border:0; }
-.homepage .lp-closing.lp-quickstart h2 { color:#f1f2ed; }
-.homepage .lp-closing.lp-quickstart h2 span { color:#fcd704; }
-.homepage .lp-quickstart-summary p,.homepage .lp-workbench-notes { color:#b7c1ce; }
-.homepage .lp-workbench-notes a { color:#f0f2f5; }
-.homepage .lp-quickstart-workbench { box-shadow:none;border-radius:0; }
-.homepage .lp-proof-agent,.homepage .lp-proof-shield,.homepage .lp-workspace-layout > article { border-radius:0;box-shadow:none; }
-.homepage .lp-proof-agent { border:0;border-block:1px solid var(--border); }
-.homepage .lp-proof-copy { padding:36px 36px 36px 0; }
-.homepage .lp-proof-interface { border-radius:0; }
-.homepage .lp-proof-compact { border-radius:0;box-shadow:none; }
-.homepage .lp-ecosystem-spotlight { padding:56px 0;border-top:1px solid var(--border); }
-.homepage .lp-ecosystem-spotlight h3 { font-family:"Archivo Narrow",Inter,sans-serif;font-weight:600;font-size:2.7rem;letter-spacing:-.025em; }
-.homepage .lp-ecosystem-visual { box-shadow:none; }
-.homepage .lp-pricing { border-top:2px solid var(--ink); }
-@media(max-width:760px) {
-  .homepage .lp-wrap { width:calc(100% - 36px); }
-  .homepage .lp-hero-grid { padding:36px 0;gap:24px; }
-  .homepage .lp-hero-copy h1 { font-size:clamp(3.7rem,13vw,5.4rem); }
-  .homepage .lp-section { padding:48px 0; }
-  .homepage .lp-directory { gap:30px; }
-  .homepage .lp-directory .lp-product-card { min-height:82px; }
-  .homepage .lp-proof-copy { padding:26px 0; }
-  .homepage .lp-ecosystem-spotlight { padding:36px 0; }
+/* Restore the original type scale, product surfaces and equal-height trust marks. */
+.lp-hero .lp-trust-intro h2 { font-size: clamp(1.13rem, 1.6vw, 1.45rem); }
+.lp-hero .lp-trust-case-study { text-decoration: none; }
+.lp-hero .lp-trust-case-study:hover { text-decoration: underline; }
+.lp-hero .lp-trust-mark { border-radius: 8px; }
+.lp-hero .lp-trust-mark--microsoft img { max-height: 48px; }
+.lp-directory .lp-product-card { padding: 16px 12px; border: 1px solid var(--border); border-radius: 10px; margin-top: 10px; }
+.lp-directory .lp-product-card-top { grid-row: span 2; }
+.lp-directory .lp-product-card h4, .lp-directory .lp-product-card p { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .lp-directory { gap: 24px; }
+  .lp-hero .lp-trust-row--programs { padding-top: 21px; }
 }

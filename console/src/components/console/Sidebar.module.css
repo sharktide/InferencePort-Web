@@ -3,7 +3,7 @@
   top: 60px;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1.7rem;
   padding: 1.25rem 0.75rem 1rem;
   background: var(--bg);
   border-right: 1px solid var(--border);
