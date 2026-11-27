@@ -3,7 +3,7 @@
   const previews = [...document.querySelectorAll("[data-tool-preview]")];
   const select = (id) => {
     if (!buttons.some(b => b.dataset.toolSelect === id)) return;
-    buttons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.toolSelect === id)));
+    buttons.forEach(b => { const active = b.dataset.toolSelect === id; b.setAttribute("aria-pressed", String(active)); b.textContent = active ? "Showing" : "Preview"; });
     previews.forEach(p => { p.hidden = p.dataset.toolPreview !== id; });
   };
   if (buttons.length && previews.length) {
@@ -72,7 +72,7 @@
     const fragment=document.createDocumentFragment();
     for (const {m,input,out} of selected) {
       const a=element("a",undefined,"lp-catalog-model");
-      a.href="marketplace.html#"+encodeURIComponent(m.id);
+      a.href="marketplace.html#"+encodeURI(m.id);
       const url=logo(m);
       if(url){ const img=element("img"); img.alt=""; img.loading="lazy"; img.src=url; img.addEventListener("error",()=>img.remove(),{once:true}); a.append(img); }
       a.append(element("strong",m.name||m.id),element("code",m.id));

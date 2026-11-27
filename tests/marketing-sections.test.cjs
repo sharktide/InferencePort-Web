@@ -396,8 +396,8 @@ test("preview accent colors and workspace padding are intentionally differentiat
     assert.ok(home.includes(name),"Missing purposeful preview element "+name);
   }
   for (const selector of [".lp-deploy-preview {",".lp-bucket-visual {",".lp-proof-interface {",
-    ".lp-council-visual {","#cli .lp-ecosystem-visual {","#lightning .lp-ecosystem-visual {",
-    "#app .lp-ecosystem-visual {"]) {
+    ".lp-council-visual {","#lp-tool-preview-cli {","#lp-tool-preview-lightning {",
+    "#lp-tool-preview-app {"]) {
     assert.ok(css.includes(selector),"Missing preview styling "+selector);
   }
   assert.match(css,/\.lp-workspace-layout > \.lp-workspace-console,[\s\S]*?padding:clamp\(32px,4vw,64px\)!important/);
@@ -413,9 +413,9 @@ test("featured infrastructure and developer ecosystem have readable dedicated sp
   assert.match(home,/class="lp-deploy-preview" aria-label="Illustrative deployment setup controls"/);
   assert.match(home,/class="lp-bucket-visual"/);
   assert.match(css,/\.lp-proof-pair \{display:flex;flex-direction:column;/);
-  assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?grid-template-columns:/);
-  assert.match(css,/\.lp-ecosystem-spotlight--reverse \.lp-ecosystem-copy/);
-  assert.match(css,/@media \(max-width:900px\) \{[\s\S]*?\.lp-ecosystem-spotlight \{grid-template-columns:1fr;/);
+  assert.match(css,/\.lp-tools-workspace \{[^}]*grid-template-columns:/);
+  assert.match(css,/\.lp-tools-previews \[hidden\]/);
+  assert.match(css,/@media\(max-width:900px\)[^\n]*\.lp-tools-workspace \{ grid-template-columns:1fr;/);
 });
 
 test("unnecessary all-caps section kickers have been removed", () => {
@@ -507,7 +507,7 @@ test("technical demos present meaningful workflows without fake live claims or r
     assert.ok(home.includes(term),"Missing purposeful product preview: "+term);
   }
   assert.match(css,/\.lp-tools-previews \.lp-ecosystem-visual/);
-  assert.match(css,/\.lp-ecosystem-spotlight \{[\s\S]*?padding:clamp\(55px,6\.2vw,88px\) 0;/);
+  assert.match(css,/\.lp-tool-entry \{[^}]*border-bottom:/);
   assert.match(css,/\.lp-desktop-visual \.lp-desktop-window img \{[\s\S]*?max-height:none/);
 });
 

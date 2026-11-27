@@ -18,6 +18,15 @@ fs.mkdirSync(screenshots,{recursive:true});
 const BASE=process.env.HOME_TEST_URL||"http://127.0.0.1:4173";
 
 async function checkScene(page,name) {
+  await page.route("https://api.inferenceport.ai/v1/models", route => route.fulfill({
+    json:{data:[
+      {id:"deepseek-v4.1-flash-1017",name:"DeepSeek Flash",type:"text",pricing:{prompt:0.0000002,completion:0.0000008}},
+      {id:"claude-sonnet-5",name:"Claude Sonnet",type:"text",input_pricing_per_million_tokens:3,output_pricing_per_million_tokens:15},
+      {id:"missing-price",type:"text",pricing:{prompt:0}},
+      {id:"unavailable",type:"text",is_ready:false,pricing:{prompt:0,completion:0}},
+      {id:"image-test",type:"image",pricing:{prompt:0,completion:0}}
+    ]},headers:{"access-control-allow-origin":"*"}
+  }));
   await page.goto(BASE+"/",{waitUntil:"domcontentloaded"});
   const shell=page.locator("#lp-topology");
   await shell.scrollIntoViewIfNeeded();
@@ -152,6 +161,15 @@ async function checkScene(page,name) {
   // The API workbench follows the product directory.
   assert.equal(await page.locator(".lp-hero-demo").count(),0);
   assert.equal(await page.locator("#quickstart [data-example-tab]").count(),8);
+  await page.locator(".lp-catalog-model").first().waitFor();
+  assert.equal(await page.locator(".lp-catalog-model").count(),2);
+  assert.match(await page.locator(".lp-catalog-model").first().innerText(),/Input: \$0\.20\/M/);
+  assert.equal(await page.locator(".lp-catalog-model").first().getAttribute("href"),"marketplace.html#deepseek-v4.1-flash-1017");
+  assert.equal(await page.locator("[data-tool-preview]:not([hidden])").count(),1);
+  await page.evaluate(()=>document.documentElement.setAttribute("data-theme","dark"));
+  const docsColor=await page.locator("#quickstart .lp-button-clear").evaluate(el=>getComputedStyle(el).color);
+  assert.equal(docsColor,"rgb(241, 245, 249)");
+  await page.evaluate(()=>document.documentElement.setAttribute("data-theme","light"));
   assert.equal(await page.locator("#api-examples").getAttribute("open"),null);
   await page.locator("#api-examples > summary").click();
   assert.ok(await page.locator("#lp-panel-text").isVisible());
@@ -190,7 +208,10 @@ async function checkScene(page,name) {
   ];
   for(const [product,container,content] of productPreviews){
     const scope=product==="shield"?"#shield":"#lp-tool-preview-"+product;
-    if(product!=="shield") await page.locator(`[data-tool-select="${product}"]`).click();
+    if(product!=="shield") {
+      await page.locator(`[data-tool-select="${product}"]`).click();
+      assert.equal(await page.locator("[data-tool-preview]:not([hidden])").count(),1);
+    }
     assert.equal(await page.locator(scope+(product==="shield"?" ":"")+container).count(),1,
       name+" missing "+product+" product interface");
     assert.ok(await page.locator(scope+" "+content).isVisible(),

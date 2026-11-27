@@ -1194,16 +1194,16 @@
 }
 .lp-council-visual .lp-review-step {color:#b6a0ff;font-size:.92rem;}
 .lp-council-visual ol li {border-bottom-color:rgba(160,139,227,.22);}
-#cli .lp-ecosystem-visual {
+#lp-tool-preview-cli {
   background:linear-gradient(140deg,rgba(61,120,231,.19),transparent 70%),var(--paper);
   border:1px solid rgba(107,146,232,.4);border-top:3px solid #668ef2;
 }
-#cli .lp-cli-terminal {box-shadow:0 16px 35px -30px rgba(49,109,228,.7);}
-#lightning .lp-ecosystem-visual {
+#lp-tool-preview-cli .lp-cli-terminal {box-shadow:0 16px 35px -30px rgba(49,109,228,.7);}
+#lp-tool-preview-lightning {
   background:linear-gradient(130deg,rgba(245,193,51,.18),transparent 75%),var(--paper);
   border:1px solid rgba(227,178,62,.34);border-top:3px solid #f3cb42;
 }
-#app .lp-ecosystem-visual {
+#lp-tool-preview-app {
   background:linear-gradient(142deg,rgba(68,186,146,.17),transparent 77%),var(--paper);
   border:1px solid rgba(69,190,158,.33);border-top:3px solid #56c8a5;
 }
@@ -1214,8 +1214,8 @@
 }
 .lp-experience-graphic-lightning {color:#e0aa15;background:rgba(234,184,43,.2);}
 .lp-experience-graphic-app {color:#48b695;background:rgba(71,183,151,.2);}
-#lightning .lp-experience-list span {border-bottom-color:rgba(220,179,82,.22);}
-#app .lp-experience-list span {border-bottom-color:rgba(94,186,151,.22);}
+#lp-tool-preview-lightning .lp-experience-list span {border-bottom-color:rgba(220,179,82,.22);}
+#lp-tool-preview-app .lp-experience-list span {border-bottom-color:rgba(94,186,151,.22);}
 .lp-ecosystem-spotlight {gap:clamp(54px,7vw,135px);}
 @media (max-width:900px) {
   .lp-workspace-layout > .lp-workspace-console,
@@ -1612,10 +1612,10 @@
 .lp-model-catalog > div {border-left-width:3px;}
 /* Council: request -> parallel answers -> review -> judges, not a generic
    numbered feature list. Keep each stage legible at mobile widths. */
-#council .lp-ecosystem-visual,
-#cli .lp-ecosystem-visual,
-#lightning .lp-ecosystem-visual,
-#app .lp-ecosystem-visual {
+#lp-tool-preview-council,
+#lp-tool-preview-cli,
+#lp-tool-preview-lightning,
+#lp-tool-preview-app {
   padding:0;
   background:transparent;
   border:0;
@@ -1680,8 +1680,8 @@
 .lp-council-visual .lp-council-command {margin:13px 20px 19px;background:transparent;color:var(--text-muted);padding:0;border:0;font-size:.7rem;overflow-wrap:anywhere;white-space:normal;}
 .lp-council-visual .lp-council-command code {font-family:var(--mono);font-size:.7rem;white-space:normal;overflow-wrap:anywhere;}
 /* CLI as the output of an actual terminal, not nested in a marketing tile. */
-#cli .lp-cli-terminal {overflow:hidden;border:1px solid #384861;border-radius:9px;box-shadow:none;background:#0e1727;}
-#cli .lp-cli-terminal > .lp-cli-terminal-top {
+#lp-tool-preview-cli .lp-cli-terminal {overflow:hidden;border:1px solid #384861;border-radius:9px;box-shadow:none;background:#0e1727;}
+#lp-tool-preview-cli .lp-cli-terminal > .lp-cli-terminal-top {
   display:flex;align-items:center;gap:12px;
   padding:13px 16px;
   background:#1d2b3d;
@@ -1696,9 +1696,9 @@
 .lp-cli-window-dots i:nth-child(3) {background:#67c49d;}
 .lp-cli-terminal-top strong {color:#e5edfc;font-size:.81rem;}
 .lp-cli-terminal-top > span:last-child {margin-left:auto;color:#b2c3d8;font-size:.73rem;white-space:nowrap;}
-#cli .lp-cli-terminal > .lp-cli-terminal-body {padding:18px 0 13px;border:0;}
+#lp-tool-preview-cli .lp-cli-terminal > .lp-cli-terminal-body {padding:18px 0 13px;border:0;}
 .lp-cli-step-label {padding:11px 20px 5px;color:#92a9c9;font-size:.74rem;font-weight:650;line-height:1.4;}
-#cli .lp-cli-terminal-body pre {
+#lp-tool-preview-cli .lp-cli-terminal-body pre {
   white-space:pre-wrap;
   overflow-wrap:anywhere;
   word-break:break-word;
@@ -1708,9 +1708,9 @@
   font:.78rem/1.75 var(--mono);
   border-bottom:1px solid #25364a;
 }
-#cli .lp-cli-terminal-body pre:last-child {border-bottom:0;}
+#lp-tool-preview-cli .lp-cli-terminal-body pre:last-child {border-bottom:0;}
 .lp-cli-prompt {color:#7ab6f6;font-weight:750;}
-#cli .lp-cli-terminal > .lp-cli-terminal-foot {
+#lp-tool-preview-cli .lp-cli-terminal > .lp-cli-terminal-foot {
   display:flex;flex-wrap:wrap;gap:8px 14px;
   padding:13px 19px;
   border-top:1px solid #35475e;
@@ -1770,8 +1770,8 @@
 .lp-lightning-conversation .lp-lightning-message--assistant p {font-size:.79rem;color:#c7d5e8;line-height:1.52;margin-top:6px;}
 .lp-lightning-compose {display:flex;align-items:center;justify-content:space-between;gap:8px;background:#202b3c;border:1px solid #46546a;border-radius:9px;padding:12px 13px;margin-top:auto;font-size:.75rem;color:#a5b3c7;}
 .lp-lightning-compose b {color:#181e28;background:#ebc94d;width:23px;height:23px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
-#lightning .lp-lightning-tools {margin:0;padding:11px 16px;background:#1a2638;border-top:1px solid #33445b;gap:7px;}
-#lightning .lp-lightning-tools span {padding:5px 9px;background:#243447;border:1px solid #3b5267;color:#d5e4f1;font-size:.7rem;}
+#lp-tool-preview-lightning .lp-lightning-tools {margin:0;padding:11px 16px;background:#1a2638;border-top:1px solid #33445b;gap:7px;}
+#lp-tool-preview-lightning .lp-lightning-tools span {padding:5px 9px;background:#243447;border:1px solid #3b5267;color:#d5e4f1;font-size:.7rem;}
 .lp-lightning-tools small {margin-left:auto;align-self:center;color:#94a9c2;font-size:.69rem;}
 /* Desktop: real screenshot is the primary content. No nested wallpaper card. */
 .lp-desktop-visual {background:transparent!important;}
@@ -1819,13 +1819,13 @@
   .lp-council-stage-heading {grid-template-columns:26px minmax(0,1fr) auto;}
   .lp-council-visual .lp-council-command {margin-inline:14px;}
   .lp-council-toolbar {padding:12px;}
-  #cli .lp-cli-terminal-body pre {font-size:.73rem;padding-inline:14px;}
+  #lp-tool-preview-cli .lp-cli-terminal-body pre {font-size:.73rem;padding-inline:14px;}
   .lp-cli-step-label {padding-inline:14px;}
   .lp-lightning-workspace {grid-template-columns:1fr;min-height:0;}
   .lp-lightning-sidebar {display:none;}
   .lp-lightning-conversation {padding:17px 13px;min-height:340px;}
   .lp-lightning-conversation .lp-lightning-message {max-width:95%;}
-  #lightning .lp-lightning-tools {gap:6px;}
+  #lp-tool-preview-lightning .lp-lightning-tools {gap:6px;}
   .lp-lightning-tools small {width:100%;margin:5px 0 0;}
   .lp-lightning-appbar {padding-inline:13px;}
   .lp-desktop-visual .lp-desktop-window-bar {flex-wrap:wrap;padding-inline:12px;}
@@ -2134,8 +2134,8 @@
 .lp-tool-entry p { color:var(--text-body); font-size:.85rem; line-height:1.6; margin:0 0 10px; }
 .lp-tool-actions { display:flex; flex-wrap:wrap; gap:8px 18px; align-items:center; }
 .lp-tool-actions a { font-size:.8rem; font-weight:650; color:var(--ink); text-decoration:underline; text-underline-offset:3px; }
-.lp-tool-actions button { padding:6px 10px; color:var(--ink); background:transparent; border:1px solid var(--border); border-radius:5px; font:600 .76rem/1.3 inherit; cursor:pointer; margin-left:auto; }
-.lp-tool-actions button[aria-pressed="true"] { border-color:#c3a219; color:var(--ink); background:var(--gold-dim); }
+.lp-tool-actions button { padding:6px 10px; color:var(--ink); background:transparent; border:1px solid var(--border); border-radius:5px; font-family:inherit; font-size:.76rem; font-weight:600; line-height:1.3; cursor:pointer; margin-left:auto; }
+.lp-tool-actions button[aria-pressed="true"] { border-color:#c3a219; color:var(--ink); background:rgba(252,215,4,.12); }
 .lp-tool-actions button:focus-visible { outline:2px solid var(--brand-ink); outline-offset:2px; }
 .lp-tools-previews { padding-top:18px; }
 .lp-tools-previews .lp-ecosystem-visual { width:100%; min-width:0; margin:0 0 16px; }
@@ -2146,3 +2146,7 @@
 .lp-more .lp-more-bottom { margin-top:24px; }
 @media(max-width:900px) { .lp-catalog-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .lp-tools-workspace { grid-template-columns:1fr; gap:12px; } .lp-tools-previews { padding-top:0; } }
 @media(max-width:420px) { .lp-catalog-model { padding:12px; min-height:145px; } .lp-catalog-model strong { font-size:.84rem; } .lp-catalog-rates { font-size:.68rem; } }
+
+.lp-tools-previews #lp-tool-preview-app, .lp-tools-previews #lp-tool-preview-cli, .lp-tools-previews #lp-tool-preview-lightning, .lp-tools-previews #lp-tool-preview-council { padding:0; }
+.lp-tool-entry:has(button[aria-pressed="true"]) h3 { text-decoration:underline; text-decoration-color:#c3a219; text-underline-offset:5px; }
+.lp-tool-actions button[aria-pressed="true"] { font-weight:700; }
