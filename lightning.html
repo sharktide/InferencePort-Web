@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Lightning Models — InferencePort AI</title>
 		<link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-		<meta name="description" content="Lightning Text v2 streams up to 1,000 words per second and Lightning Image Turbo is the default image model. Free on every plan, in the desktop app or any browser." />
+		<meta name="description" content="Chat and create with Lightning Text v2 and Lightning Image Turbo in your browser or the InferencePort app." />
 		<link rel="canonical" href="https://inferenceport.ai/lightning.html" />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
@@ -14,23 +14,55 @@
 		<script src="components/ip-navbar.js"></script>
 		<script src="components/ip-footer.js"></script>
 		<script src="scripts/animations.js" defer></script>
+		<style>
+			/* Styles for this page's plan comparison table only. */
+			.lightning-page .sec-head { grid-template-columns: minmax(0, 1fr); }
+			.lightning-table caption {
+				text-align: left;
+				color: var(--text-muted);
+				font-size: 0.88rem;
+				padding: 0 0 18px;
+			}
+			.lightning-table th[scope="row"] {
+				width: 36%;
+				text-align: left;
+				font-family: inherit;
+				font-size: inherit;
+				letter-spacing: -0.01em;
+				text-transform: none;
+				font-weight: 600;
+				color: var(--ink);
+				padding: 20px 16px 20px 0;
+				border-bottom: 1px solid var(--border);
+				vertical-align: top;
+			}
+			@media (max-width: 760px) {
+				.lightning-table td::before {
+					content: attr(data-label) ": ";
+					font-family: var(--mono);
+					font-size: 0.68rem;
+					letter-spacing: 0.08em;
+					text-transform: uppercase;
+					color: var(--text-muted);
+					margin-right: 0.45em;
+				}
+				.lightning-table th[scope="row"] { display: block; width: 100%; border: 0; padding: 3px 0; }
+			}
+		</style>
 	</head>
-	<body>
+	<body class="lightning-page">
 		<ip-navbar active="lightning"></ip-navbar>
 		<main>
 			<section class="sec night" style="border-top:0;padding:88px 0 96px">
 				<div class="wrap">
-					<div class="h-kicker" style="color:#6b7487">Lightning &middot; hosted chat</div>
-					<div class="split" style="align-items:end">
-						<div>
-							<h1 class="h-title" style="color:#fff">AI at the speed of reading.</h1>
-							<p class="h-lede" style="color:#9aa3b5">Lightning Text v2 and Lightning Image Turbo are built for cloud throughput. Both are free on every plan &mdash; in the desktop app, or in any browser.</p>
+					<div class="h-kicker" style="color:#6b7487">Chat &amp; create with Lightning</div>
+					<div class="lightning-hero-copy">
+							<h1 class="h-title" style="color:#fff">Chat and create with Lightning.</h1>
+							<p class="h-lede" style="color:#9aa3b5">Use Lightning Text v2 for chat and writing, and Lightning Image Turbo to create images. Available in your browser and the InferencePort app.</p>
 							<div class="h-cta">
-								<a class="btn-brand" href="chat/">Try Lightning in the browser</a>
-								<a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="install.html#install">Use it in the app</a>
+								<a class="btn-brand" href="chat/">Open Lightning chat</a>
+								<a class="btn-ghost" style="background:transparent;color:#fff;border-color:#475170" href="install.html#install">Download app</a>
 							</div>
-						</div>
-						<div class="bignum">1,000<small>words / sec</small></div>
 					</div>
 				</div>
 			</section>
@@ -38,28 +70,25 @@
 			<section class="sec">
 				<div class="wrap">
 					<div class="sec-head">
-						<div class="sec-idx">01 &mdash; The suite</div>
-						<div><h2>Two models, one job: be fast.</h2></div>
+						<div><h2>Text and image generation in Lightning.</h2></div>
 					</div>
 					<div class="map" style="--x:1">
 						<div class="map-cols two">
 							<article class="surf surf-chat">
 								<div class="surf-label">Text generation</div>
 								<h3>Lightning Text v2</h3>
-								<p>Built for speed and smooth streaming. Optimized caching and decoding keep latency near zero for chat, coding and long-form writing.</p>
+								<p>A hosted model for everyday chat, coding, and writing. Use it without setting up a local GPU.</p>
 								<dl>
-									<div><dt>Speed</dt><dd>Up to 1,000 words/sec streaming</dd></div>
-									<div><dt>Best for</dt><dd>Chat, code, documents</dd></div>
+									<div><dt>Use for</dt><dd>Chat, code, writing</dd></div>
 									<div><dt>Runs on</dt><dd>Cloud &mdash; no local GPU needed</dd></div>
 								</dl>
 							</article>
 							<article class="surf surf-chat">
 								<div class="surf-label">Image generation</div>
 								<h3>Lightning Image Turbo</h3>
-								<p>Ultra-realistic images with exceptional detail &mdash; cinematic, sci-fi or photoreal. The default image model, with sharper lighting and faster generation.</p>
+								<p>Create images from prompts in Lightning chat. Lightning Image Turbo is the default image model.</p>
 								<dl>
-									<div><dt>Look</dt><dd>Ultra-realistic, cinematic</dd></div>
-									<div><dt>Speed</dt><dd>Faster than previous models</dd></div>
+									<div><dt>Use for</dt><dd>Prompt-based image creation</dd></div>
 									<div><dt>Runs on</dt><dd>Cloud &mdash; no local GPU needed</dd></div>
 								</dl>
 							</article>
@@ -71,36 +100,23 @@
 			<section class="sec paper">
 				<div class="wrap">
 					<div class="sec-head">
-						<div class="sec-idx">02 &mdash; Where it fits</div>
 						<div>
 							<h2>Lightning is for chatting. The API is for shipping.</h2>
-							<p>Lightning draws on your plan&rsquo;s quotas &mdash; ideal for day-to-day use, bounded by plan limits. For production services, use the Pay-to-Go API from the Developer Console, which bills a separate credit wallet.</p>
+							<p>Lightning chat uses your plan&rsquo;s included usage limits. Free includes 50 cloud chats and 10 images per day; <a href="pricing.html">see all plan details</a>. For production services, the Pay-to-Go API in the Developer Console bills a separate credit wallet. Teams can choose whether Lightning usage is billed to a member or the organization.</p>
 						</div>
 					</div>
-					<table class="dtable">
-						<thead><tr><th>You want&hellip;</th><th>Use</th><th>Billed by</th></tr></thead>
+					<table class="dtable lightning-table">
+						<caption>Choose a service based on how you use and pay for it.</caption>
+						<thead><tr><th scope="col">You want&hellip;</th><th scope="col">Use</th><th scope="col">Billed by</th></tr></thead>
 						<tbody>
-							<tr><td>Fast everyday chat</td><td><span class="pill chat">Lightning chat</span></td><td>Plan quotas &mdash; free tier included</td></tr>
-							<tr><td>Models inside your product</td><td><span class="pill console">Pay-to-Go API</span></td><td>Credits, per request</td></tr>
-							<tr><td>Lightning for a whole team</td><td><span class="pill org">Organizations</span></td><td>Org policy can bill Lightning to the organization</td></tr>
+							<tr><th scope="row">Chat and create</th><td data-label="Use"><span class="pill chat">Lightning chat</span></td><td data-label="Billed by">Plan usage limits</td></tr>
+							<tr><th scope="row">Use models in your product</th><td data-label="Use"><span class="pill console">Pay-to-Go API</span></td><td data-label="Billed by">Separate credit wallet, per request</td></tr>
+							<tr><th scope="row">Lightning for a team</th><td data-label="Use"><span class="pill org">Organization billing</span></td><td data-label="Billed by">Member or organization, based on team policy</td></tr>
 						</tbody>
 					</table>
-					<p style="margin-top:28px"><a class="btn-ghost" href="platform.html">How the pieces fit together &rarr;</a></p>
 				</div>
 			</section>
 		</main>
-
-		<section class="closer">
-			<div class="wrap">
-				<h2>Free on every plan.</h2>
-				<p>No credit card for the free tier. Open it in a browser now, or install the app.</p>
-				<div class="h-cta">
-					<a class="btn-brand" href="chat/">Try Lightning</a>
-					<a class="btn-ghost" href="install.html#install">Install InferencePort</a>
-					<a class="btn-ghost" href="pricing.html">See plans</a>
-				</div>
-			</div>
-		</section>
 		<ip-footer></ip-footer>
 	</body>
 </html>

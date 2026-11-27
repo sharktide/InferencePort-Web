@@ -183,6 +183,8 @@ a:hover { color: var(--ink); }
   color: var(--text-body); border-radius: 2px;
 }
 .ipn-m:hover { background: var(--bg-alt); color: var(--ink); }
+.ipn-m.active { background: var(--bg-alt); }
+.ipn-m.active b { text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 3px; }
 .ipn-m i { width: 9px; height: 9px; margin-top: 6px; display: block; }
 .ipn-m b { display: block; color: var(--ink); font-size: 0.86rem; font-weight: 650; letter-spacing: -0.01em; }
 .ipn-m span { display: block; font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; margin-top: 1px; }

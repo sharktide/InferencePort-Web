@@ -2013,3 +2013,41 @@
 :root[data-theme="dark"] .lp-workbench-notes a {color:#f0f3f9;}
 @media(max-width:960px){.lp-quickstart-heading{grid-template-columns:1fr;gap:21px;}.lp-quickstart-summary{max-width:670px;}.lp-quickstart-workbench .lp-code-tabs{grid-template-columns:repeat(4,minmax(0,1fr));}}
 @media(max-width:630px){.lp-closing.lp-quickstart{padding:47px 0 55px;}.lp-closing.lp-quickstart h2{font-size:clamp(2.5rem,10vw,3.15rem);}.lp-quickstart-workbench .lp-code-heading{padding:13px;flex-wrap:wrap;}.lp-quickstart-workbench .lp-code-tabs{padding:0 7px;}.lp-quickstart-workbench .lp-code-tabs button{font-size:.65rem;padding:13px 2px;}.lp-quickstart-workbench .lp-code-hint{font-size:.6rem;padding:15px 14px 0;}.lp-quickstart-workbench .lp-code-example{min-height:260px;}.lp-quickstart-workbench .lp-code-example pre{font-size:.67rem;padding:14px;max-height:340px;}.lp-quickstart-workbench .lp-code-bottom{padding:12px 14px;flex-direction:column;align-items:flex-start;gap:12px;}}
+
+.lp-directory {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(24px, 3vw, 48px);
+}
+.lp-directory .lp-product-group { margin: 0; }
+.lp-directory .lp-product-grid { display: block; }
+.lp-directory .lp-product-group-heading { margin: 0; }
+.lp-directory .lp-product-card {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-content: center;
+  gap: 3px 12px;
+  min-height: 98px;
+  padding: 14px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+.lp-directory .lp-product-card-top { grid-row: span 2; margin: 0; align-self: start; }
+.lp-directory .lp-product-symbol { width: 32px; height: 32px; }
+.lp-directory .lp-product-card h4, .lp-directory .lp-product-card p { margin: 0; }
+.lp-directory .lp-product-card:hover h4 { text-decoration: underline; text-underline-offset: 3px; }
+.lp-example-description { margin: 0; padding: 20px 22px 0; color: #dee6f1; font-size: .92rem; }
+.lp-example-description a { color: #ecd183; text-decoration: underline; }
+.lp-hero .lp-trust { grid-template-columns: 1fr; gap: 18px; }
+.lp-hero .lp-trust-case-study { font-size: inherit; color: inherit; }
+.lp-hero .lp-trust-row--programs { padding: 16px 0 0; border: 0; border-top: 1px solid var(--trust-rule); }
+.lp-hero .lp-trust-row--programs h2 { font-size: 1rem; }
+.lp-hero .lp-trust-row--programs .lp-trust-mark { height: 54px; }
+@media (min-width: 761px) {
+  .lp-hero .lp-trust-row { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 32px; }
+}
+@media (max-width: 760px) {
+  .lp-directory { grid-template-columns: 1fr; }
+  .lp-directory .lp-product-card { min-height: 72px; }
+}

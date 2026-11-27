@@ -148,16 +148,16 @@ async function checkScene(page,name) {
   assert.ok(workspacePadding>=19,name+" workspace padding collapsed: "+workspacePadding);
 
   // Main-site product detail is restored while keeping concise product stories.
-  const richSections=["agents","deploy","buckets","shield","council","cli","lightning","app"];
-  // The full API workbench lives at the end of the homepage now, not inside the hero.
+  const richSections=["agents","deploy","buckets","shield"];
+  // The API workbench follows the product directory.
   assert.equal(await page.locator(".lp-hero-demo").count(),0);
   assert.equal(await page.locator("#quickstart [data-example-tab]").count(),8);
   assert.equal(await page.locator("#quickstart [data-example-panel]").count(),8);
   assert.equal(await page.locator("#quickstart [data-example-panel]:not([hidden])").count(),1);
   assert.ok(await page.locator("#quickstart").evaluate(el=>{
     const pricing=document.querySelector("#pricing");
-    return pricing && pricing.compareDocumentPosition(el)&Node.DOCUMENT_POSITION_FOLLOWING;
-  }),name+" quickstart should follow pricing");
+    return pricing && el.compareDocumentPosition(pricing)&Node.DOCUMENT_POSITION_FOLLOWING;
+  }),name+" quickstart should precede pricing");
   for(const id of richSections){
     const element=page.locator('[id="'+id+'"] .lp-feature-points').first();
     assert.equal(await element.count(),1,name+" missing rich feature descriptions for "+id);

@@ -541,19 +541,23 @@
 				font-weight: 600;
 				color: var(--text);
 			}
-		</style>
+
+		.chapter-shell > section { padding-top: 2rem !important; }
+		.reference-details { margin: 1rem 0; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; color: var(--text-body); }
+		.reference-details > summary { color: var(--text); font-weight: 700; cursor: pointer; }
+		.reference-details[open] > summary { margin-bottom: 1rem; color: #ef4444; }
+		.reference-details > section { padding: 1rem 0 !important; }
+	</style>
 	<script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 	<body>
 		<ip-navbar active="shield"></ip-navbar>
 
-		<!-- ═══════════════════════════════════════════════════
-		     HERO
-		     ═══════════════════════════════════════════════════ -->
-		<section class="hero-section">
+		<!-- Intro -->
+<section class="hero-section">
 			<div class="container">
 				<div class="hero-eyebrow">
-					<span class="pulse-red"></span> Abuse, fraud &amp; attack prevention — live
+					Abuse, fraud &amp; attack prevention
 				</div>
 				<h1 class="hero-title">
 					The Trust Layer<br /><span class="accent">for Modern Apps.</span>
@@ -569,33 +573,16 @@
 					<a href="console/" class="btn btn-brand">Open Developer Console</a>
 					<a href="#vision" class="btn btn-ghost">Read the Vision →</a>
 				</div>
-				<div class="mt-5 pt-4" style="border-top: 1px solid var(--border)">
-					<div class="row justify-content-center g-4">
-						<div class="col-auto text-center">
-							<div class="stat-num">1</div>
-							<div class="stat-label">endpoint to learn</div>
-						</div>
-						<div class="col-auto text-center">
-							<div class="stat-num">29</div>
-							<div class="stat-label">analysis features</div>
-						</div>
-						<div class="col-auto text-center">
-							<div class="stat-num">5</div>
-							<div class="stat-label">possible decisions</div>
-						</div>
-						<div class="col-auto text-center">
-							<div class="stat-num">&lt;1s</div>
-							<div class="stat-label">response time</div>
-						</div>
-					</div>
-				</div>
+
 			</div>
 		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     VISION
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="vision">
+		<div class="chapter-shell" id="protection-areas">
+			<div class="container py-4"><div class="section-tag">Protection areas</div><h2 class="section-title">One platform. <span class="accent">Multiple risk areas.</span></h2><p class="section-sub">Evaluate account, content, request, identity and data signals using a task profile suited to the decision.</p><div class="row g-3 mt-2">
+				<div class="col-md-4"><div class="ip-card"><div class="feat-title">Account and identity</div><div class="feat-body">Signup, login, payment, identity checks and account relationships.</div></div></div>
+				<div class="col-md-4"><div class="ip-card"><div class="feat-title">Content and AI security</div><div class="feat-body">Prompt injection, tool output, phishing, spam and content moderation.</div></div></div>
+				<div class="col-md-4"><div class="ip-card"><div class="feat-title">Requests and files</div><div class="feat-body">Web requests, uploads, passwords, listings, reviews and domains.</div></div></div>
+			</div></div>
+<section class="py-5" id="vision">
 			<div class="container">
 				<div class="row align-items-center g-5">
 					<div class="col-lg-6">
@@ -646,110 +633,9 @@
 				</div>
 			</div>
 		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     THE PROBLEM
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">The Problem</div>
-					<h2 class="section-title">Your app is <span class="accent">under attack.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						Modern applications face an ever-growing list of threats.
-						Existing solutions are fragmented, rigid, and expensive.
-					</p>
-				</div>
-				<div class="problem-grid">
-					<div class="problem-chip"><span class="pc-x">✕</span> Automated bot signups</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Multi-account abuse</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Free trial farming</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Referral abuse</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Fake users</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Spam campaigns</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Account takeovers</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> API abuse</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Fraudulent activity</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Prompt injection attacks</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Jailbreak attempts</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> Data extraction attempts</div>
-					<div class="problem-chip"><span class="pc-x">✕</span> AI agent abuse</div>
-				</div>
-				<p class="vision-text mx-auto mt-4" style="text-align:center;">
-					Existing solutions are often <strong>difficult to integrate</strong>,
-					<strong>rule-based</strong>, <strong>require constant tuning</strong>,
-					<strong>limited to a single use case</strong>, <strong>poor at combining
-					multiple weak signals</strong>, and <strong>expensive and
-					enterprise-focused</strong>. Developers need a simple solution that
-					works immediately.
-				</p>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     THE SOLUTION
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">The Solution</div>
-					<h2 class="section-title">One platform. <span class="accent">Every protection.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						Shield combines fraud detection, abuse prevention, trust
-						scoring, and AI security into a single platform.
-					</p>
-				</div>
-				<div class="row g-3">
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🛡️</div>
-							<div class="feat-title">Bot Protection</div>
-							<div class="feat-body">Detect automated signups, scraping, and abuse before they reach your application.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🔍</div>
-							<div class="feat-title">Fraud Detection</div>
-							<div class="feat-body">Identify fake accounts, trial farming, referral abuse, and payment fraud.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🧠</div>
-							<div class="feat-title">AI Security</div>
-							<div class="feat-body">Block prompt injection, jailbreaks, data extraction, and AI agent manipulation.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🕸️</div>
-							<div class="feat-title">Abuse Graph</div>
-							<div class="feat-body">Map relationships between accounts to uncover networks and coordinated campaigns.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">📊</div>
-							<div class="feat-title">Trust Scoring</div>
-							<div class="feat-body">Get a risk score, confidence level, and actionable decision for every request.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">📝</div>
-							<div class="feat-title">Human Explanations</div>
-							<div class="feat-body">Every decision comes with plain-English reasoning — not just a number.</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     ONE ENDPOINT
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="endpoint">
+		</div>
+		<!-- Request and response -->
+<section class="py-5" id="endpoint">
 			<div class="container">
 				<div class="row align-items-center g-5">
 					<div class="col-lg-5">
@@ -816,15 +702,49 @@
 				</div>
 			</div>
 		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     TASK PROFILES
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="tasks">
+		<!-- Integrations -->
+		<section class="py-5" id="integrations"><div class="container"><div class="section-tag">Integrations</div><h2 class="section-title">Use the API or <span class="accent">command line.</span></h2><p class="section-sub">Use HTTP endpoints in your application, or the <code>ipx shield</code> commands in scripts and CI.</p>
+			<details class="reference-details"><summary>CLI commands and use case examples</summary><section class="py-5" id="usecases">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Use Cases</div>
+					<h2 class="section-title">Shield for <span class="accent">anything you defend.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Not just AI. The same engine powers narrow, single-purpose jobs — from a disposable-email filter to
+						an upload scanner — with the CLI in CI or the API in production.
+					</p>
+				</div>
+				<div class="row g-3"><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">📧</div><div class="feat-title">Detect disposable email domains</div><div class="feat-body">Reject throwaway signups, or clean an existing list.</div><pre class="api-pre api-pre-sm">ipx shield disposable -f signups.txt --only-disposable
+curl -X POST …/ai-shield/check \
+  -d &#x27;{&quot;type&quot;:&quot;email&quot;,&quot;values&quot;:[&quot;a@mailinator.com&quot;]}&#x27;</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🕵️</div><div class="feat-title">Triage indicators of compromise</div><div class="feat-body">Score a list of IPs, domains, URLs and wallets and export CSV.</div><pre class="api-pre api-pre-sm">ipx shield check ip -f iocs.txt --only-flagged --csv</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧱</div><div class="feat-title">Put a WAF check in front of an endpoint</div><div class="feat-body">Inspect a request for injection, SSRF, traversal and scanners.</div><pre class="api-pre api-pre-sm">ipx shield request &quot;/search?q=1&#x27; OR &#x27;1&#x27;=&#x27;1&quot; --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">📎</div><div class="feat-title">Vet uploads and attachments</div><div class="feat-body">Catch disguised executables, macros, scripted PDFs/SVGs and zip bombs.</div><pre class="api-pre api-pre-sm">ipx shield file uploads/* --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🔐</div><div class="feat-title">Stop secrets and PII leaking</div><div class="feat-body">Scan outputs, logs and diffs, then redact.</div><pre class="api-pre api-pre-sm">git diff --cached | ipx shield scan --task dlp --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧠</div><div class="feat-title">Guard an LLM app or agent</div><div class="feat-body">Check user prompts and retrieved documents before the model sees them.</div><pre class="api-pre api-pre-sm">ipx shield scan -f prompt.txt --task prompt_guard
+curl -s $URL | ipx shield scan --task agent_tool_output</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🎣</div><div class="feat-title">Triage suspicious email</div><div class="feat-body">Verdict from the lure, the links, the sender and SPF/DKIM/DMARC.</div><pre class="api-pre api-pre-sm">ipx shield phishing -f suspicious.eml</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🪪</div><div class="feat-title">Audit tokens and password hashes</div><div class="feat-body">Find unsigned JWTs and weak, unsalted stored hashes.</div><pre class="api-pre api-pre-sm">printf '%s\n' &quot;$TOKEN&quot; | ipx shield check jwt --fail-on review
+cut -d: -f2 export.txt | ipx shield check hash --only-flagged</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧩</div><div class="feat-title">Enforce your own policy</div><div class="feat-body">Blocklists, allowlists and custom regex/keyword rules on every call.</div><pre class="api-pre api-pre-sm">ipx shield scan -f post.txt --policy policy.json</pre></div></div></div>
+			</div>
+		</section><section class="py-5" id="cli">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Command Line</div>
+					<h2 class="section-title"><span class="accent">ipx shield</span> for scripts and CI.</h2>
+					<p class="section-sub mx-auto mt-2">
+						Install <code>ipx</code> (pip, npm, cargo or the install script), run <code>ipx auth login</code>, and every
+						endpoint is a command. <code>--fail-on review</code> exits with code 3 so a verdict can gate a pipeline;
+						<code>--json</code> gives raw API output; <code>--policy</code>, <code>--block</code> and <code>--allow</code>
+						pass your own rules.
+					</p>
+				</div>
+				<div class="api-table-wrap"><table class="api-table">
+					<thead><tr><th>Command</th><th>What it does</th></tr></thead>
+					<tbody><tr><td><code>ipx shield check TYPE [VALUES…]</code></td><td>Bulk single-type checks: email, domain, url, ip, phone, username, user_agent, wallet, jwt, hash, secret. <code>-f FILE</code>, <code>--only-flagged</code>, <code>--csv</code>, <code>--lookups</code></td></tr><tr><td><code>ipx shield disposable [VALUES…]</code></td><td>Is this email or domain disposable? <code>--only-disposable</code>, <code>--fail-if-found</code></td></tr><tr><td><code>ipx shield scan [TEXT]</code></td><td>Text, files or stdin through the content pipeline. <code>--task</code>, <code>--source</code>, <code>--url</code>, <code>--redact</code></td></tr><tr><td><code>ipx shield analyze</code></td><td>Signup, login and payment signals. <code>--email --ip --phone --username --device -m KEY=VALUE --body FILE --remember</code></td></tr><tr><td><code>ipx shield phishing</code></td><td>Text or <code>.eml</code> files; <code>--sender --subject --reply-to --spf --dkim --dmarc</code></td></tr><tr><td><code>ipx shield url URL…</code></td><td>Link analysis</td></tr><tr><td><code>ipx shield request [URL]</code></td><td>WAF-style request check: <code>-X -H -d --raw FILE</code></td></tr><tr><td><code>ipx shield file PATH…</code></td><td>Upload triage: <code>--mime</code></td></tr><tr><td><code>ipx shield password</code></td><td>Strength and breach count; <code>--stdin --email --username</code></td></tr><tr><td><code>ipx shield listing / review / domain</code></td><td>Marketplace listings, reviews, domains and <code>--wallet</code></td></tr><tr><td><code>ipx shield tasks</code></td><td>Tasks, features and check types (no sign-in)</td></tr></tbody>
+				</table></div>
+			</div>
+		</section></details></div></section>
+		<!-- Pipeline configuration -->
+		<section class="py-5" id="pipeline-configuration"><div class="container"><div class="section-tag">Pipeline configuration</div><h2 class="section-title">Choose task profiles and <span class="accent">tune checks.</span></h2><p class="section-sub">Task profiles set context for analysis. Request configuration can adjust enabled features, thresholds, weights and policy rules.</p>
+			<details class="reference-details"><summary>Task profiles and thresholds</summary><section class="py-5" id="tasks">
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag">Task Profiles</div>
-					<h2 class="section-title">15 tasks. One engine. <span class="accent">Tuned for every job.</span></h2>
+					<h2 class="section-title">Task profiles <span class="accent">for different jobs.</span></h2>
 					<p class="section-sub mx-auto mt-2">
 						The same evidence means different things in different places. A pasted API key is the whole
 						point of a DLP scan but barely matters on a signup form. Set <code>task</code> and Shield
@@ -1008,16 +928,170 @@ $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 					</div>
 				</div>
 			</div>
-		</section>
+		</section></details>
+			<details class="reference-details"><summary>Pipeline stages and feature settings</summary><section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Architecture</div>
+					<h2 class="section-title">Pipeline stages and analysis layers</h2>
+					<p class="section-sub mx-auto mt-2">
+						Every request flows through four architectural layers,
+						passing through eight analysis stages. Each contributes evidence.
+					</p>
+				</div>
 
-		<!-- ═══════════════════════════════════════════════════
-		     API REFERENCE
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5" id="api">
+				<div class="row g-4">
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">📥</div>
+							<div class="feat-title">Layer 1: Signal Collection</div>
+							<div class="feat-body">Accept any available information — email, username, phone, IP, device fingerprint, session metadata, request content, historical data, custom fields. Flexible schema handles structured JSON or plain text. Shield normalizes everything.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">🔍</div>
+							<div class="feat-title">Layer 2: Intelligence Engines</div>
+							<div class="feat-body">Email Intelligence detects disposable providers and suspicious domains. IP Intelligence finds VPNs, datacenter IPs, and abuse networks. Device Intelligence spots reuse and automation. Phone Intelligence flags VOIP and temporary numbers. Behavioral Intelligence catches velocity anomalies.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">🧠</div>
+							<div class="feat-title">Layer 3: AI Reasoning Engine</div>
+							<div class="feat-body">Specialized AI models analyze all signals simultaneously. Traditional systems evaluate signals independently — Shield evaluates context. Email alone = low risk. Phone alone = low risk. IP alone = low risk. Combined pattern = high confidence abuse. The AI reasons across all available evidence.</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="ip-card featured h-100">
+							<div class="feat-icon">⚖️</div>
+							<div class="feat-title">Layer 4: Decision Engine</div>
+							<div class="feat-body">Produces the final risk score, confidence score, decision, detailed explanation, and recommended action. Supports allow, challenge, rate limit, review, and block. Every decision is auditable with full evidence trail.</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="pipeline-row mt-4">
+					<div class="pipeline-step">
+						<div class="step-num">1</div>
+						<div class="step-label">Signals</div>
+						<div class="step-desc">Collect whatever you send</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">2</div>
+						<div class="step-label">Heuristics</div>
+						<div class="step-desc">Fast pattern matching</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">3</div>
+						<div class="step-label">Intelligence</div>
+						<div class="step-desc">IP, email, device, phone</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">4</div>
+						<div class="step-label">Agents</div>
+						<div class="step-desc">Fraud, identity, prompt, content</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">5</div>
+						<div class="step-label">Graph</div>
+						<div class="step-desc">Duplicates & campaigns</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">6</div>
+						<div class="step-label">Memory</div>
+						<div class="step-desc">Prior abuse history</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">7</div>
+						<div class="step-label">LLM Reasoning</div>
+						<div class="step-desc">Synthesize all evidence</div>
+					</div>
+					<div class="pipeline-arrow">→</div>
+					<div class="pipeline-step">
+						<div class="step-num">8</div>
+						<div class="step-label">Decision</div>
+						<div class="step-desc">allow · challenge · block</div>
+					</div>
+				</div>
+			</div>
+		</section><section class="py-5">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Feature Flags</div>
+					<h2 class="section-title">29 features. <span class="accent">You control the pipeline.</span></h2>
+					<p class="section-sub mx-auto mt-2">
+						Every detection module is on out of the box except the three that build up history across requests — <code>duplicate_detection</code>, <code>campaign_detection</code> and <code>memory_update</code> are opt-in (<code>historical_memory</code> lookups stay on, but only find something once you've enabled <code>memory_update</code>). Turn off
+						<code>external_lookups</code> and <code>llm_reasoning</code> for a fully offline,
+						millisecond verdict, or tune <code>thresholds</code>, <code>category_weights</code> and
+						<code>trusted_domains</code> per request.
+					</p>
+				</div>
+				<div class="toggles-demo">
+					<div class="toggles-grid">
+						<div class="toggle-item"><span class="toggle-dot on"></span> heuristics</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> historical_memory</div>
+						<div class="toggle-item"><span class="toggle-dot off"></span> duplicate_detection</div>
+						<div class="toggle-item"><span class="toggle-dot off"></span> campaign_detection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> email_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> ip_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> phone_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> username_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> device_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> behavior_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> content_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> url_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> sensitive_data_detection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> external_lookups</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> identity_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> fraud_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> content_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> exfiltration_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> llm_reasoning</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> request_inspection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> file_inspection</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> password_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> commerce_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> domain_intelligence</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> wallet_analysis</div>
+						<div class="toggle-item"><span class="toggle-dot on"></span> custom_policy</div>
+						<div class="toggle-item"><span class="toggle-dot off"></span> memory_update</div>
+					</div>
+					<p class="text-center mt-3" style="font-size:0.78rem;color:var(--text-muted);"><span class="toggle-dot on" style="display:inline-block;"></span> on by default &nbsp; <span class="toggle-dot off" style="display:inline-block;"></span> opt-in</p>
+				</div>
+			</div>
+		</section></details></div></section>
+		<!-- Data handling -->
+		<section class="py-5" id="data-handling"><div class="container"><div class="section-tag">Data handling</div><h2 class="section-title">Choose the signals <span class="accent">you send.</span></h2><p class="section-sub">Requests can include identity, device, behavior, content, request, file and metadata fields. For content scans, <code>config.redact</code> can return content with detected secrets and personal information replaced.</p><p class="section-sub">Review the API fields and configuration for each endpoint before sending data, and set redaction where it fits your workflow.</p><details class="reference-details"><summary>Indicator types and returned facts</summary><section class="py-5" id="check-types">
+			<div class="container">
+				<div class="text-center mb-4">
+					<div class="section-tag">Check Types</div>
+					<h2 class="section-title">Indicator check types</h2>
+					<p class="section-sub mx-auto mt-2">
+						<code>POST /ai-shield/check</code> and <code>ipx shield check</code> return a verdict plus typed <code>facts</code>
+						you can branch on — for example <code>facts.disposable</code> for a disposable-email filter.
+					</p>
+				</div>
+				<div class="api-table-wrap"><table class="api-table">
+					<thead><tr><th>type</th><th>What it checks</th><th>Notable facts</th></tr></thead>
+					<tbody><tr><td><code>email</code></td><td>Disposable providers, provider typos, invalid syntax, role mailboxes, generated names, +alias/dot-alias farming, brand look-alike domains; accepts bare domains too</td><td><code>disposable, free_provider, role_account, provider_typo, canonical</code></td></tr><tr><td><code>domain</code></td><td>Look-alikes, IDN spoofing, risky TLDs, DGA-style names, disposable-mail domains, registration age</td><td><code>registered_domain, disposable_email_domain, age_days</code></td></tr><tr><td><code>url</code></td><td>Look-alike brands, raw-IP hosts, user@host tricks, shorteners, free hosting, executables, redirects</td><td><code>host, registered_domain, indicators</code></td></tr><tr><td><code>ip</code></td><td>Malformed, private/loopback/reserved, CIDR description, abuse/proxy/VPN/Tor reputation</td><td><code>private, global, version, addresses, country</code></td></tr><tr><td><code>phone</code></td><td>Invalid length, fictional 555-01XX, premium rate, repeated/sequential digits</td><td><code>valid, e164</code></td></tr><tr><td><code>username</code></td><td>Staff/system impersonation, homoglyphs, promotional, generated names</td><td><code>impersonation</code></td></tr><tr><td><code>user_agent</code></td><td>Browser automation, scripting clients, crawlers</td><td><code>kind</code></td></tr><tr><td><code>wallet</code></td><td>BTC / ETH-EVM / TRON / LTC / SOL format and checksum</td><td><code>chain, checksum_valid</code></td></tr><tr><td><code>jwt</code></td><td>alg none, remote key headers, kid injection, expiry, lifetime — decoded, never verified</td><td><code>alg, expired, expires_at, alg_none</code></td></tr><tr><td><code>hash</code></td><td>MD5 / SHA-1 / SHA-2 / NTLM / bcrypt / Argon2 / scrypt / PBKDF2 / crypt</td><td><code>type, slow_password_hash, salted</code></td></tr><tr><td><code>secret</code></td><td>API keys, private keys, tokens, cards, SSNs, IBANs (previews only)</td><td><code>contains_secret, contains_pii, matches</code></td></tr></tbody>
+				</table></div>
+			</div>
+		</section></details></div></section>
+		<!-- API reference -->
+		<section class="py-5" id="api-reference"><div class="container"><div class="section-tag">API reference</div><h2 class="section-title">Endpoints and <span class="accent">examples.</span></h2><p class="section-sub">Base URL: <code>https://api.inferenceport.ai</code>. Analyze responses include a risk score, confidence, a decision and reasons. Risk score represents assessed risk; confidence indicates certainty in the assessment; decision is the suggested handling; reasons summarize supporting signals.</p><details class="reference-details"><summary>Requests, responses, authentication and endpoint details</summary><section class="py-5" id="api">
 			<div class="container">
 				<div class="text-center mb-4">
 					<div class="section-tag">API Reference</div>
-					<h2 class="section-title">Five endpoints. <span class="accent">Every cyber use case.</span></h2>
+					<h2 class="section-title">Endpoint reference</h2>
 					<p class="section-sub mx-auto mt-2">
 						Base URL <code>https://api.inferenceport.ai</code>. Authenticate with
 						<code>Authorization: Bearer &lt;access token or ipa_live_… API key&gt;</code>;
@@ -1145,835 +1219,12 @@ $ ipx shield tasks <span class="cm"># GET /ai-shield/capabilities</span>
 						</div>
 				</div>
 			</div>
-		</section>
-
-		<section class="py-5" id="check-types">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Check Types</div>
-					<h2 class="section-title">11 indicators. <span class="accent">One call each.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						<code>POST /ai-shield/check</code> and <code>ipx shield check</code> return a verdict plus typed <code>facts</code>
-						you can branch on — for example <code>facts.disposable</code> for a disposable-email filter.
-					</p>
-				</div>
-				<div class="api-table-wrap"><table class="api-table">
-					<thead><tr><th>type</th><th>What it checks</th><th>Notable facts</th></tr></thead>
-					<tbody><tr><td><code>email</code></td><td>Disposable providers, provider typos, invalid syntax, role mailboxes, generated names, +alias/dot-alias farming, brand look-alike domains; accepts bare domains too</td><td><code>disposable, free_provider, role_account, provider_typo, canonical</code></td></tr><tr><td><code>domain</code></td><td>Look-alikes, IDN spoofing, risky TLDs, DGA-style names, disposable-mail domains, registration age</td><td><code>registered_domain, disposable_email_domain, age_days</code></td></tr><tr><td><code>url</code></td><td>Look-alike brands, raw-IP hosts, user@host tricks, shorteners, free hosting, executables, redirects</td><td><code>host, registered_domain, indicators</code></td></tr><tr><td><code>ip</code></td><td>Malformed, private/loopback/reserved, CIDR description, abuse/proxy/VPN/Tor reputation</td><td><code>private, global, version, addresses, country</code></td></tr><tr><td><code>phone</code></td><td>Invalid length, fictional 555-01XX, premium rate, repeated/sequential digits</td><td><code>valid, e164</code></td></tr><tr><td><code>username</code></td><td>Staff/system impersonation, homoglyphs, promotional, generated names</td><td><code>impersonation</code></td></tr><tr><td><code>user_agent</code></td><td>Browser automation, scripting clients, crawlers</td><td><code>kind</code></td></tr><tr><td><code>wallet</code></td><td>BTC / ETH-EVM / TRON / LTC / SOL format and checksum</td><td><code>chain, checksum_valid</code></td></tr><tr><td><code>jwt</code></td><td>alg none, remote key headers, kid injection, expiry, lifetime — decoded, never verified</td><td><code>alg, expired, expires_at, alg_none</code></td></tr><tr><td><code>hash</code></td><td>MD5 / SHA-1 / SHA-2 / NTLM / bcrypt / Argon2 / scrypt / PBKDF2 / crypt</td><td><code>type, slow_password_hash, salted</code></td></tr><tr><td><code>secret</code></td><td>API keys, private keys, tokens, cards, SSNs, IBANs (previews only)</td><td><code>contains_secret, contains_pii, matches</code></td></tr></tbody>
-				</table></div>
-			</div>
-		</section>
-
-		<section class="py-5" id="usecases">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Use Cases</div>
-					<h2 class="section-title">Shield for <span class="accent">anything you defend.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						Not just AI. The same engine powers narrow, single-purpose jobs — from a disposable-email filter to
-						an upload scanner — with the CLI in CI or the API in production.
-					</p>
-				</div>
-				<div class="row g-3"><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">📧</div><div class="feat-title">Detect disposable email domains</div><div class="feat-body">Reject throwaway signups, or clean an existing list.</div><pre class="api-pre api-pre-sm">ipx shield disposable -f signups.txt --only-disposable
-curl -X POST …/ai-shield/check \
-  -d &#x27;{&quot;type&quot;:&quot;email&quot;,&quot;values&quot;:[&quot;a@mailinator.com&quot;]}&#x27;</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🕵️</div><div class="feat-title">Triage indicators of compromise</div><div class="feat-body">Score a list of IPs, domains, URLs and wallets and export CSV.</div><pre class="api-pre api-pre-sm">ipx shield check ip -f iocs.txt --only-flagged --csv</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧱</div><div class="feat-title">Put a WAF check in front of an endpoint</div><div class="feat-body">Inspect a request for injection, SSRF, traversal and scanners.</div><pre class="api-pre api-pre-sm">ipx shield request &quot;/search?q=1&#x27; OR &#x27;1&#x27;=&#x27;1&quot; --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">📎</div><div class="feat-title">Vet uploads and attachments</div><div class="feat-body">Catch disguised executables, macros, scripted PDFs/SVGs and zip bombs.</div><pre class="api-pre api-pre-sm">ipx shield file uploads/* --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🔐</div><div class="feat-title">Stop secrets and PII leaking</div><div class="feat-body">Scan outputs, logs and diffs, then redact.</div><pre class="api-pre api-pre-sm">git diff --cached | ipx shield scan --task dlp --fail-on review</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧠</div><div class="feat-title">Guard an LLM app or agent</div><div class="feat-body">Check user prompts and retrieved documents before the model sees them.</div><pre class="api-pre api-pre-sm">ipx shield scan -f prompt.txt --task prompt_guard
-curl -s $URL | ipx shield scan --task agent_tool_output</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🎣</div><div class="feat-title">Triage suspicious email</div><div class="feat-body">Verdict from the lure, the links, the sender and SPF/DKIM/DMARC.</div><pre class="api-pre api-pre-sm">ipx shield phishing -f suspicious.eml</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🪪</div><div class="feat-title">Audit tokens and password hashes</div><div class="feat-body">Find unsigned JWTs and weak, unsalted stored hashes.</div><pre class="api-pre api-pre-sm">printf '%s\n' &quot;$TOKEN&quot; | ipx shield check jwt --fail-on review
-cut -d: -f2 export.txt | ipx shield check hash --only-flagged</pre></div></div><div class="col-md-6 col-lg-4"><div class="ip-card h-100"><div class="feat-icon">🧩</div><div class="feat-title">Enforce your own policy</div><div class="feat-body">Blocklists, allowlists and custom regex/keyword rules on every call.</div><pre class="api-pre api-pre-sm">ipx shield scan -f post.txt --policy policy.json</pre></div></div></div>
-			</div>
-		</section>
-
-		<section class="py-5" id="cli">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Command Line</div>
-					<h2 class="section-title"><span class="accent">ipx shield</span> for scripts and CI.</h2>
-					<p class="section-sub mx-auto mt-2">
-						Install <code>ipx</code> (pip, npm, cargo or the install script), run <code>ipx auth login</code>, and every
-						endpoint is a command. <code>--fail-on review</code> exits with code 3 so a verdict can gate a pipeline;
-						<code>--json</code> gives raw API output; <code>--policy</code>, <code>--block</code> and <code>--allow</code>
-						pass your own rules.
-					</p>
-				</div>
-				<div class="api-table-wrap"><table class="api-table">
-					<thead><tr><th>Command</th><th>What it does</th></tr></thead>
-					<tbody><tr><td><code>ipx shield check TYPE [VALUES…]</code></td><td>Bulk single-type checks: email, domain, url, ip, phone, username, user_agent, wallet, jwt, hash, secret. <code>-f FILE</code>, <code>--only-flagged</code>, <code>--csv</code>, <code>--lookups</code></td></tr><tr><td><code>ipx shield disposable [VALUES…]</code></td><td>Is this email or domain disposable? <code>--only-disposable</code>, <code>--fail-if-found</code></td></tr><tr><td><code>ipx shield scan [TEXT]</code></td><td>Text, files or stdin through the content pipeline. <code>--task</code>, <code>--source</code>, <code>--url</code>, <code>--redact</code></td></tr><tr><td><code>ipx shield analyze</code></td><td>Signup, login and payment signals. <code>--email --ip --phone --username --device -m KEY=VALUE --body FILE --remember</code></td></tr><tr><td><code>ipx shield phishing</code></td><td>Text or <code>.eml</code> files; <code>--sender --subject --reply-to --spf --dkim --dmarc</code></td></tr><tr><td><code>ipx shield url URL…</code></td><td>Link analysis</td></tr><tr><td><code>ipx shield request [URL]</code></td><td>WAF-style request check: <code>-X -H -d --raw FILE</code></td></tr><tr><td><code>ipx shield file PATH…</code></td><td>Upload triage: <code>--mime</code></td></tr><tr><td><code>ipx shield password</code></td><td>Strength and breach count; <code>--stdin --email --username</code></td></tr><tr><td><code>ipx shield listing / review / domain</code></td><td>Marketplace listings, reviews, domains and <code>--wallet</code></td></tr><tr><td><code>ipx shield tasks</code></td><td>Tasks, features and check types (no sign-in)</td></tr></tbody>
-				</table></div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     YOU CHOOSE WHAT TO SEND
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Your Rules</div>
-					<h2 class="section-title">You choose <span class="accent">what to send.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						No required fields. No rigid schemas. Feed Shield whatever
-						signals your application has — it adapts to your data.
-					</p>
-				</div>
-				<div class="choose-grid">
-					<div class="choose-chip"><span class="chip-dot dot-blue"></span> email</div>
-					<div class="choose-chip"><span class="chip-dot dot-green"></span> IP address</div>
-					<div class="choose-chip"><span class="chip-dot dot-amber"></span> phone number</div>
-					<div class="choose-chip"><span class="chip-dot dot-purple"></span> username</div>
-					<div class="choose-chip"><span class="chip-dot dot-cyan"></span> device fingerprint</div>
-					<div class="choose-chip"><span class="chip-dot dot-red"></span> text content</div>
-					<div class="choose-chip"><span class="chip-dot dot-pink"></span> geolocation</div>
-					<div class="choose-chip"><span class="chip-dot dot-teal"></span> signup time</div>
-					<div class="choose-chip"><span class="chip-dot dot-blue"></span> user agent</div>
-					<div class="choose-chip"><span class="chip-dot dot-green"></span> session id</div>
-					<div class="choose-chip"><span class="chip-dot dot-amber"></span> account age</div>
-					<div class="choose-chip"><span class="chip-dot dot-purple"></span> referrer</div>
-				</div>
-				<div class="row g-3 mt-4">
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">📧</div>
-							<div class="feat-title">Email Signals</div>
-							<div class="feat-body">Domain reputation, disposable email detection, risk scoring. Send an email, get a verdict.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🌐</div>
-							<div class="feat-title">IP Signals</div>
-							<div class="feat-body">Proxy/VPN detection, geolocation, known abuse databases. Send an IP, get a verdict.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100">
-							<div class="feat-icon">💬</div>
-							<div class="feat-title">Content Signals</div>
-							<div class="feat-body">Prompt injection detection, policy violations, data leakage. Send text, get a verdict.</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     PRODUCT MODULES
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Product Modules</div>
-					<h2 class="section-title">Five shields. <span class="accent">One platform.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						Each module targets a specific threat category. Together they
-						cover the full attack surface of modern applications.
-					</p>
-				</div>
-
-				<!-- Shield Signup -->
-				<div class="module-card mb-4">
-					<div class="module-header">
-						<div class="module-icon mi-red">🛡️</div>
-						<div class="module-name">Shield Signup</div>
-					</div>
-					<div class="module-body">
-						<p class="feat-body" style="margin-bottom:12px;">Protect account creation flows. Detect bots, fake accounts, multi-account users, trial farming, referral abuse, and automated registrations.</p>
-						<div class="row">
-							<div class="col-md-4">
-								<div class="module-section-label">Detects</div>
-								<ul class="module-list">
-									<li>Bots</li>
-									<li>Fake accounts</li>
-									<li>Multi-account users</li>
-									<li>Trial farming</li>
-									<li>Referral abuse</li>
-									<li>Automated registrations</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Signals Used</div>
-								<ul class="module-list">
-									<li>Email quality</li>
-									<li>Username analysis</li>
-									<li>Phone reputation</li>
-									<li>IP intelligence</li>
-									<li>Device fingerprints</li>
-									<li>Behavioral patterns</li>
-									<li>Signup velocity</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Output</div>
-								<ul class="module-list">
-									<li>Allow</li>
-									<li>Challenge</li>
-									<li>Review</li>
-									<li>Block</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Shield Identity (Dupe Detection) -->
-				<div class="module-card mb-4">
-					<div class="module-header">
-						<div class="module-icon mi-blue">🔗</div>
-						<div class="module-name">Shield Identity</div>
-					</div>
-					<div class="module-body">
-						<p class="feat-body" style="margin-bottom:12px;">
-							Detect account relationships, duplicate users, and ban evasion.
-							Shield Identity maps the connections between accounts using
-							shared devices, IPs, fingerprints, and behavioral patterns —
-							building a relationship graph that uncovers coordinated abuse
-							and ban evasion.
-						</p>
-						<div class="row">
-							<div class="col-md-4">
-								<div class="module-section-label">Identifies</div>
-								<ul class="module-list">
-									<li>Repeat users</li>
-									<li>Alternate accounts</li>
-									<li>Referral abuse networks</li>
-									<li>Ban evasion</li>
-									<li>Account farming operations</li>
-									<li>Duplicate registrations</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Signals Used</div>
-								<ul class="module-list">
-									<li>Device overlap</li>
-									<li>Browser fingerprints</li>
-									<li>Network intelligence</li>
-									<li>Behavioral similarity</li>
-									<li>Historical relationships</li>
-									<li>IP correlation</li>
-									<li>Phone number overlap</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Output</div>
-								<ul class="module-list">
-									<li>User linkage score (0–100)</li>
-									<li>Number of linked accounts</li>
-									<li>Confidence level</li>
-									<li>Risk assessment</li>
-									<li>Evidence list</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Shield Content -->
-				<div class="module-card mb-4">
-					<div class="module-header">
-						<div class="module-icon mi-green">💬</div>
-						<div class="module-name">Shield Content</div>
-					</div>
-					<div class="module-body">
-						<p class="feat-body" style="margin-bottom:12px;">Analyze user-generated content for spam, scams, automated content, promotional abuse, and malicious messages.</p>
-						<div class="row">
-							<div class="col-md-4">
-								<div class="module-section-label">Detects</div>
-								<ul class="module-list">
-									<li>Spam</li>
-									<li>Scams</li>
-									<li>Automated content</li>
-									<li>Promotional abuse</li>
-									<li>Malicious messages</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Signals Used</div>
-								<ul class="module-list">
-									<li>Text content</li>
-									<li>Historical activity</li>
-									<li>User reputation</li>
-									<li>Posting patterns</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Output</div>
-								<ul class="module-list">
-									<li>Risk classification</li>
-									<li>Severity level</li>
-									<li>Moderation recommendation</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Shield Prompt -->
-				<div class="module-card mb-4">
-					<div class="module-header">
-						<div class="module-icon mi-purple">🧠</div>
-						<div class="module-name">Shield Prompt</div>
-					</div>
-					<div class="module-body">
-						<p class="feat-body" style="margin-bottom:12px;">Protect AI products from prompt attacks. Detect injection, jailbreaks, system prompt extraction, tool abuse, and agent manipulation.</p>
-						<div class="row">
-							<div class="col-md-4">
-								<div class="module-section-label">Detects</div>
-								<ul class="module-list">
-									<li>Prompt injection</li>
-									<li>Jailbreak attempts</li>
-									<li>System prompt extraction</li>
-									<li>Tool abuse</li>
-									<li>Agent manipulation</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Analyzes</div>
-								<ul class="module-list">
-									<li>User prompts</li>
-									<li>Tool requests</li>
-									<li>Agent interactions</li>
-									<li>Conversation context</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Output</div>
-								<ul class="module-list">
-									<li>Threat classification</li>
-									<li>Risk score</li>
-									<li>Recommended response</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Shield Data -->
-				<div class="module-card">
-					<div class="module-header">
-						<div class="module-icon mi-amber">🔐</div>
-						<div class="module-name">Shield Data</div>
-					</div>
-					<div class="module-body">
-						<p class="feat-body" style="margin-bottom:12px;">Protect against data exfiltration. Detect sensitive data extraction, bulk scraping, credential harvesting, and system information extraction.</p>
-						<div class="row">
-							<div class="col-md-4">
-								<div class="module-section-label">Detects</div>
-								<ul class="module-list">
-									<li>Sensitive data extraction</li>
-									<li>Bulk content scraping</li>
-									<li>Credential harvesting</li>
-									<li>Prompt leakage attempts</li>
-									<li>System information extraction</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Analyzes</div>
-								<ul class="module-list">
-									<li>Requests</li>
-									<li>Responses</li>
-									<li>Context windows</li>
-									<li>Access patterns</li>
-								</ul>
-							</div>
-							<div class="col-md-4">
-								<div class="module-section-label">Output</div>
-								<ul class="module-list">
-									<li>Exfiltration risk score</li>
-									<li>Threat indicators</li>
-									<li>Mitigation recommendations</li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     HOW IT WORKS — 4-LAYER ARCHITECTURE
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Architecture</div>
-					<h2 class="section-title">4 layers. <span class="accent">8 pipeline stages.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						Every request flows through four architectural layers,
-						passing through eight analysis stages. Each contributes evidence.
-					</p>
-				</div>
-
-				<div class="row g-4">
-					<div class="col-md-6">
-						<div class="ip-card featured h-100">
-							<div class="feat-icon">📥</div>
-							<div class="feat-title">Layer 1: Signal Collection</div>
-							<div class="feat-body">Accept any available information — email, username, phone, IP, device fingerprint, session metadata, request content, historical data, custom fields. Flexible schema handles structured JSON or plain text. Shield normalizes everything.</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="ip-card featured h-100">
-							<div class="feat-icon">🔍</div>
-							<div class="feat-title">Layer 2: Intelligence Engines</div>
-							<div class="feat-body">Email Intelligence detects disposable providers and suspicious domains. IP Intelligence finds VPNs, datacenter IPs, and abuse networks. Device Intelligence spots reuse and automation. Phone Intelligence flags VOIP and temporary numbers. Behavioral Intelligence catches velocity anomalies.</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="ip-card featured h-100">
-							<div class="feat-icon">🧠</div>
-							<div class="feat-title">Layer 3: AI Reasoning Engine</div>
-							<div class="feat-body">Specialized AI models analyze all signals simultaneously. Traditional systems evaluate signals independently — Shield evaluates context. Email alone = low risk. Phone alone = low risk. IP alone = low risk. Combined pattern = high confidence abuse. The AI reasons across all available evidence.</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="ip-card featured h-100">
-							<div class="feat-icon">⚖️</div>
-							<div class="feat-title">Layer 4: Decision Engine</div>
-							<div class="feat-body">Produces the final risk score, confidence score, decision, detailed explanation, and recommended action. Supports allow, challenge, rate limit, review, and block. Every decision is auditable with full evidence trail.</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="pipeline-row mt-4">
-					<div class="pipeline-step">
-						<div class="step-num">1</div>
-						<div class="step-label">Signals</div>
-						<div class="step-desc">Collect whatever you send</div>
-					</div>
-					<div class="pipeline-arrow">→</div>
-					<div class="pipeline-step">
-						<div class="step-num">2</div>
-						<div class="step-label">Heuristics</div>
-						<div class="step-desc">Fast pattern matching</div>
-					</div>
-					<div class="pipeline-arrow">→</div>
-					<div class="pipeline-step">
-						<div class="step-num">3</div>
-						<div class="step-label">Intelligence</div>
-						<div class="step-desc">IP, email, device, phone</div>
-					</div>
-					<div class="pipeline-arrow">→</div>
-					<div class="pipeline-step">
-						<div class="step-num">4</div>
-						<div class="step-label">Agents</div>
-						<div class="step-desc">Fraud, identity, prompt, content</div>
-					</div>
-					<div class="pipeline-arrow">→</div>
-					<div class="pipeline-step">
-						<div class="step-num">5</div>
-						<div class="step-label">Graph</div>
-						<div class="step-desc">Duplicates & campaigns</div>
-					</div>
-					<div class="pipeline-arrow">→</div>
-					<div class="pipeline-step">
-						<div class="step-num">6</div>
-						<div class="step-label">Memory</div>
-						<div class="step-desc">Prior abuse history</div>
-					</div>
-					<div class="pipeline-arrow">→</div>
-					<div class="pipeline-step">
-						<div class="step-num">7</div>
-						<div class="step-label">LLM Reasoning</div>
-						<div class="step-desc">Synthesize all evidence</div>
-					</div>
-					<div class="pipeline-arrow">→</div>
-					<div class="pipeline-step">
-						<div class="step-num">8</div>
-						<div class="step-label">Decision</div>
-						<div class="step-desc">allow · challenge · block</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     ALL 19 FEATURES
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Feature Flags</div>
-					<h2 class="section-title">29 features. <span class="accent">You control the pipeline.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						Every detection module is on out of the box except the three that build up history across requests — <code>duplicate_detection</code>, <code>campaign_detection</code> and <code>memory_update</code> are opt-in (<code>historical_memory</code> lookups stay on, but only find something once you've enabled <code>memory_update</code>). Turn off
-						<code>external_lookups</code> and <code>llm_reasoning</code> for a fully offline,
-						millisecond verdict, or tune <code>thresholds</code>, <code>category_weights</code> and
-						<code>trusted_domains</code> per request.
-					</p>
-				</div>
-				<div class="toggles-demo">
-					<div class="toggles-grid">
-						<div class="toggle-item"><span class="toggle-dot on"></span> heuristics</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> historical_memory</div>
-						<div class="toggle-item"><span class="toggle-dot off"></span> duplicate_detection</div>
-						<div class="toggle-item"><span class="toggle-dot off"></span> campaign_detection</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> email_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> ip_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> phone_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> username_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> device_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> behavior_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> content_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> url_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> sensitive_data_detection</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> external_lookups</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> identity_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> fraud_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> prompt_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> content_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> exfiltration_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> llm_reasoning</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> request_inspection</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> file_inspection</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> password_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> commerce_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> domain_intelligence</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> wallet_analysis</div>
-						<div class="toggle-item"><span class="toggle-dot on"></span> custom_policy</div>
-						<div class="toggle-item"><span class="toggle-dot off"></span> memory_update</div>
-					</div>
-					<p class="text-center mt-3" style="font-size:0.78rem;color:var(--text-muted);"><span class="toggle-dot on" style="display:inline-block;"></span> on by default &nbsp; <span class="toggle-dot off" style="display:inline-block;"></span> opt-in</p>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     5 DECISIONS
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Verdicts</div>
-					<h2 class="section-title">5 decisions. <span class="accent">Zero ambiguity.</span></h2>
-					<p class="section-sub mx-auto mt-2">
-						Shield doesn't hand you a number and walk away. It tells you
-						exactly what to do next.
-					</p>
-				</div>
-				<div class="row g-3">
-					<div class="col-md-4">
-						<div class="ip-card h-100" style="border-left: 3px solid #10b981;">
-							<div class="d-flex align-items-center gap-2 mb-2">
-								<span class="decision-badge allow" style="margin:0;">allow</span>
-							</div>
-							<div class="feat-body">Request is safe. Proceed without any intervention. Zero friction for legitimate users.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100" style="border-left: 3px solid #f59e0b;">
-							<div class="d-flex align-items-center gap-2 mb-2">
-								<span class="decision-badge challenge" style="margin:0;">challenge</span>
-							</div>
-							<div class="feat-body">Suspicious activity. Present a CAPTCHA, send a verification email, or require 2FA.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100" style="border-left: 3px solid #7c3aed;">
-							<div class="d-flex align-items-center gap-2 mb-2">
-								<span class="decision-badge rate_limit" style="margin:0;">rate_limit</span>
-							</div>
-							<div class="feat-body">Exceeds safe thresholds. Throttle requests, add cooldowns, or cap usage.</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="ip-card h-100" style="border-left: 3px solid #fbbf24;">
-							<div class="d-flex align-items-center gap-2 mb-2">
-								<span class="decision-badge review" style="margin:0;">review</span>
-							</div>
-							<div class="feat-body">Needs a human look. Flag for manual inspection before allowing or blocking.</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="ip-card h-100" style="border-left: 3px solid #ef4444;">
-							<div class="d-flex align-items-center gap-2 mb-2">
-								<span class="decision-badge block" style="margin:0;">block</span>
-							</div>
-							<div class="feat-body">Malicious. Deny entirely. Block the IP, ban the account, kill the session.</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     WHY SHIELD WINS
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="compare-box p-4 p-md-5">
-					<div class="section-tag">Advantage</div>
-					<h2 class="section-title mb-4">
-						Why AI Shield <span class="accent">wins.</span>
-					</h2>
-					<div class="row g-4">
-						<div class="col-md-5">
-							<div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;color:var(--muted);">
-								<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:6px;"></span>Traditional Solutions
-							</div>
-							<ul class="compare-list">
-								<li>✦ Multiple products for different threats</li>
-								<li>✦ Rule-based, require constant tuning</li>
-								<li>✦ Limited to a single use case</li>
-								<li>✦ Poor at combining weak signals</li>
-								<li>✦ Expensive and enterprise-focused</li>
-								<li>✦ Cryptic risk scores with no reasoning</li>
-							</ul>
-						</div>
-						<div class="col-md-2 d-none d-md-flex align-items-center justify-content-center">
-							<span style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted)">vs</span>
-						</div>
-						<div class="col-md-5">
-							<div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;color:var(--brand);">
-								<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:6px;"></span>InferencePort AI Shield
-							</div>
-							<ul class="compare-list">
-								<li>✦ Unified platform — one engine behind five endpoints</li>
-								<li>✦ Works with zero configuration, tunable when you need it</li>
-								<li>✦ Covers all threat categories</li>
-								<li>✦ AI reasons across all signals together</li>
-								<li>✦ Developer-friendly, flat pricing</li>
-								<li>✦ Human-readable explanations</li>
-							</ul>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     SHARED ABUSE GRAPH
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="row align-items-center g-5">
-					<div class="col-lg-6">
-						<div class="section-tag">Network Effect</div>
-						<h2 class="section-title mb-3">
-							Shared <span class="accent">Abuse Graph.</span>
-						</h2>
-						<div class="vision-text">
-							<p>
-								Shield builds a <strong>privacy-safe abuse intelligence
-								network</strong>. When one customer identifies bot farms,
-								fraud rings, spam campaigns, or abuse networks — other
-								customers benefit immediately.
-							</p>
-							<p>
-								This creates <strong>network effects</strong> that continuously
-								improve detection quality for everyone. The more customers
-								use Shield, the smarter it gets.
-							</p>
-							<p style="margin-bottom:0;">
-								Long-term moat. Compounding intelligence. Your fraud today
-								becomes everyone's protection tomorrow.
-							</p>
-						</div>
-					</div>
-					<div class="col-lg-6">
-						<div class="d-flex flex-column gap-3">
-							<div class="ip-card green-featured">
-								<div class="feat-icon">🌐</div>
-								<div class="feat-title">Cross-Customer Intelligence</div>
-								<div class="feat-body">Abuse patterns detected in one account protect all accounts. Bot farms, fraud rings, and spam campaigns are identified network-wide.</div>
-							</div>
-							<div class="ip-card green-featured">
-								<div class="feat-icon">📈</div>
-								<div class="feat-title">Compounding Detection</div>
-								<div class="feat-body">Every analysis makes the graph stronger. Detection quality improves automatically as the network grows.</div>
-							</div>
-							<div class="ip-card green-featured">
-								<div class="feat-icon">🔒</div>
-								<div class="feat-title">Privacy-Safe</div>
-								<div class="feat-body">Intelligence is shared, not data. Entity fingerprints are anonymized. Customer data remains customer-owned.</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     PRIVACY & COMPLIANCE
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Enterprise Ready</div>
-					<h2 class="section-title">Privacy & <span class="accent">Compliance.</span></h2>
-				</div>
-				<div class="row g-3">
-					<div class="col-md-3">
-						<div class="ip-card h-100 text-center">
-							<div class="feat-icon">🔐</div>
-							<div class="feat-title">Zero-Retention Mode</div>
-							<div class="feat-body">Request data is never stored unless you opt in.</div>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="ip-card h-100 text-center">
-							<div class="feat-icon">🚫</div>
-							<div class="feat-title">No Training on Data</div>
-							<div class="feat-body">Customer data is never used to train models.</div>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="ip-card h-100 text-center">
-							<div class="feat-icon">🔒</div>
-							<div class="feat-title">Encrypted</div>
-							<div class="feat-body">Encryption in transit and at rest. Always.</div>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="ip-card h-100 text-center">
-							<div class="feat-icon">📋</div>
-							<div class="feat-title">Audit Logging</div>
-							<div class="feat-body">Full audit trail for every analysis request.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100 text-center">
-							<div class="feat-icon">🇪🇺</div>
-							<div class="feat-title">GDPR Support</div>
-							<div class="feat-body">Full GDPR compliance with data subject rights.</div>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<div class="ip-card h-100 text-center">
-							<div class="feat-icon">🏢</div>
-							<div class="feat-title">Private Deployment</div>
-							<div class="feat-body">Cloud, dedicated infrastructure, private VPC, or on-premise.</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     IDEAL CUSTOMERS
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Who It's For</div>
-					<h2 class="section-title">Built for <span class="accent">every stage.</span></h2>
-				</div>
-				<div class="row g-3">
-					<div class="col-md-3">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🚀</div>
-							<div class="feat-title">AI Startups</div>
-							<div class="feat-body">Prompt injection, abuse, free-tier farming, API misuse. Protect your AI product from day one.</div>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="ip-card h-100">
-							<div class="feat-icon">💼</div>
-							<div class="feat-title">SaaS Platforms</div>
-							<div class="feat-body">Fake accounts, trial abuse, referral fraud. Keep your platform clean as you scale.</div>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🏪</div>
-							<div class="feat-title">Marketplaces</div>
-							<div class="feat-body">Fake listings, fake reviews, spam sellers. Trust every transaction.</div>
-						</div>
-					</div>
-					<div class="col-md-3">
-						<div class="ip-card h-100">
-							<div class="feat-icon">🏦</div>
-							<div class="feat-title">Fintech</div>
-							<div class="feat-body">Fraud, synthetic identities, account creation abuse. Enterprise-grade protection.</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     PRICING
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Pricing</div>
-					<h2 class="section-title">Scale <span class="accent">when you're ready.</span></h2>
-					<p class="section-sub mx-auto mt-2">Plan-based daily limits. Upgrade as your needs grow.</p>
-				</div>
-				<div class="compare-box p-4 p-md-5">
-					<div class="row g-4 text-center">
-						<div class="col-md-2">
-							<div class="stat-num" style="font-size:1.4rem;">2</div>
-							<div class="stat-label">Free / day</div>
-						</div>
-						<div class="col-md-2">
-							<div class="stat-num" style="font-size:1.4rem;">10</div>
-							<div class="stat-label">Light / day</div>
-						</div>
-						<div class="col-md-2">
-							<div class="stat-num" style="font-size:1.4rem;">50</div>
-							<div class="stat-label">Core / day</div>
-						</div>
-						<div class="col-md-3">
-							<div class="stat-num" style="font-size:1.4rem;">200</div>
-							<div class="stat-label">Creator / day</div>
-						</div>
-						<div class="col-md-3">
-							<div class="stat-num" style="font-size:1.4rem;">500</div>
-							<div class="stat-label">Professional / day</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
-		<section class="py-5">
-			<div class="container">
-				<div class="text-center mb-4">
-					<div class="section-tag">Future</div>
-					<h2 class="section-title">The <span class="accent">long-term vision.</span></h2>
-				</div>
-				<div class="vision-text mx-auto" style="text-align:center;">
-					<p>
-						InferencePort AI Shield becomes the <strong>default trust
-						infrastructure</strong> for modern software. Applications, APIs,
-						AI agents, marketplaces, SaaS platforms, and fintech products
-						send user and request data to Shield before making important
-						decisions.
-					</p>
-					<p>
-						Shield answers the five questions every application needs:
-					</p>
-					<p>
-						<strong>Can this user be trusted?</strong><br />
-						<strong>Is this account fraudulent?</strong><br />
-						<strong>Is this request safe?</strong><br />
-						<strong>Is this interaction malicious?</strong><br />
-						<strong>Is sensitive information at risk?</strong>
-					</p>
-					<p style="margin-bottom:0;">
-						InferencePort AI Shield becomes the <strong>security and trust
-						layer</strong> powering the next generation of internet and AI
-						applications.
-					</p>
-				</div>
-			</div>
-		</section>
-
-		<!-- ═══════════════════════════════════════════════════
-		     CTA
-		     ═══════════════════════════════════════════════════ -->
-		<section class="py-5">
-			<div class="container">
-				<div class="cta-box">
-					<h2>Start protecting your app today.</h2>
-					<p>Sign in to the console, send a test request, and see Shield in action — no code changes required.</p>
-					<div class="d-flex justify-content-center gap-3 flex-wrap">
-						<a href="console/" class="btn btn-brand btn-lg">Open Developer Console</a>
-						<a href="shield.html#endpoint" class="btn btn-ghost">See the API →</a>
-					</div>
-				</div>
-			</div>
-		</section>
+		</section></details></div></section>
+		<!-- Start and pricing -->
+		<section class="py-5" id="start-pricing"><div class="container"><div class="cta-box"><h2>Start with a request.</h2><p>Open the developer console to access the API and review your plan.</p><div class="d-flex justify-content-center gap-3 flex-wrap"><a href="console/" class="btn btn-brand btn-lg">Open Developer Console</a><a href="#endpoint" class="btn btn-ghost">See request and response</a></div></div>
+			<div class="mt-5"><div class="section-tag">Pricing</div><h2 class="section-title">Plan-based <span class="accent">daily limits.</span></h2><p class="section-sub">Current plan limits are shown below.</p><div class="compare-box p-4 mt-3"><div class="row g-4 text-center"><div class="col"><div class="stat-num">2</div><div class="stat-label">Free / day</div></div><div class="col"><div class="stat-num">10</div><div class="stat-label">Light / day</div></div><div class="col"><div class="stat-num">50</div><div class="stat-label">Core / day</div></div><div class="col"><div class="stat-num">200</div><div class="stat-label">Creator / day</div></div><div class="col"><div class="stat-num">500</div><div class="stat-label">Professional / day</div></div></div></div></div></div></section>
+		<!-- Legacy anchors remain addressable for inbound links. -->
+		<div class="container" aria-hidden="true"></div>
 
 		<!-- ── Footer ── -->
 		<ip-footer></ip-footer>

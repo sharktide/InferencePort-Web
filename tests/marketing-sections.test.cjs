@@ -25,7 +25,7 @@ test("every link from the shared navbar to the homepage has a stable anchor", ()
   assert.match(home, /<main class="lp" id="main-content">/);
 });
 
-test("final API workbench offers all eight documented modalities", () => {
+test("API workbench offers all eight documented modalities", () => {
   const examples=[...home.matchAll(/<div class="lp-code-example"[^>]*data-example-panel="([^"]+)"[^>]*>[\s\S]*?<pre><code>([\s\S]*?)<\/code><\/pre>/g)];
   assert.equal(examples.length,8);
   const fields={
@@ -51,7 +51,7 @@ test("final API workbench offers all eight documented modalities", () => {
     if(model)assert.equal(body.model,model);
     assert.ok(body[field],key+" must include "+field);
   }
-  assert.ok(home.indexOf('id="quickstart"')>home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="quickstart"')<home.indexOf('id="platform-details"'));
   assert.ok(home.indexOf('id="customers"') < home.indexOf('id="products"'));
   assert.doesNotMatch(home,/class="lp-hero-demo"/);
   assert.match(home,/event\.key === "ArrowRight"/);
@@ -76,7 +76,7 @@ test("product sections link to usable next steps", () => {
 test("homepage has intentional layout variation and responsive themes", () => {
   const sectionCount = [...home.matchAll(/<section\b/g)].length;
   assert.ok(sectionCount <= 10, "Homepage has excessive sections");
-  assert.match(home, /class="lp-modality-matrix"/);
+  assert.match(home, /class="lp-directory"/);
   assert.match(home, /class="lp-product-grid"/);
   assert.match(home, /class="lp-proof-agent"/);
   assert.match(home, /class="lp-proof-pair"/);
@@ -131,7 +131,7 @@ test("every hosted model modality is prominent and opens its actual Marketplace 
     embedding: ["text-embedding-3-small"],
     decision: ["microsoft/decision-1"],
   };
-  assert.equal([...home.matchAll(/class="lp-modality-row"/g)].length, 8,
+  assert.equal([...home.matchAll(/class="lp-example-description"/g)].length, 8,
     "All eight modalities should use the same presentation");
   for (const [type, ids] of Object.entries(examples)) {
     const href = 'href="marketplace.html?modality=' + type + '"';
@@ -177,7 +177,7 @@ test("full product directory restores all twelve destinations without decorative
 test("homepage follows the 7-part hierarchy with restrained group accents", () => {
   const hero = home.indexOf('class="lp-hero"');
   const products = home.indexOf('class="lp-section lp-products" id="products"');
-  const api = home.indexOf('class="lp-section lp-models" id="api"');
+  const api = home.indexOf('class="lp-closing lp-quickstart" id="quickstart"');
   const details = home.indexOf('class="lp-section lp-stack" id="platform-details"');
   const workspace = home.indexOf('class="lp-section lp-workflow"');
   const ecosystem = home.indexOf('class="lp-section lp-more"');
@@ -194,7 +194,7 @@ test("homepage follows the 7-part hierarchy with restrained group accents", () =
   assert.match(css, /\.lp-modality-matrix \{[^}]*border-top:3px solid var\(--gold\)/);
   assert.doesNotMatch(css, /\.lp-product-card:hover \{[^}]*box-shadow/);
   assert.equal([...home.matchAll(/class="lp-product-card"/g)].length, 12);
-  assert.equal([...home.matchAll(/class="lp-modality-row"/g)].length, 8);
+  assert.equal([...home.matchAll(/class="lp-example-description"/g)].length, 8);
 });
 
 test("product category icons match their labels", () => {
@@ -330,13 +330,13 @@ test("responsive architecture keeps useful model and infrastructure controls vis
   assert.doesNotMatch(css,/\.lp-topology/);
 });
 
-test("quickstart is a dedicated final section after the marketing narrative", () => {
+test("quickstart precedes pricing and retains all example panels", () => {
   assert.match(home, /class="lp-closing lp-quickstart" id="quickstart"/);
   assert.match(home, /class="lp-code lp-quickstart-workbench"/);
   assert.match(home, /class="ip-architecture"/);
   assert.match(home, /<script type="module" src="scripts\/home-topology\.js"><\/script>/);
   assert.equal([...home.matchAll(/data-example-panel=/g)].length,8);
-  assert.ok(home.indexOf('id="quickstart"') > home.indexOf('id="pricing"'));
+  assert.ok(home.indexOf('id="quickstart"') < home.indexOf('id="pricing"'));
 });
 
 test("active paths are meaningful and context loss restores accessible fallback", () => {
@@ -425,7 +425,7 @@ test("unnecessary all-caps section kickers have been removed", () => {
 
 
 test("product spotlights restore main-site capability depth without a wall of cards", () => {
-  const details = ["agents","deploy","buckets","shield","council","cli","lightning","app"];
+  const details = ["agents","deploy","buckets","shield"];
   assert.doesNotMatch(home.slice(home.indexOf('class="lp-hero-grid"'),home.indexOf('id="customers"')),/class="lp-feature-points"/);
   for(const id of details) {
     const at=home.indexOf('id="'+id+'"');
@@ -491,8 +491,8 @@ test("Shield retains original protection scope and shows a concrete example resp
 
 test("Lightning is clearly a browser chat product separate from the API", () => {
   const light=home.slice(home.indexOf('id="lightning"'),home.indexOf('</article>',home.indexOf('id="lightning"')));
-  assert.match(light,/Lightning: chat and create in your browser/);
-  assert.match(light,/not the hosted model API/);
+  assert.match(light,/Chat in your browser/);
+  assert.match(light,/for programmatic requests and usage-based billing/);
   assert.match(light,/href="#api">Pay-to-Go model API/);
   assert.match(light,/href="chat\/">Try Lightning chat/);
   assert.match(light,/class="lp-lightning-workspace"/);

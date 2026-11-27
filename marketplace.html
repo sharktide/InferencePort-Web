@@ -28,6 +28,18 @@
 			font-size: 0.9rem;
 		}
 
+		#available-models .model-value { overflow-wrap: anywhere; }
+		#model-count { min-height: 1.3em; }
+		.filter-tab:focus-visible, .pagination-btn:focus-visible {
+			outline: 2px solid var(--brand);
+			outline-offset: 2px;
+		}
+		@media (max-width: 575.98px) {
+			.models-grid { grid-template-columns: minmax(0, 1fr); }
+			.model-card-top { flex-wrap: wrap; }
+			.model-card-content { padding: 1rem; }
+		}
+
 		#search-models:focus {
 			border-color: var(--brand-border);
 			box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.15);
@@ -462,23 +474,21 @@
 
 	<section class="py-5">
 		<div class="container">
-			<h2 class="fw-bold text-center mb-4" style="color: var(--text); letter-spacing: -0.02em">
-				Pay-to-Go Cloud &amp; Local Models
-			</h2>
+			<label class="visually-hidden" for="search-models">Search models by name, ID, or description</label>
+			<input type="search" id="search-models" class="form-control mb-3" placeholder="Search models by name or ID…" />
 			<div class="filter-tabs" id="filter-tabs">
-				<button class="filter-tab active" data-filter="all">All</button>
-				<button class="filter-tab" data-filter="text">Text</button>
-				<button class="filter-tab" data-filter="image">Image</button>
-				<button class="filter-tab" data-filter="video">Video</button>
-				<button class="filter-tab" data-filter="audio">Audio</button>
-				<button class="filter-tab" data-filter="3d">3D</button>
-				<button class="filter-tab" data-filter="embedding">Embeddings</button>
-				<button class="filter-tab" data-filter="realtime">Realtime</button>
-				<button class="filter-tab" data-filter="decision">Decisions</button>
-				<button class="filter-tab" data-filter="local">Local</button>
+				<button class="filter-tab active" type="button" data-filter="all" aria-pressed="true">All</button>
+				<button class="filter-tab" type="button" data-filter="text" aria-pressed="false">Text</button>
+				<button class="filter-tab" type="button" data-filter="image" aria-pressed="false">Image</button>
+				<button class="filter-tab" type="button" data-filter="video" aria-pressed="false">Video</button>
+				<button class="filter-tab" type="button" data-filter="audio" aria-pressed="false">Audio</button>
+				<button class="filter-tab" type="button" data-filter="3d" aria-pressed="false">3D</button>
+				<button class="filter-tab" type="button" data-filter="embedding" aria-pressed="false">Embeddings</button>
+				<button class="filter-tab" type="button" data-filter="realtime" aria-pressed="false">Realtime</button>
+				<button class="filter-tab" type="button" data-filter="decision" aria-pressed="false">Decisions</button>
+				<button class="filter-tab" type="button" data-filter="local" aria-pressed="false">Local</button>
 			</div>
 			<p><a href="decision.html">Decision API guide and examples</a></p>
-			<input type="text" id="search-models" class="form-control mb-4" placeholder="Search models…" />
 			<div class="price-controls">
 				<label for="price-range">Starting price
 					<select id="price-range">
@@ -498,15 +508,15 @@
 					</select>
 				</label>
 			</div>
-			<p class="price-hint">Price options use each cloud model’s lowest published list rate. Units vary (per million tokens, generation, second, etc.); unpriced and local models sort last and are excluded from price ranges.</p>
-			<div class="text-center my-4" id="loading-spinner">
+			<p class="price-hint">Price options use each cloud model’s lowest published list rate. Units vary by model (for example, per million tokens, generation, or second); unpriced and local models sort last and are excluded from price ranges.</p>
+			<div class="text-center my-4" id="loading-spinner" role="status" aria-live="polite">
 				<div class="spinner-border" style="color: var(--brand)" role="status">
 					<span class="visually-hidden">Loading…</span>
 				</div>
 			</div>
-			<div class="section-count" id="model-count"></div>
+			<div class="section-count" id="model-count" role="status" aria-live="polite"></div>
 			<div class="models-grid" id="available-models"></div>
-			<div class="no-results" id="no-results" style="display: none;">No models found.</div>
+			<div class="no-results" id="no-results" style="display: none;">No models match these filters. <button type="button" id="clear-filters" class="btn btn-link">Clear filters</button></div>
 			<div class="pagination" id="pagination"></div>
 		</div>
 	</section>
@@ -526,13 +536,14 @@
 		let localModels = [];
 		let config = null;
 		const requestedModality = (urlParams.get("modality") || "").toLowerCase();
-		const permittedModalities = new Set(["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision"]);
+		const permittedModalities = new Set(["text", "image", "video", "audio", "3d", "embedding", "realtime", "decision", "local"]);
 		let activeFilter = permittedModalities.has(requestedModality) ? requestedModality : "all";
 		let priceRange = "all";
 		let priceSort = "default";
 		const MODELS_PER_PAGE = 24;
 		let currentPage = 1;
 		let filteredModels = [];
+		let catalogHasFailure = false;
 
 		function isTextModel(m) {
 			const i = Array.isArray(m?.input_modalities) ? m.input_modalities : [];
@@ -595,7 +606,7 @@
 			if (rates && typeof rates === "object") {
 				for (const [key, label] of [["audio_in", "Audio in"], ["audio_out", "Audio out"], ["text_in", "Text in"], ["text_out", "Text out"]]) {
 					const rate = num(rates[key]);
-					if (rate !== null) parts.push(`${label}: $${fmtRate(rate)}/M`);
+					if (rate !== null) parts.push(`${label}: $${fmtRate(rate)}/M tokens`);
 				}
 			}
 			const seconds = num(m?.input_price_per_second);
@@ -666,8 +677,8 @@
 			const parts = [];
 			const input = perMillionTokens(p.prompt);
 			const output = perMillionTokens(p.completion);
-			if (input !== null) parts.push(`In: $${fmtRate(input)}/M`);
-			if (output !== null) parts.push(`Out: $${fmtRate(output)}/M`);
+			if (input !== null) parts.push(`In: $${fmtRate(input)}/M tokens`);
+			if (output !== null) parts.push(`Out: $${fmtRate(output)}/M tokens`);
 			const tp = p.token_pricing || {};
 			for (const [key, label] of [["text_in", "Text"], ["image_in", "Img In"], ["image_out", "Img Out"]]) {
 				const rate = num(tp[key]);
@@ -792,32 +803,37 @@
 		async function loadModels() {
 			const spinner = document.getElementById("loading-spinner");
 			spinner.style.display = "block";
-			try {
-				const [modelsRes, localRes] = await Promise.all([
-					fetch(`${API_BASE}/v1/models`),
-					fetch(`${API_BASE}/models`)
-				]);
-
-				const modelsData = await modelsRes.json().catch(() => ({}));
-				const remoteModels = Array.isArray(modelsData.data) ? modelsData.data : [];
-
+			const failures = [];
+			const [remoteResult, localResult] = await Promise.allSettled([
+				fetch(`${API_BASE}/v1/models`).then(async (res) => {
+					if (!res.ok) throw new Error(`Cloud catalog returned ${res.status}`);
+					const data = await res.json();
+					if (!Array.isArray(data?.data)) throw new Error("Cloud catalog response was invalid");
+					return data.data;
+				}),
+				fetch(`${API_BASE}/models`).then(async (res) => {
+					if (!res.ok) throw new Error(`Local catalog returned ${res.status}`);
+					const data = await res.json();
+					if (!Array.isArray(data)) throw new Error("Local catalog response was invalid");
+					return data;
+				})
+			]);
+			if (remoteResult.status === "fulfilled") {
 				const seen = new Set();
-				cloudModels = remoteModels.filter((m) => {
+				cloudModels = remoteResult.value.filter((m) => {
 					if (m.is_ready === false) return false;
 					const k = slug(m) || m.name;
 					if (!k || seen.has(k)) return false;
 					seen.add(k);
 					return true;
 				});
-
-				const localData = await localRes.json().catch(() => []);
-				localModels = Array.isArray(localData) ? localData : [];
-			} catch (err) {
-				console.error("Error loading models:", err);
-				cloudModels = [];
-				localModels = [];
-			} finally {
-				spinner.style.display = "none";
+			} else failures.push(remoteResult.reason);
+			if (localResult.status === "fulfilled") localModels = localResult.value;
+			else failures.push(localResult.reason);
+			spinner.style.display = "none";
+			catalogHasFailure = failures.length > 0;
+			if (failures.length) {
+				console.error("Some model catalogs could not be loaded:", failures);
 			}
 		}
 
@@ -860,14 +876,14 @@
 						</div>
 					</div>
 						<div class="model-meta">
-							<span class="model-key">Slug</span>
+							<span class="model-key">Model ID</span>
 							<span class="model-value">${escapeHtml(displaySlug)}</span>
 						</div>
 						<div class="model-meta">
-							<span class="model-key">Pricing</span>
-							<span class="model-value">${price}</span>
+							<span class="model-key">Starting price</span>
+							<span class="model-value">${escapeHtml(price)}</span>
 						</div>
-						<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" class="btn-card-action btn-console">Open Developer Console</a>
+						<a href="https://console.inferenceport.ai" target="_blank" rel="noopener" class="btn-card-action btn-console">Open console</a>
 					</div>
 				`;
 
@@ -925,7 +941,8 @@
 
 			if (showCloud) {
 				const filteredCloud = cloudModels.filter((m) => {
-					const matchesSearch = !filter || (m.name || "").toLowerCase().includes(filter.toLowerCase()) || (m.id || "").toLowerCase().includes(filter.toLowerCase());
+					const query = filter.toLowerCase();
+					const matchesSearch = !query || [m.name, m.id, m.upstream_id, m.openrouter?.slug].some((v) => String(v || "").toLowerCase().includes(query));
 					const type = modelType(m);
 					const matchesType = activeFilter === "all" || type === activeFilter || (activeFilter === "3d" && type === "3D");
 					return matchesSearch && matchesType;
@@ -975,6 +992,14 @@
 				noResults.style.display = "none";
 				countEl.textContent = `${total} model${total !== 1 ? "s" : ""} available`;
 			}
+			if (catalogHasFailure) {
+				countEl.innerHTML = `${total ? `${total} model${total !== 1 ? "s" : ""} available · ` : ""}Some catalog data could not be loaded. <button type="button" id="retry-load" class="btn btn-link p-0">Retry</button>`;
+				document.getElementById("retry-load").addEventListener("click", async () => {
+					countEl.textContent = "Retrying catalog…";
+					await loadModels();
+					renderAll(document.getElementById("search-models").value);
+				});
+			}
 
 			if (totalPages > 1) {
 				const startNum = startIdx + 1;
@@ -1019,8 +1044,9 @@
 		document.getElementById("filter-tabs").addEventListener("click", (e) => {
 			const tab = e.target.closest(".filter-tab");
 			if (!tab) return;
-			document.querySelectorAll(".filter-tab").forEach((t) => t.classList.remove("active"));
+			document.querySelectorAll(".filter-tab").forEach((t) => { t.classList.remove("active"); t.setAttribute("aria-pressed", "false"); });
 			tab.classList.add("active");
+			tab.setAttribute("aria-pressed", "true");
 			activeFilter = tab.dataset.filter;
 			// Keep category URLs shareable and preserve other query parameters.
 			const nextUrl = new URL(window.location.href);
@@ -1040,14 +1066,35 @@
 			renderAll(document.getElementById("search-models").value);
 		});
 
+		document.getElementById("clear-filters").addEventListener("click", () => {
+			document.getElementById("search-models").value = "";
+			priceRange = "all";
+			priceSort = "default";
+			document.getElementById("price-range").value = "all";
+			document.getElementById("price-sort").value = "default";
+			const allTab = document.querySelector('.filter-tab[data-filter="all"]');
+			document.querySelectorAll(".filter-tab").forEach((t) => { t.classList.toggle("active", t === allTab); t.setAttribute("aria-pressed", String(t === allTab)); });
+			activeFilter = "all";
+			document.getElementById("price-range").disabled = false;
+			document.getElementById("price-sort").disabled = false;
+			const nextUrl = new URL(window.location.href);
+			nextUrl.searchParams.delete("modality");
+			window.history.replaceState(null, "", nextUrl);
+			currentPage = 1;
+			renderAll();
+		});
+
 		document.addEventListener("DOMContentLoaded", async () => {
 			// Homepage modality links open the matching catalog category.
 			// Ignore unknown query values rather than activating an invalid filter.
 			const selected = [...document.querySelectorAll(".filter-tab")]
 				.find(tab => tab.dataset.filter === activeFilter);
 			if (selected) {
-				document.querySelectorAll(".filter-tab").forEach(tab => tab.classList.toggle("active", tab === selected));
+				document.querySelectorAll(".filter-tab").forEach(tab => { tab.classList.toggle("active", tab === selected); tab.setAttribute("aria-pressed", String(tab === selected)); });
 			}
+			const onlyLocal = activeFilter === "local";
+			document.getElementById("price-range").disabled = onlyLocal;
+			document.getElementById("price-sort").disabled = onlyLocal;
 			await loadModels();
 			renderAll();
 			scrollToHashModel();

@@ -14,12 +14,13 @@
 	<meta property="og:description"
 		content="Run AI models locally, explore Hugging Face Spaces, and discover AI tools through InferencePort's desktop interface." />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://inference.js.org/install.html" />
-	<meta property="og:image" content="https://inference.js.org/img/favicon.ico" />
+	<link rel="canonical" href="https://inferenceport.ai/install.html" />
+	<meta property="og:url" content="https://inferenceport.ai/install.html" />
+	<meta property="og:image" content="https://inferenceport.ai/img/favicon.ico" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="Download InferencePort AI | Run AI Models Locally" />
 	<meta name="twitter:description" content="Download InferencePort AI for Windows, macOS, and Linux." />
-	<meta name="twitter:image" content="https://inference.js.org/img/favicon.ico" />
+	<meta name="twitter:image" content="https://inferenceport.ai/img/favicon.ico" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
@@ -51,12 +52,18 @@
 		.dl-card-header { background: var(--bg-alt); border-bottom: 1px solid var(--border); padding: 12px 18px; font-weight: 650; font-size: 0.88rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
 		.dl-card-body { padding: 4px 0; }
 		.list-group-item { background: transparent !important; border-color: var(--border-light) !important; padding: 11px 18px; font-size: 0.84rem; color: var(--text-muted); }
-		.list-group-item a { color: var(--brand-ink); text-decoration: none; font-family: var(--mono); font-size: 0.8rem; overflow-wrap: anywhere; }
+		.list-group-item .package-label { display: block; color: var(--text); font-weight: 650; }
+		.list-group-item a { color: var(--brand-ink); text-decoration: none; font-family: var(--mono); font-size: 0.72rem; overflow-wrap: anywhere; }
 		.list-group-item a:hover { color: var(--ink); text-decoration: underline; }
 		.list-group-item:first-child { border-top: none !important; }
 		.gpu-badge { background: var(--gold-dim); color: var(--gold-ink); border: 1px solid var(--gold-border); font-family: var(--mono); font-size: 0.6rem; padding: 2px 8px; border-radius: 2px; font-weight: 500; letter-spacing: 0.05em; }
 		.no-builds { color: var(--text-muted); font-size: 0.83rem; padding: 14px 18px; }
 		.shot { border: 1px solid var(--ink); display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; }
+		.arch-choice { display: inline-flex; gap: 6px; margin-top: 8px; }
+		.arch-choice a { color: var(--brand-ink); font-size: .8rem; }
+		.release-fallback { padding: 16px 20px; background: var(--paper); border: 1px solid var(--border); color: var(--text); }
+		.gpu-group { padding: 12px 18px 4px; color: var(--text-muted); font: 500 .72rem var(--mono); letter-spacing: .07em; text-transform: uppercase; }
+		.loading { color: var(--text-muted); padding: 18px 0; }
 	</style>
 <script data-goatcounter="https://ipai.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -82,7 +89,7 @@
 		<div class="wrap">
 			<div class="sec-head">
 				<div class="sec-idx">01 &mdash; Download</div>
-				<div><h2>Pick your platform.</h2><p>We detect your system and recommend a build. Every release is also listed below, including GPU builds for CUDA, ROCm and NVIDIA Jetson.</p></div>
+				<div><h2>Pick your platform.</h2><p>We’ll recommend a build for your system. Browse every release below, including CUDA, ROCm, and JetPack options.</p></div>
 			</div>
 
 			<div id="recommended-download" class="mb-4"></div>
@@ -104,12 +111,12 @@
 		<div class="wrap">
 			<div class="sec-head">
 				<div class="sec-idx">02 &mdash; After you install</div>
-				<div><h2>Your account connects the rest.</h2><p>The app works without an account for local chat. Sign in with your InferencePort account to unlock cloud features &mdash; and the same sign-in opens the web console and any organization you belong to.</p></div>
+				<div><h2>Start chatting locally.</h2><p>Open the app, choose a model, and chat. Sign in to use Lightning cloud models or your organization’s server.</p></div>
 			</div>
 			<ul class="idx-list">
-				<li><b>Local</b><span>Pull a model from the marketplace and chat offline. Nothing leaves your machine.</span></li>
-				<li><b>Cloud</b><span>Turn on Lightning for hosted chat and generation within your plan.</span></li>
-				<li><b>Team</b><span>Host a server, or join an organization whose admins manage policy from the <a href="/console">Developer Console</a>.</span></li>
+				<li><b>Local</b><span>Choose a model and chat on your device.</span></li>
+				<li><b>Cloud</b><span>Sign in to use Lightning within your plan.</span></li>
+				<li><b>Team</b><span>Join your organization or manage its server in the <a href="/console">Developer Console</a>.</span></li>
 			</ul>
 			<p style="margin-top:28px"><a class="btn-ghost" href="platform.html">See how the app, console and organizations fit together &rarr;</a></p>
 		</div>
@@ -130,207 +137,115 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
 		let manualArchOverride = null;
+		const releasePage = "https://github.com/sharktide/inferenceport-ai/releases/latest";
+		const recommended = document.getElementById("recommended-download");
+		recommended.innerHTML = '<p class="loading" role="status">Loading the latest downloads…</p>';
+
+		const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+			"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+		})[char]);
+		const releaseLink = (label = "Browse all downloads on the release page") =>
+			`<a href="${releasePage}" target="_blank" rel="noopener">${label}</a>`;
+		function showFallback(message) {
+			recommended.innerHTML = `<div class="release-fallback"><strong>${escapeHtml(message)}</strong><div>${releaseLink()}</div></div>`;
+			for (const id of ["windows", "mac", "linux"]) {
+				document.getElementById(id).innerHTML = `<div class="release-fallback">Release details are unavailable here. ${releaseLink()}</div>`;
+			}
+		}
 
 		async function loadRelease() {
-			const res = await fetch(
-				"https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest",
-			);
-			const release = await res.json();
-			const assets = (release.assets || []).filter(
-				(a) => !/\.blockmap$/i.test(a.name),
-			);
-
-			const isWindows = (a) =>
-				/windows|setup|\.exe$|\.msi$|\.7z$|\.zip$/i.test(a.name) &&
-				!/\.appx$/i.test(a.name) &&
-				!/mac/i.test(a.name);
-			const isMac = (a) =>
-				/mac|\.dmg$|\.pkg$|\.zip$/i.test(a.name) &&
-				!/setup|Windows/i.test(a.name);
-			const isLinux = (a) => /linux/i.test(a.name);
-			const isX64 = (a) => /x64|amd64|x86_64/i.test(a.name);
-			const isArm64 = (a) => /arm64|aarch64/i.test(a.name);
-			const isCuda = (a) => /cuda/i.test(a.name);
-			const isRocm = (a) => /rocm/i.test(a.name);
-			const isJp5 = (a) => /jetpack5/i.test(a.name);
-			const isJp6 = (a) => /jetpack6/i.test(a.name);
-
-			const winX64 = assets.filter(
-				(a) => isWindows(a) && isX64(a) && !isCuda(a) && !isRocm(a),
-			);
-			const winArm64 = assets.filter((a) => isWindows(a) && isArm64(a));
-			const winCuda = assets.filter((a) => isWindows(a) && isCuda(a));
-			const winRocm = assets.filter((a) => isWindows(a) && isRocm(a));
-			const macX64 = assets.filter((a) => isMac(a) && isX64(a));
-			const macArm64 = assets.filter((a) => isMac(a) && isArm64(a));
-			const linuxX64 = assets.filter(
-				(a) => isLinux(a) && isX64(a) && !isCuda(a) && !isRocm(a),
-			);
-			const linuxArm64 = assets.filter(
-				(a) =>
-					isLinux(a) && isArm64(a) && !isJp5(a) && !isJp6(a) && !isCuda(a),
-			);
-			const linuxCuda = assets.filter((a) => isLinux(a) && isCuda(a));
-			const linuxRocm = assets.filter((a) => isLinux(a) && isRocm(a));
-			const jetpack5 = assets.filter((a) => isLinux(a) && isJp5(a));
-			const jetpack6 = assets.filter((a) => isLinux(a) && isJp6(a));
-
-			function detectPlatform() {
-				const ua = navigator.userAgent || "",
-					pl = navigator.platform || "";
-				let os = null,
-					arch = null;
-				if (/Win/i.test(pl) || /Windows/i.test(ua)) os = "windows";
-				else if (/Mac/i.test(pl)) os = "mac";
-				else if (/Linux|X11|Ubuntu|Debian|Fedora|Arch/i.test(pl + ua))
-					os = "linux";
-				if (os === "mac") {
-					arch = manualArchOverride || "arm64";
-				} else {
-					if (/arm64|aarch64/i.test(ua + pl)) arch = "arm64";
-					else if (/x86_64|Win64|WOW64|amd64/i.test(ua + pl)) arch = "x64";
-				}
-				return { os, arch };
-			}
-
-			function switchToOSTab(os) {
-				const map = {
-					windows: "windows-tab",
-					mac: "mac-tab",
-					linux: "linux-tab",
-				};
-				const el = document.getElementById(map[os]);
-				if (el) bootstrap.Tab.getOrCreateInstance(el).show();
-			}
-
-			function chooseRecommendedAsset({ os, arch }) {
-				if (os === "windows") {
-					if (arch === "arm64" && winArm64.length) return winArm64[0];
-					if (winX64.length) return winX64[0];
-					if (winCuda.length) return winCuda[0];
-					if (winRocm.length) return winRocm[0];
-				}
-				if (os === "mac") {
-					if (arch === "arm64" && macArm64.length) return macArm64[0];
-					if (arch === "x64" && macX64.length) return macX64[0];
-				}
-				if (os === "linux") {
-					if (arch === "arm64" && linuxArm64.length) return linuxArm64[0];
-					if (linuxX64.length) return linuxX64[0];
-					if (linuxCuda.length) return linuxCuda[0];
-					if (linuxRocm.length) return linuxRocm[0];
-					if (jetpack6.length) return jetpack6[0];
-					if (jetpack5.length) return jetpack5[0];
-				}
-				return null;
-			}
-
-			function renderRecommended() {
-				const container = document.getElementById("recommended-download");
-				const info = detectPlatform();
-				const asset = chooseRecommendedAsset(info);
-
-				if (!asset) {
-					container.innerHTML = `
-          <div class="rec-card" style="text-align:center">
-            <div>
-              <div class="rec-title">Recommended download</div>
-              <div class="rec-meta">No matching build found — choose from the tabs below.</div>
-            </div>
-          </div>`;
+			try {
+				const res = await fetch("https://api.github.com/repos/sharktide/inferenceport-ai/releases/latest");
+				if (!res.ok) throw new Error(`GitHub returned HTTP ${res.status}`);
+				const release = await res.json();
+				const assets = (Array.isArray(release.assets) ? release.assets : []).filter((a) =>
+					a && a.name && a.browser_download_url && !/\.(blockmap|ya?ml)$/i.test(a.name));
+				if (!release.html_url || !assets.length) {
+					showFallback("No downloadable files are listed for the latest release.");
 					return;
 				}
 
-				const platformLabel = `${(info.os || "").toUpperCase()} ${(info.arch || "").toUpperCase()}`;
-				container.innerHTML = `
-        <div class="rec-card">
-          <div>
-            <div class="rec-title">Recommended download for your system</div>
-            <div class="rec-meta">${platformLabel}</div>
-            <div class="rec-filename">${asset.name}</div>
-            ${info.os === "mac" && info.arch === "arm64" ? `<a href="#" class="rec-switch" id="switch-intel">Not on Apple Silicon? Switch to Intel build</a>` : ""}
-          </div>
-          <div>
-            <a href="${asset.browser_download_url}" class="btn-rec-dl">Download now</a>
-          </div>
-        </div>`;
+				const isWindows = (a) => /windows|win32/i.test(a.name) || /\.(exe|msi|appx|7z)$/i.test(a.name);
+				const isMac = (a) => /macos|mac\b|darwin/i.test(a.name);
+				const isLinux = (a) => /linux/i.test(a.name);
+				const isX64 = (a) => /x64|amd64|x86_64/i.test(a.name);
+				const isArm64 = (a) => /arm64|aarch64/i.test(a.name);
+				const isCuda = (a) => /cuda/i.test(a.name);
+				const isRocm = (a) => /rocm/i.test(a.name);
+				const isJp5 = (a) => /jetpack[-_ ]?5/i.test(a.name);
+				const isJp6 = (a) => /jetpack[-_ ]?6/i.test(a.name);
+				const winAssets = assets.filter(isWindows);
+				const macAssets = assets.filter(isMac);
+				const linuxAssets = assets.filter(isLinux);
+				const winCuda = winAssets.filter(isCuda), winRocm = winAssets.filter(isRocm);
+				const winGpu = new Set([...winCuda, ...winRocm]);
+				const winX64 = winAssets.filter((a) => isX64(a) && !winGpu.has(a));
+				const winArm64 = winAssets.filter((a) => isArm64(a) && !winGpu.has(a));
+				const linuxCuda = linuxAssets.filter(isCuda), linuxRocm = linuxAssets.filter(isRocm);
+				const jetpack5 = linuxAssets.filter(isJp5), jetpack6 = linuxAssets.filter(isJp6);
+				const linuxGpu = new Set([...linuxCuda, ...linuxRocm, ...jetpack5, ...jetpack6]);
+				const linuxX64 = linuxAssets.filter((a) => isX64(a) && !linuxGpu.has(a));
+				const linuxArm64 = linuxAssets.filter((a) => isArm64(a) && !linuxGpu.has(a));
+				const macX64 = macAssets.filter(isX64), macArm64 = macAssets.filter(isArm64);
 
-				if (info.os === "mac" && info.arch === "arm64") {
-					document.getElementById("switch-intel").onclick = (e) => {
-						e.preventDefault();
-						manualArchOverride = "x64";
-						renderRecommended();
-					};
+				function detectPlatform() {
+					const ua = navigator.userAgent || "", pl = navigator.platform || "";
+					let os = null, arch = null;
+					if (/Android|iPhone|iPad|iPod/i.test(ua)) return { os, arch };
+					if (/Win/i.test(pl) || /Windows/i.test(ua)) os = "windows";
+					else if (/Mac/i.test(pl) || /Macintosh|Mac OS/i.test(ua)) os = "mac";
+					else if (/Linux|X11|Ubuntu|Debian|Fedora|Arch/i.test(pl + ua)) os = "linux";
+					if (os === "mac") arch = manualArchOverride || "arm64";
+					else if (/arm64|aarch64/i.test(ua + pl)) arch = "arm64";
+					else if (/x86_64|Win64|WOW64|amd64|x64/i.test(ua + pl)) arch = "x64";
+					return { os, arch };
 				}
-
-				switchToOSTab(info.os);
+				function switchToOSTab(os) {
+					const el = document.getElementById(({ windows: "windows-tab", mac: "mac-tab", linux: "linux-tab" })[os]);
+					if (el) bootstrap.Tab.getOrCreateInstance(el).show();
+				}
+				function chooseRecommendedAsset({ os, arch }) {
+					if (os === "windows") return (arch === "arm64" && winArm64[0]) || winX64[0] || winCuda[0] || winRocm[0] || null;
+					if (os === "mac") return (arch === "arm64" ? macArm64[0] : macX64[0]) || null;
+					if (os === "linux") return (arch === "arm64" && linuxArm64[0]) || linuxX64[0] || linuxCuda[0] || linuxRocm[0] || jetpack6[0] || jetpack5[0] || null;
+					return null;
+				}
+				function renderRecommended() {
+					const info = detectPlatform(), asset = chooseRecommendedAsset(info);
+					if (!asset) {
+						recommended.innerHTML = `<div class="release-fallback"><strong>No recommended build found for this system.</strong><div>${releaseLink("Browse all release downloads")}</div></div>`;
+						return;
+					}
+					const platformLabel = `${info.os === "mac" ? "macOS" : info.os[0].toUpperCase() + info.os.slice(1)} ${(info.arch || archLabel(asset)).toUpperCase()}`;
+					const switchLinks = info.os === "mac" ? `<div class="arch-choice">Choose Mac build: <a href="#" data-arch="arm64">Apple Silicon</a> · <a href="#" data-arch="x64">Intel</a> · <a href="#" data-arch="auto">Auto</a></div>` : "";
+					recommended.innerHTML = `<div class="rec-card"><div><div class="rec-title">Recommended download for your system</div><div class="rec-meta">${platformLabel}</div><div class="rec-filename">${escapeHtml(asset.name)}</div>${switchLinks}</div><a href="${escapeHtml(asset.browser_download_url)}" class="btn-rec-dl">Download ${platformLabel}</a></div>`;
+					recommended.querySelectorAll("[data-arch]").forEach((link) => link.addEventListener("click", (event) => {
+						event.preventDefault(); manualArchOverride = link.dataset.arch === "auto" ? null : link.dataset.arch; renderRecommended();
+					}));
+					if (info.os) switchToOSTab(info.os);
+				}
+				const archLabel = (a) => isArm64(a) ? "ARM64" : isX64(a) ? "x64" : "Universal";
+				function renderCards(title, assetList) {
+					if (!assetList.length) return `<div class="dl-card"><div class="dl-card-header">${title}</div><div class="no-builds">No builds available in this release.</div></div>`;
+					return `<div class="dl-card"><div class="dl-card-header">${title}</div><div class="dl-card-body"><ul class="list-group list-group-flush">${assetList.map((a) => `<li class="list-group-item"><span class="package-label">${title} · ${archLabel(a)}</span><a href="${escapeHtml(a.browser_download_url)}">${escapeHtml(a.name)}</a></li>`).join("")}</ul></div></div>`;
+				}
+				function renderGpuGroups(groups) {
+					return groups.map(([label, list]) => list.length ? `<div class="gpu-group">${label}</div>${renderCards(label, list)}` : "").join("") || '<div class="no-builds">No GPU builds available in this release.</div>';
+				}
+				function sourceLinks(r) {
+					return `<li class="list-group-item"><span class="package-label">Source archive</span><a href="${escapeHtml(r.tarball_url)}">Download tarball</a></li><li class="list-group-item"><span class="package-label">ZIP archive</span><a href="${escapeHtml(r.zipball_url)}">Download ZIP</a></li><li class="list-group-item"><span class="package-label">Release details</span><a href="${escapeHtml(r.html_url)}">View release page</a></li>`;
+				}
+				const sourceCard = (id) => `<div class="dl-card"><div class="dl-card-header">Source code</div><div class="dl-card-body"><ul class="list-group list-group-flush" id="${id}"></ul></div></div>`;
+				document.getElementById("windows").innerHTML = `<h5 class="fw-bold mb-3" style="color:var(--text)">Windows downloads</h5>${renderCards("Windows x64 (CPU)", winX64)}${renderCards("Windows ARM64", winArm64)}${renderGpuGroups([["CUDA", winCuda], ["ROCm", winRocm]])}${sourceCard("win-source-links")}`;
+				document.getElementById("mac").innerHTML = `<h5 class="fw-bold mb-3" style="color:var(--text)">macOS downloads</h5>${renderCards("macOS Intel (x64)", macX64)}${renderCards("macOS Apple Silicon (ARM64)", macArm64)}${sourceCard("mac-source-links")}`;
+				document.getElementById("linux").innerHTML = `<h5 class="fw-bold mb-3" style="color:var(--text)">Linux downloads</h5>${renderCards("Linux x64 (CPU)", linuxX64)}${renderCards("Linux ARM64 (CPU)", linuxArm64)}${renderGpuGroups([["CUDA", linuxCuda], ["ROCm", linuxRocm], ["NVIDIA JetPack 6", jetpack6], ["NVIDIA JetPack 5", jetpack5]])}${sourceCard("linux-source-links")}`;
+				for (const id of ["win-source-links", "mac-source-links", "linux-source-links"]) document.getElementById(id).innerHTML = sourceLinks(release);
+				renderRecommended();
+			} catch (error) {
+				console.error("Could not load release downloads", error);
+				showFallback("Couldn’t load the latest release downloads.");
 			}
-
-			renderRecommended();
-
-			function renderCards(title, assetList, isGpu = false) {
-				const gpuBadge = isGpu ? ' <span class="gpu-badge">GPU</span>' : "";
-				if (!assetList.length)
-					return `
-        <div class="dl-card">
-          <div class="dl-card-header">${title}${gpuBadge}</div>
-          <div class="no-builds">No builds available.</div>
-        </div>`;
-				return `
-        <div class="dl-card">
-          <div class="dl-card-header">${title}${gpuBadge}</div>
-          <div class="dl-card-body">
-            <ul class="list-group list-group-flush">
-              ${assetList.map((a) => `<li class="list-group-item"><a href="${a.browser_download_url}">${a.name}</a></li>`).join("")}
-            </ul>
-          </div>
-        </div>`;
-			}
-
-			function sourceLinks(r) {
-				return `
-        <li class="list-group-item"><a href="${r.tarball_url}">Download Tarball</a></li>
-        <li class="list-group-item"><a href="${r.zipball_url}">Download ZIP Archive</a></li>
-        <li class="list-group-item"><a href="${r.html_url}">View Release Page</a></li>`;
-			}
-
-			document.getElementById("windows").innerHTML = `
-      <h5 class="fw-bold mb-3" style="color:var(--text)">Windows Downloads</h5>
-      ${renderCards("Windows x64 (CPU)", winX64)}
-      ${renderCards("Windows ARM64", winArm64)}
-      ${renderCards("GPU Builds", [...winCuda, ...winRocm], true)}
-      <div class="dl-card">
-        <div class="dl-card-header">Source Code</div>
-        <div class="dl-card-body"><ul class="list-group list-group-flush" id="win-source-links"></ul></div>
-      </div>`;
-
-			document.getElementById("mac").innerHTML = `
-      <h5 class="fw-bold mb-3" style="color:var(--text)">macOS Downloads</h5>
-      ${renderCards("macOS Intel (x64)", macX64)}
-      ${renderCards("macOS Apple Silicon (ARM64)", macArm64)}
-      <div class="dl-card">
-        <div class="dl-card-header">Source Code</div>
-        <div class="dl-card-body"><ul class="list-group list-group-flush" id="mac-source-links"></ul></div>
-      </div>`;
-
-			document.getElementById("linux").innerHTML = `
-      <h5 class="fw-bold mb-3" style="color:var(--text)">Linux Downloads</h5>
-      ${renderCards("Linux x64 (CPU)", linuxX64)}
-      ${renderCards("Linux ARM64 (CPU)", linuxArm64)}
-      ${renderCards("GPU Builds", [...linuxCuda, ...linuxRocm, ...jetpack5, ...jetpack6], true)}
-      <div class="dl-card">
-        <div class="dl-card-header">Source Code</div>
-        <div class="dl-card-body"><ul class="list-group list-group-flush" id="linux-source-links"></ul></div>
-      </div>`;
-
-			document.getElementById("win-source-links").innerHTML =
-				sourceLinks(release);
-			document.getElementById("mac-source-links").innerHTML =
-				sourceLinks(release);
-			document.getElementById("linux-source-links").innerHTML =
-				sourceLinks(release);
 		}
-
 		loadRelease();
 	</script>
 <script src="scripts/hero-canvas.js"></script>

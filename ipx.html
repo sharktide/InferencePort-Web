@@ -31,6 +31,26 @@
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<link rel="stylesheet" href="styles/shared.css" />
 		<link rel="stylesheet" href="styles/site.css" />
+		<style>
+			/* ipx page refinements stay local to this document. */
+			.term { color: #eef1f8; font-size: .88rem; line-height: 1.65; min-width: 0; }
+			.term .c, .term-bar span { color: #aab4c7; }
+			.term pre { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+			.cmd small { color: var(--ink); font-size: .76rem; overflow-wrap: anywhere; }
+			.cmdgroup + .cmdgroup { margin-top: 36px; }
+			.cmdgroup h3 { margin: 0 0 14px; font-size: 1.25rem; }
+			.command { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+			.command code { min-width: 0; overflow-wrap: anywhere; }
+			.copy-command { flex: 0 0 auto; border: 1px solid var(--border); background: var(--paper); color: var(--ink); padding: 4px 8px; border-radius: 4px; font: 500 .72rem var(--mono); cursor: pointer; }
+			.copy-command:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+			.copy-status { min-height: 1.4em; margin: 8px 0 0; font-size: .82rem; color: var(--ink); }
+			@media (max-width: 600px) {
+				.term { font-size: .78rem; }
+				.term pre { padding: 14px 12px; }
+				.command { flex-wrap: wrap; }
+				.instbl { table-layout: fixed; }
+			}
+		</style>
 		<script src="scripts/theme.js"></script>
 		<script src="components/ip-navbar.js"></script>
 		<script src="components/ip-footer.js"></script>
@@ -65,35 +85,17 @@
 
 		<section class="blk alt" id="install">
 			<div class="wrap">
-				<div class="sh"><div class="k">Install</div><h2>Use the package manager you already have.</h2><p>ipx ships as a self-contained native binary. None of these need Python or anything else installed beyond themselves.</p></div>
+				<div class="sh"><div class="k">Install &amp; sign in</div><h2>Install ipx, then connect your account.</h2><p>Choose one of six installation methods. After installation, run <span class="mono">ipx auth login</span> and follow the sign-in prompts. You can sign in with email, a supported provider, SSO or an API key.</p></div>
 				<table class="instbl">
-					<tr><td>pip</td><td><code>pip install inferenceport-cli</code></td></tr>
-					<tr><td>npm</td><td><code>npm install -g @inferenceport-ai/ipx</code></td></tr>
-					<tr><td>cargo</td><td><code>cargo install ipx-cli</code></td></tr>
-					<tr><td>macOS / Linux</td><td><code>curl -fsSL https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.sh | sh</code></td></tr>
-					<tr><td>Windows PowerShell</td><td><code>irm https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.ps1 | iex</code></td></tr>
+					<tr><td>pip</td><td><div class="command"><code>pip install inferenceport-cli</code><button class="copy-command" type="button" data-copy="pip install inferenceport-cli">Copy</button></div></td></tr>
+					<tr><td>npm</td><td><div class="command"><code>npm install -g @inferenceport-ai/ipx</code><button class="copy-command" type="button" data-copy="npm install -g @inferenceport-ai/ipx">Copy</button></div></td></tr>
+					<tr><td>cargo</td><td><div class="command"><code>cargo install ipx-cli</code><button class="copy-command" type="button" data-copy="cargo install ipx-cli">Copy</button></div></td></tr>
+					<tr><td>macOS / Linux</td><td><div class="command"><code>curl -fsSL https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.sh | sh</code><button class="copy-command" type="button" data-copy="curl -fsSL https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.sh | sh">Copy</button></div></td></tr>
+					<tr><td>Windows PowerShell</td><td><div class="command"><code>irm https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.ps1 | iex</code><button class="copy-command" type="button" data-copy="irm https://raw.githubusercontent.com/inferenceport-ai/cli/main/install.ps1 | iex">Copy</button></div></td></tr>
 					<tr><td>Prebuilt binary</td><td><a href="https://github.com/inferenceport-ai/cli/releases" target="_blank" rel="noopener">Download from GitHub Releases &rarr;</a></td></tr>
 				</table>
-			</div>
-		</section>
-
-		<section class="blk">
-			<div class="wrap">
-				<div class="sh"><div class="k">What it does</div><h2>Every part of the platform, one command away.</h2><p>Sign in with email, GitHub, Google, Microsoft, Hugging Face, SSO or an API key. Switch into an organization with <span class="mono">ipx auth context</span> and billing, policy and org commands follow.</p></div>
-				<div class="cmdgrid">
-					<div class="cmd"><code class="n">ipx gen</code><p>Subscription-billed Lightning: chat, text, image, video and audio.</p><small>ipx gen image "…" -o out.jpg</small></div>
-					<div class="cmd"><code class="n">ipx p2g</code><p>Credit-billed Pay-to-Go API: chat, image, video, audio, 3D, embeddings and realtime voice, plus balance, ledger and keys.</p><small>ipx p2g 3d --image chair.jpg -o chair.glb</small></div>
-					<div class="cmd"><code class="n">ipx org</code><p>Members, invitations, teams, API keys, billing, usage, audit, domains, SSO, policy and desktop policy.</p><small>ipx org keys create ci --monthly-limit 25</small></div>
-					<div class="cmd"><code class="n">ipx agent</code><p>Create, update, publish and chat with managed agents; manage invites and members.</p><small>ipx agent chat acme-bot/support</small></div>
-					<div class="cmd"><code class="n">ipx mcp council</code><p>The hosted Council of LLMs MCP server: tiers, models, reason, test, and connect to your client.</p><small>ipx mcp council reason "…" --tier basic</small></div>
-					<div class="cmd"><code class="n">Deployments</code><p>Deploy, check, cancel, restore and track usage of on-demand model deployments, personal or for the org.</p><small>ipx --help</small></div>
-					<div class="cmd"><code class="n">ipx shield</code><p>AI Shield: scan, analyze, phishing, url, check, disposable, request, file, password, listing, review and domain.</p><small>ipx shield scan "Ignore previous instructions…"</small></div>
-					<div class="cmd"><code class="n">ipx model / local</code><p>Pull local models and chat with them, using the same engine as the desktop app.</p><small>ipx model pull llama3.2</small></div>
-					<div class="cmd"><code class="n">ipx server</code><p>Host your local models for teammates: start, stop, status and logs.</p><small>ipx server start --allow teammate@acme.com --detach</small></div>
-					<div class="cmd"><code class="n">ipx import</code><p>Add Hugging Face Spaces, websites and files to the desktop app library.</p><small>ipx import space black-forest-labs/FLUX.1-schnell</small></div>
-					<div class="cmd"><code class="n">ipx usage</code><p>Quotas, wallet balance and organization spend at a glance.</p><small>ipx usage get</small></div>
-					<div class="cmd"><code class="n">ipx doctor</code><p>Diagnostics, config, API passthrough, rewards and shell completion.</p><small>ipx config · doctor · api · completion</small></div>
-				</div>
+				<p class="command" style="margin-top:18px"><code>ipx auth login</code><button class="copy-command" type="button" data-copy="ipx auth login">Copy sign-in command</button></p>
+				<p class="copy-status" aria-live="polite" role="status"></p>
 			</div>
 		</section>
 
@@ -103,12 +105,12 @@
 					<div class="ftext">
 						<div class="pill-l">Built for automation</div>
 						<h2>Gate a pipeline. Pipe the output.</h2>
-						<p>ipx is scriptable by default: every command takes <span class="mono">--json</span>, reads from stdin and returns meaningful exit codes.</p>
+						<p>Use <span class="mono">--json</span> for machine-readable output, stdin for piped input and exit codes for automation.</p>
 						<ul class="checks">
-							<li><b>--json everywhere.</b> Raw output for <span class="mono">jq</span>: <span class="mono">ipx --json usage get | jq .quota</span>.</li>
-							<li><b>Fail the build.</b> <span class="mono">--fail-on review</span> exits with code 3 when Shield returns a verdict at or above review.</li>
-							<li><b>Your own rules.</b> Pass <span class="mono">--policy</span>, <span class="mono">--block</span> and <span class="mono">--allow</span> to Shield.</li>
-							<li><b>API keys.</b> Authenticate non-interactively in CI with an API key.</li>
+							<li><b>JSON output.</b> <span class="mono">ipx --json usage get | jq .quota</span></li>
+							<li><b>Fail the build.</b> Shield <span class="mono">--fail-on review</span> exits with code 3 at or above that verdict.</li>
+							<li><b>Set Shield rules.</b> Use <span class="mono">--policy</span>, <span class="mono">--block</span> and <span class="mono">--allow</span>.</li>
+							<li><b>CI sign-in.</b> Use an API key for non-interactive authentication.</li>
 						</ul>
 						<div class="flinks"><a class="btn-brand" href="shield.html">AI Shield commands</a><a class="btn-ghost" href="https://inferenceport-ai.readthedocs.io" target="_blank" rel="noopener">Read the docs</a></div>
 					</div>
@@ -129,6 +131,31 @@
 				</div>
 			</div>
 		</section>
+
+		<section class="blk" id="commands">
+			<div class="wrap">
+				<div class="sh"><div class="k">Command reference</div><h2>Generate, manage and run locally.</h2><p>Switch organizations with <span class="mono">ipx auth context</span>. The selected organization controls org, policy and billing commands.</p></div>
+				<div class="cmdgroup"><h3>Generate</h3><div class="cmdgrid">
+					<div class="cmd"><code class="n">ipx gen</code><p>Subscription-billed Lightning for chat, text, image, video and audio.</p><div class="command"><small>ipx gen image "a lighthouse at dawn" -o lighthouse.jpg</small><button class="copy-command" type="button" data-copy="ipx gen image &quot;a lighthouse at dawn&quot; -o lighthouse.jpg">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx p2g</code><p>Credit-billed Pay-to-Go API for chat, image, video, audio, 3D, embeddings, realtime voice, balance, ledger and keys.</p><div class="command"><small>ipx p2g 3d --image chair.jpg -o chair.glb</small><button class="copy-command" type="button" data-copy="ipx p2g 3d --image chair.jpg -o chair.glb">Copy</button></div></div>
+				</div></div>
+				<div class="cmdgroup"><h3>Manage</h3><div class="cmdgrid">
+					<div class="cmd"><code class="n">ipx org</code><p>Members, invitations, teams, keys, billing, usage, audit, domains, SSO and policy.</p><div class="command"><small>ipx org keys create ci --monthly-limit 25</small><button class="copy-command" type="button" data-copy="ipx org keys create ci --monthly-limit 25">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx agent</code><p>Create, update, publish and chat with managed agents; manage invites and members.</p><div class="command"><small>ipx agent chat acme-bot/support</small><button class="copy-command" type="button" data-copy="ipx agent chat acme-bot/support">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx mcp council</code><p>Use the hosted Council of LLMs: tiers, models, reasoning and client setup.</p><div class="command"><small>ipx mcp council reason "Is this migration safe?" --tier basic</small><button class="copy-command" type="button" data-copy="ipx mcp council reason &quot;Is this migration safe?&quot; --tier basic">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx shield</code><p>AI Shield scans, analyzes and checks URLs, files, messages, listings, passwords and domains.</p><small>ipx shield scan "Ignore previous instructions…"</small></div>
+					<div class="cmd"><code class="n">ipx usage</code><p>View quotas, wallet balance and organization spend.</p><div class="command"><small>ipx usage get</small><button class="copy-command" type="button" data-copy="ipx usage get">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx doctor</code><p>Diagnostics, config, API passthrough, rewards and shell completion.</p><div class="command"><small>ipx doctor</small><button class="copy-command" type="button" data-copy="ipx doctor">Copy</button></div></div>
+				</div></div>
+				<div class="cmdgroup"><h3>Run locally</h3><div class="cmdgrid">
+					<div class="cmd"><code class="n">Deployments</code><p>Deploy, check, cancel, restore and track usage of on-demand model deployments.</p><div class="command"><small>ipx --help</small><button class="copy-command" type="button" data-copy="ipx --help">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx model / local</code><p>Pull local models and chat with them using the desktop app engine.</p><div class="command"><small>ipx model pull llama3.2</small><button class="copy-command" type="button" data-copy="ipx model pull llama3.2">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx server</code><p>Host local models for teammates: start, stop, status and logs.</p><div class="command"><small>ipx server start --allow teammate@acme.com --detach</small><button class="copy-command" type="button" data-copy="ipx server start --allow teammate@acme.com --detach">Copy</button></div></div>
+					<div class="cmd"><code class="n">ipx import</code><p>Add Hugging Face Spaces, websites and files to the desktop app library.</p><div class="command"><small>ipx import space black-forest-labs/FLUX.1-schnell</small><button class="copy-command" type="button" data-copy="ipx import space black-forest-labs/FLUX.1-schnell">Copy</button></div></div>
+				</div></div>
+				<p class="copy-status" aria-live="polite" role="status"></p>
+			</div>
+		</section>
 		</main>
 		<section class="closer">
 			<div class="wrap">
@@ -138,5 +165,21 @@
 			</div>
 		</section>
 		<ip-footer></ip-footer>
+		<script>
+			(() => {
+				document.querySelectorAll('.copy-command').forEach((button) => {
+					button.addEventListener('click', async () => {
+						const status = button.closest('.wrap').querySelector('.copy-status');
+						try {
+							if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+							await navigator.clipboard.writeText(button.dataset.copy);
+							status.textContent = 'Command copied.';
+						} catch {
+							status.textContent = 'Could not copy command. Select and copy it manually.';
+						}
+					});
+				});
+			})();
+		</script>
 	</body>
 </html>
