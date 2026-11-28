@@ -11,6 +11,18 @@ interface Props { config: any; session: any; apiBase: string; theme?: "light" | 
 type Source = "p2g" | "gen";
 type Mode = "text" | "image" | "video" | "audio" | "3d" | "embedding" | "realtime" | "decision";
 
+const MODALITY_TABS: { value: "all" | Mode; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "text", label: "Text" },
+  { value: "image", label: "Image" },
+  { value: "video", label: "Video" },
+  { value: "audio", label: "Audio" },
+  { value: "3d", label: "3D" },
+  { value: "embedding", label: "Embeddings" },
+  { value: "realtime", label: "Realtime" },
+  { value: "decision", label: "Decisions" },
+];
+
 function modelId(model: any) { return model?.id || model?.upstream_id || model?.openrouter?.slug || ""; }
 function displayName(model: any) {
   const name = model?.name || modelId(model) || "Unnamed model";
@@ -72,6 +84,7 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
+  const [modality, setModality] = useState<"all" | Mode>("all");
   const [selected, setSelected] = useState<any | null>(null);
   const [priceRange, setPriceRange] = useState("all");
   const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
@@ -141,11 +154,11 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
   const visibleModels = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (catalogOwner !== owner) return [];
-    const filtered = models.filter((model) => (!needle || [model?.name, model?.id, model?.upstream_id, model?.description, model?.publisher_url, modelType(model), model?.owned_by]
+    const filtered = models.filter((model) => (modality === "all" || String(modelType(model)).toLowerCase() === modality) && (!needle || [model?.name, model?.id, model?.upstream_id, model?.description, model?.publisher_url, modelType(model), model?.owned_by]
         .filter(Boolean).join(" ").toLowerCase().includes(needle)) &&
       (source !== "p2g" || matchesModelPriceRange(modelStartingPrice(model), priceRange)));
     return source === "p2g" && priceSort !== "default" ? [...filtered].sort((a, b) => compareModelPrice(a, b, priceSort)) : filtered;
-  }, [models, query, priceRange, priceSort, source, catalogOwner, owner]);
+  }, [models, query, modality, priceRange, priceSort, source, catalogOwner, owner]);
 
   const price = (model: any) => {
     if (source === "gen") return "1x multiplier";
@@ -166,9 +179,14 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Models</div>
         <div className={styles.tabs} role="tablist" aria-label="Model API source">
-          {(["p2g", "gen"] as const).map((value) => <button key={value} type="button" role="tab" aria-selected={source === value} className={`playground-tab ${styles.playgroundTab} ${source === value ? styles.active : ""}`} onClick={() => { setSource(value); setSelected(null); }}>{value === "p2g" ? "P2G API" : "Gen API"}</button>)}
+          {(["p2g", "gen"] as const).map((value) => <button key={value} type="button" role="tab" aria-selected={source === value} className={`playground-tab ${styles.playgroundTab} ${source === value ? styles.active : ""}`} onClick={() => { setSource(value); setModality("all"); setSelected(null); }}>{value === "p2g" ? "P2G API" : "Gen API"}</button>)}
         </div>
         <input type="search" placeholder="Search models by name, slug or publisher..." aria-label="Search models" value={query} onChange={(event) => setQuery(event.target.value)} className={styles.modelSearch} />
+        <div className={styles.tabs} role="group" aria-label="Filter models by modality">
+          {MODALITY_TABS.map(({ value, label }) => (
+            <button key={value} type="button" aria-pressed={modality === value} className={`playground-tab ${styles.playgroundTab} ${modality === value ? styles.active : ""}`} onClick={() => setModality(value)}>{label}</button>
+          ))}
+        </div>
         <div className={styles.modelPriceControls}>
           <label>Starting price<select value={priceRange} onChange={(event) => setPriceRange(event.target.value)} disabled={source !== "p2g"}>
             <option value="all">All prices</option><option value="zero">$0 rate</option><option value="lt1">Under $1</option><option value="1to5">$1–$5</option><option value="5to20">$5–$20</option><option value="gte20">$20+</option>
