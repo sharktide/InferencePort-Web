@@ -154,7 +154,7 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
   const visibleModels = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (catalogOwner !== owner) return [];
-    const filtered = models.filter((model) => (modality === "all" || String(modelType(model)).toLowerCase() === modality) && (!needle || [model?.name, model?.id, model?.upstream_id, model?.description, model?.publisher_url, modelType(model), model?.owned_by]
+    const filtered = models.filter((model) => (modality === "all" || getMode(model, source) === modality) && (!needle || [model?.name, model?.id, model?.upstream_id, model?.description, model?.publisher_url, modelType(model), model?.owned_by]
         .filter(Boolean).join(" ").toLowerCase().includes(needle)) &&
       (source !== "p2g" || matchesModelPriceRange(modelStartingPrice(model), priceRange)));
     return source === "p2g" && priceSort !== "default" ? [...filtered].sort((a, b) => compareModelPrice(a, b, priceSort)) : filtered;
@@ -179,7 +179,7 @@ export default function ModelsPanel({ session, apiBase, theme = "light" }: Props
       <section className={`${styles.card} ${styles.wide}`}>
         <div className={styles.heading}>Models</div>
         <div className={styles.tabs} role="tablist" aria-label="Model API source">
-          {(["p2g", "gen"] as const).map((value) => <button key={value} type="button" role="tab" aria-selected={source === value} className={`playground-tab ${styles.playgroundTab} ${source === value ? styles.active : ""}`} onClick={() => { setSource(value); setModality("all"); setSelected(null); }}>{value === "p2g" ? "P2G API" : "Gen API"}</button>)}
+          {(["p2g", "gen"] as const).map((value) => <button key={value} type="button" role="tab" aria-selected={source === value} className={`playground-tab ${styles.playgroundTab} ${source === value ? styles.active : ""}`} onClick={() => { if (value !== source) { setSource(value); setModality("all"); setSelected(null); } }}>{value === "p2g" ? "P2G API" : "Gen API"}</button>)}
         </div>
         <input type="search" placeholder="Search models by name, slug or publisher..." aria-label="Search models" value={query} onChange={(event) => setQuery(event.target.value)} className={styles.modelSearch} />
         <div className={styles.tabs} role="group" aria-label="Filter models by modality">
